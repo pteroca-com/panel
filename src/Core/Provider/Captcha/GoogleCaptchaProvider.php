@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Core\Service\Captcha\Provider;
+namespace App\Core\Provider\Captcha;
 
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 
-readonly class GoogleCaptchaProvider implements CaptchaProviderInterface
+class GoogleCaptchaProvider implements CaptchaProviderInterface
 {
     public function __construct(
-        private SettingService $settingService,
+        private readonly SettingService $settingService,
     ) {}
 
     public function validateCaptcha(string $captchaResponse): bool
@@ -19,8 +19,13 @@ readonly class GoogleCaptchaProvider implements CaptchaProviderInterface
             $captchaSecretKey,
             $captchaResponse,
         );
-        $response = file_get_contents($verificationUrl);
+        $response = $this->fileGetContents($verificationUrl);
         $responseKeys = json_decode($response, true);
         return $responseKeys['success'] ?? false;
+    }
+
+    protected function fileGetContents(string $url): string
+    {
+        return file_get_contents($url);
     }
 }

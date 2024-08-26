@@ -3,7 +3,7 @@
 namespace App\Core\Service\Captcha;
 
 use App\Core\Enum\SettingEnum;
-use App\Core\Service\Captcha\Provider\CaptchaProviderInterface;
+use App\Core\Provider\Captcha\CaptchaProviderInterface;
 use App\Core\Service\SettingService;
 
 readonly class CaptchaService

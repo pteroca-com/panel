@@ -3,6 +3,7 @@ pteroca:
     back: 'Retour au panneau'
     email_not_verified: 'Votre adresse e-mail n’a pas encore été vérifiée. Vérifiez votre boîte de réception.'
     pterodactyl_error: 'Une erreur est survenue lors de la communication avec le panneau Pterodactyl.'
+    dont_have_permission: 'Vous n’avez pas la permission de faire cela.'
 
   login:
     title: 'Connexion'

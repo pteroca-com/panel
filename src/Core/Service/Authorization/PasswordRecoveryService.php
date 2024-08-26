@@ -9,20 +9,22 @@ use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\PasswordResetRequestRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\SettingService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\ByteString;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-readonly class PasswordRecoveryService
+class PasswordRecoveryService
 {
     public function __construct(
-        private UserRepository $userRepository,
-        private PasswordResetRequestRepository $passwordResetRequestRepository,
-        private MessageBusInterface $messageBus,
-        private TranslatorInterface $translator,
-        private SettingService $settingService,
-        private UserPasswordHasherInterface $passwordHasher,
+        private readonly UserRepository $userRepository,
+        private readonly PasswordResetRequestRepository $passwordResetRequestRepository,
+        private readonly MessageBusInterface $messageBus,
+        private readonly TranslatorInterface $translator,
+        private readonly SettingService $settingService,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function createRecoveryRequest(string $email): void
@@ -88,7 +90,11 @@ readonly class PasswordRecoveryService
             'email/reset_password.html.twig',
             ['recoveryUrl' => $this->generateRecoveryUrl($token), 'user' => $user],
         );
-        $this->messageBus->dispatch($emailMessage);
+        try {
+            $this->messageBus->dispatch($emailMessage);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to send recovery email', ['exception' => $e]);
+        }
     }
 
     private function generateRecoveryUrl(string $token): string

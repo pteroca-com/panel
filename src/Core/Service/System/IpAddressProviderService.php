@@ -4,10 +4,10 @@ namespace App\Core\Service\System;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 
-readonly class IpAddressProviderService
+class IpAddressProviderService
 {
     public function __construct(
-        private RequestStack $requestStack
+        private readonly RequestStack $requestStack
     ) {}
 
     public function getIpAddress(): ?string
