@@ -1,0 +1,87 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}{{ product.name }}{% endblock %}
+
+{% block page_actions %}
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <style>
+        .product-image-container {
+            height: 200px;
+            width: 100%;
+            overflow: hidden;
+            background: url("{{ product.imagePath ?? 'https://via.placeholder.com/300x150' }}") no-repeat center center;
+            background-size: cover;
+            border-radius: 7px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-5">
+        <h1>{{ product.name }}</h1>
+        <div class="row">
+            <div class="col-md-12 product-image-container mt-3 mb-5"></div>
+            <div class="col-md-8">
+                <h2>{{ 'pteroca.product.information'|trans }}</h2>
+                <p>{{ product.description }}</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>{{ 'pteroca.product.ram'|trans }}:</strong> {{ product.memory }} MB</li>
+                    <li class="list-group-item"><strong>{{ 'pteroca.product.cpu'|trans }}:</strong> {{ product.cpu }}%</li>
+                    <li class="list-group-item"><strong>{{ 'pteroca.product.disk'|trans }}:</strong> {{ product.diskSpace }} MB</li>
+                    <li class="list-group-item"><strong>{{ 'pteroca.product.backups'|trans }}:</strong> {{ product.backups }}</li>
+                    <li class="list-group-item"><strong>{{ 'pteroca.product.swap'|trans }}:</strong> {{ product.swap }} MB</li>
+                    <li class="list-group-item"><strong>{{ 'pteroca.product.databases'|trans }}:</strong> {{ product.dbCount }}</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h2>{{ 'pteroca.product.order'|trans }}</h2>
+                <form action="{{ path('panel', { routeName: 'store_product_buy' }) }}" method="post">
+                    <input type="hidden" name="product" value="{{ product.id }}">
+                    <div class="form-group">
+                        <label for="duration">{{ 'pteroca.product.period'|trans }}</label>
+                        <select id="duration" name="duration" class="form-control">
+                            <option value="30">30 {{ 'pteroca.product.days'|trans }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="egg">{{ 'pteroca.product.egg'|trans }}</label>
+                        <select id="egg" name="egg" class="form-control">
+                            {% for egg in eggs %}
+                                <option value="{{ egg.id }}">{{ egg.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="form-text text-muted"><i class="fas fa-info-circle"></i> {{ 'pteroca.product.egg_hint'|trans }}</small>
+                    </div>
+                    {% if not isProductAvailable %}
+                        <div class="mb-3">
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fa fa-exclamation-triangle me-1"></i>
+                                {{ 'pteroca.product.not_available'|trans }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if app.user.balance < (product.price / 100) %}
+                        <div class="mb-3">
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fa fa-exclamation-triangle me-1"></i>
+                                {{ 'pteroca.product.not_enough_balance'|trans }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="price">{{ 'pteroca.product.price'|trans }}</label>
+                        <input type="text" id="price" class="form-control" value="{{ (product.price / 100)|number_format(2, ',', ' ') }} {{ get_currency() }}" disabled>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3 w-100" {% if not isProductAvailable or app.user.balance < (product.price / 100) %}disabled{% endif %}><i class="fa fa-shopping-basket"></i> {{ 'pteroca.product.order_now'|trans }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

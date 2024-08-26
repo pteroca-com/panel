@@ -1,0 +1,14 @@
+{% trans_default_domain 'messages' %}
+<p>
+    {{ 'pteroca.email.general.best_regards'|trans }},<br>
+    {{ get_title() }}
+</p>
+</div>
+<div class="footer">
+    <p>{{ 'pteroca.email.general.visit_website'|trans }}<br>
+        <a href="{{ get_site_url() }}">{{ get_title() }}</a></p>
+    <br>
+    <p>&copy; {{ "now"|date("Y") }} {{ get_title() }}.<br>{{ 'pteroca.email.general.copyright'|trans }}</p>
+</div>
+</body>
+</html>

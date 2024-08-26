@@ -1,0 +1,7 @@
+{% trans_default_domain 'messages' %}
+{% include 'email/header.html.twig' %}
+<p>
+    {{ 'pteroca.email.suspended.server_suspended'|trans }}<br>
+    {{ 'pteroca.email.suspended.extend_server'|trans }}
+</p>
+{% include 'email/footer.html.twig' %}

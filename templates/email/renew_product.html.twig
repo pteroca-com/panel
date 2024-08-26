@@ -1,0 +1,22 @@
+{% trans_default_domain 'messages' %}
+{% include 'email/header.html.twig' %}
+<p>
+    {{ 'pteroca.email.renew.server_renewed'|trans }}<br>
+    {{ 'pteroca.email.renew.new_expiration' }} {{ server.expiresAt|date('Y-m-d H:i') }}<br><br>
+</p>
+<p>
+    <b>{{ 'pteroca.email.store.product_details'|trans }}:</b><br>
+    {{ 'pteroca.email.store.product_name'|trans }}: {{ product.name }}<br>
+    {{ 'pteroca.email.store.product_price'|trans }}: {{ product.price|number_format(2) }} {{ currency|upper }}<br>
+</p>
+<p>
+    <b>{{ 'pteroca.email.store.server_details'|trans }}:</b><br>
+    {{ 'pteroca.email.store.ip_address'|trans }}: {{ server.ip }}<br>
+    {{ 'pteroca.email.store.management_panel'|trans }}: {{ panel.url }}<br>
+    {{ 'pteroca.email.store.panel_username'|trans }}: {{ panel.username }}<br>
+    {{ 'pteroca.email.store.panel_password'|trans }}: {{ {{ 'pteroca.email.store.panel_password_hint'|trans }} }}<br>
+</p>
+<p>
+    {{ 'pteroca.email.store.management_panel_hint'|trans }}
+</p>
+{% include 'email/footer.html.twig' %}

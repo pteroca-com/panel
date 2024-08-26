@@ -1,0 +1,27 @@
+parameters:
+  categories_base_path: '/uploads/categories'
+  categories_directory: '%kernel.project_dir%/public/%categories_base_path%'
+  products_base_path: '/uploads/products'
+  products_directory: '%kernel.project_dir%/public/%products_base_path%'
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  App\Core\:
+    resource: '../../*'
+    exclude: '../../{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    tags: ['controller.service_arguments']
+
+  App\Core\Service\StoreService:
+    arguments:
+      $categoriesBasePath: '%categories_base_path%'
+      $productsBasePath: '%products_base_path%'
+
+  App\Core\Service\Mailer\MailerService:
+    arguments:
+      $twig: '@twig'
+
+  App\Core\Twig\AppExtension:
+    tags: [ 'twig.extension' ]

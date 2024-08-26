@@ -1,0 +1,152 @@
+<?php
+
+namespace App\Core\Entity;
+
+use App\Core\Enum\UserRoleEnum;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+#[ORM\MappedSuperclass]
+#[ORM\Table(name: 'user')]
+#[UniqueEntity(fields: ['email'])]
+class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private int $pterodactylUserId;
+
+    #[ORM\Column(length: 180, unique: true)]
+    private ?string $email = null;
+
+    #[ORM\Column]
+    private array $roles = [];
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $name;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $surname;
+
+    private ?string $plainPassword = null;
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getPterodactylUserId(): int
+    {
+        return $this->pterodactylUserId;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = UserRoleEnum::ROLE_USER->value;
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSurname(): string
+    {
+        return $this->surname;
+    }
+
+    public function setSurname(string $surname): static
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function __toString(): string
+    {
+        return $this->email;
+    }
+}

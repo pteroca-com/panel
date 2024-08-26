@@ -1,0 +1,93 @@
+.sidebar {
+    background: var(--primary-color);
+}
+
+.main-header #header-logo .logo-custom,
+#main-menu .menu .menu-item-label,
+#main-menu .menu .menu-icon {
+    color: #FFFFFF;
+}
+
+#main-menu .menu .menu-item.active .menu-item-label,
+#main-menu .menu .menu-item.active:not(.expanded) .menu-icon,
+#main-menu .menu .menu-item.active:not(.expanded) a {
+    color: var(--primary-color);
+}
+
+.btn-primary, .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):active, .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):active:focus, .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):focus, .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.ea-dark-scheme .form-switch .form-check-input:checked, .form-switch .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+.dropdown-settings .dropdown-item.active, .dropdown-settings .dropdown-item.active i {
+    color: var(--primary-color);
+    background: rgba(89, 134, 165, 0.05);
+}
+
+.dropdown-settings .dropdown-item.active {
+    box-shadow: inset 0 0 0 1px rgba(89, 134, 165, 0.5);
+}
+
+.panel-sidebar-logo {
+    width: 95%;
+}
+
+.panel-login-logo {
+    width: 90%;
+    margin-left: 5%;
+    margin-bottom: 1rem;
+}
+
+.page-login {
+    background: rgb(89, 134, 165) !important;
+}
+
+.login-wrapper .form-widget input {
+    border-color: rgba(89, 134, 165, 0.5);
+}
+
+.form-widget .custom-file-input:focus~.custom-file-label, .form-widget .form-select:focus, .form-widget input.form-check-input:focus, .form-widget input.form-control:focus, .form-widget textarea.form-control:focus {
+    border-color: #b8a494;
+}
+
+.form-check-input:checked {
+    background-color: rgb(89, 134, 165);
+    border-color: rgb(89, 134, 165);
+}
+
+.form-check-input:focus {
+    border-color: rgb(89, 134, 165);
+}
+
+.main-header.register-header {
+    margin-top: 50%;
+}
+
+.login-wrapper .content {
+    padding-top: 1rem;
+}
+
+.login-wrapper .login-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 1.5rem;
+}
+
+.powered-by {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+}

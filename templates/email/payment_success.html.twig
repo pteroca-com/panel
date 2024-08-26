@@ -1,0 +1,7 @@
+{% trans_default_domain 'messages' %}
+{% include 'email/header.html.twig' %}
+<p>
+    {{ 'pteroca.email.payment.payment_received'|trans }} {{ amount|number_format(2) }} {{ currency|upper }}.<br>
+    {{ 'pteroca.email.payment.balance_updated'|trans }} {{ amount|number_format(2) }} {{ internalCurrency }}.
+</p>
+{% include 'email/footer.html.twig' %}

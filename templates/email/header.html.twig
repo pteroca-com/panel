@@ -1,0 +1,55 @@
+{% trans_default_domain 'messages' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: {{ defaultThemeColors.light }};
+            height: 150px;
+            text-align: center;
+        }
+        .header img {
+            margin: 30px 0;
+        }
+        .content {
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .footer {
+            font-size: 12px;
+            color: #FFFFFF;
+            text-align: center;
+            background-color: {{ defaultThemeColors.light }};
+            padding: 5px;
+        }
+        .footer a {
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+        .button {
+            background-color: {{ defaultThemeColors.light }};
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img src="cid:logo.png" alt="Logo" style="max-height: 100px;">
+</div>
+<div class="content">
+    <h1>{{ 'pteroca.email.general.hello'|trans }} {{ user.name }}!</h1>

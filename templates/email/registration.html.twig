@@ -1,0 +1,13 @@
+{% trans_default_domain 'messages' %}
+{% include 'email/header.html.twig' %}
+<p>
+    {{ 'pteroca.email.registration.welcome'|trans }}<br>
+    {{ 'pteroca.email.registration.confirm_email'|trans }}
+</p>
+<p>
+    <a href="{{ verificationUrl }}" class="button">{{ 'pteroca.email.registration.confirm_email_button'|trans }}</a>
+</p>
+<p>
+    {{ 'pteroca.email.registration.if_not_registered'|trans }}
+</p>
+{% include 'email/footer.html.twig' %}

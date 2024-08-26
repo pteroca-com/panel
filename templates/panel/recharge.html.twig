@@ -1,0 +1,74 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}{{ 'pteroca.recharge.recharge_balance'|trans }}{% endblock %}
+
+{% block page_actions %}
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 mb-5 mt-4">
+                <div class="card mb-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">{{ 'pteroca.recharge.recharge_balance'|trans }}</h5>
+                        {{ form_start(form) }}
+                        <div class="form-group mb-3 mt-4">
+                            {{ form_label(form.amount, null, {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="form-widget">
+                                <input type="number" id="amount" name="{{ field_name(form.amount) }}" class="form-control" value="{{ field_value(form.amount) }}" required autofocus autocomplete="name" step="0.01">
+                            </div>
+                            {{ form_errors(form.amount) }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block">{{ 'pteroca.recharge.recharge'|trans }} {{ get_currency() }}</button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-5">
+                <h5 class="text-center">{{ 'pteroca.recharge.transaction_history'|trans }}</h5>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>{{ 'pteroca.recharge.id'|trans }}</th>
+                        <th>{{ 'pteroca.recharge.date'|trans }}</th>
+                        <th>{{ 'pteroca.recharge.amount'|trans }}</th>
+                        <th>{{ 'pteroca.recharge.status'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.createdAt|date('Y-m-d H:i') }}</td>
+                            <td>{{ (payment.amount / 100)|number_format(2) }} {{ payment.currency|upper }}</td>
+                            <td>{{ ('pteroca.recharge.transaction_' ~ payment.status)|trans }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">{{ 'pteroca.recharge.no_transaction'|trans }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6 mt-5">
+                <h5 class="text-center">{{ 'pteroca.recharge.additional_information'|trans }}</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <h6>{{ 'pteroca.recharge.current_balance'|trans }}</h6>
+                        <p>{{ (app.user.balance / 100)|number_format(2, ',', ' ')}} {{ get_currency() }}</p>
+
+                        <h6>{{ 'pteroca.recharge.payment_provider_information'|trans }}</h6>
+                        <p>{{ 'pteroca.recharge.payment_provider_details'|trans }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

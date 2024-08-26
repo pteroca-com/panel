@@ -1,0 +1,47 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}{{ 'pteroca.store.title'|trans }}{% endblock %}
+
+{% block page_actions %}
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-4">
+        {% if categories|length > 0 %}
+            {% set row = 0 %}
+            {% for category in categories %}
+                {% set row = row + 1 %}
+                {% if row == 0 %}
+                    <div class="row">
+                {% endif %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}">
+                            <img src="{{ category.imagePath ?? 'https://via.placeholder.com/300x150' }}" class="card-img-top" alt="{{ category.name }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text">{{ category.description }}</p>
+                            <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}" class="btn btn-primary">{{ 'pteroca.store.show_offer'|trans }}</a>
+                        </div>
+                    </div>
+                </div>
+                {% if row % 3 == 0 %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-exclamation-circle"></i>
+                        {{ 'pteroca.store.no_categories'|trans }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
