@@ -11,7 +11,7 @@ services:
 
   App\Core\:
     resource: '../../*'
-    exclude: '../../{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    exclude: '../../{DependencyInjection,DTO,Entity,Migrations,Tests,Kernel.php}'
     tags: ['controller.service_arguments']
 
   App\Core\Service\StoreService:

@@ -21,6 +21,7 @@
                             <div class="form-widget">
                                 <input type="number" id="amount" name="{{ field_name(form.amount) }}" class="form-control" value="{{ field_value(form.amount) }}" required autofocus autocomplete="name" step="0.01">
                             </div>
+                            <input type="hidden" name="{{ field_name(form.currency) }}" value="{{ field_value(form.currency) }}" />
                             {{ form_errors(form.amount) }}
                         </div>
                         <div class="d-grid">

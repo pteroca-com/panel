@@ -65,9 +65,13 @@ class RegistrationService
 
     public function verifyEmail(string $token): void
     {
-        $token = $this->jwtConfiguration->parser()->parse($token);
-        assert($token instanceof Plain);
+        try {
+            $token = $this->jwtConfiguration->parser()->parse($token);
+        } catch (\Exception) {
+            throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+        }
 
+        assert($token instanceof Plain);
         $constraints = [
             new IssuedBy(self::JWT_ISSUER),
         ];
@@ -129,7 +133,14 @@ class RegistrationService
                 'user' => $user,
             ]
         );
-        $this->messageBus->dispatch($emailMessage);
+        try {
+            $this->messageBus->dispatch($emailMessage);
+        } catch (\Exception $exception) {
+            $this->logger->error('Failed to send registration email', [
+                'exception' => $exception,
+                'user' => $user,
+            ]);
+        }
     }
 
     private function createVerificationToken(User $user): string

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Service\Captcha\Provider;
+namespace App\Core\Provider\Captcha;
 
 interface CaptchaProviderInterface
 {

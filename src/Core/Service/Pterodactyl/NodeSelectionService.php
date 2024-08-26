@@ -5,10 +5,10 @@ namespace App\Core\Service\Pterodactyl;
 use App\Core\Entity\Product;
 use Exception;
 
-readonly class NodeSelectionService
+class NodeSelectionService
 {
     public function __construct(
-        private PterodactylService $pterodactylService
+        private readonly PterodactylService $pterodactylService
     ) {}
 
     public function getBestAllocationId(Product $product): int

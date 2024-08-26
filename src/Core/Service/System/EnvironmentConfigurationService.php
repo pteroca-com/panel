@@ -4,11 +4,17 @@ namespace App\Core\Service\System;
 
 class EnvironmentConfigurationService
 {
+    private string $envFilePath;
+
+    public function __construct(string $envFilePath = null)
+    {
+        $this->envFilePath = $envFilePath ?? dirname(__DIR__, 4) . '/.env';
+    }
+
     public function writeToEnvFile(string $pattern, string $value): bool
     {
-        $envFilePath = dirname(__DIR__, 4) . '/.env';
-        if (file_exists($envFilePath)) {
-            $envContents = file_get_contents($envFilePath);
+        if ($this->fileExists($this->envFilePath)) {
+            $envContents = $this->fileGetContents($this->envFilePath);
 
             if (preg_match($pattern, $envContents)) {
                 $envContents = preg_replace($pattern, $value, $envContents);
@@ -16,7 +22,7 @@ class EnvironmentConfigurationService
                 $envContents .= PHP_EOL . $value . PHP_EOL;
             }
 
-            file_put_contents($envFilePath, $envContents);
+            $this->filePutContents($this->envFilePath, $envContents);
             return true;
         } else {
             return false;
@@ -25,9 +31,8 @@ class EnvironmentConfigurationService
 
     public function getEnvValue(string $pattern): string
     {
-        $envFilePath = dirname(__DIR__, 4) . '/.env';
-        if (file_exists($envFilePath)) {
-            $envContents = file_get_contents($envFilePath);
+        if ($this->fileExists($this->envFilePath)) {
+            $envContents = $this->fileGetContents($this->envFilePath);
 
             if (preg_match($pattern, $envContents, $matches)) {
                 return $matches[1];
@@ -35,5 +40,20 @@ class EnvironmentConfigurationService
         }
 
         return '';
+    }
+
+    protected function fileExists(string $filePath): bool
+    {
+        return file_exists($filePath);
+    }
+
+    protected function fileGetContents(string $filePath): string
+    {
+        return file_get_contents($filePath);
+    }
+
+    protected function filePutContents(string $filePath, string $contents): void
+    {
+        file_put_contents($filePath, $contents);
     }
 }

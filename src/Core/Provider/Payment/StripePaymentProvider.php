@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Core\Service\Payment\Provider;
+namespace App\Core\Provider\Payment;
 
+use App\Core\Adapter\StripeAdapter;
+use App\Core\DTO\PaymentSessionDTO;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
-use Stripe\Checkout\Session;
-use Stripe\Stripe;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StripePaymentProvider implements PaymentProviderInterface
 {
-    public const PAID_STATUS = 'paid';
-
     private bool $isConfigured = false;
 
     public function __construct(
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
+        private readonly StripeAdapter $stripeAdapter,
     ) {
     }
 
@@ -27,7 +26,7 @@ class StripePaymentProvider implements PaymentProviderInterface
         if (empty($apiKey)) {
             throw new \Exception($this->translator->trans('pteroca.recharge.payment_is_not_configured'));
         }
-        Stripe::setApiKey($apiKey);
+        $this->stripeAdapter->setApiKey($apiKey);
         $this->isConfigured = true;
     }
 
@@ -46,36 +45,45 @@ class StripePaymentProvider implements PaymentProviderInterface
         string $currency,
         string $successUrl,
         string $cancelUrl,
-    ): Session
+    ): ?PaymentSessionDTO
     {
         if (!$this->isConfigured) {
             $this->setStripeApiKey();
         }
-        return Session::create([
-            'payment_method_types' => $this->getStripePaymentMethods(),
-            'line_items' => [
-                [
-                    'price_data' => [
-                        'currency' => strtolower($currency),
-                        'product_data' => [
-                            'name' => $this->translator->trans('pteroca.recharge.payment_title'),
+        try {
+            return $this->stripeAdapter->createSession([
+                'payment_method_types' => $this->getStripePaymentMethods(),
+                'line_items' => [
+                    [
+                        'price_data' => [
+                            'currency' => strtolower($currency),
+                            'product_data' => [
+                                'name' => $this->translator->trans('pteroca.recharge.payment_title'),
+                            ],
+                            'unit_amount' => $amount * 100,
                         ],
-                        'unit_amount' => $amount * 100,
+                        'quantity' => 1,
                     ],
-                    'quantity' => 1,
                 ],
-            ],
-            'mode' => 'payment',
-            'success_url' => $successUrl,
-            'cancel_url' => $cancelUrl,
-        ]);
+                'mode' => 'payment',
+                'success_url' => $successUrl,
+                'cancel_url' => $cancelUrl,
+            ]);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
-    public function retrieveSession(string $sessionId): Session
+    public function retrieveSession(string $sessionId): ?PaymentSessionDTO
     {
         if (!$this->isConfigured) {
             $this->setStripeApiKey();
         }
-        return Session::retrieve($sessionId);
+        try {
+            $stripeSession = $this->stripeAdapter->retrieveSession($sessionId);
+        } catch (\Exception) {
+            return null;
+        }
+        return $stripeSession;
     }
 }

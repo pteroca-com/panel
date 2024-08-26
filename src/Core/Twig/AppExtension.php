@@ -75,7 +75,7 @@ class AppExtension extends AbstractExtension
 
     public function getRequireEmailVerification(): bool
     {
-        return $this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
+        return (bool)$this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
     }
 
     public function getCaptchaSiteKey(): ?string

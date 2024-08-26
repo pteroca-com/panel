@@ -6,13 +6,13 @@ use App\Core\Repository\SettingRepository;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-readonly class SettingService
+class SettingService
 {
     public const CACHE_TTL = 86400;
 
     public function __construct(
-        private SettingRepository $settingRepository,
-        private CacheInterface $cache,
+        private readonly SettingRepository $settingRepository,
+        private readonly CacheInterface $cache,
     ) {}
 
     public function getSetting(string $name): ?string
