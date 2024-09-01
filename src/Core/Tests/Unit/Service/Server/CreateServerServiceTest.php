@@ -72,11 +72,14 @@ class CreateServerServiceTest extends TestCase
         $product->method('getDiskSpace')->willReturn(10000);
         $product->method('getPrice')->willReturn(100.0);
 
-        $egg = $this->createMock(PterodactylEgg::class);
-        $egg->id = 1;
-        $egg->docker_image = 'docker_image';
-        $egg->startup = 'startup_command';
-        $egg->relationships = ['variables' => (object)['data' => []]];
+        $egg = new PterodactylEgg([
+            'attributes' => [
+                'id' => 1,
+                'docker_image' => 'docker_image',
+                'startup' => 'startup_command',
+                'relationships' => ['variables' => (object)['data' => []]],
+            ],
+        ], $this->createMock(PterodactylApi::class));
 
         $pterodactylApiMock = $this->createMock(PterodactylApi::class);
         $pterodactylApiMock->nest_eggs = $this->createMock(NestEggManager::class);
@@ -168,7 +171,7 @@ class CreateServerServiceTest extends TestCase
         $pterodactylApiMock->nest_eggs
             ->method('get')
             ->with(1, 1, ['include' => 'variables'])
-            ->willReturn(null);
+            ->willReturn(new PterodactylEgg([]));
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Egg not found');

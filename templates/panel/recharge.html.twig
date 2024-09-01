@@ -63,7 +63,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h6>{{ 'pteroca.recharge.current_balance'|trans }}</h6>
-                        <p>{{ (app.user.balance / 100)|number_format(2, ',', ' ')}} {{ get_currency() }}</p>
+                        <p>{{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}</p>
 
                         <h6>{{ 'pteroca.recharge.payment_provider_information'|trans }}</h6>
                         <p>{{ 'pteroca.recharge.payment_provider_details'|trans }}</p>

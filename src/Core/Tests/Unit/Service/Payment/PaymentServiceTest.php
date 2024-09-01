@@ -218,7 +218,7 @@ class PaymentServiceTest extends TestCase
         $this->assertCount(2, $result);
     }
 
-    private function prepareMockUser(int $initialBalance = 0): User|MockObject
+    private function prepareMockUser(float $initialBalance = 0): User|MockObject
     {
         $user = $this->createMock(User::class);
         $user->method('getBalance')->willReturn($initialBalance);
