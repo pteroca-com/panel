@@ -61,7 +61,7 @@ class DashboardController extends AbstractDashboardController
         }
         $logo = sprintf('<img src="%s" alt="%s" style="max-width: 90%%;">', $logoUrl, $title);
         return Dashboard::new()
-            ->setTitle($logo ?? $title ?? '');
+            ->setTitle($logo);
     }
 
     public function configureMenuItems(): iterable

@@ -109,7 +109,7 @@ class UserAccountCrudController extends AbstractCrudController
                 ->getApi()
                 ->users
                 ->get($entityInstance->getPterodactylUserId());
-            if (!empty($pterodactylAccount)) {
+            if (!empty($pterodactylAccount->username)) {
                 $pterodactylAccountDetails = [
                     'username' => $pterodactylAccount->username,
                     'email' => $entityInstance->getEmail(),

@@ -21,13 +21,13 @@ use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 class CreateServerService extends AbstractActionServerService
 {
     public function __construct(
-        private PterodactylService $pterodactylService,
-        private ServerRepository $serverRepository,
-        private NodeSelectionService $nodeSelectionService,
-        private SettingService $settingService,
-        private ServerService $serverService,
-        private TranslatorInterface $translator,
-        private MessageBusInterface $messageBus,
+        private readonly PterodactylService $pterodactylService,
+        private readonly ServerRepository $serverRepository,
+        private readonly NodeSelectionService $nodeSelectionService,
+        private readonly SettingService $settingService,
+        private readonly ServerService $serverService,
+        private readonly TranslatorInterface $translator,
+        private readonly MessageBusInterface $messageBus,
         UserRepository $userRepository,
     ) {
         parent::__construct($userRepository, $pterodactylService);
@@ -49,7 +49,7 @@ class CreateServerService extends AbstractActionServerService
             $eggId,
             ['include' => 'variables']
         );
-        if (empty($selectedEgg)) {
+        if (!$selectedEgg->has('id')) {
             throw new \Exception('Egg not found');
         }
 
@@ -57,9 +57,9 @@ class CreateServerService extends AbstractActionServerService
         $requestPayload = [
             'name' => sprintf('%s [%s]', $product->getName(), $user->getEmail()),
             'user' => $user->getPterodactylUserId(),
-            'egg' => $selectedEgg->id,
-            'docker_image' => $selectedEgg->docker_image,
-            'startup' => $selectedEgg->startup,
+            'egg' => $selectedEgg->get('id'),
+            'docker_image' => $selectedEgg->get('docker_image'),
+            'startup' => $selectedEgg->get('startup'),
             'environment' => $this->prepareEnvironmentVariables($selectedEgg),
             'limits' => [
                 'memory' => $product->getMemory(),
@@ -83,8 +83,8 @@ class CreateServerService extends AbstractActionServerService
     private function createEntityServer(PterodactylServer $server, Product $product, User $user): Server
     {
         $entityServer = (new Server())
-            ->setPterodactylServerId($server->id)
-            ->setPterodactylServerIdentifier($server->identifier)
+            ->setPterodactylServerId($server->get('id'))
+            ->setPterodactylServerIdentifier($server->get('identifier'))
             ->setProduct($product)
             ->setUser($user)
             ->setExpiresAt(new \DateTime('+1 month'));
@@ -96,10 +96,10 @@ class CreateServerService extends AbstractActionServerService
     private function prepareEnvironmentVariables(PterodactylEgg $egg): array
     {
         $environmentVariables = [];
-        if (empty($egg->relationships)) {
+        if (!$egg->has('relationships')) {
             return $environmentVariables;
         }
-        foreach ($egg->relationships['variables']->data as $variable) {
+        foreach ($egg->get('relationships')['variables']->data as $variable) {
             $environmentVariables[$variable->env_variable] = $variable->default_value;
         }
         return $environmentVariables;

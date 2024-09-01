@@ -43,9 +43,11 @@ class EnvironmentConfigurationServiceTest extends TestCase
             ->method('fileGetContents')
             ->willReturn('EXISTING_VAR=value');
 
+        $expectedContent = "EXISTING_VAR=value" . PHP_EOL . "NEW_VAR=new_value" . PHP_EOL;
+
         $service->expects($this->once())
             ->method('filePutContents')
-            ->with($this->anything(), "EXISTING_VAR=value\r\nNEW_VAR=new_value\r\n");
+            ->with($this->anything(), $expectedContent);
 
         $result = $service->writeToEnvFile('/^NEW_VAR=.*/m', 'NEW_VAR=new_value');
         $this->assertTrue($result);

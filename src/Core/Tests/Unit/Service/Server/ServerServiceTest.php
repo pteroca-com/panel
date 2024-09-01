@@ -75,7 +75,7 @@ class ServerServiceTest extends TestCase
         $pterodactylApi->servers
             ->method('get')
             ->with(123, ['include' => ['allocations']])
-            ->willReturn(null);
+            ->willReturn(new PterodactylServer([], $pterodactylApi));
 
         $result = $this->serverService->getServerDetails($server);
 

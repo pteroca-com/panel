@@ -18,12 +18,12 @@ readonly class SystemSettingConfiguratorHandler
         private DefaultSystemSettingConfiguratorHandler $defaultSystemSettingConfiguratorHandler,
     )
     {
+        $this->defaultSettings = $this->defaultSystemSettingConfiguratorHandler::DEFAULT_SETTINGS;
     }
 
     public function configureSystemSettings(SymfonyStyle $io): void
     {
         if ($io->ask('Do you want to configure system settings? (yes/no)', 'yes') === 'yes') {
-            $this->defaultSettings = $this->defaultSystemSettingConfiguratorHandler::DEFAULT_SETTINGS;
             $this->generateAppSecretKeyIfNeeded();
             $this->askForSiteSettings($io);
             $this->askForEmailSettings($io);
