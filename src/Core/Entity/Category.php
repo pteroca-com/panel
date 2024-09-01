@@ -27,6 +27,8 @@ class Category
     #[Vich\UploadableField(mapping: 'category_images', fileNameProperty: 'imagePath')]
     private ?File $imageFile = null;
 
+    private \DateTimeImmutable $updatedAt;
+
     public function getId(): int
     {
         return $this->id;

@@ -19,7 +19,7 @@ class ServerService
             $server->getPterodactylServerId(),
             ['include' => ['allocations']],
         );
-        if (empty($pterodactylServer)) {
+        if (!$pterodactylServer->has('relationships')) {
             return null;
         }
         return [

@@ -58,6 +58,9 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
 
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress --ansi
+
       - name: Wait for MySQL to be ready
         run: until mysqladmin ping -h127.0.0.1 -uroot -proot --silent; do sleep 1; done
 
