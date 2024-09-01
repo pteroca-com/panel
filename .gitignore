@@ -21,4 +21,5 @@ public/uploads/**/*
 ###> phpunit/phpunit ###
 /phpunit.xml
 .phpunit.result.cache
+junit.xml
 ###< phpunit/phpunit ###
