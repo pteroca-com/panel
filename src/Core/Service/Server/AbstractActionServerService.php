@@ -13,7 +13,7 @@ abstract class AbstractActionServerService
         private readonly PterodactylService $pterodactylService,
     ) {}
 
-    protected function updateUserBalance(User $user, int $price): void
+    protected function updateUserBalance(User $user, float $price): void
     {
         $user->setBalance($user->getBalance() - $price);
         $this->userRepository->save($user);

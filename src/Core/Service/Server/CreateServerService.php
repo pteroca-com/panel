@@ -83,8 +83,8 @@ class CreateServerService extends AbstractActionServerService
     private function createEntityServer(PterodactylServer $server, Product $product, User $user): Server
     {
         $entityServer = (new Server())
-            ->setPterodactylServerId($server->id)
-            ->setPterodactylServerIdentifier($server->identifier)
+            ->setPterodactylServerId($server->get('id'))
+            ->setPterodactylServerIdentifier($server->get('identifier'))
             ->setProduct($product)
             ->setUser($user)
             ->setExpiresAt(new \DateTime('+1 month'));
@@ -99,7 +99,7 @@ class CreateServerService extends AbstractActionServerService
         if (!$egg->has('relationships')) {
             return $environmentVariables;
         }
-        foreach ($egg->get('relationships')->variables->data as $variable) {
+        foreach ($egg->get('relationships')['variables']->data as $variable) {
             $environmentVariables[$variable->env_variable] = $variable->default_value;
         }
         return $environmentVariables;

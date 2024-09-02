@@ -81,7 +81,10 @@ class StoreServiceTest extends TestCase
 
         $this->productRepository
             ->method('findBy')
-            ->with(['category' => $category])
+            ->with([
+                'category' => $category,
+                'isActive' => true,
+            ])
             ->willReturn([$product]);
 
         $products = $this->storeService->getCategoryProducts($category);
@@ -259,7 +262,7 @@ class StoreServiceTest extends TestCase
     public function testValidateBoughtProductThrowsExceptionForInsufficientFunds(): void
     {
         $user = $this->createMock(User::class);
-        $user->method('getBalance')->willReturn(100);
+        $user->method('getBalance')->willReturn(100.00);
 
         $product = $this->createMock(Product::class);
         $product->method('getPrice')->willReturn(20000.00);
@@ -280,7 +283,7 @@ class StoreServiceTest extends TestCase
     public function testValidateBoughtProductSucceeds(): void
     {
         $user = $this->createMock(User::class);
-        $user->method('getBalance')->willReturn(20000);
+        $user->method('getBalance')->willReturn(20000.00);
 
         $product = $this->createMock(Product::class);
         $product->method('getPrice')->willReturn(20000.00);

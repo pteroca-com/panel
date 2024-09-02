@@ -52,8 +52,7 @@ class UserCrudController extends AbstractPanelController
                 ->allowMultipleChoices(),
             NumberField::new('balance', $this->translator->trans('pteroca.crud.user.balance'))
                 ->setNumDecimals(2)
-                ->setDecimalSeparator('.')
-                ->formatValue(fn ($value) => number_format($value / 100, 2, '.', '')),
+                ->setDecimalSeparator('.'),
             TextField::new('plainPassword', $this->translator->trans('pteroca.crud.user.password'))
                 ->setFormTypeOption('attr', ['type' => 'password'])
                 ->onlyOnForms()

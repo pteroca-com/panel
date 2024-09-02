@@ -77,7 +77,7 @@ class CreateServerServiceTest extends TestCase
                 'id' => 1,
                 'docker_image' => 'docker_image',
                 'startup' => 'startup_command',
-                'relationships' => (object)['variables' => (object)['data' => []]],
+                'relationships' => ['variables' => (object)['data' => []]],
             ],
         ], $this->createMock(PterodactylApi::class));
 

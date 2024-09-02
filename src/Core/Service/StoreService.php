@@ -47,7 +47,10 @@ class StoreService
                 $product->setImagePath($imagePath . $product->getImagePath());
             }
             return $product;
-        }, $this->productRepository->findBy(['category' => $category]));
+        }, $this->productRepository->findBy([
+            'category' => $category,
+            'isActive' => true,
+        ]));
     }
 
     public function getActiveProduct(int $productId): ?Product
