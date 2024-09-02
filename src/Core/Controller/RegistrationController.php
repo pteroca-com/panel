@@ -30,7 +30,7 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && !$this->isTestMode()) {
             $user = $this->registrationService
                 ->registerUser($user, $form->get('plainPassword')->getData());
 
@@ -45,6 +45,9 @@ class RegistrationController extends AbstractController
         $registrationErrors = [];
         foreach ($errors as $error) {
             $registrationErrors[] = $error->getMessage();
+        }
+        if ($this->isTestMode()) {
+            $registrationErrors[] = $this->translator->trans('pteroca.demo.action_disabled');
         }
         $registrationErrors = implode('<br>', $registrationErrors);
 
@@ -66,5 +69,10 @@ class RegistrationController extends AbstractController
         }
 
         return $this->redirectToRoute('panel');
+    }
+
+    private function isTestMode(): bool
+    {
+        return isset($_ENV['DEMO_MODE']) && $_ENV['DEMO_MODE'] === 'true';
     }
 }
