@@ -112,7 +112,8 @@ class SettingCrudController extends AbstractPanelController
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.setting.add')))
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.setting.save')))
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->remove(Crud::PAGE_DETAIL, Action::INDEX);
         if (strtolower($_ENV['APP_ENV']) === 'prod') {
             $actions
                 ->remove(Crud::PAGE_INDEX, Action::DELETE)
@@ -156,8 +157,8 @@ class SettingCrudController extends AbstractPanelController
     public function edit(AdminContext $context)
     {
         $currentEntity = $this->getSettingEntity();
-        if ($currentEntity->getType() === SettingTypeEnum::SECRET->value) {
-            $currentEntity->setValue('********');
+        if ($this->isDemoMode() && $currentEntity->getType() === SettingTypeEnum::SECRET->value) {
+            throw $this->createAccessDeniedException('Secret settings cannot be edited in demo mode.');
         }
         return parent::edit($context);
     }
@@ -165,21 +166,27 @@ class SettingCrudController extends AbstractPanelController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
-        $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
-        parent::persistEntity($entityManager, $entityInstance);
+        if (!$this->isDemoMode()) {
+            $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
+            parent::persistEntity($entityManager, $entityInstance);
+        }
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
-        $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
-        parent::updateEntity($entityManager, $entityInstance);
+        if (!$this->isDemoMode()) {
+            $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
+            parent::updateEntity($entityManager, $entityInstance);
+        }
     }
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
-        $this->settingService->deleteSettingFromCache($entityInstance->getName());
-        parent::deleteEntity($entityManager, $entityInstance);
+        if (!$this->isDemoMode()) {
+            $this->settingService->deleteSettingFromCache($entityInstance->getName());
+            parent::deleteEntity($entityManager, $entityInstance);
+        }
     }
 }

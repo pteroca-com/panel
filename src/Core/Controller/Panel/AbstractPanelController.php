@@ -68,7 +68,7 @@ abstract class AbstractPanelController extends AbstractCrudController
         }
     }
 
-    private function isDemoMode(): bool
+    protected function isDemoMode(): bool
     {
         return isset($_ENV['DEMO_MODE']) && $_ENV['DEMO_MODE'] === 'true';
     }
