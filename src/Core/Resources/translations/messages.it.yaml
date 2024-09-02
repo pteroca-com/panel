@@ -5,6 +5,9 @@ pteroca:
     pterodactyl_error: 'Si è verificato un errore durante la comunicazione con il pannello di Pterodactyl.'
     dont_have_permission: 'Non hai il permesso per eseguire questa azione.'
 
+  demo:
+    action_disabled: 'Questa azione è disabilitata nella demo.'
+
   login:
     title: 'Accedi'
     email_address: 'Indirizzo e-mail'

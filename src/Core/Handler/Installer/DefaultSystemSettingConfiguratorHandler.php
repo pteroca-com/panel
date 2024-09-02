@@ -29,11 +29,11 @@ class DefaultSystemSettingConfiguratorHandler
             'value' => '0',
         ],
         SettingEnum::CUSTOMER_MOTD_TITLE->value => [
-            'type' => SettingTypeEnum::TEXT->value,
+            'type' => SettingTypeEnum::TWIG->value,
             'value' => 'Message of the day',
         ],
         SettingEnum::CUSTOMER_MOTD_MESSAGE->value => [
-            'type' => SettingTypeEnum::TEXT->value,
+            'type' => SettingTypeEnum::TWIG->value,
             'value' => 'Welcome to our store!',
         ],
         SettingEnum::REQUIRE_EMAIL_VERIFICATION->value => [

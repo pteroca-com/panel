@@ -5,6 +5,9 @@ pteroca:
     pterodactyl_error: 'Es ist ein Fehler bei der Kommunikation mit dem Pterodactyl-Panel aufgetreten.'
     dont_have_permission: 'Sie haben keine Berechtigung, diese Aktion auszuführen.'
 
+  demo:
+    action_disabled: 'Diese Aktion ist in der Demoversion deaktiviert.'
+
   login:
     title: 'Einloggen'
     email_address: 'E-Mail-Adresse'

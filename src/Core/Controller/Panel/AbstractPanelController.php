@@ -42,19 +42,35 @@ abstract class AbstractPanelController extends AbstractCrudController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         parent::persistEntity($entityManager, $entityInstance);
         $this->logEntityAction(LogActionEnum::ENTITY_ADD, $entityInstance);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         parent::updateEntity($entityManager, $entityInstance);
         $this->logEntityAction(LogActionEnum::ENTITY_EDIT, $entityInstance);
     }
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         parent::deleteEntity($entityManager, $entityInstance);
         $this->logEntityAction(LogActionEnum::ENTITY_DELETE, $entityInstance);
+    }
+
+    protected function disallowForDemoMode(): void
+    {
+        if ($this->isDemoMode()) {
+            $this->addFlash('warning', 'pteroca.demo.action_disabled');
+            throw $this->createAccessDeniedException();
+        }
+    }
+
+    private function isDemoMode(): bool
+    {
+        return isset($_ENV['DEMO_MODE']) && $_ENV['DEMO_MODE'] === 'true';
     }
 }

@@ -101,6 +101,8 @@ class UserCrudController extends AbstractPanelController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof User) {
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
@@ -126,6 +128,8 @@ class UserCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof User) {
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
@@ -162,6 +166,8 @@ class UserCrudController extends AbstractPanelController
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof User) {
             try {
                 $this->pterodactylService->getApi()->users->delete($entityInstance->getPterodactylUserId());

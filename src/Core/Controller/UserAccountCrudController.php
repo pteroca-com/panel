@@ -99,7 +99,15 @@ class UserAccountCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof User) {
+            $currentUser = $this->getUser();
+            $entityInstance->setIsBlocked($currentUser->isBlocked());
+            $entityInstance->setIsVerified($currentUser->isVerified());
+            $entityInstance->setBalance($currentUser->getBalance());
+            $entityInstance->setRoles($currentUser->getRoles());
+
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);
@@ -146,5 +154,18 @@ class UserAccountCrudController extends AbstractCrudController
         }
 
         return parent::edit($context);
+    }
+
+    private function disallowForDemoMode(): void
+    {
+        if ($this->isDemoMode()) {
+            $this->addFlash('warning', 'pteroca.demo.action_disabled');
+            throw $this->createAccessDeniedException();
+        }
+    }
+
+    private function isDemoMode(): bool
+    {
+        return isset($_ENV['DEMO_MODE']) && $_ENV['DEMO_MODE'] === 'true';
     }
 }

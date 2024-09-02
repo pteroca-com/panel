@@ -64,7 +64,7 @@ class Log
 
     public function getIpAddress(): string
     {
-        return $this->ipAddress;
+        return '-- hidden --';
     }
 
     public function setIpAddress(string $ipAddress): self

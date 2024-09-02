@@ -155,6 +155,8 @@ class ProductCrudController extends AbstractPanelController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof Product) {
             $entityInstance->setCreatedAtValue();
             $entityInstance->setUpdatedAtValue();

@@ -5,6 +5,9 @@ pteroca:
     pterodactyl_error: '与 Pterodactyl 面板通信时发生错误。'
     dont_have_permission: '您没有权限执行此操作。'
 
+  demo:
+    action_disabled: '此操作在演示模式下已禁用。'
+
   login:
     title: '登录'
     email_address: '电子邮件地址'

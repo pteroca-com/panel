@@ -5,6 +5,9 @@ pteroca:
     pterodactyl_error: 'Сталася помилка під час зв’язку з панеллю Pterodactyl.'
     dont_have_permission: 'У вас немає дозволу на виконання цієї дії.'
 
+  demo:
+    action_disabled: 'Ця дія вимкнена в демо-режимі.'
+
   login:
     title: 'Увійти'
     email_address: 'Електронна пошта'

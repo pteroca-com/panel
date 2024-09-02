@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
@@ -152,20 +153,32 @@ class SettingCrudController extends AbstractPanelController
         return null;
     }
 
+    public function edit(AdminContext $context)
+    {
+        $currentEntity = $this->getSettingEntity();
+        if ($currentEntity->getType() === SettingTypeEnum::SECRET->value) {
+            $currentEntity->setValue('********');
+        }
+        return parent::edit($context);
+    }
+
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
         parent::persistEntity($entityManager, $entityInstance);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
         parent::updateEntity($entityManager, $entityInstance);
     }
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         $this->settingService->deleteSettingFromCache($entityInstance->getName());
         parent::deleteEntity($entityManager, $entityInstance);
     }
