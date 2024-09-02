@@ -64,10 +64,7 @@ class ProductCrudController extends AbstractPanelController
                 ->setIcon('fa fa-info-circle'),
             TextField::new('name', $this->translator->trans('pteroca.crud.product.name')),
             TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description')),
-            NumberField::new('price', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price'), $internalCurrency))
-                ->formatValue(function ($value) {
-                    return $value / 100;
-                }),
+            NumberField::new('price', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price'), $internalCurrency)),
             BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active')),
             AssociationField::new('category', $this->translator->trans('pteroca.crud.product.category')),
             ImageField::new('imagePath', $this->translator->trans('pteroca.crud.product.image'))
