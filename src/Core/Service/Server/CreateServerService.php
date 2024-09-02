@@ -18,18 +18,20 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Resources\Egg as PterodactylEgg;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
-readonly class CreateServerService
+class CreateServerService extends AbstractActionServerService
 {
     public function __construct(
-        private PterodactylService   $pterodactylService,
-        private ServerRepository     $serverRepository,
-        private UserRepository       $userRepository,
-        private NodeSelectionService $nodeSelectionService,
-        private SettingService       $settingService,
-        private ServerService        $serverService,
-        private TranslatorInterface  $translator,
-        private MessageBusInterface  $messageBus,
-    ) {}
+        private readonly PterodactylService $pterodactylService,
+        private readonly ServerRepository $serverRepository,
+        private readonly NodeSelectionService $nodeSelectionService,
+        private readonly SettingService $settingService,
+        private readonly ServerService $serverService,
+        private readonly TranslatorInterface $translator,
+        private readonly MessageBusInterface $messageBus,
+        UserRepository $userRepository,
+    ) {
+        parent::__construct($userRepository, $pterodactylService);
+    }
 
     public function createServer(Product $product, int $eggId, User|UserInterface $user): Server
     {
@@ -40,24 +42,6 @@ readonly class CreateServerService
         return $createdEntityServer;
     }
 
-    public function renewServer(Server $server, User|UserInterface $user): void
-    {
-        $currentExpirationDate = $server->getExpiresAt();
-        if ($currentExpirationDate < new \DateTime()) {
-            $currentExpirationDate = new \DateTime();
-        } else {
-            $currentExpirationDate = clone $currentExpirationDate;
-        }
-        $server->setExpiresAt($currentExpirationDate->modify('+1 month'));
-        if ($server->getIsSuspended()) {
-            $this->pterodactylService->getApi()->servers->unsuspend($server->getPterodactylServerId());
-            $server->setIsSuspended(false);
-        }
-        $this->serverRepository->save($server);
-        $this->updateUserBalance($user, $server->getProduct()->getPrice());
-        $this->sendRenewConfirmationEmail($user, $server->getProduct(), $server);
-    }
-
     private function createPterodactylServer(Product $product, int $eggId, User $user): PterodactylServer
     {
         $selectedEgg = $this->pterodactylService->getApi()->nest_eggs->get(
@@ -65,7 +49,7 @@ readonly class CreateServerService
             $eggId,
             ['include' => 'variables']
         );
-        if (empty($selectedEgg)) {
+        if (!$selectedEgg->has('id')) {
             throw new \Exception('Egg not found');
         }
 
@@ -73,9 +57,9 @@ readonly class CreateServerService
         $requestPayload = [
             'name' => sprintf('%s [%s]', $product->getName(), $user->getEmail()),
             'user' => $user->getPterodactylUserId(),
-            'egg' => $selectedEgg->id,
-            'docker_image' => $selectedEgg->docker_image,
-            'startup' => $selectedEgg->startup,
+            'egg' => $selectedEgg->get('id'),
+            'docker_image' => $selectedEgg->get('docker_image'),
+            'startup' => $selectedEgg->get('startup'),
             'environment' => $this->prepareEnvironmentVariables($selectedEgg),
             'limits' => [
                 'memory' => $product->getMemory(),
@@ -99,8 +83,8 @@ readonly class CreateServerService
     private function createEntityServer(PterodactylServer $server, Product $product, User $user): Server
     {
         $entityServer = (new Server())
-            ->setPterodactylServerId($server->id)
-            ->setPterodactylServerIdentifier($server->identifier)
+            ->setPterodactylServerId($server->get('id'))
+            ->setPterodactylServerIdentifier($server->get('identifier'))
             ->setProduct($product)
             ->setUser($user)
             ->setExpiresAt(new \DateTime('+1 month'));
@@ -109,16 +93,13 @@ readonly class CreateServerService
         return $entityServer;
     }
 
-    private function updateUserBalance(User $user, int $price): void
-    {
-        $user->setBalance($user->getBalance() - $price);
-        $this->userRepository->save($user);
-    }
-
     private function prepareEnvironmentVariables(PterodactylEgg $egg): array
     {
         $environmentVariables = [];
-        foreach ($egg->relationships['variables']->data as $variable) {
+        if (!$egg->has('relationships')) {
+            return $environmentVariables;
+        }
+        foreach ($egg->get('relationships')['variables']->data as $variable) {
             $environmentVariables[$variable->env_variable] = $variable->default_value;
         }
         return $environmentVariables;
@@ -146,34 +127,5 @@ readonly class CreateServerService
             ]
         );
         $this->messageBus->dispatch($emailMessage);
-    }
-
-    private function sendRenewConfirmationEmail(User $user, Product $product, Server $server): void
-    {
-        $serverDetails = $this->serverService->getServerDetails($server);
-        $emailMessage = new SendEmailMessage(
-            $user->getEmail(),
-            $this->translator->trans('pteroca.email.renew.subject'),
-            'email/renew_product.html.twig',
-            [
-                'user' => $user,
-                'product' => $product,
-                'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
-                'server' => [
-                    'ip' => $serverDetails['ip'],
-                    'expiresAt' => $server->getExpiresAt()->format('Y-m-d H:i'),
-                ],
-                'panel' => [
-                    'url' => $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value),
-                    'username' => $this->getPterodactylAccountLogin($user),
-                ],
-            ]
-        );
-        $this->messageBus->dispatch($emailMessage);
-    }
-
-    private function getPterodactylAccountLogin(User $user): string
-    {
-        return $this->pterodactylService->getApi()->users->get($user->getPterodactylUserId())->username;
     }
 }

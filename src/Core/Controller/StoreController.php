@@ -6,6 +6,7 @@ use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\LogService;
 use App\Core\Service\Server\CreateServerService;
+use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\StoreService;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,6 +93,7 @@ class StoreController extends AbstractController
     public function buy(
         Request $request,
         CreateServerService $createServerService,
+        RenewServerService $renewServerService,
         LogService $logService,
         UserVerificationService $userVerificationService,
         ServerService $serverService,
@@ -131,7 +133,7 @@ class StoreController extends AbstractController
                     ['product' => $product, 'egg' => $eggId],
                 );
             } else {
-                $createServerService->renewServer($server, $this->getUser());
+                $renewServerService->renewServer($server, $this->getUser());
                 $logService->logAction(
                     $this->getUser(),
                     LogActionEnum::RENEW_SERVER,

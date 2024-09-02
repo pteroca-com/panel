@@ -7,11 +7,11 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-readonly class UserVerificationService
+class UserVerificationService
 {
     public function __construct(
-        private SettingService $settingService,
-        private TranslatorInterface $translator,
+        private readonly SettingService $settingService,
+        private readonly TranslatorInterface $translator,
     ) {}
 
     public function validateUserVerification(User $user): void

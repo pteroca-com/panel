@@ -28,8 +28,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column(type: 'integer')]
-    private int $balance = 0;
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    private float $balance = 0;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
@@ -127,12 +127,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getBalance(): int
+    public function getBalance(): float
     {
         return $this->balance;
     }
 
-    public function setBalance(int $balance): static
+    public function setBalance(float $balance): static
     {
         $this->balance = $balance;
 

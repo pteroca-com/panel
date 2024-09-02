@@ -2,32 +2,32 @@
 
 namespace App\Core\Service\Payment;
 
+use App\Core\DTO\PaymentSessionDTO;
 use App\Core\Entity\Payment;
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Message\SendEmailMessage;
+use App\Core\Provider\Payment\PaymentProviderInterface;
 use App\Core\Repository\PaymentRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\LogService;
-use App\Core\Service\Payment\Provider\PaymentProviderInterface;
 use App\Core\Service\SettingService;
-use Stripe\Checkout\Session;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-readonly class PaymentService
+class PaymentService
 {
     public function __construct(
-        private PaymentProviderInterface $paymentProvider,
-        private PaymentRepository        $paymentRepository,
-        private UserRepository           $userRepository,
-        private TranslatorInterface      $translator,
-        private MessageBusInterface      $messageBus,
-        private SettingService           $settingService,
-        private LogService               $logService,
-        private UserVerificationService  $userVerificationService,
+        private readonly PaymentProviderInterface $paymentProvider,
+        private readonly PaymentRepository $paymentRepository,
+        private readonly UserRepository $userRepository,
+        private readonly TranslatorInterface $translator,
+        private readonly MessageBusInterface $messageBus,
+        private readonly SettingService $settingService,
+        private readonly LogService $logService,
+        private readonly UserVerificationService $userVerificationService,
     ) {}
 
     public function createPayment(
@@ -40,37 +40,37 @@ readonly class PaymentService
     {
         $this->userVerificationService->validateUserVerification($user);
         $session = $this->paymentProvider->createSession($amount, $currency, $successUrl, $cancelUrl);
-        if (empty($session->url)) {
+        if (empty($session)) {
             throw new \Exception($this->translator->trans('pteroca.recharge.failed_to_create_payment'));
         }
         $this->logService->logAction(
             $user,
             LogActionEnum::CREATE_PAYMENT,
-            ['amount' => $amount, 'currency' => $currency, 'sessionId' => $session->id]
+            ['amount' => $amount, 'currency' => $currency, 'sessionId' => $session->getId()]
         );
         $this->savePaymentSession($user, $session);
-        return $session->url;
+        return $session->getUrl();
     }
 
     public function finalizePayment(User $user, string $sessionId): ?string
     {
         $session = $this->paymentProvider->retrieveSession($sessionId);
-        if (empty($session->id)) {
+        if (empty($session)) {
             return 'Session not found';
         }
 
         /** @var Payment|null $payment */
         $payment = $this->paymentRepository->findOneBy(['sessionId' => $sessionId]);
-        if (empty($payment)) {
+        if (empty($payment)) {;
             return $this->translator->trans('pteroca.recharge.payment_not_found');
         }
 
-        if ($payment->getStatus() === $session->payment_status) {
+        if ($payment->getStatus() === $session->getPaymentStatus()) {
             return $this->translator->trans('pteroca.recharge.payment_already_processed');
         }
 
-        if ($session->payment_status === $this->paymentProvider::PAID_STATUS) {
-            $amount = $session->amount_total;
+        if ($session->getPaymentStatus() === $this->paymentProvider::PAID_STATUS) {
+            $amount = $session->getAmountTotal();
             $newBalance = $user->getBalance() + $amount;
             $user->setBalance($newBalance);
             $this->userRepository->save($user);
@@ -81,7 +81,7 @@ readonly class PaymentService
                 'email/payment_success.html.twig',
                 [
                     'amount' => $amount,
-                    'currency' => $session->currency,
+                    'currency' => $session->getCurrency(),
                     'internalCurrency' => $this->settingService
                         ->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
                     'user' => $user,
@@ -92,11 +92,11 @@ readonly class PaymentService
             $this->logService->logAction(
                 $user,
                 LogActionEnum::BOUGHT_BALANCE,
-                ['amount' => $amount, 'currency' => $session->currency, 'newBalance' => $newBalance]
+                ['amount' => $amount, 'currency' => $session->getCurrency(), 'newBalance' => $newBalance]
             );
         }
 
-        $payment->setStatus($session->payment_status);
+        $payment->setStatus($session->getPaymentStatus());
         $this->paymentRepository->save($payment);
         return null;
     }
@@ -112,14 +112,14 @@ readonly class PaymentService
             ->getResult();
     }
 
-    private function savePaymentSession(User $user, Session $session): void
+    private function savePaymentSession(User $user, PaymentSessionDTO $session): void
     {
         $payment = (new Payment())
-            ->setAmount($session->amount_total)
-            ->setCurrency($session->currency)
-            ->setSessionId($session->id)
+            ->setAmount($session->getAmountTotal())
+            ->setCurrency($session->getCurrency())
+            ->setSessionId($session->getId())
             ->setUser($user)
-            ->setStatus($session->payment_status);
+            ->setStatus($session->getPaymentStatus());
         $this->paymentRepository->save($payment);
     }
 }

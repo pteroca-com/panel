@@ -2,10 +2,10 @@
 
 namespace App\Core\Service\Pterodactyl;
 
-readonly class PterodactylUsernameService
+class PterodactylUsernameService
 {
     public function __construct(
-        private PterodactylService $pterodactylService,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     public function generateUsername(string $username): string

@@ -29,7 +29,8 @@ class UserAccountCrudController extends AbstractCrudController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TranslatorInterface $translator,
         private readonly PterodactylService $pterodactylService,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -80,11 +81,20 @@ class UserAccountCrudController extends AbstractCrudController
 
     public function index(AdminContext $context)
     {
+        $user = $this->getUser();
+        if (empty($user)) {
+            return $this->redirectToRoute('app_login');
+        }
         return $this->redirectToRoute('panel', [
             'crudAction' => 'edit',
             'crudControllerFqcn' => UserAccountCrudController::class,
             'entityId' => $this->getUser()->getId(),
         ]);
+    }
+
+    public function edit(AdminContext $context)
+    {
+        return $this->validateAccount($context);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
@@ -99,7 +109,7 @@ class UserAccountCrudController extends AbstractCrudController
                 ->getApi()
                 ->users
                 ->get($entityInstance->getPterodactylUserId());
-            if (!empty($pterodactylAccount)) {
+            if (!empty($pterodactylAccount->username)) {
                 $pterodactylAccountDetails = [
                     'username' => $pterodactylAccount->username,
                     'email' => $entityInstance->getEmail(),
@@ -117,5 +127,24 @@ class UserAccountCrudController extends AbstractCrudController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function validateAccount(AdminContext $context)
+    {
+        $user = $this->getUser();
+        if (empty($user)) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $entityId = $context->getRequest()->get('entityId');
+        if (empty($entityId) || !is_numeric($entityId) || $user->getId() !== (int)$entityId) {
+            return $this->redirectToRoute('panel', [
+                'crudAction' => 'edit',
+                'crudControllerFqcn' => UserAccountCrudController::class,
+                'entityId' => $user->getId(),
+            ]);
+        }
+
+        return parent::edit($context);
     }
 }

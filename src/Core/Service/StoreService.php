@@ -12,15 +12,15 @@ use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-readonly class StoreService
+class StoreService
 {
     public function __construct(
-        private CategoryRepository $categoryRepository,
-        private ProductRepository $productRepository,
-        private PterodactylService $pterodactylService,
-        private TranslatorInterface $translator,
-        private string $categoriesBasePath,
-        private string $productsBasePath,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly ProductRepository $productRepository,
+        private readonly PterodactylService $pterodactylService,
+        private readonly TranslatorInterface $translator,
+        private readonly string $categoriesBasePath,
+        private readonly string $productsBasePath,
     ) {}
 
     public function getCategories(): array
@@ -47,7 +47,10 @@ readonly class StoreService
                 $product->setImagePath($imagePath . $product->getImagePath());
             }
             return $product;
-        }, $this->productRepository->findBy(['category' => $category]));
+        }, $this->productRepository->findBy([
+            'category' => $category,
+            'isActive' => true,
+        ]));
     }
 
     public function getActiveProduct(int $productId): ?Product

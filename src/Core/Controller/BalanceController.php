@@ -5,6 +5,7 @@ namespace App\Core\Controller;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\SettingService;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +37,9 @@ class BalanceController extends AbstractController
                     $currency
                 ),
             ])
+            ->add('currency', HiddenType::class, [
+                'data' => $currency,
+            ])
             ->getForm();
 
         $form->handleRequest($request);
@@ -43,6 +47,7 @@ class BalanceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $amount = $data['amount'];
+            $currency = $data['currency'];
             try {
                 $paymentUrl = $this->paymentService->createPayment(
                     $this->getUser(),

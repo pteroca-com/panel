@@ -35,7 +35,7 @@ class PterodactylService
         $this->isConfigured = true;
     }
 
-    private function connect(): void
+    protected function connect(): void
     {
         if (!$this->isConfigured) {
             $this->setCredentials();

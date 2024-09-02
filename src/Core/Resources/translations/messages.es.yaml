@@ -3,6 +3,7 @@ pteroca:
     back: 'Volver al panel'
     email_not_verified: 'Tu dirección de correo electrónico aún no ha sido verificada. Revisa tu bandeja de entrada.'
     pterodactyl_error: 'Se produjo un error al comunicarse con el panel de Pterodactyl.'
+    dont_have_permission: 'No tienes permiso para realizar esta acción.'
 
   login:
     title: 'Iniciar sesión'

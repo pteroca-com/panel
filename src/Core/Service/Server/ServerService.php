@@ -6,11 +6,11 @@ use App\Core\Entity\Server;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 
-readonly class ServerService
+class ServerService
 {
     public function __construct(
-        private PterodactylService $pterodactylService,
-        private ServerRepository $serverRepository,
+        private readonly PterodactylService $pterodactylService,
+        private readonly ServerRepository $serverRepository,
     ) {}
 
     public function getServerDetails(Server $server): ?array
@@ -19,17 +19,17 @@ readonly class ServerService
             $server->getPterodactylServerId(),
             ['include' => ['allocations']],
         );
-        if (empty($pterodactylServer)) {
+        if (!$pterodactylServer->has('relationships')) {
             return null;
         }
         return [
             'ip' => sprintf(
                 '%s:%s',
-                $pterodactylServer->relationships['allocations'][0]->ip,
-                $pterodactylServer->relationships['allocations'][0]->port,
+                $pterodactylServer->get('relationships')['allocations'][0]['ip'],
+                $pterodactylServer->get('relationships')['allocations'][0]['port'],
             ),
-            'limits' => $pterodactylServer->limits,
-            'feature-limits' => $pterodactylServer->feature_limits,
+            'limits' => $pterodactylServer->get('limits'),
+            'feature-limits' => $pterodactylServer->get('feature_limits'),
         ];
     }
 
