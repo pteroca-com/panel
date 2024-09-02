@@ -88,6 +88,7 @@ class ServerCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         $pterodactylServer = $this->getPterodactylServerDetails($entityInstance->getPterodactylServerId());
         if ($entityInstance->getIsSuspended() !== $pterodactylServer->suspended) {
             if ($entityInstance->getIsSuspended()) {
@@ -101,6 +102,7 @@ class ServerCrudController extends AbstractPanelController
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
         try {
             $this->pterodactylService->getApi()->servers->delete($entityInstance->getPterodactylServerId());
         } catch (\Exception $e) {

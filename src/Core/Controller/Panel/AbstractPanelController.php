@@ -64,8 +64,7 @@ abstract class AbstractPanelController extends AbstractCrudController
     protected function disallowForDemoMode(): void
     {
         if ($this->isDemoMode()) {
-            $this->addFlash('warning', 'pteroca.demo.action_disabled');
-            throw $this->createAccessDeniedException();
+            throw $this->createAccessDeniedException('Changes are not allowed in demo mode.');
         }
     }
 
