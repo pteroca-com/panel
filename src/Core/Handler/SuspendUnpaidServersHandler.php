@@ -9,7 +9,7 @@ use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-readonly class ServerCronJobHandler implements HandlerInterface
+readonly class SuspendUnpaidServersHandler implements HandlerInterface
 {
 
     public function __construct(
