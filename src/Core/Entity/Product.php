@@ -74,8 +74,8 @@ class Product
     private ?File $imageFile = null;
 
     #[ORM\ManyToOne(targetEntity: Category::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Category $category;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Category $category;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -271,12 +271,12 @@ class Product
         return $this;
     }
 
-    public function getCategory(): Category
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-    public function setCategory(Category $category): self
+    public function setCategory(?Category $category): self
     {
         $this->category = $category;
         return $this;
