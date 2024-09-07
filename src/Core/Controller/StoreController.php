@@ -21,13 +21,13 @@ class StoreController extends AbstractController
         private readonly StoreService $storeService,
     ) {}
 
-    #[Route('/store/categories', name: 'store_categories')]
+    #[Route('/store', name: 'store')]
     public function store(): Response
     {
         $this->checkPermission();
-        $categories = $this->storeService->getCategories();
         return $this->render('panel/store/index.html.twig', [
-            'categories' => $categories,
+            'categories' => $this->storeService->getCategories(),
+            'products' => $this->storeService->getCategoryProducts(),
         ]);
     }
 
