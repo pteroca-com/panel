@@ -26,8 +26,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
 
     private function handleServersToSuspend(): void
     {
-        /** @var Server[] $serversToSuspend */
-        $serversToSuspend = $this->serverRepository->getServersToSuspend();
+        $serversToSuspend = $this->serverRepository->getServersExpiredBefore(new \DateTime());
         foreach ($serversToSuspend as $server) {
             $server->setIsSuspended(true);
             $this->serverRepository->save($server);
