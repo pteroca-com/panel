@@ -55,8 +55,8 @@ class Product
     #[ORM\Column(type: "datetime")]
     private \DateTime $createdAt;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTime $updatedAt;
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(type: "json", nullable: true)]
     private array $nodes = [];
@@ -233,7 +233,7 @@ class Product
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
