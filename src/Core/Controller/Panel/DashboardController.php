@@ -39,7 +39,7 @@ class DashboardController extends AbstractDashboardController
     {
         $user = $this->getUser();
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
-        return $this->render('panel/dashboard.html.twig', [
+        return $this->render('panel/dashboard/dashboard.html.twig', [
             'servers' => $this->serverRepository->findBy(['user' => $user]),
             'user' => $user,
             'logs' => $this->logService->getLogsByUser($user, 10),

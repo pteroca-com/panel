@@ -1,0 +1,25 @@
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title">{{ 'pteroca.dashboard.last_activity'|trans }}</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{ 'pteroca.dashboard.action'|trans }}</th>
+                <th>{{ 'pteroca.dashboard.ip_address'|trans }}</th>
+                <th>{{ 'pteroca.dashboard.date'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ ('pteroca.actions.' ~ log.actionId)|trans }}</td>
+                    <td>{{ log.ipAddress }}</td>
+                    <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

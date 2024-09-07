@@ -8,7 +8,7 @@
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     {% endif %}
     {{ parent() }}
-    <link rel="stylesheet" href="/assets/css/panel.css">
+    <link rel="stylesheet" href="{{ asset('/assets/css/panel.css') }}">
 {% endblock %}
 
 {% block head_favicon %}

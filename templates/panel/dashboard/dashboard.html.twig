@@ -1,0 +1,20 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content %}
+    <div class="container pt-3">
+        <div class="row">
+            <div class="col-2">
+                {% include 'panel/dashboard/components/balance.html.twig' %}
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-6">
+                {% include 'panel/dashboard/components/servers.html.twig' %}
+            </div>
+            <div class="col-6">
+                {% include 'panel/dashboard/components/motd.html.twig' %}
+                {% include 'panel/dashboard/components/activity.html.twig' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -36,7 +36,7 @@ class AuthorizationController extends AbstractController
             $pageTitle = sprintf('<img src="%s" alt="%s" class="panel-login-logo" />', $logo, $title);
         }
 
-        return $this->render('login/login.html.twig', [
+        return $this->render('panel/login/login.html.twig', [
             'error' => $error,
             'last_username' => $lastUsername,
             'page_title' => $pageTitle,
