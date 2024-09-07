@@ -40,7 +40,7 @@ class StoreControllerTest extends BaseTestCase
 
         $category = $this->createTestCategory();
 
-        $crawler = $this->client->request('GET', '/panel?routeName=store_categories');
+        $crawler = $this->client->request('GET', '/panel?routeName=store');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.category-list');
@@ -49,7 +49,7 @@ class StoreControllerTest extends BaseTestCase
 
     public function testStorePageRedirectsForUnauthenticatedUser(): void
     {
-        $this->client->request('GET', '/panel?routeName=store_categories');
+        $this->client->request('GET', '/panel?routeName=store');
 
         $this->assertResponseRedirects('/login');
     }

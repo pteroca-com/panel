@@ -1,7 +1,7 @@
 {% extends ea is defined ? ea.templatePath('layout') : '@EasyAdmin/page/login_minimal.html.twig' %}
 
 {% block body_class 'page-login' %}
-{% block page_title %}{{ page_title is defined ? page_title|raw : (ea is defined ? ea.dashboardTitle|raw : '') }}{% endblock %}
+{% block page_title %}{{ get_title() }} | {{ 'pteroca.login.title'|trans }}{% endblock %}
 
 {% block head_stylesheets %}
     {% if get_captcha_site_key() %}

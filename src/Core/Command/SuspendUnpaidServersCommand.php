@@ -2,7 +2,7 @@
 
 namespace App\Core\Command;
 
-use App\Core\Handler\ServerCronJobHandler;
+use App\Core\Handler\SuspendUnpaidServersHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,13 +10,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:server-cron-job',
-    description: 'Server cron job command',
+    name: 'app:suspend-unpaid-servers',
+    description: 'Suspend unpaid servers',
 )]
-class ServerCronJobCommand extends Command
+class SuspendUnpaidServersCommand extends Command
 {
     public function __construct(
-        private readonly ServerCronJobHandler $serverCronJobHandler
+        private readonly SuspendUnpaidServersHandler $suspendUnpaidServersHandler
     )
     {
         parent::__construct();
@@ -25,8 +25,8 @@ class ServerCronJobCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $this->serverCronJobHandler->handle();
-        $io->success('Server cron job executed successfully');
+        $this->suspendUnpaidServersHandler->handle();
+        $io->success('Suspend unpaid servers command executed successfully');
 
         return Command::SUCCESS;
     }

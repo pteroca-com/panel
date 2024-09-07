@@ -55,8 +55,8 @@ class Product
     #[ORM\Column(type: "datetime")]
     private \DateTime $createdAt;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTime $updatedAt;
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(type: "json", nullable: true)]
     private array $nodes = [];
@@ -74,8 +74,8 @@ class Product
     private ?File $imageFile = null;
 
     #[ORM\ManyToOne(targetEntity: Category::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Category $category;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Category $category;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -233,7 +233,7 @@ class Product
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
@@ -271,12 +271,12 @@ class Product
         return $this;
     }
 
-    public function getCategory(): Category
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-    public function setCategory(Category $category): self
+    public function setCategory(?Category $category): self
     {
         $this->category = $category;
         return $this;
