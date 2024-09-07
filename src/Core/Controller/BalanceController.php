@@ -64,7 +64,7 @@ class BalanceController extends AbstractController
             return $this->redirect($paymentUrl);
         }
 
-        return $this->render('panel/recharge.html.twig', [
+        return $this->render('panel/wallet/recharge.html.twig', [
             'form' => $form->createView(),
             'payments' => $this->paymentService->getUserPayments($this->getUser(), 10),
             'balance' => $this->getUser()->getBalance(),

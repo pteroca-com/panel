@@ -1,0 +1,25 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}{{ 'pteroca.recharge.recharge_balance'|trans }}{% endblock %}
+
+{% block page_actions %}
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 mb-5 mt-4">
+                {% include 'panel/wallet/components/recharge_balance_card.html.twig' %}
+            </div>
+            <div class="col-md-6 mt-5">
+                {% include 'panel/wallet/components/transaction_history.html.twig' %}
+            </div>
+            <div class="col-md-6 mt-5">
+                {% include 'panel/wallet/components/additional_information.html.twig' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
