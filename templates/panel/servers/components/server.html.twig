@@ -1,6 +1,6 @@
 <div class="card" data-server-id="{{ server.id }}">
     <a href="{{ pterodactylPanelUrl }}/server/{{ server.pterodactylServerIdentifier }}" target="_blank">
-        <img src="{{ server.imagePath ?? 'https://via.placeholder.com/300x150' }}" class="card-img-top" alt="{{ server.product.name }}">
+        <img src="{{ server.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ server.product.name }}">
     </a>
     <div class="card-body">
         <h5 class="card-title">

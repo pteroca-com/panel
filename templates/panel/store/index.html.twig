@@ -10,6 +10,29 @@
 
 {% block main %}
     <div class="container mt-4 category-list">
+        {% if products|length > 0 %}
+            {% set row = 0 %}
+            {% for product in products %}
+                {% set row = row + 1 %}
+                {% if row == 0 %}
+                    <div class="row">
+                {% endif %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ product.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description }}</p>
+                            <a href="{{ path('panel', { routeName: 'store_product', id: product.id }) }}" class="btn btn-primary w-100">{{ 'pteroca.store.order'|trans }}</a>
+                        </div>
+                    </div>
+                </div>
+                {% if row % 3 == 0 %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
         {% if categories|length > 0 %}
             {% set row = 0 %}
             {% for category in categories %}
@@ -20,7 +43,7 @@
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}">
-                            <img src="{{ category.imagePath ?? 'https://via.placeholder.com/300x150' }}" class="card-img-top" alt="{{ category.name }}">
+                            <img src="{{ category.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ category.name }}">
                         </a>
                         <div class="card-body">
                             <h5 class="card-title">{{ category.name }}</h5>
@@ -33,7 +56,9 @@
                     </div>
                 {% endif %}
             {% endfor %}
-        {% else %}
+        {% endif %}
+
+        {% if categories|length == 0 and products|length == 0 %}
             <div class="row">
                 <div class="col-md-12">
                     <div class="alert alert-info" role="alert">

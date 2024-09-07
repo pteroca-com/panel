@@ -15,7 +15,7 @@
             height: 200px;
             width: 100%;
             overflow: hidden;
-            background: url("{{ product.imagePath ?? 'https://via.placeholder.com/300x150' }}") no-repeat center center;
+            background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}") no-repeat center center;
             background-size: cover;
             border-radius: 7px;
         }
