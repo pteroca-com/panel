@@ -17,55 +17,7 @@
                     <div class="row">
                 {% endif %}
                 <div class="col-md-4 mb-4">
-                    <div class="card" data-server-id="{{ server.id }}">
-                        <a href="{{ pterodactylPanelUrl }}/server/{{ server.pterodactylServerIdentifier }}" target="_blank">
-                            <img src="{{ server.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ server.product.name }}">
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                {{ server.product.name }}
-                                {% if not server.isSuspended %}
-                                    <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
-                                {% else %}
-                                    <span class="badge badge-danger">{{ 'pteroca.servers.suspended'|trans }}</span>
-                                {% endif %}
-                            </h5>
-                            <p class="card-text">
-                                <ul class="list-group placeholder-glow placeholder-wave">
-                                    <li class="list-group-item">
-                                        <strong>{{ 'pteroca.servers.ip_address'|trans }}:</strong>
-                                        <span class="placeholder col-6 float-end mt-1 rounded-1" data-ip></span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>{{ 'pteroca.servers.ram_memory'|trans }}:</strong>
-                                        <span class="placeholder col-6 float-end mt-1 rounded-1" data-limits-memory data-unit="MB"></span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>{{ 'pteroca.servers.disk'|trans }}:</strong>
-                                        <span class="placeholder col-6 float-end mt-1 rounded-1" data-limits-disk data-unit="MB"></span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>{{ 'pteroca.servers.cpu'|trans }}:</strong>
-                                        <span class="placeholder col-6 float-end mt-1 rounded-1" data-limits-cpu data-unit="%"></span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>{{ 'pteroca.servers.databases'|trans }}:</strong>
-                                        <span class="placeholder col-6 float-end mt-1 rounded-1" data-feature-limits-databases></span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>{{ 'pteroca.servers.backups'|trans }}:</strong>
-                                        <span class="placeholder col-6 float-end mt-1 rounded-1" data-feature-limits-backups></span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>{{ 'pteroca.servers.valid_until'|trans }}:</strong>
-                                        <span class="col-6 float-end mt-1">{{ server.expiresAt|date('Y-m-d H:i') }}</span>
-                                    </li>
-                                </ul>
-                            </p>
-                            <a href="{{ pterodactylPanelUrl }}/server/{{ server.pterodactylServerIdentifier }}" target="_blank" class="btn btn-primary">{{ 'pteroca.servers.manage_server'|trans }}</a>
-                            <a href="{{ path('panel', { routeName: 'store_server_renew', id: server.id }) }}" class="btn btn-primary">{{ 'pteroca.servers.extend'|trans }}</a>
-                        </div>
-                    </div>
+                    {% include 'panel/servers/components/server.html.twig' %}
                 </div>
                 {% if row % 3 == 0 %}
                     </div>
@@ -75,13 +27,7 @@
         {% else %}
             <div class="row">
                 <div class="col-md-12">
-                    <div class="alert alert-info" role="alert">
-                        <i class="fa fa-exclamation-circle"></i>
-                        {{ 'pteroca.servers.no_servers'|trans }}
-                        <a href="{{ path('panel', { routeName: 'store_categories' }) }}">
-                            {{ 'pteroca.servers.click_to_buy'|trans }}
-                        </a>
-                    </div>
+                    {% include 'panel/servers/components/alert.html.twig' %}
                 </div>
             </div>
         {% endif %}

@@ -48,7 +48,7 @@ class RegistrationController extends AbstractController
         }
         $registrationErrors = implode('<br>', $registrationErrors);
 
-        return $this->render('registration/register.html.twig', [
+        return $this->render('panel/registration/register.html.twig', [
             'registrationForm' => $form->createView(),
             'errors' => $registrationErrors,
         ]);
