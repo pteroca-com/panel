@@ -16,6 +16,7 @@ class CronJobScheduleCommand extends Command
 {
     private const SCHEDULED_COMMANDS = [
         'app:suspend-unpaid-servers',
+        'app:delete-inactive-servers',
     ];
 
     public function __construct(
