@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block body_class 'page-login' %}
-{% block title %}{{ 'pteroca.register.title'|trans }}{% endblock %}
+{% block title %}{{ get_title() }} | {{ 'pteroca.register.title'|trans }}{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/assets/css/app.css') }}">
-    <link rel="stylesheet" href="/assets/css/panel.css">
+    <link rel="stylesheet" href="{{ asset('/assets/css/panel.css') }}">
     <style>
         body {
             background: #f1f5f9;

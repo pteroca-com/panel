@@ -130,6 +130,7 @@ class ProductCrudController extends AbstractPanelController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.product'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.products'))
+            ->setDefaultSort(['createdAt' => 'DESC'])
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value);
     }
 

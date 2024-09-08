@@ -263,6 +263,8 @@ pteroca:
       verified: '已验证'
       blocked: '已封锁'
       pterodactyl_user_id: 'Pterodactyl 用户 ID'
+      created_at: '创建于'
+      updated_at: '更新于'
     payment:
       session_id: '会话 ID'
       status: '状态'

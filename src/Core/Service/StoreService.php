@@ -39,7 +39,7 @@ class StoreService
         return $this->categoryRepository->find($categoryId);
     }
 
-    public function getCategoryProducts(Category $category): array
+    public function getCategoryProducts(?Category $category = null): array
     {
         $imagePath = $this->productsBasePath . '/';
         return array_map(function ($product) use ($imagePath) {

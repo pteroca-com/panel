@@ -263,6 +263,8 @@ pteroca:
       verified: 'Підтверджений'
       blocked: 'Заблокований'
       pterodactyl_user_id: 'ID користувача Pterodactyl'
+      created_at: 'Створено'
+      updated_at: 'Оновлено'
     payment:
       session_id: 'ID сесії'
       status: 'Статус'

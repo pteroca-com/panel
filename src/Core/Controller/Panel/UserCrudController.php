@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -66,6 +67,12 @@ class UserCrudController extends AbstractPanelController
                 ->hideOnIndex(),
             BooleanField::new('isBlocked', $this->translator->trans('pteroca.crud.user.blocked'))
                 ->hideOnIndex(),
+            DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss')
+                ->setDisabled(),
+            DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss')
+                ->setDisabled(),
         ];
     }
 
@@ -76,7 +83,8 @@ class UserCrudController extends AbstractPanelController
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.user.add')))
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.user.save')))
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->add(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -84,7 +92,8 @@ class UserCrudController extends AbstractPanelController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.user.user'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.user.users'))
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value);
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value)
+            ->setDefaultSort(['createdAt' => 'DESC']);
     }
 
     public function configureFilters(Filters $filters): Filters

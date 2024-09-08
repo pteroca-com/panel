@@ -39,7 +39,7 @@ class DashboardController extends AbstractDashboardController
     {
         $user = $this->getUser();
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
-        return $this->render('panel/dashboard.html.twig', [
+        return $this->render('panel/dashboard/dashboard.html.twig', [
             'servers' => $this->serverRepository->findBy(['user' => $user]),
             'user' => $user,
             'logs' => $this->logService->getLogsByUser($user, 10),
@@ -69,7 +69,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section($this->translator->trans('pteroca.crud.menu.menu'));
         yield MenuItem::linkToDashboard($this->translator->trans('pteroca.crud.menu.dashboard'), 'fa fa-home');
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', 'servers');
-        yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart', 'store_categories');
+        yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart', 'store');
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.wallet'), 'fa fa-wallet', 'recharge_balance');
 
         if ($this->isGranted(UserRoleEnum::ROLE_ADMIN->value)) {

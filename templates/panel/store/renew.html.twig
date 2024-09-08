@@ -15,7 +15,7 @@
             height: 200px;
             width: 100%;
             overflow: hidden;
-            background: url("{{ product.imagePath ?? 'https://via.placeholder.com/300x150' }}") no-repeat center center;
+            background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}") no-repeat center center;
             background-size: cover;
             border-radius: 7px;
         }
@@ -54,9 +54,9 @@
 
                     <div class="form-group">
                         <label for="price">{{ 'pteroca.renew.price'|trans }}</label>
-                        <input type="text" id="price" class="form-control" value="{{ (product.price / 100)|number_format(2, ',', ' ') }} {{ get_currency() }}" disabled>
+                        <input type="text" id="price" class="form-control" value="{{ product.price|number_format(2, ',', ' ') }} {{ get_currency() }}" disabled>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3 w-100" {% if app.user.balance < (product.price / 100) %}disabled{% endif %}><i class="fa fa-refresh"></i> {{ 'pteroca.renew.renew_now'|trans }}</button>
+                    <button type="submit" class="btn btn-primary mt-3 w-100" {% if app.user.balance < product.price %}disabled{% endif %}><i class="fa fa-refresh"></i> {{ 'pteroca.renew.renew_now'|trans }}</button>
                 </form>
             </div>
         </div>

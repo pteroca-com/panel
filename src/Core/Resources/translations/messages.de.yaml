@@ -263,6 +263,8 @@ pteroca:
       verified: 'Verifiziert'
       blocked: 'Gesperrt'
       pterodactyl_user_id: 'Pterodactyl-Benutzer-ID'
+      created_at: 'Erstellt am'
+      updated_at: 'Aktualisiert am'
     payment:
       session_id: 'Sitzungs-ID'
       status: 'Status'

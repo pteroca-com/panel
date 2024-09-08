@@ -9,7 +9,7 @@ use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-readonly class ServerCronJobHandler implements HandlerInterface
+readonly class SuspendUnpaidServersHandler implements HandlerInterface
 {
 
     public function __construct(
@@ -26,8 +26,7 @@ readonly class ServerCronJobHandler implements HandlerInterface
 
     private function handleServersToSuspend(): void
     {
-        /** @var Server[] $serversToSuspend */
-        $serversToSuspend = $this->serverRepository->getServersToSuspend();
+        $serversToSuspend = $this->serverRepository->getServersExpiredBefore(new \DateTime());
         foreach ($serversToSuspend as $server) {
             $server->setIsSuspended(true);
             $this->serverRepository->save($server);

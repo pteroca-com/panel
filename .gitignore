@@ -6,8 +6,8 @@
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
+/public/uploads/**/*
 !public/uploads/**/.gitkeep
-public/uploads/**/*
 /var/
 /vendor/
 /.idea
