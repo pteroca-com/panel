@@ -36,6 +36,7 @@ pteroca:
     email_required: 'O endereço de e-mail é obrigatório.'
     invalid_email: 'Endereço de e-mail inválido.'
     email_already_exists: 'Já existe uma conta com este endereço de e-mail.'
+    already_have_account: 'Já tem uma conta? Faça login!'
 
   recovery:
     title: 'Recuperar senha'

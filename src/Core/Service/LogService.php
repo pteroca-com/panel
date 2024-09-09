@@ -18,7 +18,7 @@ class LogService
     public function logAction(User $user, LogActionEnum $action, array $details = []): void
     {
         $newLog = (new Log())
-            ->setActionId($action->value)
+            ->setActionId(strtolower($action->name))
             ->setUser($user)
             ->setDetails(json_encode($details))
             ->setIpAddress($this->ipAddressProviderService->getIpAddress() ?? 'Unknown');

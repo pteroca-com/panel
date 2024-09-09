@@ -68,7 +68,7 @@ class LogCrudController extends AbstractPanelController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.log.log'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.log.logs'))
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value)
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->showEntityActionsInlined();
     }

@@ -1,0 +1,10 @@
+<div class="card">
+    <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}">
+        <img src="{{ category.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ category.name }}">
+    </a>
+    <div class="card-body">
+        <h5 class="card-title">{{ category.name }}</h5>
+        <p class="card-text">{{ category.description }}</p>
+        <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}" class="btn btn-primary">{{ 'pteroca.store.show_offer'|trans }}</a>
+    </div>
+</div>

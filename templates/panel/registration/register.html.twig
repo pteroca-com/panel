@@ -90,6 +90,12 @@
                                 <button type="submit" name="register-submit" class="btn btn-lg btn-block">{{ 'pteroca.register.submit'|trans }}</button>
                             </div>
                         {{ form_end(registrationForm) }}
+
+                        <div class="text-center small">
+                            <a href="{{ path('app_login') }}">
+                                {{ 'pteroca.register.already_have_account'|trans }}
+                            </a>
+                        </div>
                     </section>
                     <div class="col-12 text-center mt-2 powered-by">
                         Powered by <a href="https://pteroca.com" target="_blank">Pteroca v{{ get_app_version() }}</a> &copy; {{ 'now'|date('Y') }}
