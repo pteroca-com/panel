@@ -56,7 +56,7 @@ class RegistrationService
         $user->setIsVerified(false);
         $pterodactylAccount = $this->createPterodactylAccount($user, $plainPassword);
         $user->setPterodactylUserId($pterodactylAccount->id ?? null);
-        $user->setRoles([UserRoleEnum::ROLE_USER->value]);
+        $user->setRoles([UserRoleEnum::ROLE_USER->name]);
         $this->userRepository->save($user);
         $this->logService->logAction($user, LogActionEnum::USER_REGISTERED);
         $this->sendRegistrationEmail($user);

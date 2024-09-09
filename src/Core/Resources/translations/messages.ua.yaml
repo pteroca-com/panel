@@ -36,6 +36,7 @@ pteroca:
     email_required: 'Електронна пошта обов’язкова.'
     invalid_email: 'Неправильна електронна пошта.'
     email_already_exists: 'Обліковий запис з такою електронною поштою вже існує.'
+    already_have_account: 'Вже є обліковий запис? Увійдіть!'
 
   recovery:
     title: 'Відновити пароль'
