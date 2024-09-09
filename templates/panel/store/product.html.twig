@@ -8,25 +8,11 @@
     </a>
 {% endblock %}
 
-{% block head_stylesheets %}
-    {{ parent() }}
-    <style>
-        .product-image-container {
-            height: 200px;
-            width: 100%;
-            overflow: hidden;
-            background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}") no-repeat center center;
-            background-size: cover;
-            border-radius: 7px;
-        }
-    </style>
-{% endblock %}
-
 {% block main %}
     <div class="container mt-5 product-details">
         <h1 class="product-name">{{ product.name }}</h1>
         <div class="row">
-            <div class="col-md-12 product-image-container mt-3 mb-5"></div>
+            <div class="col-md-12 product-image-container mt-3 mb-5" style='background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}")'></div>
             <div class="col-md-8">
                 <h2>{{ 'pteroca.product.information'|trans }}</h2>
                 <p>{{ product.description }}</p>
