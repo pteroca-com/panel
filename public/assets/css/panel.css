@@ -92,6 +92,10 @@ a:hover {
     color: rgba(255, 255, 255, 0.4);
 }
 
+.powered-by a {
+    color: inherit;
+}
+
 .default-page.container {
     max-width: 800px;
     margin: 50px auto;
