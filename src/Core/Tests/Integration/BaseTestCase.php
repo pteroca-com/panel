@@ -2,8 +2,6 @@
 
 namespace App\Core\Tests\Integration;
 
-use App\Core\Enum\SettingEnum;
-use App\Core\Handler\Installer\DefaultSystemSettingConfiguratorHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -24,7 +22,6 @@ abstract class BaseTestCase extends WebTestCase
         $this->entityManager = $this->client->getContainer()->get('doctrine')->getManager();
 
         $this->resetDatabase();
-        $this->loadFixtures();
     }
 
     protected function resetDatabase(): void
@@ -36,31 +33,11 @@ abstract class BaseTestCase extends WebTestCase
         $schemaTool->createSchema($metadata);
     }
 
-    protected function loadFixtures(): void
-    {
-        $defaultSettings = DefaultSystemSettingConfiguratorHandler::DEFAULT_SETTINGS;
-        foreach ($defaultSettings as $name => $value) {
-            switch ($name) {
-                case SettingEnum::STRIPE_SECRET_KEY->value:
-                    $value['value'] = 'sk_test_123456';
-                    break;
-                case SettingEnum::PTERODACTYL_API_KEY->value:
-                    $value['value'] = 'api_key_test_123456';
-                    break;
-            }
-            $this->entityManager->getConnection()->insert('setting', [
-                'name' => $name,
-                'value' => $value['value'],
-                'type' => $value['type'],
-            ]);
-        }
-    }
-
     protected function tearDown(): void
     {
         if ($this->entityManager) {
             $this->entityManager->close();
-            $this->entityManager = null; // Unikamy wycieków pamięci
+            $this->entityManager = null;
         }
 
         parent::tearDown();
