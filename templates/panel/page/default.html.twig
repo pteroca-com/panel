@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class 'page-login' %}
+{% block title %}{{ get_title() }} | {{ 'pteroca.register.title'|trans }}{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('/assets/css/app.css') }}">
+<link rel="stylesheet" href="{{ asset('/assets/css/panel.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="default-page container">
+        <div class="row">
+            {{ pageContent|raw }}
+        </div>
+    </div>
+{% endblock %}
