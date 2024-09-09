@@ -67,7 +67,7 @@ class CategoryCrudController extends AbstractPanelController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.category.category'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.category.category'))
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value);
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name);
     }
 
     public function configureFilters(Filters $filters): Filters

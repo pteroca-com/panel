@@ -18,14 +18,7 @@
                     <div class="row">
                 {% endif %}
                 <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <img src="{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ product.name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">{{ product.description }}</p>
-                            <a href="{{ path('panel', { routeName: 'store_product', id: product.id }) }}" class="btn btn-primary w-100">{{ 'pteroca.store.order'|trans }}</a>
-                        </div>
-                    </div>
+                    {% include 'panel/store/components/product.html.twig' with { 'product': product } %}
                 </div>
                 {% if row % 3 == 0 %}
                     </div>
@@ -41,16 +34,7 @@
                     <div class="row">
                 {% endif %}
                 <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}">
-                            <img src="{{ category.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ category.name }}">
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ category.name }}</h5>
-                            <p class="card-text">{{ category.description }}</p>
-                            <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}" class="btn btn-primary">{{ 'pteroca.store.show_offer'|trans }}</a>
-                        </div>
-                    </div>
+                    {% include 'panel/store/components/category.html.twig' with { 'category': category } %}
                 </div>
                 {% if row % 3 == 0 %}
                     </div>

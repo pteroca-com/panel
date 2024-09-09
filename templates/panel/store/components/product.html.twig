@@ -1,0 +1,8 @@
+<div class="card">
+    <img src="{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ product.name }}">
+    <div class="card-body">
+        <h5 class="card-title">{{ product.name }}</h5>
+        <p class="card-text">{{ product.description }}</p>
+        <a href="{{ path('panel', { routeName: 'store_product', id: product.id }) }}" class="btn btn-primary w-100">{{ 'pteroca.store.order'|trans }}</a>
+    </div>
+</div>
