@@ -5,7 +5,7 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/assets/css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('/assets/css/panel.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/css/panel.css?v=' ~ get_app_version()) }}">
     <style>
         body {
             background: #f1f5f9;
