@@ -80,7 +80,7 @@
                             <div class="form-group">
                                 <input class="form-check-input" type="checkbox" id="agree_terms" name="{{ field_name(registrationForm.agreeTerms) }}" {{ registrationForm.agreeTerms|default(false) ? 'checked' }}>
                                 <label class="form-check-label" for="agree_terms">
-                                    {{ 'pteroca.register.accept_terms'|trans }}
+                                    {{ 'pteroca.register.accept_terms'|trans({'{{ link }}': path('terms_of_service') })|raw }}
                                 </label>
                             </div>
 

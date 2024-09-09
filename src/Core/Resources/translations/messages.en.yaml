@@ -22,7 +22,7 @@ pteroca:
     surname: 'Last name'
     email_address: 'Email address'
     password: 'Password'
-    accept_terms: 'I accept the terms of service'
+    accept_terms: 'I accept the <a href="{{ link }}" target="_blank">terms of service</a>'
     submit: 'Register'
     verification_token_invalid: 'The verification token is either invalid or has expired.'
     verification_success: 'Your account has been successfully verified.'
@@ -246,6 +246,7 @@ pteroca:
         require_email_verification: 'Require email verification'
         google_captcha_verification: 'Require Google CAPTCHA verification'
         google_captcha_site_key: 'Google CAPTCHA site key'
+        terms_of_service: 'Terms of service page content'
     user:
       email: 'Email'
       roles: 'Roles'

@@ -22,7 +22,7 @@ pteroca:
     surname: 'Nachname'
     email_address: 'E-Mail-Adresse'
     password: 'Passwort'
-    accept_terms: 'Ich akzeptiere die Nutzungsbedingungen'
+    accept_terms: 'Ich akzeptiere <a href="{{ link }}" target="_blank">die Nutzungsbedingungen</a>'
     submit: 'Registrieren'
     verification_token_invalid: 'Der Verifizierungstoken ist ungültig oder abgelaufen.'
     verification_success: 'Ihr Konto wurde erfolgreich verifiziert.'
@@ -246,6 +246,7 @@ pteroca:
         require_email_verification: 'E-Mail-Verifizierung erforderlich'
         google_captcha_verification: 'Google CAPTCHA-Verifizierung erforderlich'
         google_captcha_site_key: 'Google CAPTCHA-Site-Schlüssel'
+        terms_of_service: 'Inhalt der Seite mit den Nutzungsbedingungen'
     user:
       email: 'E-Mail'
       roles: 'Rollen'

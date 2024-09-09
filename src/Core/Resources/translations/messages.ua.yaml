@@ -22,7 +22,7 @@ pteroca:
     surname: 'Прізвище'
     email_address: 'Електронна пошта'
     password: 'Пароль'
-    accept_terms: 'Я приймаю умови використання'
+    accept_terms: 'Я приймаю <a href="{{ link }}" target="_blank">умови використання</a>'
     submit: 'Зареєструватися'
     verification_token_invalid: 'Код підтвердження недійсний або закінчився.'
     verification_success: 'Ваш обліковий запис успішно підтверджено.'
@@ -246,6 +246,7 @@ pteroca:
         require_email_verification: 'Необхідна верифікація електронної пошти'
         google_captcha_verification: 'Необхідна перевірка CAPTCHA Google'
         google_captcha_site_key: 'Ключ сайту CAPTCHA Google'
+        terms_of_service: 'Умови надання послуг Зміст сторінки'
     user:
       email: 'Електронна пошта'
       roles: 'Ролі'

@@ -22,7 +22,7 @@ pteroca:
     surname: 'Apellido'
     email_address: 'Dirección de correo electrónico'
     password: 'Contraseña'
-    accept_terms: 'Acepto los términos y condiciones'
+    accept_terms: 'Acepto los <a href="{{ link }}" target="_blank">términos y condiciones</a>'
     submit: 'Registrarse'
     verification_token_invalid: 'El token de verificación es inválido o ha expirado.'
     verification_success: 'Tu cuenta ha sido verificada exitosamente.'
@@ -246,6 +246,7 @@ pteroca:
         require_email_verification: 'Requerir verificación de correo electrónico'
         google_captcha_verification: 'Requerir verificación de Google CAPTCHA'
         google_captcha_site_key: 'Clave del sitio CAPTCHA de Google'
+        terms_of_service: 'Contenido de la página de condiciones de servicio'
     user:
       email: 'Correo electrónico'
       roles: 'Roles'
