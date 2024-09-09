@@ -36,6 +36,7 @@ pteroca:
     email_required: '电子邮件地址是必填项。'
     invalid_email: '电子邮件地址无效。'
     email_already_exists: '该电子邮件地址的账户已存在。'
+    already_have_account: '已经有账户？登录！'
 
   recovery:
     title: '找回密码'
