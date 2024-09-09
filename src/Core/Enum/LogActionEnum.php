@@ -2,27 +2,27 @@
 
 namespace App\Core\Enum;
 
-enum LogActionEnum: string
+enum LogActionEnum
 {
-   case LOGIN = 'login';
+   case LOGIN;
 
-   case LOGOUT = 'logout';
+   case LOGOUT;
 
-   case CREATE_PAYMENT = 'create_payment';
+   case CREATE_PAYMENT;
 
-   case BOUGHT_BALANCE = 'bought_balance';
+   case BOUGHT_BALANCE;
 
-   case BOUGHT_SERVER = 'bought_server';
+   case BOUGHT_SERVER;
 
-   case RENEW_SERVER = 'renew_server';
+   case RENEW_SERVER;
 
-   case ENTITY_ADD = 'entity_add';
+   case ENTITY_ADD;
 
-   case ENTITY_EDIT = 'entity_edit';
+   case ENTITY_EDIT;
 
-   case ENTITY_DELETE = 'entity_delete';
+   case ENTITY_DELETE;
 
-   case USER_REGISTERED = 'user_registered';
+   case USER_REGISTERED;
 
-   case USER_VERIFY_EMAIL = 'user_verify_email';
+   case USER_VERIFY_EMAIL;
 }
