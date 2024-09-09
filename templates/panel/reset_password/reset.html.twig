@@ -5,21 +5,10 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/assets/css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('/assets/css/panel.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/css/panel.css?v=' ~ get_app_version()) }}">
 {% endblock %}
 
 {% block body %}
-    <style>
-        body {
-            background: #f1f5f9;
-        }
-        .login-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-    </style>
     <div class="container">
         <div class="row">
             <div class="col-12">

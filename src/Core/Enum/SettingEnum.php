@@ -57,4 +57,6 @@ enum SettingEnum: string
     case GOOGLE_CAPTCHA_SITE_KEY = 'google_captcha_site_key';
 
     case GOOGLE_CAPTCHA_SECRET_KEY = 'google_captcha_secret_key';
+
+    case TERMS_OF_SERVICE = 'terms_of_service';
 }

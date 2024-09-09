@@ -42,7 +42,7 @@ class LogServiceTest extends TestCase
             ->method('save')
             ->with($this->callback(function (Log $log) use ($user, $action, $details) {
                 return $log->getUser() === $user &&
-                    $log->getActionId() === $action->value &&
+                    $log->getActionId() === strtolower($action->name) &&
                     $log->getDetails() === json_encode($details) &&
                     $log->getIpAddress() === '127.0.0.1';
             }));
@@ -64,7 +64,7 @@ class LogServiceTest extends TestCase
             ->method('save')
             ->with($this->callback(function (Log $log) use ($user, $action) {
                 return $log->getUser() === $user &&
-                    $log->getActionId() === $action->value &&
+                    $log->getActionId() === strtolower($action->name) &&
                     $log->getIpAddress() === 'Unknown';
             }));
 

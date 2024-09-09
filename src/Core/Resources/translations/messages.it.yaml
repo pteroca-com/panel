@@ -25,7 +25,7 @@ pteroca:
     surname: 'Cognome'
     email_address: 'Indirizzo e-mail'
     password: 'Password'
-    accept_terms: 'Accetto i termini e condizioni'
+    accept_terms: 'Accetto i <a href="{{ link }}" target="_blank">termini e condizioni</a>'
     submit: 'Registrati'
     verification_token_invalid: 'Il token di verifica è non valido o è scaduto.'
     verification_success: 'Il tuo account è stato verificato con successo.'
@@ -39,6 +39,7 @@ pteroca:
     email_required: 'L’indirizzo e-mail è obbligatorio.'
     invalid_email: 'Indirizzo e-mail non valido.'
     email_already_exists: 'Esiste già un account con questo indirizzo e-mail.'
+    already_have_account: 'Hai già un account? Accedi!'
 
   recovery:
     title: 'Recupera password'
@@ -248,6 +249,7 @@ pteroca:
         require_email_verification: 'Richiedi verifica dell’e-mail'
         google_captcha_verification: 'Richiedi verifica Google CAPTCHA'
         google_captcha_site_key: 'Chiave del sito Google CAPTCHA'
+        terms_of_service: 'Contenuto della pagina dei Termini di servizio'
     user:
       email: 'E-mail'
       roles: 'Ruoli'

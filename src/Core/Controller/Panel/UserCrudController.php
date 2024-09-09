@@ -47,8 +47,8 @@ class UserCrudController extends AbstractPanelController
             TextField::new('email', $this->translator->trans('pteroca.crud.user.email')),
             ChoiceField::new('roles', $this->translator->trans('pteroca.crud.user.roles'))
                 ->setChoices([
-                    'User' => UserRoleEnum::ROLE_USER->value,
-                    'Admin' => UserRoleEnum::ROLE_ADMIN->value,
+                    'User' => UserRoleEnum::ROLE_USER->name,
+                    'Admin' => UserRoleEnum::ROLE_ADMIN->name,
                 ])
                 ->allowMultipleChoices(),
             NumberField::new('balance', $this->translator->trans('pteroca.crud.user.balance'))
@@ -92,7 +92,7 @@ class UserCrudController extends AbstractPanelController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.user.user'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.user.users'))
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value)
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
             ->setDefaultSort(['createdAt' => 'DESC']);
     }
 

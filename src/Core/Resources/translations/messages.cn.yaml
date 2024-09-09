@@ -25,7 +25,7 @@ pteroca:
     surname: '姓氏'
     email_address: '电子邮件地址'
     password: '密码'
-    accept_terms: '我接受服务条款'
+    accept_terms: '我接受 <a href="{{ link }}" target="_blank">服务条款</a>'
     submit: '注册'
     verification_token_invalid: '验证令牌无效或已过期。'
     verification_success: '您的账户已成功验证。'
@@ -39,6 +39,7 @@ pteroca:
     email_required: '电子邮件地址是必填项。'
     invalid_email: '电子邮件地址无效。'
     email_already_exists: '该电子邮件地址的账户已存在。'
+    already_have_account: '已经有账户？登录！'
 
   recovery:
     title: '找回密码'
@@ -248,6 +249,7 @@ pteroca:
         require_email_verification: '需要电子邮件验证'
         google_captcha_verification: '需要 Google CAPTCHA 验证'
         google_captcha_site_key: 'Google CAPTCHA 网站密钥'
+        terms_of_service: '服务条款页面内容'
     user:
       email: '电子邮件'
       roles: '角色'

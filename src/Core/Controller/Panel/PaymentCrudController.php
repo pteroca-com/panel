@@ -71,7 +71,7 @@ class PaymentCrudController extends AbstractPanelController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.payment.payment'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.payment.payments'))
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value)
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->showEntityActionsInlined();
     }

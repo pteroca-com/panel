@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.2.2] - 2024-09-09
+
+### Added
+- Added url to login page on the registration page.
+- Added terms of service page.
+- Added css files versioning based on the application version.
+
+### Changed
+- Refactored the enums.
+- Split store template into multiple files.
+- Moved css from the templates to the css file.
+- Set default settings as a migration.
+
 ## [0.2.1] - 2024-09-08
 
 ### Added

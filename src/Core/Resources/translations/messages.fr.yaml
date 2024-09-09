@@ -25,7 +25,7 @@ pteroca:
     surname: 'Nom de famille'
     email_address: 'Adresse e-mail'
     password: 'Mot de passe'
-    accept_terms: "J'accepte les conditions d'utilisation"
+    accept_terms: "J'accepte les <a href=\"{{ link }}\" target=\"_blank\">conditions d'utilisation</a>"
     submit: 'S’inscrire'
     verification_token_invalid: 'Le jeton de vérification est invalide ou expiré.'
     verification_success: 'Votre compte a été vérifié avec succès.'
@@ -39,6 +39,7 @@ pteroca:
     email_required: 'L’adresse e-mail est requise.'
     invalid_email: 'Adresse e-mail invalide.'
     email_already_exists: 'Un compte avec cette adresse e-mail existe déjà.'
+    already_have_account: 'Vous avez déjà un compte ? Connectez-vous !'
 
   recovery:
     title: 'Réinitialisation du mot de passe'
@@ -248,6 +249,7 @@ pteroca:
         require_email_verification: 'Exiger la vérification de l’e-mail'
         google_captcha_verification: 'Exiger la vérification CAPTCHA Google'
         google_captcha_site_key: 'Clé du site CAPTCHA Google'
+        terms_of_service: 'Contenu de la page sur les conditions d’utilisation'
     user:
       email: 'E-mail'
       roles: 'Rôles'

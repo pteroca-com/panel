@@ -70,7 +70,7 @@ class ServerCrudController extends AbstractPanelController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.server.server'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.server.servers'))
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->value)
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
             ->setDefaultSort(['createdAt' => 'DESC']);
     }
 
