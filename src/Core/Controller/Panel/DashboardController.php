@@ -72,7 +72,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart', 'store');
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.wallet'), 'fa fa-wallet', 'recharge_balance');
 
-        if ($this->isGranted(UserRoleEnum::ROLE_ADMIN->value)) {
+        if ($this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
             yield MenuItem::section($this->translator->trans('pteroca.crud.menu.administration'));
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.categories'), 'fa fa-list', Category::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.products'), 'fa fa-sliders-h', Product::class);

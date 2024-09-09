@@ -58,7 +58,7 @@ class UserCrudControllerTest extends BaseTestCase
             'User[plainPassword]' => 'testpassword123',
             'User[name]' => 'Test',
             'User[surname]' => 'User',
-            'User[roles]' => [UserRoleEnum::ROLE_USER->value],
+            'User[roles]' => [UserRoleEnum::ROLE_USER->name],
             'User[balance]' => '100.00',
         ]);
 

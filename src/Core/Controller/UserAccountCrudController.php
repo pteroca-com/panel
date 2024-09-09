@@ -68,7 +68,7 @@ class UserAccountCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.dashboard.account_settings'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.dashboard.account_settings'))
-            ->setEntityPermission(UserRoleEnum::ROLE_USER->value);
+            ->setEntityPermission(UserRoleEnum::ROLE_USER->name);
     }
 
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
