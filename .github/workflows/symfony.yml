@@ -64,11 +64,6 @@ jobs:
       - name: Wait for MySQL to be ready
         run: until mysqladmin ping -h127.0.0.1 -uroot -proot --silent; do sleep 1; done
 
-      - name: Create Test Database
-        run: php bin/console doctrine:database:create --if-not-exists --env=test
-        env:
-          DATABASE_URL: 'mysql://test_user:test_password@127.0.0.1:3306/test_db'
-
       - name: Run Database Migrations
         run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
         env:

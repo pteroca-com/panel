@@ -3,7 +3,6 @@
 namespace App\Core\Tests\Integration;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -26,11 +25,11 @@ abstract class BaseTestCase extends WebTestCase
 
     protected function resetDatabase(): void
     {
-        $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
-        $schemaTool = new SchemaTool($this->entityManager);
-
-        $schemaTool->dropSchema($metadata);
-        $schemaTool->createSchema($metadata);
+        $this->entityManager->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+        $this->entityManager->getConnection()->executeQuery('TRUNCATE TABLE server');
+        $this->entityManager->getConnection()->executeQuery('TRUNCATE TABLE user');
+        $this->entityManager->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+        $this->entityManager->clear();
     }
 
     protected function tearDown(): void
