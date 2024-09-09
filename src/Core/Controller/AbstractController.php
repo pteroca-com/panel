@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as SymfonyAbstr
 
 abstract class AbstractController extends SymfonyAbstractController
 {
-    public function checkPermission(string $permission = UserRoleEnum::ROLE_USER->value): void
+    public function checkPermission(string $permission = UserRoleEnum::ROLE_USER->name): void
     {
         $user = $this->getUser();
         if (empty($user)) {
