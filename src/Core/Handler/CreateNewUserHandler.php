@@ -29,7 +29,7 @@ class CreateNewUserHandler implements HandlerInterface
         $user = (new User())
             ->setEmail($this->userEmail)
             ->setPassword('')
-            ->setRoles([UserRoleEnum::ROLE_USER->value, UserRoleEnum::ROLE_ADMIN->value])
+            ->setRoles([UserRoleEnum::ROLE_USER->name, UserRoleEnum::ROLE_ADMIN->name])
             ->setBalance(0)
             ->setName('Admin')
             ->setSurname('Admin');

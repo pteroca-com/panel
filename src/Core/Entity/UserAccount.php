@@ -80,7 +80,7 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = UserRoleEnum::ROLE_USER->value;
+        $roles[] = UserRoleEnum::ROLE_USER->name;
 
         return array_unique($roles);
     }
