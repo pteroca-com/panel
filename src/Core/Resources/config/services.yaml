@@ -25,3 +25,7 @@ services:
 
   App\Core\Twig\AppExtension:
     tags: [ 'twig.extension' ]
+
+  App\Core\Service\System\SystemInformationService:
+    arguments:
+      $entityManager: '@doctrine.orm.entity_manager'
