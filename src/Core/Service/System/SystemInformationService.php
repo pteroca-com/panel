@@ -30,7 +30,7 @@ readonly class SystemInformationService
                 'version' => php_uname('v'),
                 'machine' => php_uname('m')
             ],
-            'webserver' => $_SERVER['SERVER_SOFTWARE'],
+            'webserver' => $_SERVER['SERVER_SOFTWARE'] ?? 'N/A',
             'pterodactyl' => [
                 'status' => $this->isPterodactylApiOnline(),
             ],
