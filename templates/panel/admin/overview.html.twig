@@ -1,0 +1,43 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}{{ 'pteroca.admin.overview.title'|trans }}{% endblock %}
+
+{% block page_actions %}
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    <div class="container pt-3">
+        <div class="row">
+            <div class="col-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ 'pteroca.admin.overview.servers'|trans }}</h5>
+                        <div class="card-text text-small">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
+                        <div class="card-text display-5">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ 'pteroca.admin.overview.users'|trans }}</h5>
+                        <div class="card-text text-small">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
+                        <div class="card-text display-5">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ 'pteroca.admin.overview.payments'|trans }}</h5>
+                        <div class="card-text text-small">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
+                        <div class="card-text display-5">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
