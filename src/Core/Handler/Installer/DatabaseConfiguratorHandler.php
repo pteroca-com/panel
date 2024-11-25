@@ -45,10 +45,10 @@ readonly class DatabaseConfiguratorHandler
             $io->text('Please provide database credentials');
             $io->newLine();
 
-            $databaseHost = $io->ask('Database host', 'localhost');
+            $databaseHost = $io->ask('Database host', '127.0.0.1');
             $databasePort = $io->ask('Database port', '3306');
-            $databaseName = $io->ask('Database name', '');
-            $databaseUser = $io->ask('Database user', '');
+            $databaseName = $io->ask('Database name', 'pteroca');
+            $databaseUser = $io->ask('Database user', 'pterocauser');
             $databasePassword = $io->ask('Database password', '');
             $dsn = sprintf('DATABASE_URL=mysql://%s:%s@%s:%s/%s', $databaseUser, $databasePassword, $databaseHost, $databasePort, $databaseName);
             if (!$this->environmentConfigurationHandler->writeToEnvFile('/^DATABASE_URL=.*$/m', $dsn)) {

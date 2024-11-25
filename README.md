@@ -48,7 +48,7 @@ Explore the full documentation at [PteroCA Documentation](https://docs.pteroca.c
 ### Demo
 - **Access the Demo**: [https://demo.pteroca.com](https://demo.pteroca.com)
 - **Login**: `demo@pteroca.com`
-- **Password**: `DemoPassword`
+- **Password**: `PterocaDemo`
 - **Note**: Editing features are restricted in the demo version.
 
 ### Panel Overview
