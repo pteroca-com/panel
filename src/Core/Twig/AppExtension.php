@@ -89,6 +89,6 @@ class AppExtension extends AbstractExtension
 
     public function getAppVersion(): string
     {
-        return '0.2.2';
+        return '0.2.4';
     }
 }
