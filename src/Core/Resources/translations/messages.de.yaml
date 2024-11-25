@@ -300,6 +300,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Zahlungen'
       logs: 'Logs'
+      overview: 'Übersicht'
 
   api:
     servers:
@@ -350,3 +351,29 @@ pteroca:
       subject: 'Serversperrung'
       server_suspended: 'Wir informieren Sie, dass einer Ihrer Server gesperrt wurde, da er nicht verlängert wurde.'
       extend_server: 'Um den Server wiederherzustellen, verlängern Sie ihn im Kundenbereich.'
+
+  admin:
+    overview:
+      title: 'Admin Übersicht'
+      servers: 'Aktive Server'
+      users: 'Registrierte Benutzer'
+      payments: 'Zahlungen'
+      last_30_days: 'Letzte 30 Tage'
+      now: 'Jetzt'
+      links: 'Wichtige Links'
+      system: 'Systeminformationen'
+      payment_overview: 'Zahlungsübersicht'
+      view_all: 'Alle anzeigen'
+      last_registered_users: 'Zuletzt registrierte Benutzer'
+      user: 'Benutzer'
+      amount: 'Betrag'
+      currency: 'Währung'
+      status: 'Status'
+      date: 'Datum'
+      no_payments: 'Ihr System hat bisher keine Zahlungen erhalten.'
+      balance: 'Kontostand'
+      verified: 'Verifiziert'
+      unverified: 'Nicht verifiziert'
+      project_site: 'Projektseite'
+      documentation: 'Dokumentation'
+      support: 'Support'

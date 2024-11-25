@@ -300,6 +300,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Платежі'
       logs: 'Журнали'
+      overview: 'Огляд'
 
   api:
     servers:
@@ -350,3 +351,29 @@ pteroca:
       subject: 'Призупинення сервера'
       server_suspended: 'Повідомляємо вас, що один із ваших серверів був призупинений, оскільки він не був продовжений.'
       extend_server: 'Щоб відновити сервер, продовжіть його у панелі клієнта.'
+
+  admin:
+    overview:
+      title: 'Адміністративний Огляд'
+      servers: 'Активні Сервери'
+      users: 'Зареєстровані Користувачі'
+      payments: 'Платежі'
+      last_30_days: 'Останні 30 днів'
+      now: 'Зараз'
+      links: 'Важливі Посилання'
+      system: 'Інформація про Систему'
+      payment_overview: 'Огляд Платежів'
+      view_all: 'Переглянути все'
+      last_registered_users: 'Останні зареєстровані користувачі'
+      user: 'Користувач'
+      amount: 'Сума'
+      currency: 'Валюта'
+      status: 'Статус'
+      date: 'Дата'
+      no_payments: 'Ваша система ще не отримала жодного платежу.'
+      balance: 'Баланс'
+      verified: 'Перевірено'
+      unverified: 'Не Перевірено'
+      project_site: 'Сайт Проєкту'
+      documentation: 'Документація'
+      support: 'Підтримка'

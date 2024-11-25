@@ -300,6 +300,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Paiements'
       logs: 'Journaux'
+      overview: 'Vue d’ensemble'
 
   api:
     servers:
@@ -350,3 +351,29 @@ pteroca:
       subject: 'Suspension de serveur'
       server_suspended: 'Nous vous informons qu’un de vos serveurs a été suspendu, car il n’a pas été renouvelé.'
       extend_server: 'Pour restaurer le serveur, prolongez-le depuis le panneau client.'
+
+  admin:
+    overview:
+      title: 'Vue d’ensemble Admin'
+      servers: 'Serveurs Actifs'
+      users: 'Utilisateurs Enregistrés'
+      payments: 'Paiements'
+      last_30_days: '30 derniers jours'
+      now: 'Maintenant'
+      links: 'Liens Importants'
+      system: 'Informations Système'
+      payment_overview: 'Vue d’ensemble des Paiements'
+      view_all: 'Voir tout'
+      last_registered_users: 'Derniers utilisateurs enregistrés'
+      user: 'Utilisateur'
+      amount: 'Montant'
+      currency: 'Devise'
+      status: 'Statut'
+      date: 'Date'
+      no_payments: 'Votre système n’a encore reçu aucun paiement.'
+      balance: 'Solde'
+      verified: 'Vérifié'
+      unverified: 'Non Vérifié'
+      project_site: 'Site du projet'
+      documentation: 'Documentation'
+      support: 'Support'

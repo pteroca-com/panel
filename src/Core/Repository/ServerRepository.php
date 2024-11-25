@@ -37,4 +37,13 @@ class ServerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getActiveServersCount(): int
+    {
+        return $this->createQueryBuilder('s')
+            ->select('COUNT(s.id)')
+            ->where('s.isSuspended = false')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

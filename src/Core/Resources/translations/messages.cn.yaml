@@ -300,6 +300,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: '支付'
       logs: '日志'
+      overview: '概览'
 
   api:
     servers:
@@ -350,3 +351,29 @@ pteroca:
       subject: '服务器暂停'
       server_suspended: '我们通知您，您的一个服务器已被暂停，因为它未续订。'
       extend_server: '要恢复服务器，请在客户面板中续订它。'
+
+  admin:
+    overview:
+      title: '管理员概览'
+      servers: '活跃服务器'
+      users: '注册用户'
+      payments: '支付'
+      last_30_days: '过去30天'
+      now: '现在'
+      links: '重要链接'
+      system: '系统信息'
+      payment_overview: '支付概览'
+      view_all: '查看全部'
+      last_registered_users: '最新注册用户'
+      user: '用户'
+      amount: '金额'
+      currency: '货币'
+      status: '状态'
+      date: '日期'
+      no_payments: '您的系统尚未收到任何支付。'
+      balance: '余额'
+      verified: '已验证'
+      unverified: '未验证'
+      project_site: '项目网站'
+      documentation: '文档'
+      support: '支持'
