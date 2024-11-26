@@ -68,6 +68,9 @@ class Product
     private array $eggs = [];
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $eggsConfiguration = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $imagePath = null;
 
     #[Vich\UploadableField(mapping: 'category_images', fileNameProperty: 'imagePath')]
@@ -268,6 +271,17 @@ class Product
     public function setEggs(array $eggs): self
     {
         $this->eggs = $eggs;
+        return $this;
+    }
+
+    public function getEggsConfiguration(): ?string
+    {
+        return $this->eggsConfiguration;
+    }
+
+    public function setEggsConfiguration(?string $eggsConfiguration): self
+    {
+        $this->eggsConfiguration = $eggsConfiguration;
         return $this;
     }
 
