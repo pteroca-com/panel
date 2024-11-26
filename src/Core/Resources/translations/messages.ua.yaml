@@ -197,6 +197,8 @@ pteroca:
       save: 'Зберегти продукт'
       product: 'Продукт'
       products: 'Продукти'
+      egg_information: 'Інформація про egg'
+      egg_options_you_can_edit: 'Ви можете редагувати наступні параметри у вашій панелі Pterodactyl.'
     server:
       pterodactyl_server_id: 'ID сервера Pterodactyl'
       pterodactyl_server_identifier: 'Ідентифікатор сервера Pterodactyl'

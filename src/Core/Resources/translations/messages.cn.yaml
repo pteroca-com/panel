@@ -197,6 +197,8 @@ pteroca:
       save: '保存产品'
       product: '产品'
       products: '产品'
+      egg_information: 'Egg 信息'
+      egg_options_you_can_edit: '您可以在 Pterodactyl 面板中编辑以下选项。'
     server:
       pterodactyl_server_id: 'Pterodactyl 服务器 ID'
       pterodactyl_server_identifier: 'Pterodactyl 服务器标识符'

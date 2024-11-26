@@ -197,6 +197,8 @@ pteroca:
       save: 'Zapisz produkt'
       product: 'Produkt'
       products: 'Produkty'
+      egg_information: 'Informacje o eggu'
+      egg_options_you_can_edit: 'Możesz edytować następujące opcje w panelu Pterodactyl.'
     server:
       pterodactyl_server_id: 'ID serwera Pterodactyl'
       pterodactyl_server_identifier: 'Identyfikator serwera Pterodactyl'
