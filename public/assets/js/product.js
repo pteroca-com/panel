@@ -261,7 +261,7 @@ function createCheckbox(checked, eggId, variableId, name) {
 function createSelect(value, eggId, options, name) {
     let select = `<select name="${getInputName(eggId, 'docker_image', name)}" class="form-control" style="font-size: 14px;">`;
     for (const [key, option] of Object.entries(options)) {
-        select += `<option value="${key}" ${value === key ? 'selected' : ''}>${option}</option>`;
+        select += `<option value="${option}" ${value === key ? 'selected' : ''}>${option}</option>`;
     }
     select += '</select>';
     return select;

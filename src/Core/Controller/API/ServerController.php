@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ServerController extends AbstractController
+class ServerController extends APIAbstractController
 {
     public function __construct(
         private readonly ServerService $serverService,

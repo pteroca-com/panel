@@ -12,9 +12,11 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
+use JsonException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 use Timdesm\PterodactylPhpApi\Resources\Egg as PterodactylEgg;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
@@ -53,14 +55,25 @@ class CreateServerService extends AbstractActionServerService
             throw new \Exception('Egg not found');
         }
 
+        try {
+            $productEggConfiguration = json_decode(
+                $product->getEggsConfiguration(),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        } catch (JsonException $e) {
+            $productEggConfiguration = [];
+        }
+
         $bestAllocationId = $this->nodeSelectionService->getBestAllocationId($product);
         $requestPayload = [
             'name' => sprintf('%s [%s]', $product->getName(), $user->getEmail()),
             'user' => $user->getPterodactylUserId(),
             'egg' => $selectedEgg->get('id'),
-            'docker_image' => $selectedEgg->get('docker_image'),
-            'startup' => $selectedEgg->get('startup'),
-            'environment' => $this->prepareEnvironmentVariables($selectedEgg),
+            'docker_image' => $productEggConfiguration[$eggId]['options']['docker_image']['value'] ?? $selectedEgg->get('docker_image'),
+            'startup' => $productEggConfiguration[$eggId]['options']['startup']['value'] ?? $selectedEgg->get('startup'),
+            'environment' => $this->prepareEnvironmentVariables($selectedEgg, $productEggConfiguration),
             'limits' => [
                 'memory' => $product->getMemory(),
                 'swap' => $product->getSwap(),
@@ -77,7 +90,16 @@ class CreateServerService extends AbstractActionServerService
             ],
         ];
 
-        return $this->pterodactylService->getApi()->servers->create($requestPayload);
+        try {
+            return $this->pterodactylService->getApi()->servers->create($requestPayload);
+        } catch (ValidationException $exception) {
+            $errors = array_map(
+                fn($error) => $error['detail'],
+                $exception->errors()['errors']
+            );
+            $errors = implode(', ', $errors);
+            throw new \Exception($errors);
+        }
     }
 
     private function createEntityServer(PterodactylServer $server, Product $product, User $user): Server
@@ -93,14 +115,15 @@ class CreateServerService extends AbstractActionServerService
         return $entityServer;
     }
 
-    private function prepareEnvironmentVariables(PterodactylEgg $egg): array
+    private function prepareEnvironmentVariables(PterodactylEgg $egg, array $productEggConfiguration): array
     {
         $environmentVariables = [];
         if (!$egg->has('relationships')) {
             return $environmentVariables;
         }
         foreach ($egg->get('relationships')['variables']->data as $variable) {
-            $environmentVariables[$variable->env_variable] = $variable->default_value;
+            $environmentVariables[$variable->env_variable] = $productEggConfiguration[$egg->get('id')]['variables'][$variable->get('id')]['value']
+                ?? $variable->default_value;
         }
         return $environmentVariables;
     }
