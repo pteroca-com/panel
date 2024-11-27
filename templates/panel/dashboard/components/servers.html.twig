@@ -18,11 +18,11 @@
                         <strong class="m-2">{{ server.product.name }}</strong>
                         <span class="placeholder col-4 rounded-1" data-ip></span>
                         <span class="float-end">
-                                            <a href="{{ pterodactylPanelUrl }}/server/{{ server.pterodactylServerIdentifier }}" target="_blank">
-                                                <i class="fa fa-cog"></i>
-                                                {{ 'pteroca.servers.manage_server'|trans }}
-                                            </a>
-                                        </span>
+                            <a href="{{ path('panel', { routeName: 'server', id: server.id }) }}">
+                                <i class="fa fa-cog"></i>
+                                {{ 'pteroca.servers.manage_server'|trans }}
+                            </a>
+                        </span>
                     </li>
                 {% endfor %}
             </ul>

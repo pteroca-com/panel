@@ -1,0 +1,379 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/xterm.min.css') }}">
+{% endblock %}
+
+{% block content_title %}{{ 'pteroca.server.title'|trans }}{% endblock %}
+
+{% block page_actions %}
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-4">
+        <div class="nav-tabs-custom form-tabs-tablist">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#console" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.console'|trans }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#startup" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.startup'|trans }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#settings" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.settings'|trans }}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane active" id="console">
+                <div class="row">
+                    <div class="col-9">
+                       <div class="row">
+                           <div class="col-12">
+                               <div id="terminal"></div>
+                           </div>
+                           <div class="col-12">
+                               <div class="row">
+                                   <div class="col-10">
+                                       <input type="text" class="form-control mt-2" id="command" placeholder="{{ 'pteroca.server.command'|trans }}">
+                                   </div>
+                                   <div class="col-2">
+                                        <button class="btn btn-primary mt-2 h-75 w-100" id="send-command">{{ 'pteroca.server.send'|trans }}</button>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class="btn btn-primary w-100 bg-success" id="server-start">{{ 'pteroca.server.start'|trans }}</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-primary w-100" id="server-restart">{{ 'pteroca.server.restart'|trans }}</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-primary bg-danger w-100" id="server-stop">{{ 'pteroca.server.stop'|trans }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <i class="fas fa-wifi fa-3x"></i>
+                                            </div>
+                                            <div class="col-9">
+                                                <h6 class="card-title">{{ 'pteroca.server.address'|trans }}</h6>
+                                                <p class="card-text">
+                                                    <span class="col-12 float-end mt-1 rounded-1" data-ip>{{ serverDetails.ip }}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <i class="fas fa-clock fa-3x"></i>
+                                            </div>
+                                            <div class="col-9">
+                                                <h6 class="card-title">{{ 'pteroca.server.uptime'|trans }}</h6>
+                                                <p class="card-text">
+                                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-uptime></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <i class="fas fa-microchip fa-3x"></i>
+                                            </div>
+                                            <div class="col-9">
+                                                <h6 class="card-title">{{ 'pteroca.server.cpu_load'|trans }}</h6>
+                                                <p class="card-text">
+                                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-cpu-load></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <i class="fas fa-memory fa-3x"></i>
+                                            </div>
+                                            <div class="col-9">
+                                                <h6 class="card-title">{{ 'pteroca.server.memory'|trans }}</h6>
+                                                <p class="card-text">
+                                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-memory></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <i class="fas fa-hard-drive fa-3x"></i>
+                                            </div>
+                                            <div class="col-9">
+                                                <h6 class="card-title">{{ 'pteroca.server.disk'|trans }}</h6>
+                                                <p class="card-text">
+                                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-disk></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <i class="fas fa-cloud-arrow-down fa-3x"></i>
+                                            </div>
+                                            <div class="col-9">
+                                                <h6 class="card-title">{{ 'pteroca.server.network_inbound'|trans }}</h6>
+                                                <p class="card-text">
+                                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-inbound></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <i class="fas fa-cloud-arrow-up fa-3x"></i>
+                                            </div>
+                                            <div class="col-9">
+                                                <h6 class="card-title">{{ 'pteroca.server.network_outbound'|trans }}</h6>
+                                                <p class="card-text">
+                                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-outbound></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="startup">
+                {% if productEggConfiguration.options.startup.user_viewable is defined or productEggConfiguration.options.docker_image.user_viewable is defined %}
+                    <div class="row">
+                        <div class="col-12">
+                            <h3 class="mb-4">{{ 'pteroca.server.default_options'|trans }}</h3>
+                        </div>
+                        {% if productEggConfiguration.options.startup.user_viewable is defined %}
+                            <div class="col-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title">
+                                            {{ 'pteroca.server.startup_command'|trans }}
+                                            {% if productEggConfiguration.options.startup.user_editable is not defined %}
+                                                <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
+                                            {% endif %}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                       <div class="row">
+                                           <div class="col-12">
+                                               <input type="text" class="form-control" id="startup" value="" {% if productEggConfiguration.options.startup.user_editable is not defined %}disabled{% endif %}>
+                                           </div>
+                                       </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if productEggConfiguration.options.docker_image.user_viewable is defined %}
+                            <div class="col-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title">
+                                            {{ 'pteroca.server.docker_image'|trans }}
+                                            {% if productEggConfiguration.options.docker_image.user_editable is not defined %}
+                                                <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
+                                            {% endif %}
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                       <div class="row">
+                                             <div class="col-12">
+                                                 <select class="form-select" id="docker-image" {% if productEggConfiguration.options.docker_image.user_editable is not defined %}disabled{% endif %}>
+                                                 </select>
+                                             </div>
+                                       </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="tab-pane" id="settings">
+                ustawienia
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script src="{{ asset('assets/js/xterm.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            terminal.initializeWebsocket();
+            terminal.initializeTerminal();
+        });
+
+        const terminal = {
+            currentServerState: null,
+            terminal: null,
+            ws: null,
+            colors: {
+                red: "\x1b[38;2;248;113;133m",
+                green: "\x1b[38;2;134;239;172m",
+                yellow: "\x1b[38;2;253;224;71m",
+                blue: "\x1b[38;2;147;197;253m",
+                magenta: "\x1b[38;2;249;168;212m",
+                cyan: "\x1b[38;2;103;232;249m",
+                default: "\x1b[38;2;255;255;255m"
+            },
+            initializeTerminal: function() {
+                this.terminal = new Terminal();
+                this.terminal.open(document.getElementById('terminal'));
+            },
+            initializeWebsocket: function() {
+                const websocketData = JSON.parse('{{ websocket.toArray()|json_encode|raw }}');
+                this.ws = new WebSocket(websocketData.socket);
+                this.ws.onopen = function() {
+                    terminal.ws.send(JSON.stringify({ event: 'auth', args: [websocketData.token] }));
+                    terminal.ws.send(JSON.stringify({ event: 'send stats', args: [null]}));
+                    terminal.ws.send(JSON.stringify({ event: 'send logs', args: [null]}));
+
+                    terminal.bindButtons();
+                };
+                this.ws.onmessage = function(event) {
+                    const eventData = JSON.parse(event.data);
+                    switch (eventData.event) {
+                        case 'console output':
+                        case 'install output':
+                            terminal.terminal.write(eventData.args.join(' ') + '\r\n');
+                            break;
+                        case 'status':
+                            const serverStatus = eventData.args.join(' '),
+                                isOffline = serverStatus.includes('offline'),
+                                color = isOffline ? terminal.colors.red : terminal.colors.green;
+                            terminal.terminal.write('Server marked as: ' + color + serverStatus + terminal.colors.default + '\r\n');
+                            terminal.currentServerState = serverStatus;
+                            break;
+                        case 'stats':
+                            const parsedStats = JSON.parse(eventData.args);
+                            terminal.currentServerState = parsedStats.state;
+                            terminal.loadStatisticsFromWebsocket(parsedStats);
+                            break;
+                    }
+                };
+                this.ws.onclose = function() {
+                    terminal.terminal.write(terminal.colors.red + 'Connection to server console closed' + terminal.colors.default + '\r\n');
+                };
+                this.ws.onerror = function(event) {
+                    terminal.terminal.write(terminal.colors.red + 'Error connecting to server console' + terminal.colors.default + '\r\n');
+                };
+            },
+            sendCommand: function(command) {
+                this.ws.send(JSON.stringify({ event: 'send command', args: [command] }));
+                this.terminal.write('> ' + command + '\r\n');
+            },
+            sendState: function(state) {
+                this.ws.send(JSON.stringify({ event: 'set state', args: [state] }));
+            },
+            loadStatisticsFromWebsocket: function(stats) {
+                const isOnline = stats.state !== 'offline';
+                this.updateStatisticValue('[data-disk]', `${this.parseBytesToBestFit(stats.disk_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverDetails.limits.disk }}'))}`);
+                this.updateStatisticValue('[data-uptime]', isOnline ? `${this.parseMillisecondsToHumanReadable(stats.uptime)}` : 'Offline');
+                this.updateStatisticValue('[data-memory]', isOnline ? `${this.parseBytesToBestFit(stats.memory_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverDetails.limits.memory }}'))}` : 'Offline');
+                this.updateStatisticValue('[data-cpu-load]', isOnline ? `${this.parseToPercentage(stats.cpu_absolute)}% / {{ serverDetails.limits.cpu }}%` : 'Offline');
+                this.updateStatisticValue('[data-network-inbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.rx_bytes)}` : 'Offline');
+                this.updateStatisticValue('[data-network-outbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.tx_bytes)}` : 'Offline');
+            },
+            updateStatisticValue(selector, value) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.textContent = value;
+                    element.classList.remove('placeholder');
+                }
+            },
+            parseBytesToBestFit: function(bytes) {
+                const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                let unitIndex = 0;
+                while (bytes >= 1024) {
+                    bytes /= 1024;
+                    unitIndex++;
+                }
+
+                return `${bytes.toFixed(2)} ${units[unitIndex]}`;
+            },
+            parseMegabytesToBytes: function(value) {
+                return value * 1024 * 1024;
+            },
+            parseToPercentage: function(value) {
+                return (value / 100).toFixed(2);
+            },
+            parseMillisecondsToHumanReadable: function(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+
+                return `${days}d ${hours % 24}h ${minutes % 60}m ${seconds % 60}s`;
+            },
+            bindButtons: function() {
+                document.querySelector('#send-command').addEventListener('click', function() {
+                    const command = document.querySelector('#command');
+                    terminal.sendCommand(command.value);
+                    command.value = '';
+                });
+
+                document.querySelector('#server-start').addEventListener('click', function() {
+                    terminal.sendState('start');
+                });
+
+                document.querySelector('#server-restart').addEventListener('click', function() {
+                    terminal.sendState('restart');
+                });
+
+                document.querySelector('#server-stop').addEventListener('click', function() {
+                    terminal.sendState('stop');
+                });
+            }
+        };
+    </script>
+{% endblock %}

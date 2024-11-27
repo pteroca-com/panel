@@ -23,6 +23,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $pterodactylUserId = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $pterodactylUserApiKey = null;
+
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
@@ -74,6 +77,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPterodactylUserId(?int $pterodactylUserId): static
     {
         $this->pterodactylUserId = $pterodactylUserId;
+
+        return $this;
+    }
+
+    public function getPterodactylUserApiKey(): ?string
+    {
+        return $this->pterodactylUserApiKey;
+    }
+
+    public function setPterodactylUserApiKey(?string $pterodactylUserApiKey): static
+    {
+        $this->pterodactylUserApiKey = $pterodactylUserApiKey;
 
         return $this;
     }

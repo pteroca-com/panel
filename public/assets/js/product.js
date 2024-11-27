@@ -114,8 +114,8 @@ function prepareEggTabContent(index, eggData) {
         tabContent.classList.add('active');
     }
 
-    tabContent.innerHTML = '<h4 class="mb-4 mt-4">' + eggData.name + ' - Configuration</h4>';
-    tabContent.innerHTML += '<h5 class="mb-3 mt-4">Default configuration</h5>';
+    tabContent.innerHTML = '<h4 class="mb-4 mt-4">' + eggData.name + ' - ' + loadedTranslations.configuration + '</h4>';
+    tabContent.innerHTML += '<h5 class="mb-3 mt-4">' + loadedTranslations.default_configuration + '</h5>';
     tabContent.innerHTML += generateVariablesTable({
         0: {
             id: 'startup',
@@ -137,7 +137,7 @@ function prepareEggTabContent(index, eggData) {
             options: eggData.docker_images
         }
     })
-    tabContent.innerHTML += '<h5 class="mb-3 mt-4">Variables</h5>';
+    tabContent.innerHTML += '<h5 class="mb-3 mt-4">' + loadedTranslations.variables + '</h5>';
     tabContent.innerHTML += generateVariablesTable(eggData?.relationships?.variables)
 
     tabContent.innerHTML += '<h4 class="mb-4 mt-4">' + eggData.name + ' - ' + loadedTranslations.egg_information + '</h4>';
@@ -191,13 +191,13 @@ function generateVariablesTable(variables) {
         thUserEditable = document.createElement('th');
 
     table.className = 'table table-bordered table-striped';
-    thName.textContent = 'Nazwa';
-    thDescription.textContent = 'Opis';
+    thName.textContent = loadedTranslations.egg_variable_name;
+    thDescription.textContent = loadedTranslations.egg_variable_description;
     thDescription.style.minWidth = '200px';
-    thValue.textContent = 'Wartość';
+    thValue.textContent = loadedTranslations.egg_variable_value;
     thValue.style.minWidth = '300px';
-    thUserEditable.textContent = 'Edytowalne przez użytkownika';
-    thUserViewable.textContent = 'Widoczne dla użytkownika';
+    thUserEditable.textContent = loadedTranslations.egg_variable_user_editable;
+    thUserViewable.textContent = loadedTranslations.egg_variable_user_viewable;
 
     tr.appendChild(thName);
     tr.appendChild(thDescription);

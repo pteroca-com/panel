@@ -4,7 +4,6 @@ namespace App\Core\Controller\API;
 
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
