@@ -62,7 +62,9 @@ class ServerController extends AbstractController
         //dd($serverService->getServerDetails($server));
 
         // @TODO: move to service
-        $pterodactylServer = $pterodactylService->getApi()->servers->get($server->getPterodactylServerId());
+        $pterodactylServer = $pterodactylService->getApi()->servers->get($server->getPterodactylServerId(), [
+            'include' => ['variables', 'egg'],
+        ]);
         $productEggsConfiguration = $server->getProduct()->getEggsConfiguration();
         try {
             $productEggsConfiguration = json_decode($productEggsConfiguration, true, 512, JSON_THROW_ON_ERROR);
@@ -71,12 +73,15 @@ class ServerController extends AbstractController
             $productEggConfiguration = [];
         }
 
-        return $this->render('panel/servers/server.html.twig', [
+        $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
+
+        return $this->render('panel/server/server.html.twig', [
             'server' => $server,
             'serverDetails' => $serverService->getServerDetails($server),
             'pterodactylServer' => $pterodactylServer,
             'websocket' => $serverWebsocketService->establishWebsocketConnection($server),
             'productEggConfiguration' => $productEggConfiguration,
+            'dockerImages' => $dockerImages,
         ]);
     }
 }

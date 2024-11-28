@@ -1,0 +1,33 @@
+{% block main %}
+    {% if pterodactylServer.get('relationships')['variables'].toArray()|length > 0 %}
+        <div class="row mt-3">
+            <div class="col-12">
+                <h3 class="mb-4">{{ 'pteroca.server.variables'|trans }}</h3>
+            </div>
+            {% for key, variable in pterodactylServer.get('relationships')['variables'].toArray() %}
+                {% if productEggConfiguration.variables[variable.attributes.id].user_viewable is defined %}
+                    <div class="col-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title">
+                                    {{ variable.attributes.name }}
+                                    {% if productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}
+                                        <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
+                                    {% endif %}
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ variable.attributes.description }}"><i class="fas fa-xs fa-info-circle"></i></span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" value="{{ productEggConfiguration.variables[variable.attributes.id].value }}" {% if productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}disabled{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
