@@ -4,3 +4,65 @@
         {% include 'panel/server/tabs/startup/components/variables.html.twig' %}
     </div>
 {% endblock %}
+
+{% block body_javascript %}
+    <script>
+        function getSettingElement(settingName) {
+            const preparedSettingName = settingName.replace('_', '-');
+            return document.querySelector(`input[data-option-name="${preparedSettingName}"], select[data-option-name="${preparedSettingName}"]`);
+        }
+
+        function toggleSetting(settingName, isStartupOption = false) {
+            const element = getSettingElement(settingName),
+                icon = document.querySelector(`i[data-option-name="${settingName}"]`);
+            icon.classList.toggle('fa-edit');
+            icon.classList.toggle('fa-save');
+            if (element.tagName !== 'SELECT') {
+                element.readOnly = !element.readOnly;
+                if (!element.readOnly) {
+                    element.focus();
+                } else {
+                    saveSetting(settingName, isStartupOption);
+                }
+            } else {
+                element.disabled = !element.disabled;
+                if (!element.disabled) {
+                    element.focus();
+                } else {
+                    saveSetting(settingName, isStartupOption);
+                }
+            }
+        }
+
+        function saveSetting(settingName, isStartupOption) {
+            const element = getSettingElement(settingName),
+                endpointUrl = !isStartupOption
+                    ? '{{ path('server_startup_variable_update', { id: server.id }) }}'
+                    : '{{ path('server_startup_option_update', { id: server.id }) }}';
+            fetch(endpointUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key: settingName,
+                    value: element.value,
+                }),
+            }).then(response => {
+                // TODO set translations
+                if (!response.ok) {
+                   return handleError('Failed to save setting. Try again later.');
+                }
+
+                alert('Setting saved successfully.');
+            }).catch(error => {
+                return handleError('Failed to save setting. Try again later.');
+            });
+        }
+
+        function handleError(message) {
+            alert(message);
+            throw new Error(message);
+        }
+    </script>
+{% endblock %}

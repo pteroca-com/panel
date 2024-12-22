@@ -12,13 +12,17 @@
                                 {{ 'pteroca.server.startup_command'|trans }}
                                 {% if productEggConfiguration.options.startup.user_editable is not defined %}
                                     <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
+                                {% else %}
+                                    <a href="#" class="float-end" onclick="toggleSetting('startup', true)">
+                                        <i class="fas fa-edit" data-option-name="startup"></i>
+                                    </a>
                                 {% endif %}
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12">
-                                    <input type="text" class="form-control" id="startup" value="{{ pterodactylServer.get('container').startup_command }}" {% if productEggConfiguration.options.startup.user_editable is not defined %}disabled{% endif %}>
+                                    <input type="text" class="form-control" data-option-name="startup" value="{{ pterodactylServer.get('container').startup_command }}" {% if productEggConfiguration.options.startup.user_editable is not defined %}disabled{% endif %} readonly>
                                 </div>
                             </div>
                         </div>
@@ -33,13 +37,17 @@
                                 {{ 'pteroca.server.docker_image'|trans }}
                                 {% if productEggConfiguration.options.docker_image.user_editable is not defined %}
                                     <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
+                                {% else %}
+                                    <a href="#" class="float-end" onclick="toggleSetting('docker_image', true)">
+                                        <i class="fas fa-edit" data-option-name="docker_image"></i>
+                                    </a>
                                 {% endif %}
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12">
-                                    <select class="form-select" id="docker-image" {% if productEggConfiguration.options.docker_image.user_editable is not defined %}disabled{% endif %}>
+                                    <select class="form-select" data-option-name="docker-image" disabled>
                                         {% for dockerImageName, dockerImage in dockerImages %}
                                             <option value="{{ dockerImage }}" {% if dockerImage == pterodactylServer.get('container')['image'] %}selected{% endif %}>{{ dockerImageName }} - {{ dockerImage }}</option>
                                         {% endfor %}

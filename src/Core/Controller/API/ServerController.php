@@ -22,6 +22,8 @@ class ServerController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
+        // TODO: check if user has permission to access this server or if has admin role
+
         $server = $serverRepository->find($id);
         if (empty($server)) {
             return new JsonResponse(

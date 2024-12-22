@@ -13,6 +13,10 @@
                                     {{ variable.attributes.name }}
                                     {% if productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}
                                         <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
+                                    {% else %}
+                                        <a href="#" class="float-end" onclick="toggleSetting('{{ variable.attributes.env_variable }}')">
+                                            <i class="fas fa-edit" data-option-name="{{ variable.attributes.env_variable }}"></i>
+                                        </a>
                                     {% endif %}
                                     <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ variable.attributes.description }}"><i class="fas fa-xs fa-info-circle"></i></span>
                                 </h5>
@@ -20,7 +24,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-12">
-                                        <input type="text" class="form-control" value="{{ productEggConfiguration.variables[variable.attributes.id].value }}" {% if productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}disabled{% endif %}>
+                                        <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ productEggConfiguration.variables[variable.attributes.id].value }}" {% if productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}disabled{% endif %} readonly>
                                     </div>
                                 </div>
                             </div>
