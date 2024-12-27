@@ -2,11 +2,19 @@
     <link rel="stylesheet" href="{{ asset('assets/css/xterm.min.css') }}">
 {% endblock %}
 
+{% block stylesheets %}
+    <style>
+        #terminal > div {
+            padding: 10px;
+        }
+    </style>
+{% endblock %}
+
 {% block main %}
     <div class="tab-pane active" id="console">
         <div class="row">
-            <div class="col-9">
-                <div class="row">
+            <div class="col-12 col-xl-9 mb-3">
+                <div class="row mb-3">
                     <div class="col-12">
                         <div id="terminal"></div>
                     </div>
@@ -21,149 +29,17 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-3">
                 <div class="row">
-                    <div class="col-12 mb-3">
-                        <div class="row">
-                            <div class="col-4">
-                                <button class="btn btn-primary w-100 bg-success" id="server-start">{{ 'pteroca.server.start'|trans }}</button>
-                            </div>
-                            <div class="col-4">
-                                <button class="btn btn-primary w-100" id="server-restart">{{ 'pteroca.server.restart'|trans }}</button>
-                            </div>
-                            <div class="col-4">
-                                <button class="btn btn-primary bg-danger w-100" id="server-stop">{{ 'pteroca.server.stop'|trans }}</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <i class="fas fa-wifi fa-3x"></i>
-                                    </div>
-                                    <div class="col-9">
-                                        <h6 class="card-title">{{ 'pteroca.server.address'|trans }}</h6>
-                                        <p class="card-text">
-                                            <span class="col-12 float-end mt-1 rounded-1" data-ip>{{ serverDetails.ip }}</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <i class="fas fa-clock fa-3x"></i>
-                                    </div>
-                                    <div class="col-9">
-                                        <h6 class="card-title">{{ 'pteroca.server.uptime'|trans }}</h6>
-                                        <p class="card-text">
-                                            <span class="placeholder col-12 float-end mt-1 rounded-1" data-uptime></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <i class="fas fa-microchip fa-3x"></i>
-                                    </div>
-                                    <div class="col-9">
-                                        <h6 class="card-title">{{ 'pteroca.server.cpu_load'|trans }}</h6>
-                                        <p class="card-text">
-                                            <span class="placeholder col-12 float-end mt-1 rounded-1" data-cpu-load></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <i class="fas fa-memory fa-3x"></i>
-                                    </div>
-                                    <div class="col-9">
-                                        <h6 class="card-title">{{ 'pteroca.server.memory'|trans }}</h6>
-                                        <p class="card-text">
-                                            <span class="placeholder col-12 float-end mt-1 rounded-1" data-memory></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <i class="fas fa-hard-drive fa-3x"></i>
-                                    </div>
-                                    <div class="col-9">
-                                        <h6 class="card-title">{{ 'pteroca.server.disk'|trans }}</h6>
-                                        <p class="card-text">
-                                            <span class="placeholder col-12 float-end mt-1 rounded-1" data-disk></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <i class="fas fa-cloud-arrow-down fa-3x"></i>
-                                    </div>
-                                    <div class="col-9">
-                                        <h6 class="card-title">{{ 'pteroca.server.network_inbound'|trans }}</h6>
-                                        <p class="card-text">
-                                            <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-inbound></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <i class="fas fa-cloud-arrow-up fa-3x"></i>
-                                    </div>
-                                    <div class="col-9">
-                                        <h6 class="card-title">{{ 'pteroca.server.network_outbound'|trans }}</h6>
-                                        <p class="card-text">
-                                            <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-outbound></span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'panel/server/tabs/console/components/charts.html.twig' %}
                 </div>
             </div>
+            {% include 'panel/server/tabs/console/components/stats.html.twig' %}
         </div>
     </div>
 {% endblock %}
 
 {% block body_javascript %}
-    <script src="{{ asset('assets/js/xterm.min.js') }}"></script>
+    <script src="{{ asset('assets/js/libraries/xterm.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             terminal.initializeWebsocket();
@@ -233,13 +109,22 @@
                 this.ws.send(JSON.stringify({ event: 'set state', args: [state] }));
             },
             loadStatisticsFromWebsocket: function(stats) {
-                const isOnline = stats.state !== 'offline';
+                const isOnline = stats.state !== 'offline',
+                    uptimeIcon = document.querySelector('[data-uptime-icon]');
+
+                uptimeIcon.classList.toggle('text-success', isOnline);
+                uptimeIcon.classList.toggle('text-danger', !isOnline);
+
                 this.updateStatisticValue('[data-disk]', `${this.parseBytesToBestFit(stats.disk_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverDetails.limits.disk }}'))}`);
                 this.updateStatisticValue('[data-uptime]', isOnline ? `${this.parseMillisecondsToHumanReadable(stats.uptime)}` : 'Offline');
                 this.updateStatisticValue('[data-memory]', isOnline ? `${this.parseBytesToBestFit(stats.memory_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverDetails.limits.memory }}'))}` : 'Offline');
                 this.updateStatisticValue('[data-cpu-load]', isOnline ? `${this.parseToPercentage(stats.cpu_absolute)}% / {{ serverDetails.limits.cpu }}%` : 'Offline');
                 this.updateStatisticValue('[data-network-inbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.rx_bytes)}` : 'Offline');
                 this.updateStatisticValue('[data-network-outbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.tx_bytes)}` : 'Offline');
+
+                addChartData(cpuLoadChart, new Date().toLocaleTimeString(), this.parseToPercentage(stats.cpu_absolute));
+                addChartData(memoryChart, new Date().toLocaleTimeString(), stats.memory_bytes / 1024 / 1024);
+                addChartData(networkChart, new Date().toLocaleTimeString(), stats.network.rx_bytes / 1024);
             },
             updateStatisticValue(selector, value) {
                 const element = document.querySelector(selector);
@@ -262,7 +147,7 @@
                 return value * 1024 * 1024;
             },
             parseToPercentage: function(value) {
-                return (value / 100).toFixed(2);
+                return value.toFixed(2);
             },
             parseMillisecondsToHumanReadable: function(milliseconds) {
                 const seconds = Math.floor(milliseconds / 1000);

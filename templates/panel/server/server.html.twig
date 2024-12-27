@@ -1,6 +1,8 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content_title %}{{ 'pteroca.server.title'|trans }}{% endblock %}
+{% block content_title %}
+    {{ pterodactylServer.name ?? 'pteroca.server.title'|trans }}
+{% endblock %}
 
 {% block page_actions %}
     <a class="btn btn-secondary" href="{{ path('panel') }}">

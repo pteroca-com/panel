@@ -6,7 +6,7 @@
             </div>
             {% for key, variable in pterodactylServer.get('relationships')['variables'].toArray() %}
                 {% if productEggConfiguration.variables[variable.attributes.id].user_viewable is defined %}
-                    <div class="col-6">
+                    <div class="col-12 col-xl-6">
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="card-title">
