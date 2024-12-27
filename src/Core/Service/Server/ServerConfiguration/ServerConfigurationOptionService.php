@@ -8,7 +8,8 @@ use App\Core\Service\Pterodactyl\PterodactylService;
 class ServerConfigurationOptionService extends AbstractServerConfiguration
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylService                $pterodactylService,
+        private readonly ServerConfigurationStartupService $serverConfigurationStartupService,
     ) {
         parent::__construct($this->pterodactylService);
     }
@@ -23,13 +24,11 @@ class ServerConfigurationOptionService extends AbstractServerConfiguration
         $serverDetails = $this->getServerDetails($server, ['egg']);
         $this->validateVariableValue($variableKey, $variableValue, $serverDetails);
 
-        $this->pterodactylService
-            ->getApi()
-            ->servers
-            ->updateStartup(
-                $server->getPterodactylServerId(),
-                $this->getStartupPayload($variableKey, $variableValue, $serverDetails),
-            );
+        $startupPayload = $this->serverConfigurationStartupService
+            ->getStartupPayload($variableKey, $variableValue, $serverDetails);
+
+        $this->serverConfigurationStartupService
+            ->updateServerStartup($server, $startupPayload);
     }
 
     private function mapVariableKey(string $variableKey): string
@@ -54,24 +53,5 @@ class ServerConfigurationOptionService extends AbstractServerConfiguration
                 throw new \Exception('Invalid image');
             }
         }
-    }
-
-    private function getStartupPayload(string $variableKey, string $variableValue, array $serverDetails): array
-    {
-        $preparedPayload = [
-            'startup' => $serverDetails['container']['startup_command'],
-            'egg' => $serverDetails['egg'],
-            'environment' => $serverDetails['container']['environment'],
-            'image' => $serverDetails['container']['image'],
-            'skip_scripts' => false,
-        ];
-
-        if (!isset($preparedPayload[$variableKey])) {
-            throw new \Exception('Invalid variable key');
-        }
-
-        $preparedPayload[$variableKey] = $variableValue;
-
-        return $preparedPayload;
     }
 }

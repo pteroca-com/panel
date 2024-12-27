@@ -241,6 +241,7 @@ pteroca:
       egg_variable_value: 'Value'
       egg_variable_user_viewable: 'User viewable'
       egg_variable_user_editable: 'User editable'
+      egg_allow_change: 'Allow to change egg with reinstallation'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'

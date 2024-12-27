@@ -100,6 +100,9 @@ class ProductCrudController extends AbstractPanelController
                 ->setRequired(true)
                 ->setFormTypeOption('attr', ['class' => 'nest-selector']),
             HiddenField::new('eggsConfiguration')->onlyOnForms(),
+            BooleanField::new('allowChangeEgg', $this->translator->trans('pteroca.crud.product.egg_allow_change'))
+                ->setRequired(false)
+                ->hideOnIndex(),
             ChoiceField::new('eggs', $this->translator->trans('pteroca.crud.product.eggs'))
                 ->setChoices(fn() => $this->getEggsChoices($nests))
                 ->allowMultipleChoices()

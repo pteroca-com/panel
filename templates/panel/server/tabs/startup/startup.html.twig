@@ -7,13 +7,16 @@
 
 {% block body_javascript %}
     <script>
-        function getSettingElement(settingName) {
-            const preparedSettingName = settingName.replace('_', '-');
+        function getSettingElement(settingName, isStartupOption = false) {
+            let preparedSettingName = settingName;
+            if (isStartupOption) {
+                preparedSettingName = preparedSettingName.replace('_', '-');
+            }
             return document.querySelector(`input[data-option-name="${preparedSettingName}"], select[data-option-name="${preparedSettingName}"]`);
         }
 
         function toggleSetting(settingName, isStartupOption = false) {
-            const element = getSettingElement(settingName),
+            const element = getSettingElement(settingName, isStartupOption),
                 icon = document.querySelector(`i[data-option-name="${settingName}"]`);
             icon.classList.toggle('fa-edit');
             icon.classList.toggle('fa-save');
@@ -35,7 +38,7 @@
         }
 
         function saveSetting(settingName, isStartupOption) {
-            const element = getSettingElement(settingName),
+            const element = getSettingElement(settingName, isStartupOption),
                 endpointUrl = !isStartupOption
                     ? '{{ path('server_startup_variable_update', { id: server.id }) }}'
                     : '{{ path('server_startup_option_update', { id: server.id }) }}';

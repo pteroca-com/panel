@@ -2,10 +2,12 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationOptionService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationVariableService;
+use App\Core\Service\Server\ServerConfiguration\ServerReinstallationService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -69,12 +71,25 @@ class ServerConfigurationController extends APIAbstractController
         return new JsonResponse();
     }
 
+    #[Route('/panel/api/server/{id}/reinstall', name: 'server_reinstall', methods: ['POST'])]
+    public function reinstallServer(
+        Request $request,
+        ServerReinstallationService $serverReinstallationService,
+        int $id,
+    ): JsonResponse
+    {
+        [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
+        $serverReinstallationService->reinstallServer($server, $variableData['key']);
+
+        return new JsonResponse();
+    }
+
     private function extractValidatedServerVariableData(Request $request, int $serverId): array
     {
         $server = $this->serverRepository->find($serverId);
         $variableData = $request->toArray();
-        $isDataValid = !empty($variableData['key']) && isset($variableData['value']);
-        $hasPermission = $server->getUser() === $this->getUser() || $this->isGranted('ROLE_ADMIN');
+        $isDataValid = isset($variableData['key']) && isset($variableData['value']);
+        $hasPermission = $server->getUser() === $this->getUser() || $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
 
         if (empty($server) || !$isDataValid || !$hasPermission) {
             throw new \Exception('Invalid data');

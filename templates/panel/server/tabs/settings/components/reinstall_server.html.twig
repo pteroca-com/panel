@@ -13,16 +13,20 @@
                             {{ 'pteroca.server.reinstall_server_hint'|trans }}
                         </div>
                     </div>
-                    <div class="col-12 mb-3">
-                        <label for="reinstall-server" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
-                        <select class="form-select" id="reinstall-server">
-                            {% for egg in availableNestEggs %}
-                                <option value="{{ egg.id }}">{{ egg.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    {% if availableNestEggs %}
+                        <div class="col-12 mb-3">
+                            <label for="reinstall-server-egg" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
+                            <select class="form-select" id="reinstall-server-egg">
+                                {% for egg in availableNestEggs %}
+                                    <option value="{{ egg.id }}" {% if pterodactylServer.egg == egg.id %}selected{% endif %}>
+                                        {{ egg.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
                     <div class="col-4">
-                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#reinstallServerModal">
+                        <button type="button" class="btn btn-danger w-100" onclick="reinstallServer()">
                             {{ 'pteroca.server.reinstall_server'|trans }}
                         </button>
                     </div>
@@ -30,4 +34,33 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        function reinstallServer() {
+            let confirmation = confirm('Are you sure you want to reinstall this server?');
+            if (!confirmation) {
+                return;
+            }
+
+            const eggId = document.getElementById('reinstall-server-egg')?.value ?? 0;
+            fetch('{{ path('server_reinstall', { id: server.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key: eggId,
+                    value: 0,
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    alert('An error occurred while reinstalling the server.');
+                } else {
+                    location.reload();
+                }
+            })
+        }
+    </script>
 {% endblock %}

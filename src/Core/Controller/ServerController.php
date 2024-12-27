@@ -84,8 +84,11 @@ class ServerController extends AbstractController
             $productEggConfiguration = [];
         }
 
+        if ($server->getProduct()->getAllowChangeEgg()) {
+            $availableNestEggs = $serverNestService->getServerAvailableEggs($server);
+        }
+
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
-        $availableNestEggs = $serverNestService->getNestEggs($server->getProduct()->getNest()); // todo load only if permitted to change egg
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,
@@ -96,7 +99,7 @@ class ServerController extends AbstractController
             'websocket' => $serverWebsocketService->establishWebsocketConnection($server),
             'productEggConfiguration' => $productEggConfiguration,
             'dockerImages' => $dockerImages,
-            'availableNestEggs' => $availableNestEggs,
+            'availableNestEggs' => $availableNestEggs ?? null,
         ]);
     }
 }

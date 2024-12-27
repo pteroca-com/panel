@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylService;
 
 class ServerNestService
@@ -19,5 +20,14 @@ class ServerNestService
             ->nest_eggs
             ->all($nestId)
             ->toArray();
+    }
+
+    public function getServerAvailableEggs(Server $server): array
+    {
+        $nestEggs = $this->getNestEggs($server->getProduct()->getNest());
+
+        return array_filter($nestEggs, function ($egg) use ($server) {
+            return in_array($egg->id, $server->getProduct()->getEggs());
+        });
     }
 }

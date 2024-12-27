@@ -70,6 +70,9 @@ class Product
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $eggsConfiguration = null;
 
+    #[ORM\Column(type: "boolean")]
+    private bool $allowChangeEgg = false;
+
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $imagePath = null;
 
@@ -91,8 +94,6 @@ class Product
     {
         $this->updatedAt = new \DateTime();
     }
-
-    // Gettery i settery dla każdej właściwości
 
     public function getId(): int
     {
@@ -282,6 +283,17 @@ class Product
     public function setEggsConfiguration(?string $eggsConfiguration): self
     {
         $this->eggsConfiguration = $eggsConfiguration;
+        return $this;
+    }
+
+    public function getAllowChangeEgg(): bool
+    {
+        return $this->allowChangeEgg;
+    }
+
+    public function setAllowChangeEgg(bool $allowChangeEgg): self
+    {
+        $this->allowChangeEgg = $allowChangeEgg;
         return $this;
     }
 
