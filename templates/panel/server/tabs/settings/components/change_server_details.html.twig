@@ -1,0 +1,77 @@
+{% block main %}
+    <div class="col-6">
+        <div class="card mb-4 h-100">
+            <div class="card-header">
+                <h5 class="card-title">
+                    {{ 'pteroca.server.change_server_details'|trans }}
+                    <a href="#" class="float-end toggle-server-details" onclick="toggleServerDetails()">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="server-name" class="form-label">{{ 'pteroca.server.server_name'|trans }}</label>
+                            <input type="text" class="form-control" id="server-name" value="{{ pterodactylServer.get('name') }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="server-description" class="form-label">{{ 'pteroca.server.server_description'|trans }}</label>
+                            <textarea class="form-control" id="server-description" rows="3" readonly>{{ pterodactylServer.get('description') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        function toggleServerDetails() {
+            const serverName = document.getElementById('server-name');
+            serverName.readOnly = !serverName.readOnly;
+            document.getElementById('server-description').readOnly = !document.getElementById('server-description').readOnly;
+
+            const icon = document.querySelector('.toggle-server-details i');
+            icon.classList.toggle('fa-edit');
+            icon.classList.toggle('fa-save');
+
+            if (!serverName.readOnly) {
+                serverName.focus();
+            } else {
+                saveServerDetails();
+            }
+        }
+
+        function saveServerDetails() {
+            const serverName = document.getElementById('server-name').value;
+            const serverDescription = document.getElementById('server-description').value;
+
+            if (serverName.length === 0) {
+                alert('Server name cannot be empty.');
+                return; // TODO translations
+            }
+
+            fetch('{{ path('server_details_update', { id: server.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key: serverName,
+                    value: serverDescription,
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    alert('An error occurred while saving the server details.');
+                    return;
+                }
+            }).catch(error => {
+                console.error(error);
+                alert('An error occurred while saving the server details.');
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,5 +1,10 @@
 {% block main %}
     <div class="tab-pane" id="settings">
-        ustawienia
+    <div class="row mb-4">
+        {% include 'panel/server/tabs/settings/components/sftp_details.html.twig' %}
+        {% include 'panel/server/tabs/settings/components/change_server_details.html.twig' %}
+    </div>
+    <div class="row">
+        {% include 'panel/server/tabs/settings/components/reinstall_server.html.twig' %}
     </div>
 {% endblock %}

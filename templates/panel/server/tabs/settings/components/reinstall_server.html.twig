@@ -1,0 +1,33 @@
+{% block main %}
+    <div class="col-6">
+        <div class="card mb-4 h-100">
+            <div class="card-header">
+                <h5 class="card-title">
+                    {{ 'pteroca.server.reinstall_server'|trans }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="alert alert-warning" role="alert">
+                            {{ 'pteroca.server.reinstall_server_hint'|trans }}
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="reinstall-server" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
+                        <select class="form-select" id="reinstall-server">
+                            {% for egg in availableNestEggs %}
+                                <option value="{{ egg.id }}">{{ egg.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#reinstallServerModal">
+                            {{ 'pteroca.server.reinstall_server'|trans }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

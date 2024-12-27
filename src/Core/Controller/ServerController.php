@@ -4,7 +4,9 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\Server;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\ServerNestService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,6 +42,8 @@ class ServerController extends AbstractController
         ServerWebsocketService $serverWebsocketService,
         ServerService $serverService,
         PterodactylService $pterodactylService,
+        PterodactylClientService $pterodactylClientService,
+        ServerNestService $serverNestService,
     ): Response
     {
         $this->checkPermission();
@@ -59,13 +63,20 @@ class ServerController extends AbstractController
             throw $this->createAccessDeniedException(); // TODO: Add message
         }
 
-        //dd($serverService->getServerDetails($server));
-
         // @TODO: move to service
         $pterodactylServer = $pterodactylService->getApi()->servers->get($server->getPterodactylServerId(), [
             'include' => ['variables', 'egg'],
         ]);
+        $pterodactylClientApi = $pterodactylClientService
+            ->getApi($server->getUser());
+        $pterodactylClientServer = $pterodactylClientApi
+            ->servers
+            ->get($server->getPterodactylServerIdentifier());
+        $pterodactylClientAccount = $pterodactylClientApi
+            ->account
+            ->details();
         $productEggsConfiguration = $server->getProduct()->getEggsConfiguration();
+
         try {
             $productEggsConfiguration = json_decode($productEggsConfiguration, true, 512, JSON_THROW_ON_ERROR);
             $productEggConfiguration = $productEggsConfiguration[$pterodactylServer->get('egg')] ?? [];
@@ -74,14 +85,18 @@ class ServerController extends AbstractController
         }
 
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
+        $availableNestEggs = $serverNestService->getNestEggs($server->getProduct()->getNest()); // todo load only if permitted to change egg
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,
             'serverDetails' => $serverService->getServerDetails($server),
             'pterodactylServer' => $pterodactylServer,
+            'pterodactylClientServer' => $pterodactylClientServer,
+            'pterodactylClientAccount' => $pterodactylClientAccount,
             'websocket' => $serverWebsocketService->establishWebsocketConnection($server),
             'productEggConfiguration' => $productEggConfiguration,
             'dockerImages' => $dockerImages,
+            'availableNestEggs' => $availableNestEggs,
         ]);
     }
 }

@@ -171,6 +171,17 @@ pteroca:
     read_only: 'Read only'
     default_options: 'Default options'
     variables: 'Variables'
+    sftp_details: 'SFTP Details'
+    sftp_server_address: 'Server address'
+    sftp_username: 'Username'
+    sftp_password_hint: 'The password is the same as the password you use to access this panel.'
+    sftp_launch: 'Launch SFTP'
+    change_server_details: 'Change Server Details'
+    server_name: 'Server name'
+    server_description: 'Server description'
+    reinstall_server: 'Reinstall Server'
+    reinstall_server_hint: 'Reinstalling your server will stop it, and then re-run the installation script that initially set it up. Some files may be deleted or modified during this process, please back up your data before continuing.'
+    select_software: 'Select software'
 
   actions:
     login: 'Login'
