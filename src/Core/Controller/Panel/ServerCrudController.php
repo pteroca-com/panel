@@ -58,11 +58,23 @@ class ServerCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
+        $manageServerAction = Action::new(
+            'manageServer',
+            $this->translator->trans('pteroca.crud.server.manage_server'),
+        )->linkToRoute('server', fn (Server $entity) => ['id' => $entity->getId()]);
+
         return $actions
             ->remove(Crud::PAGE_INDEX, Action::NEW)
-            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.server.save')))
+            ->update(
+                Crud::PAGE_EDIT,
+                Action::SAVE_AND_RETURN,
+                fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.server.save')),
+            )
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $manageServerAction)
+            ;
     }
 
     public function configureCrud(Crud $crud): Crud

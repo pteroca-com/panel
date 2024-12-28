@@ -14,11 +14,11 @@
                     <div class="col-12">
                         <div class="mb-3">
                             <label for="server-name" class="form-label">{{ 'pteroca.server.server_name'|trans }}</label>
-                            <input type="text" class="form-control" id="server-name" value="{{ pterodactylServer.get('name') }}" readonly>
+                            <input type="text" class="form-control" id="server-name" value="{{ pterodactylServer.get('name') }}" readonly minlength="1" maxlength="255">
                         </div>
                         <div class="mb-3">
                             <label for="server-description" class="form-label">{{ 'pteroca.server.server_description'|trans }}</label>
-                            <textarea class="form-control" id="server-description" rows="3" readonly>{{ pterodactylServer.get('description') }}</textarea>
+                            <textarea class="form-control" id="server-description" rows="3" readonly minlength="0" maxlength="255">{{ pterodactylServer.get('description') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -68,6 +68,8 @@
                     alert('An error occurred while saving the server details.');
                     return;
                 }
+
+                alert('Server details saved successfully.');
             }).catch(error => {
                 console.error(error);
                 alert('An error occurred while saving the server details.');

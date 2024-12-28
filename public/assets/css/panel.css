@@ -151,3 +151,15 @@ a:hover {
 .card-header {
     padding-top: 0.8rem;
 }
+
+input#command {
+    border-bottom: 0.13rem solid var(--primary-color);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    font-family: 'Fira Code', monospace, sans-serif;
+    padding: 5px;
+}
+
+.server-stats-row {
+    min-width: 300px;
+}

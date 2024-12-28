@@ -157,6 +157,7 @@ pteroca:
     start: 'Start'
     stop: 'Stop'
     restart: 'Restart'
+    kill: 'Kill'
     send: 'Send'
     address: 'Address'
     uptime: 'Uptime'
@@ -182,6 +183,7 @@ pteroca:
     reinstall_server: 'Reinstall Server'
     reinstall_server_hint: 'Reinstalling your server will stop it, and then re-run the installation script that initially set it up. Some files may be deleted or modified during this process, please back up your data before continuing.'
     select_software: 'Select software'
+    admin_view_warning: 'You are currently viewing this server as an administrator. Be careful with the changes you make, as they may affect the server and its users.'
 
   actions:
     login: 'Login'
@@ -253,6 +255,7 @@ pteroca:
       save: 'Save server'
       server: 'Server'
       servers: 'Servers'
+      manage_server: 'Manage server'
     setting:
       name: 'Setting name'
       value: 'Setting value'

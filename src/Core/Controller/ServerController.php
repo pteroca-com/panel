@@ -3,6 +3,7 @@
 namespace App\Core\Controller;
 
 use App\Core\Entity\Server;
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -59,7 +60,8 @@ class ServerController extends AbstractController
             throw $this->createNotFoundException(); // TODO: Add message
         }
 
-        if ($server->getUser() !== $this->getUser()) {
+        $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name) && $server->getUser() !== $this->getUser();
+        if ($server->getUser() !== $this->getUser() && !$isAdminView) {
             throw $this->createAccessDeniedException(); // TODO: Add message
         }
 
@@ -67,6 +69,7 @@ class ServerController extends AbstractController
         $pterodactylServer = $pterodactylService->getApi()->servers->get($server->getPterodactylServerId(), [
             'include' => ['variables', 'egg'],
         ]);
+        $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
         $pterodactylClientApi = $pterodactylClientService
             ->getApi($server->getUser());
         $pterodactylClientServer = $pterodactylClientApi
@@ -78,7 +81,12 @@ class ServerController extends AbstractController
         $productEggsConfiguration = $server->getProduct()->getEggsConfiguration();
 
         try {
-            $productEggsConfiguration = json_decode($productEggsConfiguration, true, 512, JSON_THROW_ON_ERROR);
+            $productEggsConfiguration = json_decode(
+                $productEggsConfiguration,
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            );
             $productEggConfiguration = $productEggsConfiguration[$pterodactylServer->get('egg')] ?? [];
         } catch (\Exception $e) {
             $productEggConfiguration = [];
@@ -87,8 +95,6 @@ class ServerController extends AbstractController
         if ($server->getProduct()->getAllowChangeEgg()) {
             $availableNestEggs = $serverNestService->getServerAvailableEggs($server);
         }
-
-        $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,
@@ -100,6 +106,36 @@ class ServerController extends AbstractController
             'productEggConfiguration' => $productEggConfiguration,
             'dockerImages' => $dockerImages,
             'availableNestEggs' => $availableNestEggs ?? null,
+            'isAdminView' => $isAdminView,
+            'hasConfigurableStartup' => $this->shouldShowStartupTab($server, $pterodactylServer->get('egg')),
         ]);
+    }
+
+    private function shouldShowStartupTab(Server $server, int $currentEgg): bool // TODO move to service
+    {
+        $productEggConfiguration = $server->getProduct()->getEggsConfiguration();
+        if (empty($productEggConfiguration)) {
+            return false;
+        }
+
+        try {
+            $productEggConfiguration = json_decode($productEggConfiguration, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        $currentEggConfiguration = $productEggConfiguration[$currentEgg] ?? [];
+        if (empty($currentEggConfiguration)) {
+            return false;
+        }
+
+        $hasConfigurableOptions = !empty(array_filter(array_values($currentEggConfiguration['options']), function ($configuration) {
+            return !empty($configuration['user_viewable']) && $configuration['user_viewable'] === 'on';
+        }));
+        $hasConfigurableVariables = !empty(array_filter(array_values($currentEggConfiguration['variables']), function ($configuration) {
+            return !empty($configuration['user_viewable']) && $configuration['user_viewable'] === 'on';
+        }));
+
+        return $hasConfigurableOptions || $hasConfigurableVariables;
     }
 }

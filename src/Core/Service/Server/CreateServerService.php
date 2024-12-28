@@ -11,6 +11,7 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
 use App\Core\Service\SettingService;
 use JsonException;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -30,6 +31,7 @@ class CreateServerService extends AbstractActionServerService
         private readonly ServerService $serverService,
         private readonly TranslatorInterface $translator,
         private readonly MessageBusInterface $messageBus,
+        private readonly ServerConfigurationDetailsService $serverConfigurationDetailsService,
         UserRepository $userRepository,
     ) {
         parent::__construct($userRepository, $pterodactylService);
@@ -39,6 +41,7 @@ class CreateServerService extends AbstractActionServerService
     {
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $user);
         $createdEntityServer = $this->createEntityServer($createdPterodactylServer, $product, $user);
+        $this->updateCreatedPterodactylServerDetails($createdEntityServer);
         $this->updateUserBalance($user, $product->getPrice());
         $this->sendBoughtConfirmationEmail($user, $product, $createdEntityServer);
         return $createdEntityServer;
@@ -67,8 +70,9 @@ class CreateServerService extends AbstractActionServerService
         }
 
         $bestAllocationId = $this->nodeSelectionService->getBestAllocationId($product);
+        $serverName = sprintf('%s [%s]', $product->getName(), $user->getEmail());
         $requestPayload = [
-            'name' => sprintf('%s [%s]', $product->getName(), $user->getEmail()),
+            'name' => $serverName,
             'user' => $user->getPterodactylUserId(),
             'egg' => $selectedEgg->get('id'),
             'docker_image' => $productEggConfiguration[$eggId]['options']['docker_image']['value'] ?? $selectedEgg->get('docker_image'),
@@ -100,6 +104,17 @@ class CreateServerService extends AbstractActionServerService
             $errors = implode(', ', $errors);
             throw new \Exception($errors);
         }
+    }
+
+    private function updateCreatedPterodactylServerDetails(Server $server): void
+    {
+        $serverName = sprintf(
+            '%s #%s',
+            $server->getProduct()->getName(),
+            $server->getPterodactylServerIdentifier()
+        );
+
+        $this->serverConfigurationDetailsService->updateServerDetails($server, $serverName, '');
     }
 
     private function createEntityServer(PterodactylServer $server, Product $product, User $user): Server

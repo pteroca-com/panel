@@ -140,39 +140,7 @@ function prepareEggTabContent(index, eggData) {
     tabContent.innerHTML += '<h5 class="mb-3 mt-4">' + loadedTranslations.variables + '</h5>';
     tabContent.innerHTML += generateVariablesTable(eggData?.relationships?.variables)
 
-    tabContent.innerHTML += '<h4 class="mb-4 mt-4">' + eggData.name + ' - ' + loadedTranslations.egg_information + '</h4>';
-    tabContent.innerHTML += '<div class="alert alert-info mb-4"><i class="fas fa-info-circle"></i> ' + loadedTranslations.alert + '</div>';
-    tabContent.innerHTML += generateTableFromObject(eggData);
     return tabContent;
-}
-
-function generateTableFromObject(data){
-    if (data === null || typeof data === "undefined") {
-        data = {};
-    }
-
-    const table = document.createElement('table'),
-        tbody = document.createElement('tbody');
-
-    table.className = 'table table-bordered table-striped';
-
-    for (const [key, value] of Object.entries(data)) {
-        let preparedValue = value;
-        if (typeof value === 'object') {
-            preparedValue = generateTableFromObject(value);
-        }
-        const tr = document.createElement('tr'),
-            th = document.createElement('th'),
-            td = document.createElement('td');
-        th.textContent = key;
-        td.innerHTML = preparedValue;
-        tr.appendChild(th);
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-    }
-
-    table.appendChild(tbody);
-    return table.outerHTML;
 }
 
 function generateVariablesTable(variables) {

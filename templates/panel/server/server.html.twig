@@ -11,11 +11,22 @@
 {% endblock %}
 
 {% block main %}
+    {% if isAdminView %}
+        <div class="container mt-4 mb-4">
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ 'pteroca.server.admin_view_warning'|trans }}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="container mt-4">
         {% include 'panel/server/tabs/navigation.html.twig' %}
         <div class="tab-content">
             {% include 'panel/server/tabs/console/console.html.twig' %}
-            {% include 'panel/server/tabs/startup/startup.html.twig' %}
+            {% if hasConfigurableStartup %}
+                {% include 'panel/server/tabs/startup/startup.html.twig' %}
+            {% endif %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}
         </div>
     </div>

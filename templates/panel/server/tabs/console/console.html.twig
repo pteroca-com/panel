@@ -18,13 +18,13 @@
                     <div class="col-12">
                         <div id="terminal"></div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 mt-2">
                         <div class="row">
-                            <div class="col-10">
-                                <input type="text" class="form-control mt-2" id="command" placeholder="{{ 'pteroca.server.command'|trans }}">
+                            <div class="col-10 d-flex justify-content-center align-items-center">
+                                <input type="text" class="form-control w-100 h-100" id="command" placeholder="> {{ 'pteroca.server.command'|trans }}" disabled>
                             </div>
-                            <div class="col-2">
-                                <button class="btn btn-primary mt-2 h-75 w-100" id="send-command">{{ 'pteroca.server.send'|trans }}</button>
+                            <div class="col-2 d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary w-100 h-100" id="send-command" disabled>{{ 'pteroca.server.send'|trans }}</button>
                             </div>
                         </div>
                     </div>
@@ -86,19 +86,29 @@
                                 color = isOffline ? terminal.colors.red : terminal.colors.green;
                             terminal.terminal.write('Server marked as: ' + color + serverStatus + terminal.colors.default + '\r\n');
                             terminal.currentServerState = serverStatus;
+                            terminal.toggleButtons(isOffline);
+                            terminal.toggleKillButton(serverStatus === 'stopping');
                             break;
                         case 'stats':
                             const parsedStats = JSON.parse(eventData.args);
                             terminal.currentServerState = parsedStats.state;
                             terminal.loadStatisticsFromWebsocket(parsedStats);
                             break;
+                        case 'token expiring':
+                            // TODO
+                            break;
+                        case 'token expired':
+                            // TODO
+                            break;
                     }
                 };
                 this.ws.onclose = function() {
                     terminal.terminal.write(terminal.colors.red + 'Connection to server console closed' + terminal.colors.default + '\r\n');
+                    terminal.toggleButtons(true);
                 };
                 this.ws.onerror = function(event) {
                     terminal.terminal.write(terminal.colors.red + 'Error connecting to server console' + terminal.colors.default + '\r\n');
+                    terminal.toggleButtons(true);
                 };
             },
             sendCommand: function(command) {
@@ -159,10 +169,12 @@
             },
             bindButtons: function() {
                 document.querySelector('#send-command').addEventListener('click', function() {
-                    const command = document.querySelector('#command');
-                    terminal.sendCommand(command.value);
-                    command.value = '';
+                    const commandInput = document.querySelector('#command');
+                    terminal.sendCommand(commandInput.value);
+                    commandInput.value = '';
                 });
+
+                this.toggleButtons(false);
 
                 document.querySelector('#server-start').addEventListener('click', function() {
                     terminal.sendState('start');
@@ -175,6 +187,18 @@
                 document.querySelector('#server-stop').addEventListener('click', function() {
                     terminal.sendState('stop');
                 });
+
+                document.querySelector('#server-kill').addEventListener('click', function() {
+                    terminal.sendState('kill');
+                });
+            },
+            toggleButtons(disabledState) {
+                document.querySelector('#send-command').disabled = disabledState;
+                document.querySelector('#command').disabled = disabledState;
+            },
+            toggleKillButton(show = true) {
+                document.querySelector('#server-stop').parentElement.classList.toggle('d-none', show);
+                document.querySelector('#server-kill').parentElement.classList.toggle('d-none', !show);
             }
         };
     </script>
