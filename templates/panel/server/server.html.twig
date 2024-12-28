@@ -1,7 +1,7 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
 {% block content_title %}
-    {{ pterodactylServer.name ?? 'pteroca.server.title'|trans }}
+    {{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }}
 {% endblock %}
 
 {% block page_actions %}
@@ -24,7 +24,7 @@
         {% include 'panel/server/tabs/navigation.html.twig' %}
         <div class="tab-content">
             {% include 'panel/server/tabs/console/console.html.twig' %}
-            {% if hasConfigurableStartup %}
+            {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
                 {% include 'panel/server/tabs/startup/startup.html.twig' %}
             {% endif %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}

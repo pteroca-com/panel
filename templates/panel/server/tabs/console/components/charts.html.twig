@@ -32,8 +32,8 @@
                 (value) => {
                     return value + 'MiB';
                 },
-                {{ pterodactylServer.limits.memory }},
-                {{ pterodactylServer.limits.memory / 2 }}
+                {{ serverData.pterodactylServer.limits.memory }},
+                {{ serverData.pterodactylServer.limits.memory / 2 }}
             ),
             networkChart = initChart(
                 document.getElementById('server-chart-network'),

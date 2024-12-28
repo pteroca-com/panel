@@ -4,7 +4,7 @@
             <li class="nav-item">
                 <a class="nav-link active" href="#console" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.console'|trans }}</a>
             </li>
-            {% if hasConfigurableStartup %}
+            {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
                 <li class="nav-item">
                     <a class="nav-link" href="#startup" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.startup'|trans }}</a>
                 </li>

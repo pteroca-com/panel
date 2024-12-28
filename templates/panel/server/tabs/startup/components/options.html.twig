@@ -1,16 +1,16 @@
 {% block main %}
-    {% if productEggConfiguration.options.startup.user_viewable is defined or productEggConfiguration.options.docker_image.user_viewable is defined %}
+    {% if serverData.productEggConfiguration.options.startup.user_viewable is defined or serverData.productEggConfiguration.options.docker_image.user_viewable is defined %}
         <div class="row">
             <div class="col-12">
                 <h3 class="mb-4">{{ 'pteroca.server.default_options'|trans }}</h3>
             </div>
-            {% if productEggConfiguration.options.startup.user_viewable is defined %}
+            {% if serverData.productEggConfiguration.options.startup.user_viewable is defined %}
                 <div class="col-12 col-xl-6">
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="card-title">
                                 {{ 'pteroca.server.startup_command'|trans }}
-                                {% if productEggConfiguration.options.startup.user_editable is not defined %}
+                                {% if serverData.productEggConfiguration.options.startup.user_editable is not defined %}
                                     <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
                                 {% else %}
                                     <a href="#" class="float-end" onclick="toggleSetting('startup', true)">
@@ -22,20 +22,20 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12">
-                                    <input type="text" class="form-control" data-option-name="startup" value="{{ pterodactylServer.get('container').startup_command }}" {% if productEggConfiguration.options.startup.user_editable is not defined %}disabled{% endif %} readonly>
+                                    <input type="text" class="form-control" data-option-name="startup" value="{{ serverData.pterodactylServer.container.startup_command }}" {% if serverData.productEggConfiguration.options.startup.user_editable is not defined %}disabled{% endif %} readonly>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             {% endif %}
-            {% if productEggConfiguration.options.docker_image.user_viewable is defined %}
+            {% if serverData.productEggConfiguration.options.docker_image.user_viewable is defined %}
                 <div class="col-12 col-xl-6">
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="card-title">
                                 {{ 'pteroca.server.docker_image'|trans }}
-                                {% if productEggConfiguration.options.docker_image.user_editable is not defined %}
+                                {% if serverData.productEggConfiguration.options.docker_image.user_editable is not defined %}
                                     <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
                                 {% else %}
                                     <a href="#" class="float-end" onclick="toggleSetting('docker_image', true)">
@@ -48,8 +48,8 @@
                             <div class="row">
                                 <div class="col-12">
                                     <select class="form-select" data-option-name="docker-image" disabled>
-                                        {% for dockerImageName, dockerImage in dockerImages %}
-                                            <option value="{{ dockerImage }}" {% if dockerImage == pterodactylServer.get('container')['image'] %}selected{% endif %}>{{ dockerImageName }} - {{ dockerImage }}</option>
+                                        {% for dockerImageName, dockerImage in serverData.dockerImages %}
+                                            <option value="{{ dockerImage }}" {% if dockerImage == serverData.pterodactylServer.container.image %}selected{% endif %}>{{ dockerImageName }} - {{ dockerImage }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>

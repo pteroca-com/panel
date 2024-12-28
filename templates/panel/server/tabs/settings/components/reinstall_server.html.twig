@@ -13,12 +13,12 @@
                             {{ 'pteroca.server.reinstall_server_hint'|trans }}
                         </div>
                     </div>
-                    {% if availableNestEggs %}
+                    {% if serverData.availableNestEggs %}
                         <div class="col-12 mb-3">
                             <label for="reinstall-server-egg" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
                             <select class="form-select" id="reinstall-server-egg">
-                                {% for egg in availableNestEggs %}
-                                    <option value="{{ egg.id }}" {% if pterodactylServer.egg == egg.id %}selected{% endif %}>
+                                {% for egg in serverData.availableNestEggs %}
+                                    <option value="{{ egg.id }}" {% if serverData.pterodactylServer.egg == egg.id %}selected{% endif %}>
                                         {{ egg.name }}
                                     </option>
                                 {% endfor %}
