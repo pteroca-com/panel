@@ -6,8 +6,6 @@ use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerDataService;
-use App\Core\Service\Server\ServerService;
-use App\Core\Service\Server\ServerWebsocketService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,24 +32,22 @@ class ServerController extends AbstractController
         ]);
     }
 
-    #[Route('/server', name: 'server', requirements: ['id' => '\d+'])]
+    #[Route('/server', name: 'server')]
     public function server(
         Request $request,
         ServerRepository $serverRepository,
-        ServerWebsocketService $serverWebsocketService,
-        ServerService $serverService,
         ServerDataService $serverDataService,
     ): Response
     {
         $this->checkPermission();
 
         $serverId = $request->get('id');
-        if (empty($serverId) || !is_numeric($serverId)) {
+        if (empty($serverId)) {
             throw $this->createNotFoundException(); // TODO: Add message
         }
 
         /** @var Server $server */
-        $server = $serverRepository->find($serverId);
+        $server = current($serverRepository->findBy(['pterodactylServerIdentifier' => $serverId]));
         if (empty($server)) {
             throw $this->createNotFoundException(); // TODO: Add message
         }
@@ -65,9 +61,7 @@ class ServerController extends AbstractController
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,
-            'serverDetails' => $serverService->getServerDetails($server),
             'serverData' => $serverData,
-            'websocket' => $serverWebsocketService->establishWebsocketConnection($server),
             'isAdminView' => $isAdminView,
         ]);
     }

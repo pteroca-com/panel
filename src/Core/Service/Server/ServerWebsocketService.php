@@ -12,7 +12,7 @@ class ServerWebsocketService
         private readonly PterodactylClientService $pterodactylService,
     ) {}
 
-    public function establishWebsocketConnection(Server $server): ?ServerWebsocketDTO
+    public function getWebsocketToken(Server $server): ?ServerWebsocketDTO
     {
         if ($server->getIsSuspended()) {
             return null;

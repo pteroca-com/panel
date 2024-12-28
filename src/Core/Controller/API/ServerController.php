@@ -2,10 +2,11 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Entity\Server;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerService;
+use App\Core\Service\Server\ServerWebsocketService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -13,26 +14,47 @@ class ServerController extends APIAbstractController
 {
     public function __construct(
         private readonly ServerService $serverService,
+        private readonly ServerRepository $serverRepository,
         private readonly TranslatorInterface $translator,
     ) {}
 
     #[Route('/panel/api/server/{id}/details', name: 'server_details', methods: ['GET'])]
     public function serverDetails(
-        ServerRepository $serverRepository,
         int $id,
     ): JsonResponse
     {
         // TODO: check if user has permission to access this server or if has admin role
 
-        $server = $serverRepository->find($id);
+        $server = $this->getServer($id);
+        $serverDetails = $this->serverService->getServerDetails($server);
+
+        return new JsonResponse($serverDetails);
+    }
+
+    #[Route('/panel/api/server/{id}/websocket', name: 'server_websocket_token', methods: ['GET'])]
+    public function serverWebsocketToken(
+        int $id,
+        ServerWebsocketService $serverWebsocketService,
+    ): JsonResponse
+    {
+        // TODO: check if user has permission to access this server or if has admin role
+
+        $server = $this->getServer($id);
+        $websocket = $serverWebsocketService->getWebsocketToken($server);
+
+        return new JsonResponse([
+            'token' => $websocket->getToken(),
+            'socket' => $websocket->getSocket(),
+        ]);
+    }
+
+    private function getServer(int $id): Server
+    {
+        $server = $this->serverRepository->find($id);
         if (empty($server)) {
-            return new JsonResponse(
-                ['error' => $this->translator->trans('pteroca.api.servers.not_found')],
-                Response::HTTP_NOT_FOUND
-            );
+            throw $this->createNotFoundException($this->translator->trans('pteroca.api.servers.not_found'));
         }
 
-        $serverDetails = $this->serverService->getServerDetails($server);
-        return new JsonResponse($serverDetails);
+        return $server;
     }
 }

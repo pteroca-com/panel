@@ -42,8 +42,11 @@
     <script src="{{ asset('assets/js/libraries/xterm.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            terminal.initializeWebsocket();
             terminal.initializeTerminal();
+            terminal.getWebsocketToken()
+                .then(data => {
+                    terminal.initializeWebsocket(data.token, data.socket);
+                });
         });
 
         const terminal = {
@@ -63,11 +66,14 @@
                 this.terminal = new Terminal();
                 this.terminal.open(document.getElementById('terminal'));
             },
-            initializeWebsocket: function() {
-                const websocketData = JSON.parse('{{ websocket.toArray()|json_encode|raw }}');
-                this.ws = new WebSocket(websocketData.socket);
+            getWebsocketToken() {
+                return fetch('{{ path('server_websocket_token', { id: server.id }) }}')
+                    .then(response => response.json());
+            },
+            initializeWebsocket: function(token, socket) {
+                this.ws = new WebSocket(socket);
                 this.ws.onopen = function() {
-                    terminal.ws.send(JSON.stringify({ event: 'auth', args: [websocketData.token] }));
+                    terminal.ws.send(JSON.stringify({ event: 'auth', args: [token] }));
                     terminal.ws.send(JSON.stringify({ event: 'send stats', args: [null]}));
                     terminal.ws.send(JSON.stringify({ event: 'send logs', args: [null]}));
 
@@ -95,10 +101,15 @@
                             terminal.loadStatisticsFromWebsocket(parsedStats);
                             break;
                         case 'token expiring':
-                            // TODO
+                            terminal.getWebsocketToken()
+                                .then(data => {
+                                    terminal.ws.send(JSON.stringify({ event: 'auth', args: [data.token] }));
+                                    terminal.ws.send(JSON.stringify({ event: 'send stats', args: [null]}));
+                                    terminal.ws.send(JSON.stringify({ event: 'send logs', args: [null]}));
+                                })
                             break;
                         case 'token expired':
-                            // TODO
+                            terminal.terminal.write(terminal.colors.red + 'Token expired, please refresh the page' + terminal.colors.default + '\r\n');
                             break;
                     }
                 };
@@ -125,10 +136,10 @@
                 uptimeIcon.classList.toggle('text-success', isOnline);
                 uptimeIcon.classList.toggle('text-danger', !isOnline);
 
-                this.updateStatisticValue('[data-disk]', `${this.parseBytesToBestFit(stats.disk_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverDetails.limits.disk }}'))}`);
+                this.updateStatisticValue('[data-disk]', `${this.parseBytesToBestFit(stats.disk_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverData.serverDetails.limits.disk }}'))}`);
                 this.updateStatisticValue('[data-uptime]', isOnline ? `${this.parseMillisecondsToHumanReadable(stats.uptime)}` : 'Offline');
-                this.updateStatisticValue('[data-memory]', isOnline ? `${this.parseBytesToBestFit(stats.memory_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverDetails.limits.memory }}'))}` : 'Offline');
-                this.updateStatisticValue('[data-cpu-load]', isOnline ? `${this.parseToPercentage(stats.cpu_absolute)}% / {{ serverDetails.limits.cpu }}%` : 'Offline');
+                this.updateStatisticValue('[data-memory]', isOnline ? `${this.parseBytesToBestFit(stats.memory_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverData.serverDetails.limits.memory }}'))}` : 'Offline');
+                this.updateStatisticValue('[data-cpu-load]', isOnline ? `${this.parseToPercentage(stats.cpu_absolute)}% / {{ serverData.serverDetails.limits.cpu }}%` : 'Offline');
                 this.updateStatisticValue('[data-network-inbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.rx_bytes)}` : 'Offline');
                 this.updateStatisticValue('[data-network-outbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.tx_bytes)}` : 'Offline');
 

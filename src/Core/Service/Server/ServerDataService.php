@@ -13,6 +13,7 @@ class ServerDataService
         private readonly PterodactylService $pterodactylService,
         private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerNestService $serverNestService,
+        private readonly ServerService $serverService,
     )
     {
     }
@@ -58,6 +59,7 @@ class ServerDataService
         );
 
         return new ServerDataDTO(
+            $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
             $dockerImages,
             $pterodactylClientServer->toArray(),

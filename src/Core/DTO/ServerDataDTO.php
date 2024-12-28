@@ -5,6 +5,7 @@ namespace App\Core\DTO;
 class ServerDataDTO
 {
     public function __construct(
+        public array $serverDetails,
         public array $pterodactylServer,
         public array $dockerImages,
         public array $pterodactylClientServer,

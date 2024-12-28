@@ -1,11 +1,18 @@
 {% block main %}
-    <div class="tab-pane" id="startup">
-        {% include 'panel/server/tabs/startup/components/options.html.twig' %}
-        {% include 'panel/server/tabs/startup/components/variables.html.twig' %}
-    </div>
+    {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
+        <div class="tab-pane" id="startup">
+            {% if serverData.hasConfigurableOptions %}
+                {% include 'panel/server/tabs/startup/components/options.html.twig' %}
+            {% endif %}
+            {% if serverData.hasConfigurableVariables %}
+                {% include 'panel/server/tabs/startup/components/variables.html.twig' %}
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block body_javascript %}
+    {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
     <script>
         function getSettingElement(settingName, isStartupOption = false) {
             let preparedSettingName = settingName;
@@ -68,4 +75,5 @@
             throw new Error(message);
         }
     </script>
+    {% endif %}
 {% endblock %}
