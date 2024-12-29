@@ -2,7 +2,7 @@
     <div class="tab-pane" id="activity">
         <div class="row pt-3">
             <div class="col-12 mb-3">
-                <table class="table table-warning table-striped">
+                <table class="table table-striped">
                     <thead>
                     <tr>
                         <th>Akcja</th>
@@ -16,11 +16,9 @@
                         <tr>
                             <td>{{ ('pteroca.server_actions.' ~ log.actionId)|trans }}</td>
                             <td>
-                                <button
-                                        id="toggle-btn-{{ log.id }}"
-                                        class="btn btn-info"
-                                        onclick="toggleDetails('{{ log.id }}')">
-                                    Pokaż szczegóły
+                                <!-- @TODO translate -->
+                                <button id="toggle-btn-{{ log.id }}" class="btn btn-info" onclick="toggleDetails('{{ log.id }}')">
+                                    Show details
                                 </button>
                                 <pre id="log-details-{{ log.id }}" style="display:none;">
                                         {{ log.details|raw }}
@@ -38,10 +36,10 @@
                 <nav class="pager list-pagination-paginator first-page">
                     <ul class="pagination">
                         <li class="page-item {% if serverLogs.currentPage <= 1 %}disabled{% endif %}">
-                            <span class="page-link">«</span>
+                            <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page=1#activity">«</a>
                         </li>
                         <li class="page-item {% if serverLogs.currentPage <= 1 %}disabled{% endif %}">
-                            <span class="page-link">‹</span>
+                            <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage - 1 }}#activity" rel="back">‹</a>
                         </li>
 
                         {% if serverLogs.currentPage > 1 %}
@@ -89,10 +87,10 @@
 
             if (detailsElement.style.display === "none") {
                 detailsElement.style.display = "block";
-                buttonElement.innerText = "Zwiń szczegóły";
+                buttonElement.innerText = "Hide details"; // TODO translacje
             } else {
                 detailsElement.style.display = "none";
-                buttonElement.innerText = "Pokaż szczegóły";
+                buttonElement.innerText = "Show details"; // TODO translacje
             }
         }
 

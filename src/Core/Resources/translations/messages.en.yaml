@@ -185,6 +185,10 @@ pteroca:
     reinstall_server_hint: 'Reinstalling your server will stop it, and then re-run the installation script that initially set it up. Some files may be deleted or modified during this process, please back up your data before continuing.'
     select_software: 'Select software'
     admin_view_warning: 'You are currently viewing this server as an administrator. Be careful with the changes you make, as they may affect the server and its users.'
+    extend_server: 'Extend Server'
+    extend_server_expires: 'Your <strong>{{ productName }}</strong> server is currently set to expire on <strong>{{ expiresAt }}</strong>.'
+    extend_server_hint: 'You can extend the server by clicking the button below.'
+    extend_server_hint_2: 'The server will be extended for the selected period.'
 
   actions:
     login: 'Login'

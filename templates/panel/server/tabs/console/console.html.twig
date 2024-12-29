@@ -74,14 +74,16 @@
                 this.ws = new WebSocket(socket);
                 this.ws.onopen = function() {
                     terminal.ws.send(JSON.stringify({ event: 'auth', args: [token] }));
-                    terminal.ws.send(JSON.stringify({ event: 'send stats', args: [null]}));
-                    terminal.ws.send(JSON.stringify({ event: 'send logs', args: [null]}));
 
                     terminal.bindButtons();
                 };
                 this.ws.onmessage = function(event) {
                     const eventData = JSON.parse(event.data);
                     switch (eventData.event) {
+                        case 'auth success':
+                            terminal.ws.send(JSON.stringify({ event: 'send stats', args: [null]}));
+                            terminal.ws.send(JSON.stringify({ event: 'send logs', args: [null]}));
+                            break;
                         case 'console output':
                         case 'install output':
                             terminal.terminal.write(eventData.args.join(' ') + '\r\n');
@@ -104,8 +106,6 @@
                             terminal.getWebsocketToken()
                                 .then(data => {
                                     terminal.ws.send(JSON.stringify({ event: 'auth', args: [data.token] }));
-                                    terminal.ws.send(JSON.stringify({ event: 'send stats', args: [null]}));
-                                    terminal.ws.send(JSON.stringify({ event: 'send logs', args: [null]}));
                                 })
                             break;
                         case 'token expired':
