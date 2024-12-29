@@ -9,8 +9,8 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\LogService;
-use App\Core\Service\Pterodactyl\PterodactylService;
-use App\Core\Service\Pterodactyl\PterodactylUsernameService;
+use App\Core\Service\Pterodactyl\PterodactylAccountService;
+use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
 use App\Core\Service\SettingService;
 use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
@@ -22,7 +22,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class RegistrationService
 {
@@ -32,12 +31,12 @@ class RegistrationService
 
     public function __construct(
         private readonly UserPasswordHasherInterface $userPasswordHasher,
-        private readonly PterodactylService $pterodactylService,
-        private readonly PterodactylUsernameService $usernameService,
         private readonly UserRepository $userRepository,
         private readonly TranslatorInterface $translator,
         private readonly LogService $logService,
         private readonly SettingService $settingService,
+        private readonly PterodactylAccountService $pterodactylAccountService,
+        private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
         private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
     ) {
@@ -54,12 +53,19 @@ class RegistrationService
                 ->hashPassword($user, $plainPassword)
         );
         $user->setIsVerified(false);
-        $pterodactylAccount = $this->createPterodactylAccount($user, $plainPassword);
+
+        $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $plainPassword);
         $user->setPterodactylUserId($pterodactylAccount->id ?? null);
+
+        $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
+        $user->setPterodactylUserApiKey($pterodactylClientApiKey);
+
         $user->setRoles([UserRoleEnum::ROLE_USER->name]);
+
         $this->userRepository->save($user);
         $this->logService->logAction($user, LogActionEnum::USER_REGISTERED);
         $this->sendRegistrationEmail($user);
+
         return $user;
     }
 
@@ -97,25 +103,6 @@ class RegistrationService
         $user->setIsVerified(true);
         $this->userRepository->save($user);
         $this->logService->logAction($user, LogActionEnum::USER_VERIFY_EMAIL);
-    }
-
-    public function createPterodactylAccount(User $user, string $plainPassword): ?PterodactylUser
-    {
-        try {
-            $createdPterodactylUser = $this->pterodactylService->getApi()->users->create([
-                'email' => $user->getEmail(),
-                'username' => $this->usernameService->generateUsername($user->getEmail()),
-                'first_name' => $user->getName(),
-                'last_name' => $user->getSurname(),
-                'password' => $plainPassword,
-            ]);
-        } catch (\Exception $exception) {
-            $this->logger->error('Failed to create Pterodactyl account', [
-                'exception' => $exception,
-                'user' => $user,
-            ]);
-        }
-        return $createdPterodactylUser ?? null;
     }
 
     private function sendRegistrationEmail(User $user): void

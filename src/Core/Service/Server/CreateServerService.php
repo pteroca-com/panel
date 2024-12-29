@@ -143,7 +143,7 @@ class CreateServerService extends AbstractActionServerService
         return $environmentVariables;
     }
 
-    private function sendBoughtConfirmationEmail(User $user, Product $product, Server $server): void
+    private function sendBoughtConfirmationEmail(User $user, Product $product, Server $server): void // TODO wynieść do serwisu
     {
         $serverDetails = $this->serverService->getServerDetails($server);
         $emailMessage = new SendEmailMessage(

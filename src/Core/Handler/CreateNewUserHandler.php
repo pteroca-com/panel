@@ -5,7 +5,8 @@ namespace App\Core\Handler;
 use App\Core\Entity\User;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\UserRepository;
-use App\Core\Service\Authorization\RegistrationService;
+use App\Core\Service\Pterodactyl\PterodactylAccountService;
+use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CreateNewUserHandler implements HandlerInterface
@@ -17,7 +18,8 @@ class CreateNewUserHandler implements HandlerInterface
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UserRepository $userRepository,
-        private readonly RegistrationService $registrationService,
+        private readonly PterodactylAccountService $pterodactylAccountService,
+        private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
     ) {}
 
     public function handle(): void
@@ -36,9 +38,11 @@ class CreateNewUserHandler implements HandlerInterface
         $hashedPassword = $this->passwordHasher->hashPassword($user, $this->userPassword);
         $user->setPassword($hashedPassword);
 
-        $pterodactylAccount = $this->registrationService->createPterodactylAccount($user, $this->userPassword);
+        $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $this->userPassword);
         if (!empty($pterodactylAccount->id)) {
             $user->setPterodactylUserId($pterodactylAccount->id);
+            $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
+            $user->setPterodactylUserApiKey($pterodactylClientApiKey);
         }
 
         $this->userRepository->save($user);
