@@ -8,7 +8,7 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\RegistrationService;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Pterodactyl\PterodactylUsernameService;
 use App\Core\Service\SettingService;

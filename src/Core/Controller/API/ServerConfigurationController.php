@@ -2,8 +2,10 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationOptionService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationVariableService;
@@ -17,6 +19,7 @@ class ServerConfigurationController extends APIAbstractController
 {
     public function __construct(
         private readonly ServerRepository $serverRepository,
+        private readonly ServerLogService $serverLogService,
         private readonly TranslatorInterface $translator,
     ) {}
 
@@ -32,6 +35,13 @@ class ServerConfigurationController extends APIAbstractController
             $server,
             $variableData['key'],
             $variableData['value'],
+        );
+
+        $this->serverLogService->logServerAction(
+            $this->getUser(),
+            $server,
+            ServerLogActionEnum::CHANGE_STARTUP_VARIABLE,
+            $variableData,
         );
 
         return new JsonResponse();
@@ -51,6 +61,13 @@ class ServerConfigurationController extends APIAbstractController
             $variableData['value'],
         );
 
+        $this->serverLogService->logServerAction(
+            $this->getUser(),
+            $server,
+            ServerLogActionEnum::CHANGE_STARTUP_OPTION,
+            $variableData,
+        );
+
         return new JsonResponse();
     }
 
@@ -68,6 +85,13 @@ class ServerConfigurationController extends APIAbstractController
             $variableData['value'],
         );
 
+        $this->serverLogService->logServerAction(
+            $this->getUser(),
+            $server,
+            ServerLogActionEnum::CHANGE_DETAILS,
+            $variableData,
+        );
+
         return new JsonResponse();
     }
 
@@ -80,6 +104,13 @@ class ServerConfigurationController extends APIAbstractController
     {
         [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
         $serverReinstallationService->reinstallServer($server, $variableData['key']);
+
+        $this->serverLogService->logServerAction(
+            $this->getUser(),
+            $server,
+            ServerLogActionEnum::REINSTALL,
+            $variableData,
+        );
 
         return new JsonResponse();
     }

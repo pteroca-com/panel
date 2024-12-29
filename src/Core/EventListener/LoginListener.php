@@ -3,7 +3,7 @@
 namespace App\Core\EventListener;
 
 use App\Core\Enum\LogActionEnum;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;

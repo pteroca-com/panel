@@ -7,7 +7,7 @@ use App\Core\Enum\SettingTypeEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
 use App\Core\Service\LocaleService;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;

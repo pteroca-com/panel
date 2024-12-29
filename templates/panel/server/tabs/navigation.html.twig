@@ -1,17 +1,39 @@
 {% block main %}
     <div class="nav-tabs-custom form-tabs-tablist">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" href="#console" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.console'|trans }}</a>
+                <a class="nav-link active" href="#console" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.console'|trans }}</a>
             </li>
             {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#startup" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.startup'|trans }}</a>
+                    <a class="nav-link" href="#startup" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.startup'|trans }}</a>
                 </li>
             {% endif %}
             <li class="nav-item">
-                <a class="nav-link" href="#settings" data-bs-toggle="tab" data-tab="tab">{{ 'pteroca.server.settings'|trans }}</a>
+                <a class="nav-link" href="#settings" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.settings'|trans }}</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" href="#activity" data-bs-toggle="tab" aria-selected="true" role="tab">{{ 'pteroca.server.activity'|trans }}</a>
             </li>
         </ul>
     </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tabHash = window.location.hash;
+
+            if (tabHash) {
+                document.querySelector(`a[href="${tabHash}"]`).click();
+            }
+
+            document.querySelectorAll('.nav-tabs-custom a').forEach(function (element) {
+                element.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    window.location.hash = event.target.getAttribute('href');
+                });
+            });
+        });
+    </script>
 {% endblock %}

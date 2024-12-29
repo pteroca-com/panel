@@ -118,4 +118,9 @@ class Server
         $this->isSuspended = $isSuspended;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->pterodactylServerIdentifier;
+    }
 }

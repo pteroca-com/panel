@@ -4,7 +4,7 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;

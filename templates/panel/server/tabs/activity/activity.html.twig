@@ -1,0 +1,108 @@
+{% block main %}
+    <div class="tab-pane" id="activity">
+        <div class="row pt-3">
+            <div class="col-12 mb-3">
+                <table class="table table-warning table-striped">
+                    <thead>
+                    <tr>
+                        <th>Akcja</th>
+                        <th>Szczegóły</th>
+                        <th>Użytkownik</th>
+                        <th>Data</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for log in serverLogs.items %}
+                        <tr>
+                            <td>{{ ('pteroca.server_actions.' ~ log.actionId)|trans }}</td>
+                            <td>
+                                <button
+                                        id="toggle-btn-{{ log.id }}"
+                                        class="btn btn-info"
+                                        onclick="toggleDetails('{{ log.id }}')">
+                                    Pokaż szczegóły
+                                </button>
+                                <pre id="log-details-{{ log.id }}" style="display:none;">
+                                        {{ log.details|raw }}
+                                    </pre>
+                            </td>
+                            <td>{{ log.user.email }}</td>
+                            <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="list-pagination d-flex justify-content-end">
+                <nav class="pager list-pagination-paginator first-page">
+                    <ul class="pagination">
+                        <li class="page-item {% if serverLogs.currentPage <= 1 %}disabled{% endif %}">
+                            <span class="page-link">«</span>
+                        </li>
+                        <li class="page-item {% if serverLogs.currentPage <= 1 %}disabled{% endif %}">
+                            <span class="page-link">‹</span>
+                        </li>
+
+                        {% if serverLogs.currentPage > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage - 1 }}#activity">{{ serverLogs.currentPage - 1 }}</a>
+                            </li>
+                        {% endif %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ serverLogs.currentPage }}</span>
+                        </li>
+                        {% if serverLogs.totalPages > serverLogs.currentPage %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage + 1 }}#activity">{{ serverLogs.currentPage + 1 }}</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item {% if serverLogs.currentPage >= serverLogs.totalPages %}disabled{% endif %}">
+                            <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage + 1 }}#activity" rel="next">›</a>
+                        </li>
+                        <li class="page-item {% if serverLogs.currentPage >= serverLogs.totalPages %}disabled{% endif %}">
+                            <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.totalPages }}#activity">»</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block body_javascript %}
+    <script>
+        function formatJSON(json) {
+            try {
+                var parsedJSON = JSON.parse(json);
+                return JSON.stringify(parsedJSON, null, 2);
+            } catch (e) {
+                return json;
+            }
+        }
+
+        function toggleDetails(logId) {
+            var detailsElement = document.getElementById('log-details-' + logId);
+            var buttonElement = document.getElementById('toggle-btn-' + logId);
+
+            if (detailsElement.style.display === "none") {
+                detailsElement.style.display = "block";
+                buttonElement.innerText = "Zwiń szczegóły";
+            } else {
+                detailsElement.style.display = "none";
+                buttonElement.innerText = "Pokaż szczegóły";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            {% for log in serverLogs %}
+            var logDetails = document.getElementById('log-details-{{ log.id }}');
+            if (logDetails) {
+                logDetails.innerText = formatJSON(logDetails.innerText);
+            }
+            {% endfor %}
+        });
+    </script>
+{% endblock %}

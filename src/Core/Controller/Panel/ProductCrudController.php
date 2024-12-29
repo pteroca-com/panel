@@ -5,7 +5,7 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Product;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;

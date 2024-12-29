@@ -154,6 +154,7 @@ pteroca:
     console: 'Console'
     startup: 'Startup'
     settings: 'Configuration'
+    activity: 'Activity'
     start: 'Start'
     stop: 'Stop'
     restart: 'Restart'
@@ -197,6 +198,12 @@ pteroca:
     entity_delete: 'Entity deleted'
     user_registered: 'User registered'
     user_verify_email: 'Email verified'
+
+  server_actions:
+    change_details: 'Changed server details'
+    reinstall: 'Reinstalled server'
+    change_startup_option: 'Changed startup option'
+    change_startup_variable: 'Changed startup variable'
 
   crud:
     category:
@@ -325,11 +332,14 @@ pteroca:
     log:
       log: 'Log'
       logs: 'Logs'
+      server_log: 'Server log'
+      server_logs: 'Server logs'
       action: 'Action'
       details: 'Details'
       created_at: 'Created at'
       user: 'User'
       ip_address: 'IP address'
+      server: 'Server'
     menu:
       menu: 'Menu'
       dashboard: 'Dashboard'
@@ -345,6 +355,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Payments'
       logs: 'Logs'
+      server_logs: 'Server logs'
       overview: 'Overview'
 
   api:

@@ -5,6 +5,7 @@ namespace App\Core\Controller;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Server\ServerDataService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,11 +38,13 @@ class ServerController extends AbstractController
         Request $request,
         ServerRepository $serverRepository,
         ServerDataService $serverDataService,
+        ServerLogService $serverLogService,
     ): Response
     {
         $this->checkPermission();
 
         $serverId = $request->get('id');
+        $currentPage = $request->get('page', 1);
         if (empty($serverId)) {
             throw $this->createNotFoundException(); // TODO: Add message
         }
@@ -63,6 +66,7 @@ class ServerController extends AbstractController
             'server' => $server,
             'serverData' => $serverData,
             'isAdminView' => $isAdminView,
+            'serverLogs' => $serverLogService->getServerLogsWithPagination($server, $currentPage),
         ]);
     }
 }

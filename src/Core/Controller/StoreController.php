@@ -4,7 +4,7 @@ namespace App\Core\Controller;
 
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Authorization\UserVerificationService;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerService;
