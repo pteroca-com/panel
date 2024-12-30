@@ -37,7 +37,7 @@ class ServerLogCrudController extends AbstractPanelController
             IdField::new('id')->hideOnForm(),
             TextField::new('actionId', $this->translator->trans('pteroca.crud.log.action'))
                 ->setDisabled()
-            ->formatValue(fn ($value) => $this->translator->trans('pteroca.actions.' . $value)),
+            ->formatValue(fn ($value) => $this->translator->trans('pteroca.server_actions.' . $value)),
             CodeEditorField::new('details', $this->translator->trans('pteroca.crud.log.details'))
                 ->setDisabled()
                 ->formatValue(fn ($value) => $value === '[]' ? '' : json_encode(json_decode($value), JSON_PRETTY_PRINT)),
