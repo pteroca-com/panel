@@ -1,4 +1,5 @@
 parameters:
+  version: '0.3.0'
   categories_base_path: '/uploads/categories'
   categories_directory: 'public/uploads/categories'
   products_base_path: '/uploads/products'
@@ -25,7 +26,13 @@ services:
 
   App\Core\Twig\AppExtension:
     tags: [ 'twig.extension' ]
+    arguments:
+      $currentVersion: '%version%'
 
   App\Core\Service\System\SystemInformationService:
     arguments:
       $entityManager: '@doctrine.orm.entity_manager'
+
+  App\Core\Service\System\SystemVersionService:
+    arguments:
+      $currentVersion: '%version%'

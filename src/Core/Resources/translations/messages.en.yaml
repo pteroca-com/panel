@@ -374,3 +374,5 @@ pteroca:
       project_site: 'Project site'
       documentation: 'Documentation'
       support: 'Support'
+      up_to_date: 'Up to date'
+      update_available: 'Update available'
