@@ -43,7 +43,9 @@
                                 <option value="{{ egg.id }}">{{ egg.name }}</option>
                             {% endfor %}
                         </select>
-                        <small class="form-text text-muted"><i class="fas fa-info-circle"></i> {{ 'pteroca.product.egg_hint'|trans }}</small>
+                        {% if product.allowChangeEgg %}
+                            <small class="form-text text-muted"><i class="fas fa-info-circle"></i> {{ 'pteroca.product.egg_hint'|trans }}</small>
+                        {% endif %}
                     </div>
                     {% if not isProductAvailable %}
                         <div class="mb-3">
