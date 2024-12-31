@@ -109,6 +109,9 @@ pteroca:
     order_now: 'Ordina ora'
     not_available: 'Il prodotto non è attualmente disponibile.'
     not_enough_balance: 'Non hai abbastanza saldo sul tuo account.'
+    product_information: 'Informazioni sul prodotto'
+    name: 'Nome del prodotto'
+    description: 'Descrizione del prodotto'
 
   store:
     title: 'Negozio'
@@ -132,6 +135,10 @@ pteroca:
     current_expiration: 'Data di scadenza attuale'
     renew_now: 'Rinnova ora'
     ip_address: 'Indirizzo IP del server'
+    server_information: 'Informazioni sul server'
+    server_name: 'Nome del server'
+    server_description: 'Descrizione del server'
+    server_current_software: 'Software attuale'
 
   servers:
     title: 'Server'

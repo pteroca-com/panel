@@ -109,6 +109,9 @@ pteroca:
     order_now: 'Замовити зараз'
     not_available: 'Продукт наразі недоступний.'
     not_enough_balance: 'Недостатньо коштів на рахунку.'
+    product_information: 'Інформація про продукт'
+    name: 'Назва продукту'
+    description: 'Опис продукту'
 
   store:
     title: 'Магазин'
@@ -132,6 +135,10 @@ pteroca:
     current_expiration: 'Поточна дата закінчення'
     renew_now: 'Продовжити зараз'
     ip_address: 'IP-адреса сервера'
+    server_information: 'Інформація про сервер'
+    server_name: 'Назва сервера'
+    server_description: 'Опис сервера'
+    server_current_software: 'Поточне програмне забезпечення'
 
   servers:
     title: 'Сервери'

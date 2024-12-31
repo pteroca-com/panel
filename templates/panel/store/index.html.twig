@@ -14,17 +14,20 @@
             {% set row = 0 %}
             {% for product in products %}
                 {% set row = row + 1 %}
-                {% if row == 0 %}
+                {% if row == 1 or row % 3 == 1 %}
                     <div class="row">
                 {% endif %}
+
                 <div class="col-md-4 mb-4">
                     {% include 'panel/store/components/product.html.twig' with { 'product': product } %}
                 </div>
+
                 {% if row % 3 == 0 %}
                     </div>
                 {% endif %}
             {% endfor %}
         {% endif %}
+
 
         {% if categories|length > 0 %}
             {% set row = 0 %}

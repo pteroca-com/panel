@@ -135,3 +135,9 @@ a:hover {
     background-size: cover;
     border-radius: 7px;
 }
+
+.product-image {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+}
