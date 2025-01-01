@@ -189,6 +189,7 @@ pteroca:
     extend_server_expires: 'Your <strong>{{ productName }}</strong> server is currently set to expire on <strong>{{ expiresAt }}</strong>.'
     extend_server_hint: 'You can extend the server by clicking the button below.'
     extend_server_hint_2: 'The server will be extended for the selected period.'
+    no_activity_logs: 'There are no activity logs for this server yet.'
 
   actions:
     login: 'Login'
