@@ -149,6 +149,48 @@ pteroca:
     no_servers: 'У вас ще немає серверів.'
     click_to_buy: 'Натисніть тут, щоб купити сервер.'
 
+  server:
+    title: 'Управління сервером'
+    console: 'Консоль'
+    startup: 'Запуск'
+    settings: 'Налаштування'
+    activity: 'Активність'
+    start: 'Запустити'
+    stop: 'Зупинити'
+    restart: 'Перезапустити'
+    kill: 'Завершити'
+    send: 'Надіслати'
+    address: 'Адреса'
+    uptime: 'Час роботи'
+    cpu_load: 'Завантаження CPU'
+    memory: 'Пам''ять'
+    disk: 'Диск'
+    network_inbound: 'Вхідний трафік'
+    network_outbound: 'Вихідний трафік'
+    command: 'Команда'
+    startup_command: 'Команда запуску'
+    docker_image: 'Образ Docker'
+    read_only: 'Тільки для читання'
+    default_options: 'Параметри за замовчуванням'
+    variables: 'Змінні'
+    sftp_details: 'Деталі SFTP'
+    sftp_server_address: 'Адреса сервера'
+    sftp_username: 'Ім''я користувача'
+    sftp_password_hint: 'Пароль такий самий, як і пароль для доступу до цієї панелі.'
+    sftp_launch: 'Запустити SFTP'
+    change_server_details: 'Змінити деталі сервера'
+    server_name: 'Назва сервера'
+    server_description: 'Опис сервера'
+    reinstall_server: 'Перевстановити сервер'
+    reinstall_server_hint: 'Перевстановлення сервера зупинить його, а потім знову запустить скрипт встановлення, який спочатку його налаштував. Деякі файли можуть бути видалені або змінені під час цього процесу, будь ласка, зробіть резервну копію даних перед продовженням.'
+    select_software: 'Вибрати програмне забезпечення'
+    admin_view_warning: 'Ви зараз переглядаєте цей сервер як адміністратор. Будьте обережні з внесеними змінами, оскільки вони можуть вплинути на сервер та його користувачів.'
+    extend_server: 'Продовжити сервер'
+    extend_server_expires: 'Ваш сервер <strong>{{ productName }}</strong> наразі налаштований на завершення <strong>{{ expiresAt }}</strong>.'
+    extend_server_hint: 'Ви можете продовжити сервер, натиснувши кнопку нижче.'
+    extend_server_hint_2: 'Сервер буде продовжено на вибраний період.'
+    no_activity_logs: 'Ще немає журналів активності для цього сервера.'
+
   actions:
     login: 'Вхід'
     logout: 'Вихід'
@@ -161,6 +203,12 @@ pteroca:
     entity_delete: 'Видалено сутність'
     user_registered: 'Реєстрація облікового запису'
     user_verify_email: 'Підтвердження електронної пошти'
+
+  server_actions:
+    change_details: 'Змінено деталі сервера'
+    reinstall: 'Сервер перевстановлено'
+    change_startup_option: 'Змінено параметр запуску'
+    change_startup_variable: 'Змінено змінну запуску'
 
   crud:
     category:
@@ -199,6 +247,15 @@ pteroca:
       products: 'Продукти'
       egg_information: 'Інформація про egg'
       egg_options_you_can_edit: 'Ви можете редагувати наступні параметри у вашій панелі Pterodactyl.'
+      egg_variables: 'Змінні'
+      egg_configuration: 'Конфігурація'
+      egg_default_configuration: 'Типова конфігурація'
+      egg_variable_name: 'Назва'
+      egg_variable_description: 'Опис'
+      egg_variable_value: 'Значення'
+      egg_variable_user_viewable: 'Видиме для користувача'
+      egg_variable_user_editable: 'Редаговане користувачем'
+      egg_allow_change: 'Дозволити змінювати egg при перевстановленні'
     server:
       pterodactyl_server_id: 'ID сервера Pterodactyl'
       pterodactyl_server_identifier: 'Ідентифікатор сервера Pterodactyl'
@@ -210,6 +267,7 @@ pteroca:
       save: 'Зберегти сервер'
       server: 'Сервер'
       servers: 'Сервери'
+      manage_server: 'Керувати сервером'
     setting:
       name: 'Назва налаштування'
       value: 'Значення'
@@ -279,11 +337,14 @@ pteroca:
     log:
       log: 'Журнал'
       logs: 'Журнали'
+      server_log: 'Лог сервера'
+      server_logs: 'Логи сервера'
       action: 'Дія'
       details: 'Деталі'
       created_at: 'Створено'
       user: 'Користувач'
       ip_address: 'IP-адреса'
+      server: 'Сервер'
     menu:
       menu: 'Меню'
       dashboard: 'Панель'
@@ -299,6 +360,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Платежі'
       logs: 'Журнали'
+      server_logs: 'Логи сервера'
       overview: 'Огляд'
 
   api:

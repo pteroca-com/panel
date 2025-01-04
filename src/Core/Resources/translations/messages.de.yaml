@@ -149,6 +149,48 @@ pteroca:
     no_servers: 'Sie haben noch keine Server.'
     click_to_buy: 'Klicken Sie hier, um einen Server zu kaufen.'
 
+  server:
+    title: 'Serververwaltung'
+    console: 'Konsole'
+    startup: 'Start'
+    settings: 'Konfiguration'
+    activity: 'Aktivität'
+    start: 'Starten'
+    stop: 'Stoppen'
+    restart: 'Neustarten'
+    kill: 'Beenden'
+    send: 'Senden'
+    address: 'Adresse'
+    uptime: 'Betriebszeit'
+    cpu_load: 'CPU-Auslastung'
+    memory: 'Speicher'
+    disk: 'Festplatte'
+    network_inbound: 'Netzwerk eingehend'
+    network_outbound: 'Netzwerk ausgehend'
+    command: 'Befehl'
+    startup_command: 'Startbefehl'
+    docker_image: 'Docker-Image'
+    read_only: 'Schreibgeschützt'
+    default_options: 'Standardoptionen'
+    variables: 'Variablen'
+    sftp_details: 'SFTP-Details'
+    sftp_server_address: 'Serveradresse'
+    sftp_username: 'Benutzername'
+    sftp_password_hint: 'Das Passwort ist dasselbe wie das Passwort, das Sie für den Zugriff auf dieses Panel verwenden.'
+    sftp_launch: 'SFTP starten'
+    change_server_details: 'Serverdetails ändern'
+    server_name: 'Servername'
+    server_description: 'Serverbeschreibung'
+    reinstall_server: 'Server neu installieren'
+    reinstall_server_hint: 'Das Neuinstallieren Ihres Servers wird ihn stoppen und dann das Installationsskript erneut ausführen, das ihn ursprünglich eingerichtet hat. Einige Dateien können während dieses Vorgangs gelöscht oder geändert werden, bitte sichern Sie Ihre Daten, bevor Sie fortfahren.'
+    select_software: 'Software auswählen'
+    admin_view_warning: 'Sie sehen diesen Server derzeit als Administrator. Seien Sie vorsichtig mit den Änderungen, die Sie vornehmen, da sie den Server und seine Benutzer beeinflussen können.'
+    extend_server: 'Server verlängern'
+    extend_server_expires: 'Ihr <strong>{{ productName }}</strong>-Server läuft derzeit am <strong>{{ expiresAt }}</strong> ab.'
+    extend_server_hint: 'Sie können den Server verlängern, indem Sie auf die Schaltfläche unten klicken.'
+    extend_server_hint_2: 'Der Server wird für den ausgewählten Zeitraum verlängert.'
+    no_activity_logs: 'Es gibt noch keine Aktivitätsprotokolle für diesen Server.'
+
   actions:
     login: 'Login'
     logout: 'Logout'
@@ -161,6 +203,12 @@ pteroca:
     entity_delete: 'Entität gelöscht'
     user_registered: 'Benutzer registriert'
     user_verify_email: 'E-Mail-Adresse verifiziert'
+
+  server_actions:
+    change_details: 'Serverdetails geändert'
+    reinstall: 'Server neu installiert'
+    change_startup_option: 'Startoption geändert'
+    change_startup_variable: 'Startvariable geändert'
 
   crud:
     category:
@@ -199,6 +247,15 @@ pteroca:
       products: 'Produkte'
       egg_information: 'Informationen über das Egg'
       egg_options_you_can_edit: 'Sie können die folgenden Optionen in Ihrem Pterodactyl-Panel bearbeiten.'
+      egg_variables: 'Variablen'
+      egg_configuration: 'Konfiguration'
+      egg_default_configuration: 'Standardkonfiguration'
+      egg_variable_name: 'Name'
+      egg_variable_description: 'Beschreibung'
+      egg_variable_value: 'Wert'
+      egg_variable_user_viewable: 'Für Benutzer sichtbar'
+      egg_variable_user_editable: 'Vom Benutzer bearbeitbar'
+      egg_allow_change: 'Änderung des Eggs bei Neuinstallation zulassen'
     server:
       pterodactyl_server_id: 'Pterodactyl-Server-ID'
       pterodactyl_server_identifier: 'Pterodactyl-Server-Identifier'
@@ -210,6 +267,7 @@ pteroca:
       save: 'Server speichern'
       server: 'Server'
       servers: 'Server'
+      manage_server: 'Server verwalten'
     setting:
       name: 'Einstellungsname'
       value: 'Wert'
@@ -279,11 +337,14 @@ pteroca:
     log:
       log: 'Log'
       logs: 'Logs'
+      server_log: 'Server-Log'
+      server_logs: 'Server-Logs'
       action: 'Aktion'
       details: 'Details'
       created_at: 'Erstellt am'
       user: 'Benutzer'
       ip_address: 'IP-Adresse'
+      server: 'Server'
     menu:
       menu: 'Menü'
       dashboard: 'Dashboard'
@@ -299,6 +360,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Zahlungen'
       logs: 'Logs'
+      server_logs: 'Server-Logs'
       overview: 'Übersicht'
 
   api:

@@ -149,6 +149,48 @@ pteroca:
     no_servers: 'Nie masz jeszcze żadnych serwerów.'
     click_to_buy: 'Kliknij tutaj, aby kupić serwer.'
 
+  server:
+    title: 'Zarządzanie serwerem'
+    console: 'Konsola'
+    startup: 'Uruchomienie'
+    settings: 'Konfiguracja'
+    activity: 'Aktywność'
+    start: 'Start'
+    stop: 'Stop'
+    restart: 'Restart'
+    kill: 'Zabij'
+    send: 'Wyślij'
+    address: 'Adres'
+    uptime: 'Czas działania'
+    cpu_load: 'Obciążenie CPU'
+    memory: 'Pamięć'
+    disk: 'Dysk'
+    network_inbound: 'Ruch przychodzący'
+    network_outbound: 'Ruch wychodzący'
+    command: 'Komenda'
+    startup_command: 'Komenda startowa'
+    docker_image: 'Obraz Docker'
+    read_only: 'Tylko do odczytu'
+    default_options: 'Domyślne opcje'
+    variables: 'Zmienne'
+    sftp_details: 'Szczegóły SFTP'
+    sftp_server_address: 'Adres serwera'
+    sftp_username: 'Nazwa użytkownika'
+    sftp_password_hint: 'Hasło jest takie samo jak hasło używane do logowania do tego panelu.'
+    sftp_launch: 'Uruchom SFTP'
+    change_server_details: 'Zmień szczegóły serwera'
+    server_name: 'Nazwa serwera'
+    server_description: 'Opis serwera'
+    reinstall_server: 'Przeinstaluj serwer'
+    reinstall_server_hint: 'Przeinstalowanie serwera zatrzyma go, a następnie ponownie uruchomi skrypt instalacyjny, który go początkowo skonfigurował. Niektóre pliki mogą zostać usunięte lub zmodyfikowane podczas tego procesu, proszę wykonać kopię zapasową danych przed kontynuowaniem.'
+    select_software: 'Wybierz oprogramowanie'
+    admin_view_warning: 'Obecnie przeglądasz ten serwer jako administrator. Uważaj na wprowadzane zmiany, ponieważ mogą one wpłynąć na serwer i jego użytkowników.'
+    extend_server: 'Przedłuż serwer'
+    extend_server_expires: 'Twój serwer <strong>{{ productName }}</strong> jest obecnie ustawiony na wygaśnięcie <strong>{{ expiresAt }}</strong>.'
+    extend_server_hint: 'Możesz przedłużyć serwer, klikając poniższy przycisk.'
+    extend_server_hint_2: 'Serwer zostanie przedłużony na wybrany okres.'
+    no_activity_logs: 'Brak logów aktywności dla tego serwera.'
+
   actions:
     login: 'Logowanie'
     logout: 'Wylogowanie'
@@ -161,6 +203,12 @@ pteroca:
     entity_delete: 'Usunięcie encji'
     user_registered: 'Rejestracja konta'
     user_verify_email: 'Weryfikacja adresu e-mail'
+
+  server_actions:
+    change_details: 'Zmiana szczegółów serwera'
+    reinstall: 'Ponowna instalacja serwera'
+    change_startup_option: 'Zmiana opcji uruchamiania'
+    change_startup_variable: 'Zmiana zmiennej uruchamiania'
 
   crud:
     category:
@@ -199,6 +247,15 @@ pteroca:
       products: 'Produkty'
       egg_information: 'Informacje o eggu'
       egg_options_you_can_edit: 'Możesz edytować następujące opcje w panelu Pterodactyl.'
+      egg_variables: 'Zmienne'
+      egg_configuration: 'Konfiguracja'
+      egg_default_configuration: 'Domyślna konfiguracja'
+      egg_variable_name: 'Nazwa'
+      egg_variable_description: 'Opis'
+      egg_variable_value: 'Wartość'
+      egg_variable_user_viewable: 'Widoczne dla użytkownika'
+      egg_variable_user_editable: 'Edytowalne przez użytkownika'
+      egg_allow_change: 'Zezwól na zmianę egga przy reinstalacji'
     server:
       pterodactyl_server_id: 'ID serwera Pterodactyl'
       pterodactyl_server_identifier: 'Identyfikator serwera Pterodactyl'
@@ -210,6 +267,7 @@ pteroca:
       save: 'Zapisz serwer'
       server: 'Serwer'
       servers: 'Serwery'
+      manage_server: 'Zarządzaj serwerem'
     setting:
       name: 'Nazwa ustawienia'
       value: 'Wartość ustawienia'
@@ -279,11 +337,14 @@ pteroca:
     log:
       log: 'Log'
       logs: 'Logi'
+      server_log: 'Log serwera'
+      server_logs: 'Logi serwera'
       action: 'Akcja'
       details: 'Szczegóły'
       created_at: 'Utworzono'
       user: 'Użytkownik'
       ip_address: 'Adres IP'
+      server: 'Serwer'
     menu:
       menu: 'Menu'
       dashboard: 'Dashboard'
@@ -299,6 +360,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Płatności'
       logs: 'Logi'
+      server_logs: 'Logi serwera'
       overview: 'Przegląd'
 
   api:
