@@ -191,6 +191,17 @@ pteroca:
     extend_server_hint: 'Vous pouvez prolonger le serveur en cliquant sur le bouton ci-dessous.'
     extend_server_hint_2: 'Le serveur sera prolongé pour la période sélectionnée.'
     no_activity_logs: 'Il n''y a pas encore de journaux d''activité pour ce serveur.'
+    admin: 'Admin'
+    action: 'Action'
+    details: 'Détails'
+    user: 'Utilisateur'
+    date: 'Date'
+    show_details: 'Afficher les détails'
+    hide_details: 'Masquer les détails'
+    data_updated_successfully: 'Les données ont été mises à jour avec succès.'
+    data_update_error: 'Une erreur s''est produite lors de la mise à jour des données.'
+    server_name_required: 'Le nom du serveur est requis.'
+    are_you_sure: 'Êtes-vous sûr de vouloir faire cela?'
 
   actions:
     login: 'Connexion'

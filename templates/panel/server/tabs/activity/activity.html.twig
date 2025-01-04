@@ -6,10 +6,10 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>Akcja</th>
-                            <th>Szczegóły</th>
-                            <th>Użytkownik</th>
-                            <th>Data</th>
+                            <th>{{ 'pteroca.server.action'|trans }}</th>
+                            <th>{{ 'pteroca.server.details'|trans }}</th>
+                            <th>{{ 'pteroca.server.user'|trans }}</th>
+                            <th>{{ 'pteroca.server.date'|trans }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -17,9 +17,8 @@
                             <tr>
                                 <td>{{ ('pteroca.server_actions.' ~ log.actionId)|trans }}</td>
                                 <td>
-                                    <!-- @TODO translate -->
                                     <button id="toggle-btn-{{ log.id }}" class="btn btn-info" onclick="toggleDetails('{{ log.id }}')">
-                                        Show details
+                                        {{ 'pteroca.server.show_details'|trans }}
                                     </button>
                                     <pre id="log-details-{{ log.id }}" style="display:none;">
                                         {{ log.details|raw }}
@@ -27,7 +26,7 @@
                                 </td>
                                 <td>
                                     {% set isAdminLog = log.user.email != server.user.email and 'ROLE_ADMIN' in log.user.roles %}
-                                    {{ isAdminLog ? '<span class="badge bg-primary text-white">Admin</span>' : log.user.email }} <!-- TODO translacje -->
+                                    {{ isAdminLog ? '<span class="badge bg-primary text-white">' ~ ('pteroca.server.admin'|trans) ~'</span>' : log.user.email }}
                                 </td>
                                 <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
                             </tr>
@@ -99,10 +98,10 @@
 
             if (detailsElement.style.display === "none") {
                 detailsElement.style.display = "block";
-                buttonElement.innerText = "Hide details"; // TODO translacje
+                buttonElement.innerText = '{{ 'pteroca.server.hide_details'|trans }}';
             } else {
                 detailsElement.style.display = "none";
-                buttonElement.innerText = "Show details"; // TODO translacje
+                buttonElement.innerText = '{{ 'pteroca.server.show_details'|trans }}';
             }
         }
 

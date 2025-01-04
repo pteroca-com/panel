@@ -3,19 +3,18 @@
 namespace App\Core\Controller\API;
 
 use App\Core\Entity\Server;
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerController extends APIAbstractController
 {
     public function __construct(
         private readonly ServerService $serverService,
         private readonly ServerRepository $serverRepository,
-        private readonly TranslatorInterface $translator,
     ) {}
 
     #[Route('/panel/api/server/{id}/details', name: 'server_details', methods: ['GET'])]
@@ -23,8 +22,6 @@ class ServerController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        // TODO: check if user has permission to access this server or if has admin role
-
         $server = $this->getServer($id);
         $serverDetails = $this->serverService->getServerDetails($server);
 
@@ -37,8 +34,6 @@ class ServerController extends APIAbstractController
         ServerWebsocketService $serverWebsocketService,
     ): JsonResponse
     {
-        // TODO: check if user has permission to access this server or if has admin role
-
         $server = $this->getServer($id);
         $websocket = $serverWebsocketService->getWebsocketToken($server);
 
@@ -52,7 +47,11 @@ class ServerController extends APIAbstractController
     {
         $server = $this->serverRepository->find($id);
         if (empty($server)) {
-            throw $this->createNotFoundException($this->translator->trans('pteroca.api.servers.not_found'));
+            throw $this->createNotFoundException();
+        }
+
+        if ($server->getUser() !== $this->getUser() || !$this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
+            throw $this->createAccessDeniedException();
         }
 
         return $server;

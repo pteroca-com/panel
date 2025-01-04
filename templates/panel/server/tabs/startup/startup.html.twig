@@ -59,14 +59,13 @@
                     value: element.value,
                 }),
             }).then(response => {
-                // TODO set translations
                 if (!response.ok) {
-                   return handleError('Failed to save setting. Try again later.');
+                   return handleError('{{ 'pteroca.server.data_update_error'|trans }}');
                 }
 
-                alert('Setting saved successfully.');
+                alert('{{ 'pteroca.server.data_updated_successfully'|trans }}');
             }).catch(error => {
-                return handleError('Failed to save setting. Try again later.');
+                return handleError('{{ 'pteroca.server.data_update_error'|trans }}');
             });
         }
 

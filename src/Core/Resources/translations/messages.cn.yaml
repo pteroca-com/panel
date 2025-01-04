@@ -191,6 +191,17 @@ pteroca:
     extend_server_hint: '您可以通过点击下面的按钮来延长服务器。'
     extend_server_hint_2: '服务器将延长所选的时间段。'
     no_activity_logs: '此服务器尚无活动日志。'
+    admin: '管理员'
+    action: '操作'
+    details: '详情'
+    user: '用户'
+    date: '日期'
+    show_details: '显示详情'
+    hide_details: '隐藏详情'
+    data_updated_successfully: '数据已成功更新。'
+    data_update_error: '更新数据时出错。'
+    server_name_required: '服务器名称是必需的。'
+    are_you_sure: '你确定要这样做吗？'
 
   actions:
     login: '登录'

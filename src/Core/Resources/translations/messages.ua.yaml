@@ -191,6 +191,17 @@ pteroca:
     extend_server_hint: 'Ви можете продовжити сервер, натиснувши кнопку нижче.'
     extend_server_hint_2: 'Сервер буде продовжено на вибраний період.'
     no_activity_logs: 'Ще немає журналів активності для цього сервера.'
+    admin: 'Адмін'
+    action: 'Дія'
+    details: 'Деталі'
+    user: 'Користувач'
+    date: 'Дата'
+    show_details: 'Показати деталі'
+    hide_details: 'Приховати деталі'
+    data_updated_successfully: 'Дані успішно оновлено.'
+    data_update_error: 'Сталася помилка під час оновлення даних.'
+    server_name_required: 'Потрібна назва сервера.'
+    are_you_sure: 'Ви впевнені, що хочете це зробити?'
 
   actions:
     login: 'Вхід'

@@ -19,7 +19,7 @@
     <script>
         const cpuLoadChart = initChart(
             document.getElementById('server-chart-cpu-load'),
-            'CPU Load', // TODO Translate
+            '{{ 'pteroca.server.cpu_load'|trans }}',
             (value) => {
                 return value + '%';
             },
@@ -28,7 +28,7 @@
         ),
             memoryChart = initChart(
                 document.getElementById('server-chart-memory'),
-                'Memory',
+                '{{ 'pteroca.server.memory'|trans }}',
                 (value) => {
                     return value + 'MiB';
                 },
@@ -37,7 +37,7 @@
             ),
             networkChart = initChart(
                 document.getElementById('server-chart-network'),
-                'Network',
+                '{{ 'pteroca.server.network_inbound'|trans }}',
                 (value) => {
                     return value + 'KiB/s';
                 },

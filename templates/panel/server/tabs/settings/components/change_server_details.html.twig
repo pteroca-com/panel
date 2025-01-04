@@ -50,8 +50,8 @@
             const serverDescription = document.getElementById('server-description').value;
 
             if (serverName.length === 0) {
-                alert('Server name cannot be empty.');
-                return; // TODO translations
+                alert('{{ 'pteroca.server.server_name_required'|trans }}');
+                return;
             }
 
             fetch('{{ path('server_details_update', { id: server.id }) }}', {
@@ -65,14 +65,14 @@
                 })
             }).then(response => {
                 if (!response.ok) {
-                    alert('An error occurred while saving the server details.');
+                    alert('{{ 'pteroca.server.data_update_error'|trans }}');
                     return;
                 }
 
-                alert('Server details saved successfully.');
+                alert('{{ 'pteroca.server.data_updated_successfully'|trans }}');
             }).catch(error => {
                 console.error(error);
-                alert('An error occurred while saving the server details.');
+                alert('{{ 'pteroca.server.data_update_error'|trans }}');
             });
         }
     </script>

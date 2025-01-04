@@ -191,6 +191,17 @@ pteroca:
     extend_server_hint: 'Sie können den Server verlängern, indem Sie auf die Schaltfläche unten klicken.'
     extend_server_hint_2: 'Der Server wird für den ausgewählten Zeitraum verlängert.'
     no_activity_logs: 'Es gibt noch keine Aktivitätsprotokolle für diesen Server.'
+    admin: 'Admin'
+    action: 'Aktion'
+    details: 'Details'
+    user: 'Benutzer'
+    date: 'Datum'
+    show_details: 'Details anzeigen'
+    hide_details: 'Details verbergen'
+    data_updated_successfully: 'Daten wurden erfolgreich aktualisiert.'
+    data_update_error: 'Beim Aktualisieren der Daten ist ein Fehler aufgetreten.'
+    server_name_required: 'Servername ist erforderlich.'
+    are_you_sure: 'Sind Sie sicher, dass Sie dies tun möchten?'
 
   actions:
     login: 'Login'

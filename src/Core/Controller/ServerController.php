@@ -46,18 +46,18 @@ class ServerController extends AbstractController
         $serverId = $request->get('id');
         $currentPage = $request->get('page', 1);
         if (empty($serverId)) {
-            throw $this->createNotFoundException(); // TODO: Add message
+            throw $this->createNotFoundException();
         }
 
         /** @var Server $server */
         $server = current($serverRepository->findBy(['pterodactylServerIdentifier' => $serverId]));
         if (empty($server)) {
-            throw $this->createNotFoundException(); // TODO: Add message
+            throw $this->createNotFoundException();
         }
 
         $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name) && $server->getUser() !== $this->getUser();
         if ($server->getUser() !== $this->getUser() && !$isAdminView) {
-            throw $this->createAccessDeniedException(); // TODO: Add message
+            throw $this->createAccessDeniedException();
         }
 
         $serverData = $serverDataService->getServerData($server);

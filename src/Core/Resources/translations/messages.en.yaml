@@ -191,6 +191,18 @@ pteroca:
     extend_server_hint: 'You can extend the server by clicking the button below.'
     extend_server_hint_2: 'The server will be extended for the selected period.'
     no_activity_logs: 'There are no activity logs for this server yet.'
+    admin: 'Admin'
+    action: 'Action'
+    details: 'Details'
+    user: 'User'
+    date: 'Date'
+    show_details: 'Show details'
+    hide_details: 'Hide details'
+    data_updated_successfully: 'Data has been successfully updated.'
+    data_update_error: 'An error occurred while updating the data.'
+    server_name_required: 'Server name is required.'
+    are_you_sure: 'Are you sure you want to do this?'
+
 
   actions:
     login: 'Login'

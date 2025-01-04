@@ -39,7 +39,7 @@
 {% block body_javascript %}
     <script>
         function reinstallServer() {
-            let confirmation = confirm('Are you sure you want to reinstall this server?'); // TODO translate (other components too)
+            let confirmation = confirm('{{ 'pteroca.server.are_you_sure'|trans }}');
             if (!confirmation) {
                 return;
             }
@@ -56,7 +56,7 @@
                 })
             }).then(response => {
                 if (!response.ok) {
-                    alert('An error occurred while reinstalling the server.');
+                    alert('{{ 'pteroca.server.data_update_error'|trans }}');
                 } else {
                     location.reload();
                 }

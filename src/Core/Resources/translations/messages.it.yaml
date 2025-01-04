@@ -191,6 +191,17 @@ pteroca:
     extend_server_hint: 'Puoi estendere il server facendo clic sul pulsante qui sotto.'
     extend_server_hint_2: 'Il server sarà esteso per il periodo selezionato.'
     no_activity_logs: 'Non ci sono ancora registri di attività per questo server.'
+    admin: 'Admin'
+    action: 'Azione'
+    details: 'Dettagli'
+    user: 'Utente'
+    date: 'Data'
+    show_details: 'Mostra dettagli'
+    hide_details: 'Nascondi dettagli'
+    data_updated_successfully: 'Dati aggiornati con successo.'
+    data_update_error: 'Si è verificato un errore durante l''aggiornamento dei dati.'
+    server_name_required: 'Il nome del server è obbligatorio.'
+    are_you_sure: 'Sei sicuro di volerlo fare?'
 
   actions:
     login: 'Login'
