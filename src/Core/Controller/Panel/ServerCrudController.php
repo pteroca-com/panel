@@ -5,7 +5,7 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Logs\LogService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\UpdateServerService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -17,16 +17,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class ServerCrudController extends AbstractPanelController
 {
     public function __construct(
         LogService $logService,
-        private readonly PterodactylService $pterodactylService,
-        private readonly LoggerInterface $logger,
+        private readonly UpdateServerService $updateServerService,
         private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($logService);
@@ -61,7 +58,7 @@ class ServerCrudController extends AbstractPanelController
         $manageServerAction = Action::new(
             'manageServer',
             $this->translator->trans('pteroca.crud.server.manage_server'),
-        )->linkToRoute('server', fn (Server $entity) => ['id' => $entity->getId()]);
+        )->linkToRoute('server', fn (Server $entity) => ['id' => $entity->getPterodactylServerIdentifier()]);
 
         return $actions
             ->remove(Crud::PAGE_INDEX, Action::NEW)
@@ -101,35 +98,13 @@ class ServerCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        $pterodactylServer = $this->getPterodactylServerDetails($entityInstance->getPterodactylServerId());
-        if ($entityInstance->getIsSuspended() !== $pterodactylServer->suspended) {
-            if ($entityInstance->getIsSuspended()) {
-                $this->pterodactylService->getApi()->servers->suspend($entityInstance->getPterodactylServerId());
-            } else {
-                $this->pterodactylService->getApi()->servers->unsuspend($entityInstance->getPterodactylServerId());
-            }
-        }
+        $this->updateServerService->updateServer($entityInstance);
         parent::updateEntity($entityManager, $entityInstance);
     }
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        try {
-            $this->pterodactylService->getApi()->servers->delete($entityInstance->getPterodactylServerId());
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to delete pterodactyl server during deleting entity', [
-                'exception' => $e,
-                'serverId' => $entityInstance->getPterodactylServerId(),
-                'entityId' => $entityInstance->getId(),
-            ]);
-        }
+        $this->updateServerService->deleteServer($entityInstance);
         parent::deleteEntity($entityManager, $entityInstance);
-    }
-
-    private function getPterodactylServerDetails(int $serverId): PterodactylServer
-    {
-        /** @var PterodactylServer $server */
-        $server = $this->pterodactylService->getApi()->servers->get($serverId);
-        return $server;
     }
 }

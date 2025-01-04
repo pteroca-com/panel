@@ -171,6 +171,7 @@ pteroca:
     startup_command: 'Comando de inicialização'
     docker_image: 'Imagem Docker'
     read_only: 'Somente leitura'
+    admin_view: 'Visualização do administrador'
     default_options: 'Opções padrão'
     variables: 'Variáveis'
     sftp_details: 'Detalhes do SFTP'

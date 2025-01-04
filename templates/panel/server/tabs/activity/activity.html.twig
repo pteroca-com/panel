@@ -25,7 +25,10 @@
                                         {{ log.details|raw }}
                                     </pre>
                                 </td>
-                                <td>{{ log.user.email }}</td>
+                                <td>
+                                    {% set isAdminLog = log.user.email != server.user.email and 'ROLE_ADMIN' in log.user.roles %}
+                                    {{ isAdminLog ? '<span class="badge bg-primary text-white">Admin</span>' : log.user.email }} <!-- TODO translacje -->
+                                </td>
                                 <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
                             </tr>
                         {% endfor %}

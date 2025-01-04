@@ -171,6 +171,7 @@ pteroca:
     startup_command: '启动命令'
     docker_image: 'Docker镜像'
     read_only: '只读'
+    admin_view: '管理员视图'
     default_options: '默认选项'
     variables: '变量'
     sftp_details: 'SFTP详情'

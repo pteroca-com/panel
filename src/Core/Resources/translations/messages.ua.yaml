@@ -171,6 +171,7 @@ pteroca:
     startup_command: 'Команда запуску'
     docker_image: 'Образ Docker'
     read_only: 'Тільки для читання'
+    admin_view: 'Перегляд адміністратора'
     default_options: 'Параметри за замовчуванням'
     variables: 'Змінні'
     sftp_details: 'Деталі SFTP'

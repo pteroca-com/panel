@@ -5,26 +5,30 @@
                 <h3 class="mb-4">{{ 'pteroca.server.variables'|trans }}</h3>
             </div>
             {% for key, variable in serverData.pterodactylServer.relationships.variables.toArray() %}
-                {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_viewable is defined %}
+                {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_viewable is defined or isAdminView %}
                     <div class="col-12 col-xl-6">
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="card-title">
                                     {{ variable.attributes.name }}
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ variable.attributes.description }}"><i class="fas fa-xs fa-info-circle"></i></span>
                                     {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}
                                         <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
-                                    {% else %}
+                                    {% endif %}
+                                    {% if isAdminView %}
+                                        <span class="badge bg-warning text-white">{{ 'pteroca.server.admin_view'|trans }}</span>
+                                    {% endif %}
+                                    {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is defined or isAdminView %}
                                         <a href="#" class="float-end" onclick="toggleSetting('{{ variable.attributes.env_variable }}')">
                                             <i class="fas fa-edit" data-option-name="{{ variable.attributes.env_variable }}"></i>
                                         </a>
                                     {% endif %}
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ variable.attributes.description }}"><i class="fas fa-xs fa-info-circle"></i></span>
                                 </h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-12">
-                                        <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ serverData.productEggConfiguration.variables[variable.attributes.id].value }}" {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}disabled{% endif %} readonly>
+                                        <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ serverData.productEggConfiguration.variables[variable.attributes.id].value }}" {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
                                     </div>
                                 </div>
                             </div>
