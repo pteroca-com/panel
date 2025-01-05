@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block body_javascript %}
-    {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
+    {% if not server.isSuspended and (serverData.hasConfigurableOptions or serverData.hasConfigurableVariable) %}
     <script>
         function getSettingElement(settingName, isStartupOption = false) {
             let preparedSettingName = settingName;

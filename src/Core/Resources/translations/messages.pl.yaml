@@ -202,6 +202,13 @@ pteroca:
     data_update_error: 'Wystąpił błąd podczas aktualizacji danych.'
     server_name_required: 'Nazwa serwera jest wymagana.'
     are_you_sure: 'Czy na pewno chcesz to zrobić?'
+    suspended_expired_hint: 'Ten serwer został zawieszony w dniu {{ expireDate }} z powodu braku odnowienia. Aby przywrócić serwer, odnow go w zakładce konfiguracji.'
+    suspended_hint: 'Ten serwer został zawieszony.'
+    console_suspended_hint: 'Konsola jest niedostępna, ponieważ serwer został zawieszony.'
+    console_server_marked_as: 'Serwer został oznaczony jako:'
+    console_token_expired: 'Token konsoli wygasł. Proszę odświeżyć stronę.'
+    console_connection_closed: 'Połączenie z konsolą zostało zamknięte.'
+    console_connection_error: 'Wystąpił błąd podczas łączenia z konsolą.'
 
   actions:
     login: 'Logowanie'

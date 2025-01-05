@@ -82,7 +82,7 @@ class ServerConfigurationController extends APIAbstractController
         $serverConfigurationDetailsService->updateServerDetails(
             $server,
             $variableData['key'],
-            $variableData['value'],
+            $variableData['value'] ?? null,
         );
 
         $this->serverLogService->logServerAction(
@@ -119,7 +119,7 @@ class ServerConfigurationController extends APIAbstractController
     {
         $server = $this->serverRepository->find($serverId);
         $variableData = $request->toArray();
-        $isDataValid = isset($variableData['key']) && isset($variableData['value']);
+        $isDataValid = isset($variableData['key']);
         $hasPermission = $server->getUser() === $this->getUser() || $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
 
         if (empty($server) || !$isDataValid || !$hasPermission) {

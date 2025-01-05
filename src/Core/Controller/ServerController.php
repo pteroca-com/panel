@@ -55,7 +55,7 @@ class ServerController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name) && $server->getUser() !== $this->getUser();
+        $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
         if ($server->getUser() !== $this->getUser() && !$isAdminView) {
             throw $this->createAccessDeniedException();
         }

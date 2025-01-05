@@ -11,11 +11,23 @@
 {% endblock %}
 
 {% block main %}
-    {% if isAdminView %}
+    {% if isAdminView and app.user.email != server.user.email %}
         <div class="container mt-4 mb-4">
             <div class="alert alert-warning" role="alert">
                 <i class="fas fa-exclamation-triangle"></i>
                 {{ 'pteroca.server.admin_view_warning'|trans }}
+            </div>
+        </div>
+    {% endif %}
+    {% if server.isSuspended %}
+        <div class="container mt-4 mb-4">
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                {% if server.expiresAt|date("Y-m-d H:i:s") < "now"|date("Y-m-d H:i:s") %}
+                    {{ 'pteroca.server.suspended_expired_hint'|trans({ '{{ expireDate }}': server.expiresAt|date("Y-m-d H:i") }) }}
+                {% else %}
+                    {{ 'pteroca.server.suspended_hint'|trans }}
+                {% endif %}
             </div>
         </div>
     {% endif %}

@@ -38,8 +38,8 @@ class ServerController extends APIAbstractController
         $websocket = $serverWebsocketService->getWebsocketToken($server);
 
         return new JsonResponse([
-            'token' => $websocket->getToken(),
-            'socket' => $websocket->getSocket(),
+            'token' => $websocket?->getToken(),
+            'socket' => $websocket?->getSocket(),
         ]);
     }
 

@@ -202,6 +202,13 @@ pteroca:
     data_update_error: 'Beim Aktualisieren der Daten ist ein Fehler aufgetreten.'
     server_name_required: 'Servername ist erforderlich.'
     are_you_sure: 'Sind Sie sicher, dass Sie dies tun möchten?'
+    suspended_expired_hint: 'Dieser Server wurde am {{ expireDate }} gesperrt, weil er nicht verlängert wurde. Um den Server wiederherzustellen, verlängern Sie ihn im Konfigurationsbereich.'
+    suspended_hint: 'Dieser Server wurde gesperrt.'
+    console_suspended_hint: 'Die Konsole ist nicht verfügbar, da der Server gesperrt wurde.'
+    console_server_marked_as: 'Der Server wurde markiert als:'
+    console_token_expired: 'Das Konsolen-Token ist abgelaufen. Bitte aktualisieren Sie die Seite.'
+    console_connection_closed: 'Die Konsolenverbindung wurde geschlossen.'
+    console_connection_error: 'Beim Verbinden mit der Konsole ist ein Fehler aufgetreten.'
 
   actions:
     login: 'Login'

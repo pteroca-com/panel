@@ -4,9 +4,11 @@
             <div class="card-header">
                 <h5 class="card-title">
                     {{ 'pteroca.server.change_server_details'|trans }}
+                    {% if not server.isSuspended %}
                     <a href="#" class="float-end toggle-server-details" onclick="toggleServerDetails()">
                         <i class="fas fa-edit"></i>
                     </a>
+                    {% endif %}
                 </h5>
             </div>
             <div class="card-body">
@@ -28,7 +30,17 @@
 {% endblock %}
 
 {% block body_javascript %}
+    {% if not server.isSuspended %}
     <script>
+        let savedValues = getSavedValues();
+
+        function getSavedValues() {
+            return {
+                serverName: document.getElementById('server-name').value,
+                serverDescription: document.getElementById('server-description').value,
+            };
+        }
+
         function toggleServerDetails() {
             const serverName = document.getElementById('server-name');
             serverName.readOnly = !serverName.readOnly;
@@ -46,11 +58,13 @@
         }
 
         function saveServerDetails() {
-            const serverName = document.getElementById('server-name').value;
-            const serverDescription = document.getElementById('server-description').value;
+            const serverName = document.getElementById('server-name');
+            const serverDescription = document.getElementById('server-description');
 
-            if (serverName.length === 0) {
+            if (serverName.value.length === 0) {
                 alert('{{ 'pteroca.server.server_name_required'|trans }}');
+                serverName.value = savedValues.serverName;
+                serverDescription.value = savedValues.serverDescription;
                 return;
             }
 
@@ -60,12 +74,14 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    key: serverName,
-                    value: serverDescription,
+                    key: serverName.value,
+                    value: serverDescription.value,
                 })
             }).then(response => {
                 if (!response.ok) {
                     alert('{{ 'pteroca.server.data_update_error'|trans }}');
+                    serverName.value = savedValues.serverName;
+                    serverDescription.value = savedValues.serverDescription;
                     return;
                 }
 
@@ -73,7 +89,10 @@
             }).catch(error => {
                 console.error(error);
                 alert('{{ 'pteroca.server.data_update_error'|trans }}');
+                serverName.value = savedValues.serverName;
+                serverDescription.value = savedValues.serverDescription;
             });
         }
     </script>
+    {% endif %}
 {% endblock %}

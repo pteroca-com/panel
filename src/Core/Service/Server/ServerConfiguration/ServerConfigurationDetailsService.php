@@ -15,15 +15,18 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
         parent::__construct($this->pterodactylService);
     }
 
-    public function updateServerDetails(Server $server, string $serverName, string $serverDescription): void
+    public function updateServerDetails(Server $server, string $serverName, ?string $serverDescription): void
     {
-        $this->pterodactylClientService
-            ->getApi($server->getUser())
+        $pterodactylClientApi = $this->pterodactylClientService->getApi($server->getUser());
+        $pterodactylServer = $pterodactylClientApi->servers->get($server->getPterodactylServerIdentifier());
+        $description = $serverDescription ?? $pterodactylServer->get('description');
+
+        $pterodactylClientApi
             ->servers
             ->http
             ->post(sprintf('servers/%s/settings/rename', $server->getPterodactylServerIdentifier()), [
                 'name' => substr($serverName, 0, 255),
-                'description' => substr($serverDescription, 0, 255),
+                'description' => substr($description ?? '', 0, 255),
             ]);
     }
 }

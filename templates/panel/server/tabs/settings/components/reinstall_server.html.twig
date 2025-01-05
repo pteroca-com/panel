@@ -16,7 +16,7 @@
                     {% if serverData.availableNestEggs %}
                         <div class="col-12 mb-3">
                             <label for="reinstall-server-egg" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
-                            <select class="form-select" id="reinstall-server-egg">
+                            <select class="form-select" id="reinstall-server-egg" {% if server.isSuspended %}disabled{% endif %}>
                                 {% for egg in serverData.availableNestEggs %}
                                     <option value="{{ egg.id }}" {% if serverData.pterodactylServer.egg == egg.id %}selected{% endif %}>
                                         {{ egg.name }}
@@ -26,7 +26,7 @@
                         </div>
                     {% endif %}
                     <div class="col-4">
-                        <button type="button" class="btn btn-danger w-100" onclick="reinstallServer()">
+                        <button type="button" class="btn btn-danger w-100" {% if not server.isSuspended %}onclick="reinstallServer()"{% else %}disabled{% endif %}>
                             {{ 'pteroca.server.reinstall_server'|trans }}
                         </button>
                     </div>

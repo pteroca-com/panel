@@ -43,10 +43,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             terminal.initializeTerminal();
-            terminal.getWebsocketToken()
-                .then(data => {
-                    terminal.initializeWebsocket(data.token, data.socket);
-                });
+            {% if not server.isSuspended %}
+                terminal.getWebsocketToken()
+                    .then(data => {
+                        terminal.initializeWebsocket(data.token, data.socket);
+                    });
+            {% else %}
+                terminal.showSuspendedServerMessage();
+            {% endif %}
         });
 
         const terminal = {
@@ -70,6 +74,9 @@
                 return fetch('{{ path('server_websocket_token', { id: server.id }) }}')
                     .then(response => response.json());
             },
+            showSuspendedServerMessage() {
+                this.terminal.write(this.colors.red + '{{ 'pteroca.server.console_suspended_hint'|trans }}' + this.colors.default + '\r\n');
+            },
             initializeWebsocket: function(token, socket) {
                 this.ws = new WebSocket(socket);
                 this.ws.onopen = function() {
@@ -92,7 +99,7 @@
                             const serverStatus = eventData.args.join(' '),
                                 isOffline = serverStatus.includes('offline'),
                                 color = isOffline ? terminal.colors.red : terminal.colors.green;
-                            terminal.terminal.write('Server marked as: ' + color + serverStatus + terminal.colors.default + '\r\n');
+                            terminal.terminal.write('{{ 'pteroca.server.console_server_marked_as'|trans }} ' + color + serverStatus + terminal.colors.default + '\r\n');
                             terminal.currentServerState = serverStatus;
                             terminal.toggleButtons(isOffline);
                             terminal.toggleKillButton(serverStatus === 'stopping');
@@ -109,16 +116,16 @@
                                 })
                             break;
                         case 'token expired':
-                            terminal.terminal.write(terminal.colors.red + 'Token expired, please refresh the page' + terminal.colors.default + '\r\n');
+                            terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_token_expired'|trans }}' + terminal.colors.default + '\r\n');
                             break;
                     }
                 };
                 this.ws.onclose = function() {
-                    terminal.terminal.write(terminal.colors.red + 'Connection to server console closed' + terminal.colors.default + '\r\n');
+                    terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_connection_closed'|trans }}' + terminal.colors.default + '\r\n');
                     terminal.toggleButtons(true);
                 };
                 this.ws.onerror = function(event) {
-                    terminal.terminal.write(terminal.colors.red + 'Error connecting to server console' + terminal.colors.default + '\r\n');
+                    terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_connection_error'|trans }}' + terminal.colors.default + '\r\n');
                     terminal.toggleButtons(true);
                 };
             },

@@ -202,6 +202,13 @@ pteroca:
     data_update_error: '更新数据时出错。'
     server_name_required: '服务器名称是必需的。'
     are_you_sure: '你确定要这样做吗？'
+    suspended_expired_hint: '由于未续订，此服务器已于 {{ expireDate }} 被暂停。要恢复服务器，请在配置选项卡中续订。'
+    suspended_hint: '此服务器已被暂停。'
+    console_suspended_hint: '由于服务器已被暂停，控制台不可用。'
+    console_server_marked_as: '服务器已标记为：'
+    console_token_expired: '控制台令牌已过期。请刷新页面。'
+    console_connection_closed: '控制台连接已关闭。'
+    console_connection_error: '连接控制台时发生错误。'
 
   actions:
     login: '登录'

@@ -18,7 +18,7 @@
                                     {% if isAdminView %}
                                         <span class="badge bg-warning text-white">{{ 'pteroca.server.admin_view'|trans }}</span>
                                     {% endif %}
-                                    {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is defined or isAdminView %}
+                                    {% if not server.isSuspended and (serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is defined or isAdminView) %}
                                         <a href="#" class="float-end" onclick="toggleSetting('{{ variable.attributes.env_variable }}')">
                                             <i class="fas fa-edit" data-option-name="{{ variable.attributes.env_variable }}"></i>
                                         </a>

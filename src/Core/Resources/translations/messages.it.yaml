@@ -202,6 +202,13 @@ pteroca:
     data_update_error: 'Si è verificato un errore durante l''aggiornamento dei dati.'
     server_name_required: 'Il nome del server è obbligatorio.'
     are_you_sure: 'Sei sicuro di volerlo fare?'
+    suspended_expired_hint: 'Questo server è stato sospeso il {{ expireDate }} perché non è stato rinnovato. Per ripristinare il server, rinnovalo nella scheda di configurazione.'
+    suspended_hint: 'Questo server è stato sospeso.'
+    console_suspended_hint: 'La console non è disponibile perché il server è stato sospeso.'
+    console_server_marked_as: 'Il server è stato contrassegnato come:'
+    console_token_expired: 'Il token della console è scaduto. Si prega di aggiornare la pagina.'
+    console_connection_closed: 'La connessione alla console è stata chiusa.'
+    console_connection_error: 'Si è verificato un errore durante la connessione alla console.'
 
   actions:
     login: 'Login'
