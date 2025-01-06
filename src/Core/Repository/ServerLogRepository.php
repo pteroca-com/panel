@@ -18,4 +18,13 @@ class ServerLogRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($log);
         $this->getEntityManager()->flush();
     }
+
+    public function deleteServerLogs(int $serverId): void
+    {
+        $serverLogs = $this->findBy(['server' => $serverId]);
+        foreach ($serverLogs as $serverLog) {
+            $this->getEntityManager()->remove($serverLog);
+        }
+        $this->getEntityManager()->flush();
+    }
 }

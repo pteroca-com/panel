@@ -5,18 +5,13 @@ namespace App\Core\Service\Server;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Entity\User;
-use App\Core\Enum\SettingEnum;
-use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylService;
-use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
-use App\Core\Service\SettingService;
 use JsonException;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 use Timdesm\PterodactylPhpApi\Resources\Egg as PterodactylEgg;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
@@ -27,11 +22,7 @@ class CreateServerService extends AbstractActionServerService
         private readonly PterodactylService $pterodactylService,
         private readonly ServerRepository $serverRepository,
         private readonly NodeSelectionService $nodeSelectionService,
-        private readonly SettingService $settingService,
-        private readonly ServerService $serverService,
-        private readonly TranslatorInterface $translator,
-        private readonly MessageBusInterface $messageBus,
-        private readonly ServerConfigurationDetailsService $serverConfigurationDetailsService,
+        private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
         UserRepository $userRepository,
     ) {
         parent::__construct($userRepository, $pterodactylService);
@@ -41,9 +32,14 @@ class CreateServerService extends AbstractActionServerService
     {
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $user);
         $createdEntityServer = $this->createEntityServer($createdPterodactylServer, $product, $user);
-        $this->updateCreatedPterodactylServerDetails($createdEntityServer);
         $this->updateUserBalance($user, $product->getPrice());
-        $this->sendBoughtConfirmationEmail($user, $product, $createdEntityServer);
+        $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
+            $user,
+            $product,
+            $createdEntityServer,
+            $this->getPterodactylAccountLogin($user),
+        );
+
         return $createdEntityServer;
     }
 
@@ -70,13 +66,17 @@ class CreateServerService extends AbstractActionServerService
         }
 
         $bestAllocationId = $this->nodeSelectionService->getBestAllocationId($product);
-        $serverName = sprintf('%s [%s]', $product->getName(), $user->getEmail());
+        $dockerImage = $productEggConfiguration[$eggId]['options']['docker_image']['value']
+            ?? $selectedEgg->get('docker_image');
+        $startup = $productEggConfiguration[$eggId]['options']['startup']['value']
+            ?? $selectedEgg->get('startup');
+
         $requestPayload = [
-            'name' => $serverName,
+            'name' => $product->getName(),
             'user' => $user->getPterodactylUserId(),
             'egg' => $selectedEgg->get('id'),
-            'docker_image' => $productEggConfiguration[$eggId]['options']['docker_image']['value'] ?? $selectedEgg->get('docker_image'),
-            'startup' => $productEggConfiguration[$eggId]['options']['startup']['value'] ?? $selectedEgg->get('startup'),
+            'docker_image' => $dockerImage,
+            'startup' => $startup,
             'environment' => $this->prepareEnvironmentVariables($selectedEgg, $productEggConfiguration),
             'limits' => [
                 'memory' => $product->getMemory(),
@@ -106,15 +106,21 @@ class CreateServerService extends AbstractActionServerService
         }
     }
 
-    private function updateCreatedPterodactylServerDetails(Server $server): void
+    private function prepareEnvironmentVariables(PterodactylEgg $egg, array $productEggConfiguration): array
     {
-        $serverName = sprintf(
-            '%s #%s',
-            $server->getProduct()->getName(),
-            $server->getPterodactylServerIdentifier()
-        );
+        $environmentVariables = [];
 
-        $this->serverConfigurationDetailsService->updateServerDetails($server, $serverName, '');
+        if (!$egg->has('relationships')) {
+            return $environmentVariables;
+        }
+
+        foreach ($egg->get('relationships')['variables']->data as $variable) {
+            $variableToSet = $productEggConfiguration[$egg->get('id')]['variables'][$variable->get('id')]['value']
+                ?? $variable->default_value;
+            $environmentVariables[$variable->env_variable] = $variableToSet;
+        }
+
+        return $environmentVariables;
     }
 
     private function createEntityServer(PterodactylServer $server, Product $product, User $user): Server
@@ -128,42 +134,5 @@ class CreateServerService extends AbstractActionServerService
 
         $this->serverRepository->save($entityServer);
         return $entityServer;
-    }
-
-    private function prepareEnvironmentVariables(PterodactylEgg $egg, array $productEggConfiguration): array
-    {
-        $environmentVariables = [];
-        if (!$egg->has('relationships')) {
-            return $environmentVariables;
-        }
-        foreach ($egg->get('relationships')['variables']->data as $variable) {
-            $environmentVariables[$variable->env_variable] = $productEggConfiguration[$egg->get('id')]['variables'][$variable->get('id')]['value']
-                ?? $variable->default_value;
-        }
-        return $environmentVariables;
-    }
-
-    private function sendBoughtConfirmationEmail(User $user, Product $product, Server $server): void // TODO wynieść do serwisu
-    {
-        $serverDetails = $this->serverService->getServerDetails($server);
-        $emailMessage = new SendEmailMessage(
-            $user->getEmail(),
-            $this->translator->trans('pteroca.email.store.subject'),
-            'email/purchased_product.html.twig',
-            [
-                'user' => $user,
-                'product' => $product,
-                'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
-                'server' => [
-                    'ip' => $serverDetails['ip'],
-                    'expiresAt' => $server->getExpiresAt()->format('Y-m-d H:i'),
-                ],
-                'panel' => [
-                    'url' => $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value),
-                    'username' => $this->getPterodactylAccountLogin($user),
-                ],
-            ]
-        );
-        $this->messageBus->dispatch($emailMessage);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Logs\LogService;
+use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -24,6 +25,7 @@ class ServerCrudController extends AbstractPanelController
     public function __construct(
         LogService $logService,
         private readonly UpdateServerService $updateServerService,
+        private readonly DeleteServerService $deleteServerService,
         private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($logService);
@@ -104,7 +106,7 @@ class ServerCrudController extends AbstractPanelController
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        $this->updateServerService->deleteServer($entityInstance);
+        $this->deleteServerService->deleteServer($entityInstance);
         parent::deleteEntity($entityManager, $entityInstance);
     }
 }

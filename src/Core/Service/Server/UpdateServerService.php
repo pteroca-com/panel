@@ -4,14 +4,12 @@ namespace App\Core\Service\Server;
 
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylService;
-use Psr\Log\LoggerInterface;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class UpdateServerService
 {
     public function __construct(
         private readonly PterodactylService $pterodactylService,
-        private readonly LoggerInterface $logger,
     )
     {
     }
@@ -37,19 +35,6 @@ class UpdateServerService
                     'user' => $entityInstance->getUser()->getPterodactylUserId(),
                 ],
             );
-        }
-    }
-
-    public function deleteServer(Server $entityInstance): void
-    {
-        try {
-            $this->pterodactylService->getApi()->servers->delete($entityInstance->getPterodactylServerId());
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to delete pterodactyl server during deleting entity', [
-                'exception' => $e,
-                'serverId' => $entityInstance->getPterodactylServerId(),
-                'entityId' => $entityInstance->getId(),
-            ]);
         }
     }
 

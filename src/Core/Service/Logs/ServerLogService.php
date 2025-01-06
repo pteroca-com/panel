@@ -40,4 +40,9 @@ class ServerLogService
             $serverLogs,
         );
     }
+
+    public function deleteServerActionLogs(Server $server): void
+    {
+        $this->serverLogRepository->deleteServerLogs($server->getId());
+    }
 }

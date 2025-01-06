@@ -25,6 +25,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('get_require_email_verification', [$this, 'getRequireEmailVerification']),
             new TwigFunction('get_captcha_site_key', [$this, 'getCaptchaSiteKey']),
             new TwigFunction('get_favicon', [$this, 'getFavicon']),
+            new TwigFunction('use_pterodactyl_panel_as_client_panel', [$this, 'usePterodactylPanelAsClientPanel']),
         ];
     }
 
@@ -76,6 +77,11 @@ class AppExtension extends AbstractExtension
     public function getRequireEmailVerification(): bool
     {
         return (bool)$this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
+    }
+
+    public function usePterodactylPanelAsClientPanel(): bool
+    {
+        return (bool)$this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);
     }
 
     public function getCaptchaSiteKey(): ?string

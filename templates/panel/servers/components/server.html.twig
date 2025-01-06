@@ -4,7 +4,7 @@
     </a>
     <div class="card-body">
         <h5 class="card-title">
-            {{ server.product.name }}
+            {{ server.product.name }} #{{ server.pterodactylServerIdentifier }}
             {% if not server.isSuspended %}
                 <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
             {% else %}
