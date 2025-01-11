@@ -10,26 +10,39 @@
 
 {% block main %}
     <div class="container mt-5 product-details">
-        <h1>{{ 'pteroca.renew.title'|trans }}: {{ product.name }}</h1>
+        <h1>{{ 'pteroca.renew.title'|trans }}: {{ serverDetails.name }}</h1>
         <div class="row">
-            <div class="col-md-12 product-image-container mt-3 mb-5" style='background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}")'></div>
+            <div class="col-md-12 product-image-container mt-4 mb-5" style='background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}")'></div>
             <div class="col-md-8">
-                <h2>{{ 'pteroca.product.information'|trans }}</h2>
-                <p>{{ product.description }}</p>
-                <ul class="list-group">
-                    <li class="list-group-item"><strong>{{ 'pteroca.renew.ip_address'|trans }}:</strong> {{ serverDetails.ip }}</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.ram'|trans }}:</strong> {{ product.memory }} MB</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.cpu'|trans }}:</strong> {{ product.cpu }}%</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.disk'|trans }}:</strong> {{ product.diskSpace }} MB</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.backups'|trans }}:</strong> {{ product.backups }}</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.swap'|trans }}:</strong> {{ product.swap }} MB</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.databases'|trans }}:</strong> {{ product.dbCount }}</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.renew.current_expiration'|trans }}:</strong> {{ server.expiresAt|date('Y-m-d') }}</li>
-                </ul>
+                <div class="row">
+                    <div class="col-6">
+                        <h2>{{ 'pteroca.product.product_information'|trans }}</h2>
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.name'|trans }}:</strong> {{ product.name }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.description'|trans }}:</strong> {{ product.description }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.ram'|trans }}:</strong> {{ product.memory }} MB</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.cpu'|trans }}:</strong> {{ product.cpu }}%</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.disk'|trans }}:</strong> {{ product.diskSpace }} MB</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.backups'|trans }}:</strong> {{ product.backups }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.swap'|trans }}:</strong> {{ product.swap }} MB</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.databases'|trans }}:</strong> {{ product.dbCount }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-6">
+                        <h2>{{ 'pteroca.renew.server_information'|trans }}</h2>
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>{{ 'pteroca.renew.server_name'|trans }}:</strong> {{ serverDetails.name }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.renew.server_description'|trans }}:</strong> {{ serverDetails.description }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.renew.ip_address'|trans }}:</strong> {{ serverDetails.ip }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.renew.server_current_software'|trans }}:</strong> {{ serverDetails.egg.name }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.renew.current_expiration'|trans }}:</strong> {{ server.expiresAt|date('Y-m-d') }}</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
                 <h2>{{ 'pteroca.renew.renew'|trans }}</h2>
-                <form action="{{ path('panel', { routeName: 'store_product_buy', id: server.id }) }}" method="post">
+                <form action="{{ path('panel', { routeName: 'store_product_buy', id: product.id }) }}&server={{ server.pterodactylServerIdentifier }}" method="post">
                     <input type="hidden" name="server" value="{{ server.id }}">
                     <div class="form-group">
                         <label for="duration">{{ 'pteroca.renew.period'|trans }}</label>
@@ -42,6 +55,16 @@
                         <label for="price">{{ 'pteroca.renew.price'|trans }}</label>
                         <input type="text" id="price" class="form-control" value="{{ product.price|number_format(2, ',', ' ') }} {{ get_currency() }}" disabled>
                     </div>
+
+                    {% if app.user.balance < product.price %}
+                        <div class="mb-3">
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fa fa-exclamation-triangle me-1"></i>
+                                {{ 'pteroca.product.not_enough_balance'|trans }}
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <button type="submit" class="btn btn-primary mt-3 w-100" {% if app.user.balance < product.price %}disabled{% endif %}><i class="fa fa-refresh"></i> {{ 'pteroca.renew.renew_now'|trans }}</button>
                 </form>
             </div>

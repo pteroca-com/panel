@@ -64,8 +64,11 @@ class StoreService
 
     public function prepareProduct(Product $product): Product
     {
-        $imagePath = $this->productsBasePath . '/';
-        $product->setImagePath($imagePath . $product->getImagePath());
+        if (!empty($product->getImagePath())) {
+            $imagePath = $this->productsBasePath . '/';
+            $product->setImagePath($imagePath . $product->getImagePath());
+        }
+
         return $product;
     }
 

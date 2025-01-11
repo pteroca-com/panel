@@ -4,7 +4,7 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Category;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;

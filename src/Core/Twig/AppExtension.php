@@ -10,6 +10,7 @@ use Twig\TwigFunction;
 class AppExtension extends AbstractExtension
 {
     public function __construct(
+        private readonly string $currentVersion,
         private readonly SettingService $settingService,
     ) {}
 
@@ -25,6 +26,8 @@ class AppExtension extends AbstractExtension
             new TwigFunction('get_require_email_verification', [$this, 'getRequireEmailVerification']),
             new TwigFunction('get_captcha_site_key', [$this, 'getCaptchaSiteKey']),
             new TwigFunction('get_favicon', [$this, 'getFavicon']),
+            new TwigFunction('use_pterodactyl_panel_as_client_panel', [$this, 'usePterodactylPanelAsClientPanel']),
+            new TwigFunction('get_pterodactyl_panel_url', [$this, 'getPterodactylPanelUrl']),
         ];
     }
 
@@ -78,6 +81,16 @@ class AppExtension extends AbstractExtension
         return (bool)$this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
     }
 
+    public function usePterodactylPanelAsClientPanel(): bool
+    {
+        return (bool)$this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);
+    }
+
+    public function getPterodactylPanelUrl(): string
+    {
+        return $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+    }
+
     public function getCaptchaSiteKey(): ?string
     {
         $isCaptchaEnabled = $this->settingService->getSetting(SettingEnum::GOOGLE_CAPTCHA_VERIFICATION->value);
@@ -89,6 +102,6 @@ class AppExtension extends AbstractExtension
 
     public function getAppVersion(): string
     {
-        return '0.2.4';
+        return $this->currentVersion;
     }
 }

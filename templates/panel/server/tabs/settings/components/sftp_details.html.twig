@@ -1,0 +1,37 @@
+{% block main %}
+    <div class="col-12 col-xl-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">
+                    {{ 'pteroca.server.sftp_details'|trans }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label for="sftp-password" class="form-label">{{ 'pteroca.server.sftp_server_address'|trans }}</label>
+                            <input type="text" class="form-control" id="sftp-server" value="sftp://{{ serverData.pterodactylClientServer.sftp_details.ip }}:{{ serverData.pterodactylClientServer.sftp_details.port }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sftp-password" class="form-label">{{ 'pteroca.server.sftp_username'|trans }}</label>
+                            <input type="text" class="form-control" id="sftp-username" value="{{ serverData.pterodactylClientAccount.username }}.{{ server.pterodactylServerIdentifier }}" readonly>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="alert alert-info" role="alert">
+                                    {{ 'pteroca.server.sftp_password_hint'|trans }}
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <a href="sftp://{{ serverData.pterodactylClientServer.sftp_details.ip }}:{{ serverData.pterodactylClientServer.sftp_details.port }}" target="_blank" class="btn btn-primary w-100">
+                                    {{ 'pteroca.server.sftp_launch'|trans }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

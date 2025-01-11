@@ -13,8 +13,10 @@
     <b>{{ 'pteroca.email.store.server_details'|trans }}:</b><br>
     {{ 'pteroca.email.store.ip_address'|trans }}: {{ server.ip }}<br>
     {{ 'pteroca.email.store.management_panel'|trans }}: {{ panel.url }}<br>
-    {{ 'pteroca.email.store.panel_username'|trans }}: {{ panel.username }}<br>
-    {{ 'pteroca.email.store.panel_password'|trans }}: {{ {{ 'pteroca.email.store.panel_password_hint'|trans }} }}<br>
+    {% if use_pterodactyl_panel_as_client_panel() %}
+        {{ 'pteroca.email.store.panel_username'|trans }}: {{ panel.username }}<br>
+        {{ 'pteroca.email.store.panel_password'|trans }}: {{ {{ 'pteroca.email.store.panel_password_hint'|trans }} }}<br>
+    {% endif %}
 </p>
 <p>
     {{ 'pteroca.email.store.management_panel_hint'|trans }}

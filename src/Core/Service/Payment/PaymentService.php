@@ -12,7 +12,7 @@ use App\Core\Provider\Payment\PaymentProviderInterface;
 use App\Core\Repository\PaymentRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;

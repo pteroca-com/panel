@@ -5,7 +5,7 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Product;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,10 +19,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\HiddenField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProductCrudController extends AbstractPanelController
@@ -34,6 +36,7 @@ class ProductCrudController extends AbstractPanelController
         private readonly PterodactylService $pterodactylService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
+        private readonly RequestStack $requestStack,
     ) {
         parent::__construct($logService);
     }
@@ -96,6 +99,10 @@ class ProductCrudController extends AbstractPanelController
                 ->onlyOnForms()
                 ->setRequired(true)
                 ->setFormTypeOption('attr', ['class' => 'nest-selector']),
+            HiddenField::new('eggsConfiguration')->onlyOnForms(),
+            BooleanField::new('allowChangeEgg', $this->translator->trans('pteroca.crud.product.egg_allow_change'))
+                ->setRequired(false)
+                ->hideOnIndex(),
             ChoiceField::new('eggs', $this->translator->trans('pteroca.crud.product.eggs'))
                 ->setChoices(fn() => $this->getEggsChoices($nests))
                 ->allowMultipleChoices()
@@ -105,6 +112,7 @@ class ProductCrudController extends AbstractPanelController
 
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
+
         ];
 
         if (!empty($this->flashMessages)) {
@@ -159,6 +167,7 @@ class ProductCrudController extends AbstractPanelController
         $this->disallowForDemoMode();
 
         if ($entityInstance instanceof Product) {
+            $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
             $entityInstance->setCreatedAtValue();
             $entityInstance->setUpdatedAtValue();
         }
@@ -169,10 +178,17 @@ class ProductCrudController extends AbstractPanelController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Product) {
+            $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
             $entityInstance->setUpdatedAtValue();
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function getEggsConfigurationFromRequest(): array
+    {
+        $requestData = $this->requestStack->getCurrentRequest()->request->all();
+        return $requestData['eggs_configuration'] ?? [];
     }
 
     private function getNodesChoices(): array

@@ -8,15 +8,14 @@ use App\Core\Entity\User;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\CreateServerService;
-use App\Core\Service\Server\ServerService;
-use App\Core\Service\SettingService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Timdesm\PterodactylPhpApi\Managers\Nest\NestEggManager;
 use Timdesm\PterodactylPhpApi\Managers\ServerManager;
 use Timdesm\PterodactylPhpApi\Managers\UserManager;
@@ -29,9 +28,7 @@ class CreateServerServiceTest extends TestCase
     private PterodactylService $pterodactylService;
     private ServerRepository $serverRepository;
     private NodeSelectionService $nodeSelectionService;
-    private SettingService $settingService;
-    private ServerService $serverService;
-    private TranslatorInterface $translator;
+    private BoughtConfirmationEmailService $boughtConfirmationEmailService;
     private MessageBusInterface $messageBus;
     private UserRepository $userRepository;
     private CreateServerService $createServerService;
@@ -41,9 +38,7 @@ class CreateServerServiceTest extends TestCase
         $this->pterodactylService = $this->createMock(PterodactylService::class);
         $this->serverRepository = $this->createMock(ServerRepository::class);
         $this->nodeSelectionService = $this->createMock(NodeSelectionService::class);
-        $this->settingService = $this->createMock(SettingService::class);
-        $this->serverService = $this->createMock(ServerService::class);
-        $this->translator = $this->createMock(TranslatorInterface::class);
+        $this->boughtConfirmationEmailService = $this->createMock(BoughtConfirmationEmailService::class);
         $this->messageBus = $this->createMock(MessageBusInterface::class);
         $this->userRepository = $this->createMock(UserRepository::class);
 
@@ -51,10 +46,7 @@ class CreateServerServiceTest extends TestCase
             $this->pterodactylService,
             $this->serverRepository,
             $this->nodeSelectionService,
-            $this->settingService,
-            $this->serverService,
-            $this->translator,
-            $this->messageBus,
+            $this->boughtConfirmationEmailService,
             $this->userRepository
         );
     }
@@ -136,19 +128,6 @@ class CreateServerServiceTest extends TestCase
                 ],
             ]
         );
-
-        $this->messageBus
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with($this->isInstanceOf(SendEmailMessage::class))
-            ->willReturn(new Envelope($sendEmailMessage));
-
-        $this->serverService
-            ->expects($this->once())
-            ->method('getServerDetails')
-            ->willReturn([
-                'ip' => '127.0.0.1'
-            ]);
 
         $createdEntityServer = $this->createServerService->createServer($product, 1, $user);
 

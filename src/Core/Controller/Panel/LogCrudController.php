@@ -5,17 +5,16 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Log;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\LogService;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use App\Core\Service\Logs\LogService;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LogCrudController extends AbstractPanelController

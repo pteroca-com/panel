@@ -24,6 +24,18 @@
     border-color: var(--primary-color);
 }
 
+[data-bs-theme="light"] input.form-control:read-only,
+[data-bs-theme="light"] textarea.form-control:read-only,
+[data-bs-theme="light"] select.form-select:disabled {
+    background-color: #d5d5d5;
+}
+
+[data-bs-theme="dark"] input.form-control:read-only,
+[data-bs-theme="dark"] textarea.form-control:read-only,
+[data-bs-theme="dark"] select.form-select:disabled {
+    background-color: var(--bs-secondary-bg);
+}
+
 a {
     color: var(--primary-color);
 }
@@ -134,4 +146,26 @@ a:hover {
     overflow: hidden;
     background-size: cover;
     border-radius: 7px;
+}
+
+.product-image {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.card-header {
+    padding-top: 0.8rem;
+}
+
+input#command {
+    border-bottom: 0.13rem solid var(--primary-color);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    font-family: 'Fira Code', monospace, sans-serif;
+    padding: 5px;
+}
+
+.server-stats-row {
+    min-width: 300px;
 }

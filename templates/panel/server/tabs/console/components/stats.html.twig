@@ -1,0 +1,141 @@
+{% block main %}
+    <div class="col-12 col-xl-3">
+        <div class="row server-stats-row">
+            <div class="col-12 mb-4 mb-xl-3">
+                <div class="row">
+                    <div class="col-4">
+                        <button class="btn btn-primary w-100 bg-success" id="server-start">{{ 'pteroca.server.start'|trans }}</button>
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-primary w-100" id="server-restart">{{ 'pteroca.server.restart'|trans }}</button>
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-primary bg-danger w-100" id="server-stop">{{ 'pteroca.server.stop'|trans }}</button>
+                    </div>
+                    <div class="col-4 d-none">
+                        <button class="btn btn-primary bg-danger w-100" id="server-kill">{{ 'pteroca.server.kill'|trans }}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-wifi fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.address'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="col-12 float-end mt-1 rounded-1" data-ip>{{ serverData.serverDetails.ip }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-clock fa-3x" data-uptime-icon></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.uptime'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-uptime></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-microchip fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.cpu_load'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-cpu-load></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-memory fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.memory'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-memory></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-hard-drive fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.disk'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-disk></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-cloud-arrow-down fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.network_inbound'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-inbound></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-cloud-arrow-up fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.network_outbound'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-outbound></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
