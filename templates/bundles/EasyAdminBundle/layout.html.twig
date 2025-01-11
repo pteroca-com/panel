@@ -81,7 +81,7 @@
 
         {% set user_menu_avatar %}
             {% if null == ea.userMenu.avatarUrl %}
-                <span class="user-avatar">
+                <span class="user-avatar me-2 mb-1">
                     <span class="fa-stack">
                         <i class="user-avatar-icon-background fas fa-square fa-stack-2x"></i>
                         <i class="user-avatar-icon-foreground {{ ea.user is not null ? 'fa fa-user' : 'fas fa-user-slash' }} fa-stack-1x fa-inverse"></i>
@@ -97,7 +97,7 @@
         {% set user_menu_dropdown %}
             <ul class="dropdown-menu dropdown-menu-end">
                 <li class="dropdown-user-details">
-                    <div>{{ user_menu_avatar }}</div>
+                    <!-- <div>{{ user_menu_avatar }}</div> -->
                     <div>
                         <span class="user-label">{{ 'user.logged_in_as'|trans(domain = 'EasyAdminBundle') }}</span>
                         <span class="user-name">{{ ea.user is null ? 'user.anonymous'|trans(domain = 'EasyAdminBundle') : ea.userMenu.name }}</span>

@@ -1,0 +1,46 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}
+    {{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}
+{% endblock %}
+
+{% block page_actions %}
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    {% if isAdminView and app.user.email != server.user.email %}
+        <div class="container mt-4 mb-4">
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ 'pteroca.server.admin_view_warning'|trans }}
+            </div>
+        </div>
+    {% endif %}
+    {% if server.isSuspended %}
+        <div class="container mt-4 mb-4">
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                {% if server.expiresAt|date("Y-m-d H:i:s") < "now"|date("Y-m-d H:i:s") %}
+                    {{ 'pteroca.server.suspended_expired_hint'|trans({ '{{ expireDate }}': server.expiresAt|date("Y-m-d H:i") }) }}
+                {% else %}
+                    {{ 'pteroca.server.suspended_hint'|trans }}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="container mt-4">
+        {% include 'panel/server/tabs/navigation.html.twig' %}
+        <div class="tab-content">
+            {% include 'panel/server/tabs/console/console.html.twig' %}
+            {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
+                {% include 'panel/server/tabs/startup/startup.html.twig' %}
+            {% endif %}
+            {% include 'panel/server/tabs/settings/settings.html.twig' %}
+            {% include 'panel/server/tabs/activity/activity.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

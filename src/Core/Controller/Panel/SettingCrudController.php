@@ -7,7 +7,7 @@ use App\Core\Enum\SettingTypeEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
 use App\Core\Service\LocaleService;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -155,13 +155,13 @@ class SettingCrudController extends AbstractPanelController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
-        parent::persistEntity($entityManager, $entityInstance);
+        $this->settingRepository->save($entityInstance);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
-        parent::updateEntity($entityManager, $entityInstance);
+        $this->settingRepository->save($entityInstance);
     }
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void

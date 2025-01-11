@@ -5,12 +5,12 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Setting;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingTypeEnum;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 abstract class AbstractPanelController extends AbstractCrudController
 {

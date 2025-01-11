@@ -1,0 +1,78 @@
+{% block main %}
+    {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
+        <div class="tab-pane" id="startup">
+            {% if serverData.hasConfigurableOptions %}
+                {% include 'panel/server/tabs/startup/components/options.html.twig' %}
+            {% endif %}
+            {% if serverData.hasConfigurableVariables %}
+                {% include 'panel/server/tabs/startup/components/variables.html.twig' %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block body_javascript %}
+    {% if not server.isSuspended and (serverData.hasConfigurableOptions or serverData.hasConfigurableVariable) %}
+    <script>
+        function getSettingElement(settingName, isStartupOption = false) {
+            let preparedSettingName = settingName;
+            if (isStartupOption) {
+                preparedSettingName = preparedSettingName.replace('_', '-');
+            }
+            return document.querySelector(`input[data-option-name="${preparedSettingName}"], select[data-option-name="${preparedSettingName}"]`);
+        }
+
+        function toggleSetting(settingName, isStartupOption = false) {
+            const element = getSettingElement(settingName, isStartupOption),
+                icon = document.querySelector(`i[data-option-name="${settingName}"]`);
+            icon.classList.toggle('fa-edit');
+            icon.classList.toggle('fa-save');
+            if (element.tagName !== 'SELECT') {
+                element.readOnly = !element.readOnly;
+                if (!element.readOnly) {
+                    element.focus();
+                } else {
+                    saveSetting(settingName, isStartupOption);
+                }
+            } else {
+                element.disabled = !element.disabled;
+                if (!element.disabled) {
+                    element.focus();
+                } else {
+                    saveSetting(settingName, isStartupOption);
+                }
+            }
+        }
+
+        function saveSetting(settingName, isStartupOption) {
+            const element = getSettingElement(settingName, isStartupOption),
+                endpointUrl = !isStartupOption
+                    ? '{{ path('server_startup_variable_update', { id: server.id }) }}'
+                    : '{{ path('server_startup_option_update', { id: server.id }) }}';
+            fetch(endpointUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key: settingName,
+                    value: element.value,
+                }),
+            }).then(response => {
+                if (!response.ok) {
+                   return handleError('{{ 'pteroca.server.data_update_error'|trans }}');
+                }
+
+                alert('{{ 'pteroca.server.data_updated_successfully'|trans }}');
+            }).catch(error => {
+                return handleError('{{ 'pteroca.server.data_update_error'|trans }}');
+            });
+        }
+
+        function handleError(message) {
+            alert(message);
+            throw new Error(message);
+        }
+    </script>
+    {% endif %}
+{% endblock %}

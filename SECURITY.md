@@ -5,9 +5,10 @@
 Below are the currently supported versions of PteroCA with security updates:
 
 | Version | Supported          |
-|---------| ------------------ |
-| 0.2.x   | :white_check_mark:  |
-| 0.1.x   | :white_check_mark:  |
+|---------|--------------------|
+| 0.3.x   | :white_check_mark: |
+| 0.2.x   | :white_check_mark: |
+| 0.1.x   | :x:                |
 | < 0.1   | :x:                |
 
 

@@ -7,13 +7,14 @@ use App\Core\Entity\Log;
 use App\Core\Entity\Payment;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
+use App\Core\Entity\ServerLog;
 use App\Core\Entity\Setting;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -80,6 +81,7 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', Payment::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class);
+            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars-progress', ServerLog::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs', Setting::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class);
         }

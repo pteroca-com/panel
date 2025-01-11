@@ -6,7 +6,7 @@ use App\Core\Entity\Log;
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Repository\LogRepository;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\System\IpAddressProviderService;
 use PHPUnit\Framework\TestCase;
 

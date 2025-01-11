@@ -4,7 +4,7 @@ namespace App\Core\Controller;
 
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Authorization\UserVerificationService;
-use App\Core\Service\LogService;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerService;
@@ -71,7 +71,7 @@ class StoreController extends AbstractController
     public function renewProduct(Request $request, ServerService $serverService): Response
     {
         $this->checkPermission();
-        $serverId = $request->query->getInt('id');
+        $serverId = $request->query->getString('id');
         $server = $serverService->getServer($serverId);
         if (empty($server)) {
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
@@ -99,7 +99,7 @@ class StoreController extends AbstractController
         ServerService $serverService,
     ): Response {
         $this->checkPermission();
-        $serverId = $request->request->getInt('server');
+        $serverId = $request->query->getString('server');
         if (!empty($serverId)) {
             $server = $serverService->getServer($serverId);
             if (empty($server)) {

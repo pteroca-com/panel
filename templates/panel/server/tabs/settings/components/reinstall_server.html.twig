@@ -1,0 +1,66 @@
+{% block main %}
+    <div class="col-12 col-xl-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">
+                    {{ 'pteroca.server.reinstall_server'|trans }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="alert alert-warning" role="alert">
+                            {{ 'pteroca.server.reinstall_server_hint'|trans }}
+                        </div>
+                    </div>
+                    {% if serverData.availableNestEggs %}
+                        <div class="col-12 mb-3">
+                            <label for="reinstall-server-egg" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
+                            <select class="form-select" id="reinstall-server-egg" {% if server.isSuspended %}disabled{% endif %}>
+                                {% for egg in serverData.availableNestEggs %}
+                                    <option value="{{ egg.id }}" {% if serverData.pterodactylServer.egg == egg.id %}selected{% endif %}>
+                                        {{ egg.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    <div class="col-4">
+                        <button type="button" class="btn btn-danger w-100" {% if not server.isSuspended %}onclick="reinstallServer()"{% else %}disabled{% endif %}>
+                            {{ 'pteroca.server.reinstall_server'|trans }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        function reinstallServer() {
+            let confirmation = confirm('{{ 'pteroca.server.are_you_sure'|trans }}');
+            if (!confirmation) {
+                return;
+            }
+
+            const eggId = document.getElementById('reinstall-server-egg')?.value ?? 0;
+            fetch('{{ path('server_reinstall', { id: server.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key: eggId,
+                    value: 0,
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    alert('{{ 'pteroca.server.data_update_error'|trans }}');
+                } else {
+                    location.reload();
+                }
+            })
+        }
+    </script>
+{% endblock %}
