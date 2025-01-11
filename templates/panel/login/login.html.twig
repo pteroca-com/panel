@@ -1,4 +1,4 @@
-{% extends ea is defined ? ea.templatePath('layout') : '@EasyAdmin/page/login_minimal.html.twig' %}
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
 
 {% block body_class 'page-login' %}
 {% block page_title %}{{ get_title() }} | {{ 'pteroca.login.title'|trans }}{% endblock %}
@@ -55,7 +55,7 @@
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token(csrf_token_intention) }}">
                 {% endif %}
 
-                <input type="hidden" name="{{ target_path_parameter|default('_target_path') }}" value="{{ target_path|default(ea is defined ? path(ea.dashboardRouteName) : '/') }}" />
+                <input type="hidden" name="{{ target_path_parameter|default('_target_path') }}" value="/" />
 
                 <div class="form-group">
                     <label class="form-control-label required" for="username">{{ 'pteroca.login.email_address'|trans }}</label>

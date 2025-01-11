@@ -97,12 +97,17 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         $constraints = [];
 
         foreach ($rules as $rule) {
+            if (str_contains($rule, ':')) {
+                $partedRules = explode(':', $rule);
+                $rule = $partedRules[0];
+            }
+
             if (isset($ruleMap[$rule])) {
-                if (in_array($rule, ['string', 'numeric', 'boolean'], true)) {
-                    $constraints[] = new $ruleMap[$rule](['type' => $rule]);
-                } else {
-                    $constraints[] = new $ruleMap[$rule]();
-                }
+                $constraints[] = match ($rule) {
+                    'string', 'numeric', 'boolean' => new $ruleMap[$rule](['type' => $rule]),
+                    'regex' => new $ruleMap[$rule](['pattern' => $partedRules[1] ?? '']),
+                    default => new $ruleMap[$rule]([]),
+                };
             }
         }
 

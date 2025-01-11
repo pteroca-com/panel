@@ -104,7 +104,7 @@ class StoreControllerTest extends BaseTestCase
         $product = $this->createTestProduct($category);
         $server = $this->createTestServer($user, $product);
 
-        $crawler = $this->client->request('GET', '/panel?routeName=store_server_renew&id=' . $server->getId());
+        $crawler = $this->client->request('GET', '/panel?routeName=store_server_renew&id=' . $server->getPterodactylServerIdentifier());
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.product-details');

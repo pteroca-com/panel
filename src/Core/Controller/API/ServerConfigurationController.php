@@ -13,14 +13,12 @@ use App\Core\Service\Server\ServerConfiguration\ServerReinstallationService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerConfigurationController extends APIAbstractController
 {
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerLogService $serverLogService,
-        private readonly TranslatorInterface $translator,
     ) {}
 
     #[Route('/panel/api/server/{id}/startup/variable', name: 'server_startup_variable_update', methods: ['POST'])]

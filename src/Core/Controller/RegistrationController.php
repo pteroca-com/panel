@@ -7,10 +7,12 @@ use App\Core\Form\RegistrationFormType;
 use App\Core\Security\UserAuthenticator;
 use App\Core\Service\Authorization\RegistrationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationController extends AbstractController
@@ -24,7 +26,8 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request,
         UserAuthenticatorInterface $userAuthenticator,
-        UserAuthenticator $authenticator,
+        #[Autowire(service: 'App\Core\Security\UserAuthenticator')]
+        AuthenticatorInterface $authenticator,
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);

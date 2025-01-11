@@ -9,6 +9,7 @@ use App\Core\Service\Server\ServerService;
 use PHPUnit\Framework\TestCase;
 use Timdesm\PterodactylPhpApi\Managers\ServerManager;
 use Timdesm\PterodactylPhpApi\PterodactylApi;
+use Timdesm\PterodactylPhpApi\Resources\Egg;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class ServerServiceTest extends TestCase
@@ -43,24 +44,27 @@ class ServerServiceTest extends TestCase
                             'port' => 25565,
                         ]
                     ],
+                    'egg' => new Egg(['name' => 'Test Egg']),
                 ],
             ],
         ];
 
         $pterodactylServer = new PterodactylServer($pterodactylServerData, $pterodactylApi);
+        $pterodactylServer->set('name', 'Test Server');
+        $pterodactylServer->set('description', 'Test Description');
 
         $pterodactylApi->servers = $this->createMock(ServerManager::class);
         $pterodactylApi->servers
             ->method('get')
-            ->with(123, ['include' => ['allocations']])
+            ->with(123, ['include' => ['allocations', 'egg']])
             ->willReturn($pterodactylServer);
 
         $result = $this->serverService->getServerDetails($server);
 
         $this->assertNotNull($result);
-        $this->assertEquals('192.168.1.1:25565', $result['ip']);
-        $this->assertEquals(['memory' => 2048], $result['limits']);
-        $this->assertEquals(['databases' => 3], $result['feature-limits']);
+        $this->assertEquals('192.168.1.1:25565', $result->ip);
+        $this->assertEquals(['memory' => 2048], $result->limits);
+        $this->assertEquals(['databases' => 3], $result->featureLimits);
     }
 
     public function testGetServerDetailsWithInvalidServer(): void
@@ -74,7 +78,7 @@ class ServerServiceTest extends TestCase
         $pterodactylApi->servers = $this->createMock(ServerManager::class);
         $pterodactylApi->servers
             ->method('get')
-            ->with(123, ['include' => ['allocations']])
+            ->with(123, ['include' => ['allocations', 'egg']])
             ->willReturn(new PterodactylServer([], $pterodactylApi));
 
         $result = $this->serverService->getServerDetails($server);
@@ -85,12 +89,14 @@ class ServerServiceTest extends TestCase
     public function testGetServer(): void
     {
         $server = new Server();
+        $server->setPterodactylServerIdentifier(123);
+
         $this->serverRepository
-            ->method('find')
-            ->with(123)
+            ->method('findOneBy')
+            ->with(['pterodactylServerIdentifier' => $server->getPterodactylServerIdentifier()])
             ->willReturn($server);
 
-        $result = $this->serverService->getServer(123);
+        $result = $this->serverService->getServer($server->getPterodactylServerIdentifier());
 
         $this->assertSame($server, $result);
     }
@@ -98,8 +104,8 @@ class ServerServiceTest extends TestCase
     public function testGetServerNotFound(): void
     {
         $this->serverRepository
-            ->method('find')
-            ->with(123)
+            ->method('findOneBy')
+            ->with(['pterodactylServerIdentifier' => 123])
             ->willReturn(null);
 
         $result = $this->serverService->getServer(123);

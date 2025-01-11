@@ -42,7 +42,7 @@
             </div>
             <div class="col-md-4">
                 <h2>{{ 'pteroca.renew.renew'|trans }}</h2>
-                <form action="{{ path('panel', { routeName: 'store_product_buy', id: server.id }) }}" method="post">
+                <form action="{{ path('panel', { routeName: 'store_product_buy', id: product.id }) }}&server={{ server.pterodactylServerIdentifier }}" method="post">
                     <input type="hidden" name="server" value="{{ server.id }}">
                     <div class="form-group">
                         <label for="duration">{{ 'pteroca.renew.period'|trans }}</label>

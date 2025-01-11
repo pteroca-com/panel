@@ -138,7 +138,7 @@ class StoreServiceTest extends TestCase
     public function testPrepareProduct(): void
     {
         $product = $this->createMock(Product::class);
-        $product->expects($this->once())
+        $product->expects($this->exactly(2))
             ->method('getImagePath')
             ->willReturn('product1.jpg');
 

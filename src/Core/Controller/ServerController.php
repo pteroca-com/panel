@@ -49,7 +49,7 @@ class ServerController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        /** @var Server $server */
+        /** @var ?Server $server */
         $server = current($serverRepository->findBy(['pterodactylServerIdentifier' => $serverId]));
         if (empty($server)) {
             throw $this->createNotFoundException();

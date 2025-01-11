@@ -17,11 +17,12 @@ class AbstractServerConfiguration
     {
         $serverDetails = $this->pterodactylService->getApi()->servers->get($server->getPterodactylServerId(), [
             'include' => $include,
-        ]);
+        ])?->toArray();
+
         if (empty($serverDetails)) {
             throw new \Exception('Server not found');
         }
 
-        return $serverDetails->toArray();
+        return $serverDetails;
     }
 }

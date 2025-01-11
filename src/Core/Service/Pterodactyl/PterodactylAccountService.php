@@ -14,17 +14,15 @@ class PterodactylAccountService
     {
     }
 
-    public function createPterodactylAccount(User $user, string $plainPassword): ?PterodactylUser
+    public function createPterodactylAccount(User $user, string $plainPassword): PterodactylUser
     {
-        $createdPterodactylUser = $this->pterodactylService->getApi()->users->create([
+        return $this->pterodactylService->getApi()->users->create([
             'email' => $user->getEmail(),
             'username' => $this->usernameService->generateUsername($user->getEmail()),
             'first_name' => $user->getName(),
             'last_name' => $user->getSurname(),
             'password' => $plainPassword,
         ]);
-
-        return $createdPterodactylUser ?? null;
     }
 
     public function deletePterodactylAccount(User $user): void

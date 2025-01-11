@@ -38,7 +38,7 @@ class BoughtConfirmationEmailService
                 'product' => $product,
                 'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
                 'server' => [
-                    'ip' => $serverDetails['ip'],
+                    'ip' => $serverDetails->ip,
                     'expiresAt' => $server->getExpiresAt()->format('Y-m-d H:i'),
                 ],
                 'panel' => [
@@ -64,7 +64,7 @@ class BoughtConfirmationEmailService
                 'product' => $product,
                 'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
                 'server' => [
-                    'ip' => $serverDetails['ip'],
+                    'ip' => $serverDetails->ip,
                     'expiresAt' => $server->getExpiresAt()->format('Y-m-d H:i'),
                 ],
                 'panel' => [

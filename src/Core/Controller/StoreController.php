@@ -99,7 +99,7 @@ class StoreController extends AbstractController
         ServerService $serverService,
     ): Response {
         $this->checkPermission();
-        $serverId = $request->request->getInt('server');
+        $serverId = $request->query->getString('server');
         if (!empty($serverId)) {
             $server = $serverService->getServer($serverId);
             if (empty($server)) {
