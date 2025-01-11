@@ -326,6 +326,8 @@ pteroca:
         google_captcha_verification: '需要 Google CAPTCHA 验证'
         google_captcha_site_key: 'Google CAPTCHA 网站密钥'
         terms_of_service: '服务条款页面内容'
+        pterodactyl_use_as_client_panel: '使用Pterodactyl面板作为服务器管理面板。警告：这将禁用在此面板中管理服务器的功能'
+
     user:
       email: '电子邮件'
       roles: '角色'

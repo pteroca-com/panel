@@ -326,6 +326,8 @@ pteroca:
         google_captcha_verification: 'Requerir verificación de Google CAPTCHA'
         google_captcha_site_key: 'Clave del sitio CAPTCHA de Google'
         terms_of_service: 'Contenido de la página de condiciones de servicio'
+        pterodactyl_use_as_client_panel: 'Usar el panel de Pterodactyl como panel de gestión de servidores. Advertencia: Esto deshabilitará la capacidad de gestionar servidores en este panel'
+
     user:
       email: 'Correo electrónico'
       roles: 'Roles'

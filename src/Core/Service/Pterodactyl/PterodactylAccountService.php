@@ -26,4 +26,9 @@ class PterodactylAccountService
 
         return $createdPterodactylUser ?? null;
     }
+
+    public function deletePterodactylAccount(User $user): void
+    {
+        $this->pterodactylService->getApi()->users->delete($user->getPterodactylUserId());
+    }
 }

@@ -9,8 +9,8 @@ use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\RegistrationService;
 use App\Core\Service\Logs\LogService;
-use App\Core\Service\Pterodactyl\PterodactylService;
-use App\Core\Service\Pterodactyl\PterodactylUsernameService;
+use App\Core\Service\Pterodactyl\PterodactylAccountService;
+use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
 use App\Core\Service\SettingService;
 use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
@@ -23,15 +23,12 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Timdesm\PterodactylPhpApi\Managers\UserManager;
-use Timdesm\PterodactylPhpApi\PterodactylApi;
-use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class RegistrationServiceTest extends TestCase
 {
     private UserPasswordHasherInterface $userPasswordHasher;
-    private PterodactylService $pterodactylService;
-    private PterodactylUsernameService $usernameService;
+    private PterodactylAccountService $pterodactylAccountService;
+    private PterodactylClientApiKeyService $pterodactylClientApiKeyService;
     private UserRepository $userRepository;
     private TranslatorInterface $translator;
     private LogService $logService;
@@ -43,8 +40,8 @@ class RegistrationServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->userPasswordHasher = $this->createMock(UserPasswordHasherInterface::class);
-        $this->pterodactylService = $this->createMock(PterodactylService::class);
-        $this->usernameService = $this->createMock(PterodactylUsernameService::class);
+        $this->pterodactylAccountService = $this->createMock(PterodactylAccountService::class);
+        $this->pterodactylClientApiKeyService = $this->createMock(PterodactylClientApiKeyService::class);
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
         $this->logService = $this->createMock(LogService::class);
@@ -54,12 +51,12 @@ class RegistrationServiceTest extends TestCase
 
         $this->registrationService = new RegistrationService(
             $this->userPasswordHasher,
-            $this->pterodactylService,
-            $this->usernameService,
             $this->userRepository,
             $this->translator,
             $this->logService,
             $this->settingService,
+            $this->pterodactylAccountService,
+            $this->pterodactylClientApiKeyService,
             $this->messageBus,
             $this->logger
         );
@@ -81,19 +78,18 @@ class RegistrationServiceTest extends TestCase
             ->with($user, $plainPassword)
             ->willReturn($hashedPassword);
 
-        $this->usernameService
-            ->method('generateUsername')
-            ->willReturn('pterodactyl_username');
+        $pterodactylAccount = new \Timdesm\PterodactylPhpApi\Resources\User([]);
+        $pterodactylAccount->set('id', $pterodactylUserId);
 
-        $pterodactylUser = $this->createMock(PterodactylUser::class);
-        $pterodactylUser->id = $pterodactylUserId;
+        $this->pterodactylAccountService
+            ->method('createPterodactylAccount')
+            ->with($user, $plainPassword)
+            ->willReturn($pterodactylAccount);
 
-        $pterodactylApiMock = $this->createMock(PterodactylApi::class);
-        $pterodactylApiMock->users = $this->createMock(UserManager::class);
-
-        $this->pterodactylService
-            ->method('getApi')
-            ->willReturn($pterodactylApiMock);
+        $this->pterodactylClientApiKeyService
+            ->method('createClientApiKey')
+            ->with($user)
+            ->willReturn('api_key');
 
         $this->userRepository
             ->expects($this->once())

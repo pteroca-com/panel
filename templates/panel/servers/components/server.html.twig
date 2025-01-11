@@ -1,5 +1,5 @@
 <div class="card" data-server-id="{{ server.id }}">
-    <a href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}">
+    <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url() }}/server/{{ server.pterodactylServerIdentifier }}{% endif %}">
         <img src="{{ server.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ server.product.name }}">
     </a>
     <div class="card-body">
@@ -43,7 +43,7 @@
                 </li>
             </ul>
         </p>
-        <a href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}" class="btn btn-primary">{{ 'pteroca.servers.manage_server'|trans }}</a>
+        <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url() }}/server/{{ server.pterodactylServerIdentifier }}{% endif %}" class="btn btn-primary">{{ 'pteroca.servers.manage_server'|trans }}</a>
         <a href="{{ path('panel', { routeName: 'store_server_renew', id: server.id }) }}" class="btn btn-primary">{{ 'pteroca.servers.extend'|trans }}</a>
     </div>
 </div>

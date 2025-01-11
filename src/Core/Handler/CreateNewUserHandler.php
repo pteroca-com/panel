@@ -4,6 +4,7 @@ namespace App\Core\Handler;
 
 use App\Core\Entity\User;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
 use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
@@ -41,8 +42,14 @@ class CreateNewUserHandler implements HandlerInterface
         $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $this->userPassword);
         if (!empty($pterodactylAccount->id)) {
             $user->setPterodactylUserId($pterodactylAccount->id);
-            $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
-            $user->setPterodactylUserApiKey($pterodactylClientApiKey);
+
+            try {
+                $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
+                $user->setPterodactylUserApiKey($pterodactylClientApiKey);
+            } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
+                $this->pterodactylAccountService->deletePterodactylAccount($user);
+                throw $exception;
+            }
         }
 
         $this->userRepository->save($user);

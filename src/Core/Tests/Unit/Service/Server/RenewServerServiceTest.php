@@ -8,14 +8,12 @@ use App\Core\Entity\User;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\RenewServerService;
-use App\Core\Service\Server\ServerService;
-use App\Core\Service\SettingService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Managers\ServerManager;
 use Timdesm\PterodactylPhpApi\Managers\UserManager;
 use Timdesm\PterodactylPhpApi\PterodactylApi;
@@ -24,10 +22,7 @@ class RenewServerServiceTest extends TestCase
 {
     private PterodactylService $pterodactylService;
     private ServerRepository $serverRepository;
-    private SettingService $settingService;
-    private ServerService $serverService;
-    private TranslatorInterface $translator;
-    private MessageBusInterface $messageBus;
+    private BoughtConfirmationEmailService $boughtConfirmationEmailService;
     private UserRepository $userRepository;
     private RenewServerService $renewServerService;
 
@@ -35,19 +30,13 @@ class RenewServerServiceTest extends TestCase
     {
         $this->pterodactylService = $this->createMock(PterodactylService::class);
         $this->serverRepository = $this->createMock(ServerRepository::class);
-        $this->settingService = $this->createMock(SettingService::class);
-        $this->serverService = $this->createMock(ServerService::class);
-        $this->translator = $this->createMock(TranslatorInterface::class);
-        $this->messageBus = $this->createMock(MessageBusInterface::class);
+        $this->boughtConfirmationEmailService = $this->createMock(BoughtConfirmationEmailService::class);
         $this->userRepository = $this->createMock(UserRepository::class);
 
         $this->renewServerService = new RenewServerService(
             $this->pterodactylService,
             $this->serverRepository,
-            $this->settingService,
-            $this->serverService,
-            $this->translator,
-            $this->messageBus,
+            $this->boughtConfirmationEmailService,
             $this->userRepository
         );
     }
@@ -108,21 +97,15 @@ class RenewServerServiceTest extends TestCase
             ->method('getApi')
             ->willReturn($pterodactylApi);
 
-        $this->serverService
+        $this->boughtConfirmationEmailService
             ->expects($this->once())
-            ->method('getServerDetails')
-            ->willReturn(['ip' => '127.0.0.1']);
-
-        $this->messageBus
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with($this->isInstanceOf(SendEmailMessage::class))
-            ->willReturn(new Envelope(new SendEmailMessage(
-                'test@test.com',
-                'pteroca.email.renew.subject',
-                'email/renew_product.html.twig',
-                []
-            )));
+            ->method('sendRenewConfirmationEmail')
+            ->with(
+                $user,
+                $server->getProduct(),
+                $server,
+                $this->isType('string')
+            );
 
         $this->renewServerService->renewServer($server, $user);
 
@@ -181,21 +164,15 @@ class RenewServerServiceTest extends TestCase
             ->method('getApi')
             ->willReturn($pterodactylApi);
 
-        $this->serverService
+        $this->boughtConfirmationEmailService
             ->expects($this->once())
-            ->method('getServerDetails')
-            ->willReturn(['ip' => '127.0.0.1']);
-
-        $this->messageBus
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with($this->isInstanceOf(SendEmailMessage::class))
-            ->willReturn(new Envelope(new SendEmailMessage(
-                'test@test.com',
-                'pteroca.email.renew.subject',
-                'email/renew_product.html.twig',
-                []
-            )));
+            ->method('sendRenewConfirmationEmail')
+            ->with(
+                $user,
+                $server->getProduct(),
+                $server,
+                $this->isType('string')
+            );
 
         $this->renewServerService->renewServer($server, $user);
 
@@ -205,5 +182,4 @@ class RenewServerServiceTest extends TestCase
         );
         $this->assertFalse($server->getIsSuspended());
     }
-
 }

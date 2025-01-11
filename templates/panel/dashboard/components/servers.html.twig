@@ -18,7 +18,7 @@
                         <strong class="m-2">{{ server.product.name }}</strong>
                         <span class="placeholder col-4 rounded-1" data-ip></span>
                         <span class="float-end">
-                            <a href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}">
+                            <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url() }}/server/{{ server.pterodactylServerIdentifier }}{% endif %}">
                                 <i class="fa fa-cog"></i>
                                 {{ 'pteroca.servers.manage_server'|trans }}
                             </a>

@@ -6,6 +6,7 @@ use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\LogService;
@@ -53,14 +54,21 @@ class RegistrationService
                 ->hashPassword($user, $plainPassword)
         );
         $user->setIsVerified(false);
+        $user->setRoles([UserRoleEnum::ROLE_USER->name]);
 
         $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $plainPassword);
         $user->setPterodactylUserId($pterodactylAccount->id ?? null);
 
-        $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
-        $user->setPterodactylUserApiKey($pterodactylClientApiKey);
-
-        $user->setRoles([UserRoleEnum::ROLE_USER->name]);
+        try {
+            $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
+            $user->setPterodactylUserApiKey($pterodactylClientApiKey);
+        } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
+            $this->pterodactylAccountService->deletePterodactylAccount($user);
+            $this->logger->error('Failed to create Pterodactyl client API key', [
+                'exception' => $exception,
+                'user' => $user,
+            ]);
+        }
 
         $this->userRepository->save($user);
         $this->logService->logAction($user, LogActionEnum::USER_REGISTERED);
