@@ -148,6 +148,12 @@ a:hover {
     border-radius: 7px;
 }
 
+.product-image {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+}
+
 .card-header {
     padding-top: 0.8rem;
 }

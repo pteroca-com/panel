@@ -12,18 +12,43 @@
     <div class="container mt-5 product-details">
         <h1 class="product-name">{{ product.name }}</h1>
         <div class="row">
-            <div class="col-md-12 product-image-container mt-3 mb-5" style='background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}")'></div>
+            <div class="col-md-12 product-image-container mt-4 mb-5" style='background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}")'></div>
             <div class="col-md-8">
                 <h2>{{ 'pteroca.product.information'|trans }}</h2>
-                <p>{{ product.description }}</p>
-                <ul class="list-group">
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.ram'|trans }}:</strong> {{ product.memory }} MB</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.cpu'|trans }}:</strong> {{ product.cpu }}%</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.disk'|trans }}:</strong> {{ product.diskSpace }} MB</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.backups'|trans }}:</strong> {{ product.backups }}</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.swap'|trans }}:</strong> {{ product.swap }} MB</li>
-                    <li class="list-group-item"><strong>{{ 'pteroca.product.databases'|trans }}:</strong> {{ product.dbCount }}</li>
-                </ul>
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.name'|trans }}:</strong> {{ product.name }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.description'|trans }}:</strong> {{ product.description }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.ram'|trans }}:</strong> {{ product.memory }} MB</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.cpu'|trans }}:</strong> {{ product.cpu }}%</li>
+                        </ul>
+                        {% if not isProductAvailable %}
+                            <div class="mt-5">
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fa fa-exclamation-triangle me-1"></i>
+                                    {{ 'pteroca.product.not_available'|trans }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.disk'|trans }}:</strong> {{ product.diskSpace }} MB</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.backups'|trans }}:</strong> {{ product.backups }}</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.swap'|trans }}:</strong> {{ product.swap }} MB</li>
+                            <li class="list-group-item"><strong>{{ 'pteroca.product.databases'|trans }}:</strong> {{ product.dbCount }}</li>
+                        </ul>
+                        {% if app.user.balance < product.price %}
+                            <div class="mt-5">
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fa fa-exclamation-triangle me-1"></i>
+                                    {{ 'pteroca.product.not_enough_balance'|trans }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
                 <h2>{{ 'pteroca.product.order'|trans }}</h2>
@@ -47,22 +72,6 @@
                             <small class="form-text text-muted"><i class="fas fa-info-circle"></i> {{ 'pteroca.product.egg_hint'|trans }}</small>
                         {% endif %}
                     </div>
-                    {% if not isProductAvailable %}
-                        <div class="mb-3">
-                            <div class="alert alert-warning" role="alert">
-                                <i class="fa fa-exclamation-triangle me-1"></i>
-                                {{ 'pteroca.product.not_available'|trans }}
-                            </div>
-                        </div>
-                    {% endif %}
-                    {% if app.user.balance < product.price %}
-                        <div class="mb-3">
-                            <div class="alert alert-warning" role="alert">
-                                <i class="fa fa-exclamation-triangle me-1"></i>
-                                {{ 'pteroca.product.not_enough_balance'|trans }}
-                            </div>
-                        </div>
-                    {% endif %}
                     <div class="form-group">
                         <label for="price">{{ 'pteroca.product.price'|trans }}</label>
                         <input type="text" id="price" class="form-control" value="{{ product.price|number_format(2, ',', ' ') }} {{ get_currency() }}" disabled>

@@ -71,7 +71,7 @@ class StoreController extends AbstractController
     public function renewProduct(Request $request, ServerService $serverService): Response
     {
         $this->checkPermission();
-        $serverId = $request->query->getInt('id');
+        $serverId = $request->query->getString('id');
         $server = $serverService->getServer($serverId);
         if (empty($server)) {
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));

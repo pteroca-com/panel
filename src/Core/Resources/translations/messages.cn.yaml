@@ -109,6 +109,9 @@ pteroca:
     order_now: '立即订购'
     not_available: '该产品目前不可用。'
     not_enough_balance: '您的账户余额不足。'
+    product_information: '产品信息'
+    name: '产品名称'
+    description: '产品描述'
 
   store:
     title: '商店'
@@ -132,6 +135,10 @@ pteroca:
     current_expiration: '当前到期日期'
     renew_now: '立即续订'
     ip_address: '服务器 IP 地址'
+    server_information: '服务器信息'
+    server_name: '服务器名称'
+    server_description: '服务器描述'
+    server_current_software: '当前软件'
 
   servers:
     title: '服务器'
