@@ -10,6 +10,7 @@ use Twig\TwigFunction;
 class AppExtension extends AbstractExtension
 {
     public function __construct(
+        private readonly string $currentVersion,
         private readonly SettingService $settingService,
     ) {}
 
@@ -101,6 +102,6 @@ class AppExtension extends AbstractExtension
 
     public function getAppVersion(): string
     {
-        return '0.2.4';
+        return $this->currentVersion;
     }
 }
