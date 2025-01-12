@@ -4,6 +4,7 @@ namespace App\Core\Controller\API;
 
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Exception\NotAllowedInDemoModeException;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
@@ -28,6 +29,8 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
+        throw new NotAllowedInDemoModeException();
+
         [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
         $serverConfigurationVariableService->updateServerVariable(
             $server,
@@ -52,6 +55,8 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
+        throw new NotAllowedInDemoModeException();
+
         [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
         $serverConfigurationOptionService->updateServerStartupOption(
             $server,
@@ -76,6 +81,8 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
+        throw new NotAllowedInDemoModeException();
+
         [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
         $serverConfigurationDetailsService->updateServerDetails(
             $server,
@@ -100,6 +107,8 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
+        throw new NotAllowedInDemoModeException();
+
         [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
         $serverReinstallationService->reinstallServer($server, $variableData['key']);
 

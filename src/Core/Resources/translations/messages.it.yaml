@@ -7,6 +7,7 @@ pteroca:
 
   demo:
     action_disabled: 'Questa azione è disabilitata nella demo.'
+    limited_in_demo: 'Alcune funzionalità sono limitate nella versione demo. Per accedere a tutte le funzionalità, provalo sul tuo server.'
 
   login:
     title: 'Accedi'

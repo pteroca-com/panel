@@ -7,6 +7,7 @@ pteroca:
 
   demo:
     action_disabled: '此操作在演示模式下已禁用。'
+    limited_in_demo: '某些功能在演示版本中受到限制。要访问所有功能，请在您自己的服务器上试用。'
 
   login:
     title: '登录'

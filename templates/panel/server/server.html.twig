@@ -31,6 +31,12 @@
             </div>
         </div>
     {% endif %}
+    <div class="container mt-4 mb-4">
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ 'pteroca.demo.limited_in_demo'|trans }}
+        </div>
+    </div>
 
     <div class="container mt-4">
         {% include 'panel/server/tabs/navigation.html.twig' %}
