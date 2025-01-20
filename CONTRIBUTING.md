@@ -42,7 +42,7 @@ We love new ideas! If you have a feature request, follow these steps:
 
 - **Be respectful**: We value a welcoming, respectful, and inclusive community. Disrespectful or inappropriate behavior will not be tolerated.
 - **Collaboration**: Help fellow contributors by reviewing pull requests and participating in discussions.
-- **Support**: For usage or configuration questions, please refer to our [Documentation](https://pteroca.gitbook.io) and the [Discord Support Server](https://discord.gg/fMk5728M).
+- **Support**: For usage or configuration questions, please refer to our [Documentation](https://pteroca.gitbook.io) and the [Discord Support Server](https://discord.gg/Gz5phhuZym).
 
 ## Setting Up Your Development Environment
 
