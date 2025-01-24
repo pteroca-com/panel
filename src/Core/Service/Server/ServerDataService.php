@@ -2,8 +2,10 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\DTO\Collection\ServerVariableCollection;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
+use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 
@@ -14,6 +16,7 @@ class ServerDataService
         private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerNestService $serverNestService,
         private readonly ServerService $serverService,
+        private readonly ServerVariableFactory $serverVariableFactory,
     )
     {
     }
@@ -58,6 +61,9 @@ class ServerDataService
             $pterodactylServer->get('egg')
         );
 
+        $serverVariables = $this->serverVariableFactory
+            ->createFromCollection($pterodactylServer->get('relationships')['variables']->all());
+
         return new ServerDataDTO(
             $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
@@ -68,6 +74,7 @@ class ServerDataService
             $availableNestEggs ?? null,
             $hasConfigurableOptions,
             $hasConfigurableVariables,
+            new ServerVariableCollection($serverVariables),
         );
     }
 

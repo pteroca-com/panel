@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: 'Das Konsolen-Token ist abgelaufen. Bitte aktualisieren Sie die Seite.'
     console_connection_closed: 'Die Konsolenverbindung wurde geschlossen.'
     console_connection_error: 'Beim Verbinden mit der Konsole ist ein Fehler aufgetreten.'
+    rules: 'Regeln'
+    data_validation_error: 'Fehler bei der Validierung. Bitte überprüfen Sie, ob alle Regeln erfüllt sind.'
 
   actions:
     login: 'Login'

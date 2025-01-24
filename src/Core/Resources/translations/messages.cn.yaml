@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: '控制台令牌已过期。请刷新页面。'
     console_connection_closed: '控制台连接已关闭。'
     console_connection_error: '连接控制台时发生错误。'
+    rules: '规则'
+    data_validation_error: '验证过程中出错。请检查是否满足所有规则。'
 
   actions:
     login: '登录'

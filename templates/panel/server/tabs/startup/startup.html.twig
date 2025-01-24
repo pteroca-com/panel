@@ -24,29 +24,97 @@
 
         function toggleSetting(settingName, isStartupOption = false) {
             const element = getSettingElement(settingName, isStartupOption),
-                icon = document.querySelector(`i[data-option-name="${settingName}"]`);
+                icon = document.querySelector(`i[data-option-name="${settingName}"]`),
+                disabled = toggleDisabledElement(element);
+
+            if (!disabled) {
+                element.focus();
+            } else if (!saveSetting(settingName, isStartupOption)) {
+                toggleDisabledElement(element);
+                element.focus();
+                return;
+            }
+
             icon.classList.toggle('fa-edit');
             icon.classList.toggle('fa-save');
+            toggleServerVariablesElement(settingName);
+        }
+
+        function toggleDisabledElement(element) {
+            let disabled;
+
             if (element.tagName !== 'SELECT') {
                 element.readOnly = !element.readOnly;
-                if (!element.readOnly) {
-                    element.focus();
-                } else {
-                    saveSetting(settingName, isStartupOption);
-                }
+                disabled = element.readOnly;
             } else {
                 element.disabled = !element.disabled;
-                if (!element.disabled) {
-                    element.focus();
-                } else {
-                    saveSetting(settingName, isStartupOption);
-                }
+                disabled = element.disabled;
+            }
+
+            return disabled;
+        }
+
+        function toggleServerVariablesElement(settingName) {
+            const serverVariablesElement = document.querySelector(`.server-variables[data-option-name="${settingName}"]`);
+            if (serverVariablesElement) {
+                serverVariablesElement.classList.toggle('d-none');
             }
         }
 
+        function validateSetting(settingName, settingValue) {
+            const settingRules = document.querySelectorAll(`.server-variables[data-option-name="${settingName}"] .server-variable`);
+
+            for (const ruleElement of settingRules) {
+                const rule = ruleElement.textContent.trim();
+
+                switch (true) {
+                    case rule === 'required':
+                        if (settingValue.trim() === '') {
+                            return false;
+                        }
+                        break;
+                    case rule.startsWith('min:'):
+                        const min = parseInt(rule.split(':')[1]);
+                        if (settingValue.length < min) {
+                            return false;
+                        }
+                        break;
+                    case rule.startsWith('max:'):
+                        const max = parseInt(rule.split(':')[1]);
+                        if (settingValue.length > max) {
+                            return false;
+                        }
+                        break;
+                    case rule.startsWith('between:'):
+                        const between = rule.split(':')[1].split(',');
+                        const minBetween = parseInt(between[0]);
+                        const maxBetween = parseInt(between[1]);
+                        if (settingValue.length < minBetween || settingValue.length > maxBetween) {
+                            return false;
+                        }
+                        break;
+                    case rule.startsWith('regex:'):
+                        const regexPattern = rule.split(':')[1].replace(/^\/|\/$/g, '');
+                        const regex = new RegExp(regexPattern);
+                        if (!regex.test(settingValue)) {
+                            return false;
+                        }
+                        break;
+                }
+            }
+
+            return true;
+        }
+
         function saveSetting(settingName, isStartupOption) {
-            const element = getSettingElement(settingName, isStartupOption),
-                endpointUrl = !isStartupOption
+            const element = getSettingElement(settingName, isStartupOption);
+
+            if (validateSetting(settingName, element.value) === false) {
+                alert('{{ 'pteroca.server.data_validation_error'|trans }}');
+                return false;
+            }
+
+            const endpointUrl = !isStartupOption
                     ? '{{ path('server_startup_variable_update', { id: server.id }) }}'
                     : '{{ path('server_startup_option_update', { id: server.id }) }}';
             fetch(endpointUrl, {
@@ -67,6 +135,8 @@
             }).catch(error => {
                 return handleError('{{ 'pteroca.server.data_update_error'|trans }}');
             });
+
+            return true;
         }
 
         function handleError(message) {

@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: 'Термін дії токена консолі закінчився. Будь ласка, оновіть сторінку.'
     console_connection_closed: 'З''єднання з консоллю закрито.'
     console_connection_error: 'Сталася помилка під час підключення до консолі.'
+    rules: 'Правила'
+    data_validation_error: 'Помилка під час перевірки. Будь ласка, перевірте, чи виконані всі правила.'
 
   actions:
     login: 'Вхід'
