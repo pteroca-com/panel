@@ -2,6 +2,7 @@
 
 namespace App\Core\Command;
 
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Handler\CreateNewUserHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -28,6 +29,7 @@ class CreateNewUserCommand extends Command
         $this
             ->addArgument('email', InputArgument::REQUIRED, 'User email')
             ->addArgument('password', InputArgument::REQUIRED, 'User password')
+            ->addArgument('role', InputArgument::OPTIONAL, 'User role', UserRoleEnum::ROLE_USER->name)
         ;
     }
 
@@ -37,8 +39,9 @@ class CreateNewUserCommand extends Command
 
         $email = $input->getArgument('email');
         $password = $input->getArgument('password');
+        $role = UserRoleEnum::tryFrom($input->getArgument('role')) ?? UserRoleEnum::ROLE_USER;
 
-        $this->createNewUserHandler->setUserCredentials($email, $password);
+        $this->createNewUserHandler->setUserCredentials($email, $password, $role);
         $this->createNewUserHandler->handle();
 
         $io->success('New user created!');
