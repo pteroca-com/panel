@@ -2,9 +2,10 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Repository\SettingRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: "App\Core\Repository\SettingRepository")]
+#[ORM\Entity(repositoryClass: SettingRepository::class)]
 class Setting
 {
     #[ORM\Id]
@@ -20,6 +21,9 @@ class Setting
 
     #[ORM\Column(length: 50)]
     private string $type;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $context;
 
     public function getId(): int
     {
@@ -56,6 +60,17 @@ class Setting
     public function setType(string $type): self
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function getContext(): ?string
+    {
+        return $this->context;
+    }
+
+    public function setContext(?string $context): self
+    {
+        $this->context = $context;
         return $this;
     }
 

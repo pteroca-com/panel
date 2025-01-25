@@ -2,15 +2,20 @@
 
 namespace App\Core\Controller\Panel;
 
+use App\Core\Controller\Panel\Setting\EmailSettingCrudController;
+use App\Core\Controller\Panel\Setting\GeneralSettingCrudController;
+use App\Core\Controller\Panel\Setting\PaymentSettingCrudController;
+use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
+use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
 use App\Core\Entity\Category;
 use App\Core\Entity\Log;
 use App\Core\Entity\Payment;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
-use App\Core\Entity\Setting;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
+use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
@@ -82,7 +87,13 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars-progress', ServerLog::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs', Setting::class);
+            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.general'), 'fa fa-cog', $this->generateSettingsUrl(SettingContextEnum::GENERAL)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.appearance'), 'fa fa-brush', $this->generateSettingsUrl(SettingContextEnum::THEME)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.security'), 'fa fa-shield-halved', $this->generateSettingsUrl(SettingContextEnum::SECURITY)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.payment_gateways'), 'fa fa-hand-holding-dollar', $this->generateSettingsUrl(SettingContextEnum::PAYMENT)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.email'), 'fa fa-envelope', $this->generateSettingsUrl(SettingContextEnum::EMAIL)),
+            ]);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class);
         }
 
@@ -115,5 +126,21 @@ class DashboardController extends AbstractDashboardController
             ),
         ]);
         return $userMenu;
+    }
+
+    private function generateSettingsUrl(SettingContextEnum $context): string
+    {
+        $crudFqcn = match ($context) {
+            SettingContextEnum::THEME => ThemeSettingCrudController::class,
+            SettingContextEnum::SECURITY => SecuritySettingCrudController::class,
+            SettingContextEnum::PAYMENT => PaymentSettingCrudController::class,
+            SettingContextEnum::EMAIL => EmailSettingCrudController::class,
+            default => GeneralSettingCrudController::class,
+        };
+
+        return $this->generateUrl('panel', [
+            'crudAction' => 'index',
+            'crudControllerFqcn' => $crudFqcn,
+        ]);
     }
 }
