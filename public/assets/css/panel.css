@@ -169,3 +169,7 @@ input#command {
 .server-stats-row {
     min-width: 300px;
 }
+
+.menu-item .icon.submenu-toggle-icon {
+    color: #FFFFFF !important;
+}
