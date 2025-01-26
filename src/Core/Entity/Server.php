@@ -37,6 +37,9 @@ class Server
     #[ORM\Column(type: 'boolean')]
     private bool $isSuspended = false;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $autoRenewal = false;
+
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
@@ -116,6 +119,17 @@ class Server
     public function setIsSuspended(bool $isSuspended): self
     {
         $this->isSuspended = $isSuspended;
+        return $this;
+    }
+
+    public function isAutoRenewal(): bool
+    {
+        return $this->autoRenewal;
+    }
+
+    public function setAutoRenewal(bool $autoRenewal): self
+    {
+        $this->autoRenewal = $autoRenewal;
         return $this;
     }
 

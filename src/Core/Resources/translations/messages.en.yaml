@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: 'The console token has expired. Please refresh the page.'
     console_connection_closed: 'The console connection has been closed.'
     console_connection_error: 'An error occurred while connecting to the console.'
+    enable_auto_renewal: 'Enable auto-renewal for this server'
+    auto_renewal_tooltip: 'If enabled, the server will be automatically renewed for the selected period. The payment will be made from your account balance.'
 
   actions:
     login: 'Login'
@@ -235,6 +237,7 @@ pteroca:
     reinstall: 'Reinstalled server'
     change_startup_option: 'Changed startup option'
     change_startup_variable: 'Changed startup variable'
+    toggle_auto_renewal: 'Toggled auto-renewal'
 
   crud:
     category:
@@ -294,6 +297,7 @@ pteroca:
       server: 'Server'
       servers: 'Servers'
       manage_server: 'Manage server'
+      auto_renewal: 'Auto renewal'
     setting:
       name: 'Setting name'
       value: 'Setting value'

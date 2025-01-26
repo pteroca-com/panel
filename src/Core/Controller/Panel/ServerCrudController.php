@@ -52,6 +52,8 @@ class ServerCrudController extends AbstractPanelController
                 ->hideOnForm(),
             DateTimeField::new('expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
             BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
+            BooleanField::new('autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
+                ->hideOnIndex(),
         ];
     }
 

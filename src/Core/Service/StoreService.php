@@ -117,9 +117,13 @@ class StoreService
             throw new NotFoundHttpException($this->translator->trans('pteroca.store.egg_not_found'));
         }
 
+        $this->validateUserBalance($user, $product);
+    }
 
+    public function validateUserBalance(User $user, Product $product): void
+    {
         if (($product->getPrice() / 100) > $user->getBalance()) {
-            throw new NotFoundHttpException($this->translator->trans('pteroca.store.not_enough_funds'));
+            throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
     }
 }

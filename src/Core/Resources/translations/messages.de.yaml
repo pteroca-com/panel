@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: 'Das Konsolen-Token ist abgelaufen. Bitte aktualisieren Sie die Seite.'
     console_connection_closed: 'Die Konsolenverbindung wurde geschlossen.'
     console_connection_error: 'Beim Verbinden mit der Konsole ist ein Fehler aufgetreten.'
+    enable_auto_renewal: 'Automatische Verlängerung für diesen Server aktivieren'
+    auto_renewal_tooltip: 'Wenn aktiviert, wird der Server automatisch für den ausgewählten Zeitraum verlängert. Die Zahlung erfolgt aus Ihrem Kontoguthaben.'
 
   actions:
     login: 'Login'
@@ -235,6 +237,7 @@ pteroca:
     reinstall: 'Server neu installiert'
     change_startup_option: 'Startoption geändert'
     change_startup_variable: 'Startvariable geändert'
+    toggle_auto_renewal: 'Automatische Verlängerung umgeschaltet'
 
   crud:
     category:
@@ -294,6 +297,7 @@ pteroca:
       server: 'Server'
       servers: 'Server'
       manage_server: 'Server verwalten'
+      auto_renewal: 'Automatische Verlängerung'
     setting:
       name: 'Einstellungsname'
       value: 'Wert'
