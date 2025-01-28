@@ -1,9 +1,11 @@
 <div class="card" data-server-id="{{ server.id }}">
-    <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url() }}/server/{{ server.pterodactylServerIdentifier }}{% endif %}">
-        <img src="{{ server.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top" alt="{{ server.product.name }}">
-    </a>
+    {% if server.imagePath is defined and server.imagePath %}
+        <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url() }}/server/{{ server.pterodactylServerIdentifier }}{% endif %}">
+            <img src="{{ server.imagePath }}" class="card-img-top" alt="{{ server.product.name }}">
+        </a>
+    {% endif %}
     <div class="card-body">
-        <h5 class="card-title">
+        <h5 class="card-title mt-2 mb-4 px-3">
             {{ server.product.name }} #{{ server.pterodactylServerIdentifier }}
             {% if not server.isSuspended %}
                 <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
