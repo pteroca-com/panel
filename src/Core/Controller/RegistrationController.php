@@ -29,6 +29,10 @@ class RegistrationController extends AbstractController
         #[Autowire(service: 'App\Core\Security\UserAuthenticator')]
         AuthenticatorInterface $authenticator,
     ): Response {
+        if ($this->getUser() !== null) {
+            return $this->redirectToRoute('panel');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
