@@ -69,6 +69,11 @@ class StoreService
             $product->setImagePath($imagePath . $product->getImagePath());
         }
 
+        if (!empty($product->getBannerPath())) {
+            $bannerPath = $this->productsBasePath . '/';
+            $product->setBannerPath($bannerPath . $product->getBannerPath());
+        }
+
         return $product;
     }
 

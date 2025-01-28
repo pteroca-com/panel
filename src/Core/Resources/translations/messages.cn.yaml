@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: '控制台令牌已过期。请刷新页面。'
     console_connection_closed: '控制台连接已关闭。'
     console_connection_error: '连接控制台时发生错误。'
+    rules: '规则'
+    data_validation_error: '验证过程中出错。请检查是否满足所有规则。'
 
   actions:
     login: '登录'
@@ -252,6 +254,9 @@ pteroca:
       is_active: '活跃'
       category: '类别'
       image: '图片'
+      image_help: '图片将显示在商店中。'
+      banner: '横幅'
+      banner_help: '横幅将显示在产品页面上。'
       server_resources: '服务器资源'
       disk_space: '磁盘空间'
       memory: 'RAM 内存'
@@ -417,8 +422,8 @@ pteroca:
     store:
       subject: '服务器购买'
       server_purchased: '您已在我们的商店购买了一台服务器。'
-      expiration_date: '到期日期：'
-      product_details: '产品详情：'
+      expiration_date: '到期日期'
+      product_details: '产品详情'
       product_name: '产品名称'
       product_price: '产品价格'
       server_details: '服务器详情'

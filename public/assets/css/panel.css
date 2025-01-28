@@ -169,3 +169,7 @@ input#command {
 .server-stats-row {
     min-width: 300px;
 }
+
+.hover-pointer:hover {
+    cursor: pointer;
+}

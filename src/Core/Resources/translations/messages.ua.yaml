@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: 'Термін дії токена консолі закінчився. Будь ласка, оновіть сторінку.'
     console_connection_closed: 'З''єднання з консоллю закрито.'
     console_connection_error: 'Сталася помилка під час підключення до консолі.'
+    rules: 'Правила'
+    data_validation_error: 'Помилка під час перевірки. Будь ласка, перевірте, чи виконані всі правила.'
 
   actions:
     login: 'Вхід'
@@ -252,6 +254,9 @@ pteroca:
       is_active: 'Активний'
       category: 'Категорія'
       image: 'Зображення'
+      image_help: 'Зображення буде відображено в магазині.'
+      banner: 'Банер'
+      banner_help: 'Банер буде відображено на сторінці продукту.'
       server_resources: 'Ресурси сервера'
       disk_space: 'Місце на диску'
       memory: 'RAM'
@@ -417,8 +422,8 @@ pteroca:
     store:
       subject: 'Покупка сервера'
       server_purchased: 'Ви придбали сервер у нашому магазині.'
-      expiration_date: 'Дата закінчення:'
-      product_details: 'Деталі продукту:'
+      expiration_date: 'Дата закінчення'
+      product_details: 'Деталі продукту'
       product_name: 'Назва продукту'
       product_price: 'Ціна продукту'
       server_details: 'Деталі сервера'

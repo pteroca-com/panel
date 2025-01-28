@@ -64,8 +64,13 @@ Take a look at some screenshots of our intuitive panel interface below:
 ### Community & Support
 Join our [Discord Server](https://discord.gg/Gz5phhuZym) for community support, or visit our [GitHub Issues](https://github.com/pteroca-com/panel/issues) page to report bugs or request features.
 
+### Roadmap
+We are continuously working to improve PteroCA.com! Check out the [Roadmap Page](https://pteroca.com/roadmap) for more details.
+
 ### Contributing
 We welcome contributions! Check out our [Contributing Guide](https://github.com/pteroca-com/panel/blob/main/CONTRIBUTING.md) to get started.
+
+Also, if you're interested in helping translate PteroCA.com into more languages, visit our [Crowdin page](https://crowdin.com/project/pteroca) to contribute.
 
 ---
 

@@ -9,12 +9,15 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
 use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 
 class CreateNewUserHandler implements HandlerInterface
 {
     private string $userEmail;
 
     private string $userPassword;
+
+    private UserRoleEnum $userRole;
 
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
@@ -32,14 +35,23 @@ class CreateNewUserHandler implements HandlerInterface
         $user = (new User())
             ->setEmail($this->userEmail)
             ->setPassword('')
-            ->setRoles([UserRoleEnum::ROLE_USER->name, UserRoleEnum::ROLE_ADMIN->name])
+            ->setRoles([$this->userRole->name])
             ->setBalance(0)
             ->setName('Admin')
             ->setSurname('Admin');
+
         $hashedPassword = $this->passwordHasher->hashPassword($user, $this->userPassword);
         $user->setPassword($hashedPassword);
 
-        $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $this->userPassword);
+        try {
+            $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $this->userPassword);
+        } catch (ValidationException $exception) {
+            $errors = $exception->errors()['errors'] ?? [];
+            $errors = array_map(fn($error) => $error['detail'], $errors);
+            $message = sprintf('%s Errors: %s', $exception->getMessage(), implode(', ', $errors));
+            throw new \RuntimeException($message);
+        }
+
         if (!empty($pterodactylAccount->id)) {
             $user->setPterodactylUserId($pterodactylAccount->id);
 
@@ -55,9 +67,10 @@ class CreateNewUserHandler implements HandlerInterface
         $this->userRepository->save($user);
     }
 
-    public function setUserCredentials(string $email, string $password): void
+    public function setUserCredentials(string $email, string $password, UserRoleEnum $userRole): void
     {
         $this->userEmail = $email;
         $this->userPassword = $password;
+        $this->userRole = $userRole;
     }
 }

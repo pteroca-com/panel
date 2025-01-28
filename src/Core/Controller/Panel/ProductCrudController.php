@@ -74,7 +74,14 @@ class ProductCrudController extends AbstractPanelController
                 ->setBasePath($this->getParameter('products_base_path'))
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-                ->setRequired(false),
+                ->setRequired(false)
+                ->setHelp($this->translator->trans('pteroca.crud.product.image_help')),
+            ImageField::new('bannerPath', $this->translator->trans('pteroca.crud.product.banner'))
+                ->setBasePath($this->getParameter('products_base_path'))
+                ->setUploadDir($uploadDirectory)
+                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
+                ->setRequired(false)
+                ->setHelp($this->translator->trans('pteroca.crud.product.banner_help')),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
                 ->setIcon('fa fa-server'),
