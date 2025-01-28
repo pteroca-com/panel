@@ -417,8 +417,8 @@ pteroca:
     store:
       subject: 'Achat de serveur'
       server_purchased: 'Vous avez acheté un serveur dans notre boutique.'
-      expiration_date: 'Date d’expiration :'
-      product_details: 'Détails du produit :'
+      expiration_date: 'Date d’expiration'
+      product_details: 'Détails du produit'
       product_name: 'Nom du produit'
       product_price: 'Prix du produit'
       server_details: 'Détails du serveur'
