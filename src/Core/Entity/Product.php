@@ -79,6 +79,12 @@ class Product
     #[Vich\UploadableField(mapping: 'category_images', fileNameProperty: 'imagePath')]
     private ?File $imageFile = null;
 
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $bannerPath = null;
+
+    #[Vich\UploadableField(mapping: 'category_banners', fileNameProperty: 'bannerPath')]
+    private ?File $bannerFile = null;
+
     #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?Category $category;
@@ -332,6 +338,32 @@ class Product
     public function getImageFile(): ?File
     {
         return $this->imageFile;
+    }
+
+    public function getBannerPath(): ?string
+    {
+        return $this->bannerPath;
+    }
+
+    public function setBannerPath(?string $bannerPath): self
+    {
+        $this->bannerPath = $bannerPath;
+        return $this;
+    }
+
+    public function setBannerFile(?File $bannerFile = null): void
+    {
+        $this->bannerFile = $bannerFile;
+        if (null !== $bannerFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTime();
+        }
+    }
+
+    public function getBannerFile(): ?File
+    {
+        return $this->bannerFile;
     }
 
     public function __toString(): string
