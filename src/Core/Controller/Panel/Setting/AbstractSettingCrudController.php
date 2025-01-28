@@ -37,6 +37,8 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
 {
     protected SettingContextEnum $context;
 
+    protected ?Setting $currentEntity = null;
+
     public function __construct(
         LogService $logService,
         private readonly RequestStack $requestStack,
@@ -46,6 +48,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         private readonly LocaleService $localeService,
     ) {
         parent::__construct($logService);
+        $this->currentEntity = $this->getSettingEntity();
     }
 
     public static function getEntityFqcn(): string
@@ -55,7 +58,6 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
 
     public function configureFields(string $pageName): iterable
     {
-        $entity = $this->getSettingEntity();
         $fields = [
             TextField::new('name', $this->translator->trans('pteroca.crud.setting.name'))
                 ->setDisabled($pageName === Crud::PAGE_EDIT)
@@ -77,7 +79,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         ];
 
         $valueLabel = $this->translator->trans('pteroca.crud.setting.value');
-        $valueField = match ($entity?->getType()) {
+        $valueField = match ($this->currentEntity?->getType()) {
             SettingTypeEnum::COLOR->value => TextField::new('value', $valueLabel)
                 ->setFormType(ColorType::class),
             SettingTypeEnum::BOOLEAN->value => ChoiceField::new('value', $valueLabel)
@@ -152,21 +154,6 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         return parent::configureFilters($filters);
     }
 
-    private function getSettingEntity(): ?Setting
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        $crudAction = $request->query->get('crudAction');
-        if ($crudAction === 'index') {
-            return null;
-        }
-
-        $id = $request->query->get('entityId');
-        if ($id) {
-            return $this->settingRepository->find($id);
-        }
-        return null;
-    }
-
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
@@ -192,5 +179,20 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
             ->setParameter('context', $this->context->value);
 
         return $qb;
+    }
+
+    private function getSettingEntity(): ?Setting
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $crudAction = $request->query->get('crudAction');
+        if ($crudAction === 'index') {
+            return null;
+        }
+
+        $id = $request->query->get('entityId');
+        if ($id) {
+            return $this->settingRepository->find($id);
+        }
+        return null;
     }
 }

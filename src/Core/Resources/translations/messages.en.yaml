@@ -335,6 +335,14 @@ pteroca:
         google_captcha_site_key: 'Google CAPTCHA site key'
         terms_of_service: 'Terms of service page content'
         pterodactyl_use_as_client_panel: 'Use Pterodactyl Panel as server management panel. Warning: This will disable the ability to manage servers in this panel'
+      template:
+        name: 'Template name'
+        description: 'Template description'
+        author: 'Author'
+        version: 'Version'
+        license: 'License'
+        pterocaVersion: 'Pteroca version'
+        phpVersion: 'PHP version'
 
     user:
       email: 'Email'
