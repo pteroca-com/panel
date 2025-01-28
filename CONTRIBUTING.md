@@ -71,6 +71,10 @@ We love new ideas! If you have a feature request, follow these steps:
 
 5. **Start developing!**
 
+
+## Helping with Translations
+We want PteroCA to be accessible to users all over the world. If you're interested in helping translate PteroCA into more languages, you can contribute via our [Crowdin page](https://crowdin.com/project/pteroca). No coding skills are required—just your language expertise!
+
 ## License
 
 By contributing to PteroCA, you agree that your contributions will be licensed under the [MIT License](https://github.com/pteroca-com/panel/blob/main/LICENSE).
