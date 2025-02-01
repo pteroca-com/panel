@@ -25,6 +25,13 @@ class PterodactylAccountService
         ]);
     }
 
+    public function updatePterodactylAccountPassword(User $user, string $plainPassword): PterodactylUser
+    {
+        return $this->pterodactylService->getApi()->users->update($user->getPterodactylUserId(), [
+            'password' => $plainPassword,
+        ]);
+    }
+
     public function deletePterodactylAccount(User $user): void
     {
         $this->pterodactylService->getApi()->users->delete($user->getPterodactylUserId());
