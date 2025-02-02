@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Authorization;
 
+use App\Core\DTO\Action\Result\RegisterUserActionResult;
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
@@ -47,16 +48,20 @@ class RegistrationService
         );
     }
 
-    public function registerUser(User $user, string $plainPassword): User
+    public function registerUser(User $user, string $plainPassword): RegisterUserActionResult
     {
-        $user->setPassword(
-            $this->userPasswordHasher
-                ->hashPassword($user, $plainPassword)
-        );
+        try {
+            $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $plainPassword);
+        } catch (\Exception $exception) {
+            return new RegisterUserActionResult(
+                success: false,
+                error: $exception->getMessage(),
+            );
+        }
+
+        $user->setPassword($this->userPasswordHasher->hashPassword($user, $plainPassword));
         $user->setIsVerified(false);
         $user->setRoles([UserRoleEnum::ROLE_USER->name]);
-
-        $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $plainPassword);
         $user->setPterodactylUserId($pterodactylAccount->id ?? null);
 
         try {
@@ -74,7 +79,10 @@ class RegistrationService
         $this->logService->logAction($user, LogActionEnum::USER_REGISTERED);
         $this->sendRegistrationEmail($user);
 
-        return $user;
+        return new RegisterUserActionResult(
+            success: true,
+            user: $user,
+        );
     }
 
     public function verifyEmail(string $token): void
