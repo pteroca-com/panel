@@ -38,22 +38,24 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->registrationService
+            $registerActionResult = $this->registrationService
                 ->registerUser($user, $form->get('plainPassword')->getData());
 
-            return $userAuthenticator->authenticateUser(
-                $user,
-                $authenticator,
-                $request
-            );
+            if (!$registerActionResult->success) {
+                $registrationErrors[] = $registerActionResult->error;
+            } else {
+                return $userAuthenticator->authenticateUser(
+                    $registerActionResult->user,
+                    $authenticator,
+                    $request
+                );
+            }
         }
 
-        $errors = $form->getErrors(true);
-        $registrationErrors = [];
-        foreach ($errors as $error) {
-            $registrationErrors[] = $error->getMessage();
+        if (empty($registrationErrors)) {
+            $errors = $form->getErrors(true);
+            $registrationErrors = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
         }
-        $registrationErrors = implode('<br>', $registrationErrors);
 
         return $this->render('panel/registration/register.html.twig', [
             'registrationForm' => $form->createView(),
