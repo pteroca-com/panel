@@ -273,6 +273,9 @@
             "./config/packages/validator.yaml"
         ]
     },
+    "twig/extra-bundle": {
+        "version": "v3.19.0"
+    },
     "vich/uploader-bundle": {
         "version": "2.4",
         "recipe": {

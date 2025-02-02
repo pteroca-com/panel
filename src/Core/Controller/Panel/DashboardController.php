@@ -107,6 +107,11 @@ class DashboardController extends AbstractDashboardController
     public function configureUserMenu(UserInterface $user): UserMenu
     {
         $userMenu = parent::configureUserMenu($user);
+        $menuItems = $userMenu->getAsDto()->getItems();
+
+        $logoutAction = end($menuItems);
+        $logoutAction->getAsDto()->setIcon('fa-sign-out-alt');
+
         $userMenu->addMenuItems([
             MenuItem::linkToCrud(
                 $this->translator->trans('pteroca.dashboard.account_settings'),
@@ -114,6 +119,7 @@ class DashboardController extends AbstractDashboardController
                 UserAccount::class
             ),
         ]);
+
         return $userMenu;
     }
 }

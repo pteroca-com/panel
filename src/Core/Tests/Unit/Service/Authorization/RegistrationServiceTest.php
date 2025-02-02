@@ -117,7 +117,7 @@ class RegistrationServiceTest extends TestCase
         $this->assertSame($hashedPassword, $user->getPassword());
         $this->assertFalse($user->isVerified());
         $this->assertSame([UserRoleEnum::ROLE_USER->name], $user->getRoles());
-        $this->assertSame($user, $result);
+        $this->assertSame($user, $result->user);
     }
 
     public function testVerifyEmailWithValidToken(): void
