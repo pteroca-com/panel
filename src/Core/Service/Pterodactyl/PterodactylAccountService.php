@@ -3,6 +3,7 @@
 namespace App\Core\Service\Pterodactyl;
 
 use App\Core\Entity\User;
+use Exception;
 use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class PterodactylAccountService
@@ -27,9 +28,18 @@ class PterodactylAccountService
 
     public function updatePterodactylAccountPassword(User $user, string $plainPassword): PterodactylUser
     {
-        return $this->pterodactylService->getApi()->users->update($user->getPterodactylUserId(), [
-            'password' => $plainPassword,
-        ]);
+        try {
+            $currentPterodactylUser = $this->pterodactylService->getApi()->users->get($user->getPterodactylUserId());
+            return $this->pterodactylService->getApi()->users->update($user->getPterodactylUserId(), [
+                'email' => $currentPterodactylUser->get('email'),
+                'username' => $currentPterodactylUser->get('username'),
+                'first_name' => $currentPterodactylUser->get('first_name'),
+                'last_name' => $currentPterodactylUser->get('last_name'),
+                'password' => $plainPassword,
+            ]);
+        } catch (Exception $e) {
+            throw new Exception(sprintf('Error while updating user password: %s', $e->getMessage()));
+        }
     }
 
     public function deletePterodactylAccount(User $user): void
