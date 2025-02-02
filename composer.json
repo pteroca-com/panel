@@ -30,15 +30,16 @@
         "symfony/http-client": "^7.0",
         "symfony/http-foundation": "^7.0",
         "symfony/mailer": "^7.0",
+        "symfony/maker-bundle": "^1.52",
         "symfony/messenger": "^7.0",
         "symfony/monolog-bundle": "^3.10",
         "symfony/runtime": "^7.0",
         "symfony/security-bundle": "^7.0",
         "symfony/serializer": "^7.0",
+        "symfony/ux-twig-component": "^2.22",
         "symfony/yaml": "^7.0",
         "timdesm/pterodactyl-php-api": "^1.2",
-        "vich/uploader-bundle": "^2.4",
-        "symfony/maker-bundle": "^1.52"
+        "vich/uploader-bundle": "^2.4"
     },
     "config": {
         "allow-plugins": {
