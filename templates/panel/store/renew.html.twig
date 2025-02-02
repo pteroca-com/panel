@@ -12,7 +12,11 @@
     <div class="container mt-5 product-details">
         <h1>{{ 'pteroca.renew.title'|trans }}: {{ serverDetails.name }}</h1>
         <div class="row">
-            <div class="col-md-12 product-image-container mt-4 mb-5" style='background: url("{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}")'></div>
+            {% if product.bannerPath %}
+                <div class="col-md-12 product-image-container mt-4 mb-5" style='background: url("{{ product.bannerPath }}")'></div>
+            {% else %}
+                <div class="col-md-12 mt-4 mb-4"></div>
+            {% endif %}
             <div class="col-md-8">
                 <div class="row">
                     <div class="col-6">

@@ -2,6 +2,8 @@
 
 namespace App\Core\DTO;
 
+use App\Core\DTO\Collection\ServerVariableCollection;
+
 class ServerDataDTO
 {
     public function __construct(
@@ -14,6 +16,7 @@ class ServerDataDTO
         public ?array $availableNestEggs,
         public bool $hasConfigurableOptions,
         public bool $hasConfigurableVariables,
+        public ServerVariableCollection $serverVariables,
     )
     {
     }
