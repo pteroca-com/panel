@@ -4,7 +4,6 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\User;
 use App\Core\Form\RegistrationFormType;
-use App\Core\Security\UserAuthenticator;
 use App\Core\Service\Authorization\RegistrationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
