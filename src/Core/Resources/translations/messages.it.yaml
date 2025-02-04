@@ -335,7 +335,8 @@ pteroca:
         google_captcha_site_key: 'Chiave del sito Google CAPTCHA'
         terms_of_service: 'Contenuto della pagina dei Termini di servizio'
         pterodactyl_use_as_client_panel: 'Usa il pannello Pterodactyl come pannello di gestione del server. Avviso: Questo disabiliterà la possibilità di gestire i server in questo pannello'
-
+        delete_suspended_servers_enabled: 'Abilita l''eliminazione automatica dei server sospesi (non rinnovati)'
+        delete_suspended_servers_days_after: 'Numero di giorni dopo la data di sospensione del server prima che i server sospesi vengano eliminati definitivamente'
     user:
       email: 'E-mail'
       roles: 'Ruoli'
