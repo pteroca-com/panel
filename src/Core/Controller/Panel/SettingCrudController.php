@@ -57,7 +57,8 @@ class SettingCrudController extends AbstractPanelController
                         return sprintf("%s<br><small>(%s)</small>", $value, $hint);
                     }
                     return $value;
-                }),
+                })
+                ->setHelp($this->getHelpText($entity?->getName())),
             ChoiceField::new('type', $this->translator->trans('pteroca.crud.setting.type'))
                 ->setChoices(SettingTypeEnum::getValues())
                 ->onlyWhenCreating(),
@@ -168,5 +169,17 @@ class SettingCrudController extends AbstractPanelController
     {
         $this->settingService->deleteSettingFromCache($entityInstance->getName());
         parent::deleteEntity($entityManager, $entityInstance);
+    }
+
+    private function getHelpText(?string $name): string
+    {
+        if (empty ($name)) {
+            return '';
+        }
+
+        $hintIndex = "pteroca.crud.setting.hints.$name";
+        $hint = $this->translator->trans($hintIndex);
+
+        return $hint !== $hintIndex ? $hint : '';
     }
 }
