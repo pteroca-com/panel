@@ -5,6 +5,7 @@ namespace App\Core\Service\System;
 use App\Core\DTO\SystemVersionDTO;
 use DateTime;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SystemVersionService
@@ -39,10 +40,12 @@ class SystemVersionService
 
     private function getCurrentReleaseVersion(): array
     {
-        return $this->cache->get(self::CACHE_KEY, function () {
+        return $this->cache->get(self::CACHE_KEY, function (ItemInterface $item) {
+            $item->expiresAfter(self::CACHE_TTL);
+
             return $this->httpClient
                 ->request('GET', self::VERSION_URL)
                 ->toArray();
-        }, self::CACHE_TTL);
+        });
     }
 }

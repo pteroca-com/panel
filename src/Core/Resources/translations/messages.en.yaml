@@ -83,7 +83,7 @@ pteroca:
     invalid_session_id: 'Invalid session ID.'
     payment_success: 'Payment was successfully completed.'
     payment_canceled: 'Payment was canceled.'
-    payment_title: 'Wallet recharge'
+    payment_title: 'Deposit funds'
     failed_to_create_payment: 'Failed to create payment.'
     payment_not_found: 'Payment not found.'
     payment_already_processed: 'Payment has already been processed.'
@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: 'The console token has expired. Please refresh the page.'
     console_connection_closed: 'The console connection has been closed.'
     console_connection_error: 'An error occurred while connecting to the console.'
+    rules: 'Rules'
+    data_validation_error: 'Error during validation. Please check if all rules are met.'
 
   actions:
     login: 'Login'
@@ -252,6 +254,9 @@ pteroca:
       is_active: 'Active'
       category: 'Category'
       image: 'Image'
+      image_help: 'The image will be displayed in the store.'
+      banner: 'Banner'
+      banner_help: 'The banner will be displayed on the product page.'
       server_resources: 'Server resources'
       disk_space: 'Disk space'
       memory: 'RAM'
@@ -424,8 +429,8 @@ pteroca:
     store:
       subject: 'Server Purchase'
       server_purchased: 'You have purchased a server from our store.'
-      expiration_date: 'Expiration date:'
-      product_details: 'Product details:'
+      expiration_date: 'Expiration date'
+      product_details: 'Product details'
       product_name: 'Product name'
       product_price: 'Product price'
       server_details: 'Server details'

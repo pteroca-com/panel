@@ -2,28 +2,21 @@
 
 namespace App\Core\Handler;
 
-use App\Core\Entity\User;
-use App\Core\Enum\UserRoleEnum;
-use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
-use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 
-class CreateNewUserHandler implements HandlerInterface
+class ChangeUserPasswordHandler implements HandlerInterface
 {
     private string $userEmail;
 
     private string $userPassword;
 
-    private UserRoleEnum $userRole;
-
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UserRepository $userRepository,
         private readonly PterodactylAccountService $pterodactylAccountService,
-        private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
     ) {}
 
     public function handle(): void
@@ -32,19 +25,16 @@ class CreateNewUserHandler implements HandlerInterface
             throw new \RuntimeException('User credentials not set');
         }
 
-        $user = (new User())
-            ->setEmail($this->userEmail)
-            ->setPassword('')
-            ->setRoles([$this->userRole->name])
-            ->setBalance(0)
-            ->setName('Admin')
-            ->setSurname('Admin');
+        $user = $this->userRepository->findOneBy(['email' => $this->userEmail]);
+        if (empty($user)) {
+            throw new \RuntimeException('User not found');
+        }
 
         $hashedPassword = $this->passwordHasher->hashPassword($user, $this->userPassword);
         $user->setPassword($hashedPassword);
 
         try {
-            $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $this->userPassword);
+            $this->pterodactylAccountService->updatePterodactylAccountPassword($user, $this->userPassword);
         } catch (ValidationException $exception) {
             $errors = $exception->errors()['errors'] ?? [];
             $errors = array_map(fn($error) => $error['detail'], $errors);
@@ -52,25 +42,12 @@ class CreateNewUserHandler implements HandlerInterface
             throw new \RuntimeException($message);
         }
 
-        if (!empty($pterodactylAccount->id)) {
-            $user->setPterodactylUserId($pterodactylAccount->id);
-
-            try {
-                $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
-                $user->setPterodactylUserApiKey($pterodactylClientApiKey);
-            } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
-                $this->pterodactylAccountService->deletePterodactylAccount($user);
-                throw $exception;
-            }
-        }
-
         $this->userRepository->save($user);
     }
 
-    public function setUserCredentials(string $email, string $password, UserRoleEnum $userRole): void
+    public function setUserCredentials(string $email, string $password): void
     {
         $this->userEmail = $email;
         $this->userPassword = $password;
-        $this->userRole = $userRole;
     }
 }

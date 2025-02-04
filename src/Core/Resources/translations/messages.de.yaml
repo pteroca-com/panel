@@ -216,6 +216,8 @@ pteroca:
     console_token_expired: 'Das Konsolen-Token ist abgelaufen. Bitte aktualisieren Sie die Seite.'
     console_connection_closed: 'Die Konsolenverbindung wurde geschlossen.'
     console_connection_error: 'Beim Verbinden mit der Konsole ist ein Fehler aufgetreten.'
+    rules: 'Regeln'
+    data_validation_error: 'Fehler bei der Validierung. Bitte überprüfen Sie, ob alle Regeln erfüllt sind.'
 
   actions:
     login: 'Login'
@@ -252,6 +254,9 @@ pteroca:
       is_active: 'Aktiv'
       category: 'Kategorie'
       image: 'Bild'
+      image_help: 'Das Bild wird im Shop angezeigt.'
+      banner: 'Banner'
+      banner_help: 'Das Banner wird auf der Produktseite angezeigt.'
       server_resources: 'Server-Ressourcen'
       disk_space: 'Speicherplatz'
       memory: 'RAM'
@@ -424,8 +429,8 @@ pteroca:
     store:
       subject: 'Serverkauf'
       server_purchased: 'Sie haben einen Server in unserem Shop gekauft.'
-      expiration_date: 'Ablaufdatum:'
-      product_details: 'Produktdetails:'
+      expiration_date: 'Ablaufdatum'
+      product_details: 'Produktdetails'
       product_name: 'Produktname'
       product_price: 'Produktpreis'
       server_details: 'Serverdetails'
