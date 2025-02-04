@@ -357,6 +357,7 @@ pteroca:
       pterodactyl_user_id: 'ID del usuario en Pterodactyl'
       created_at: 'Creado el'
       updated_at: 'Actualizado el'
+      avatar: 'Avatar'
     payment:
       session_id: 'ID de la sesión'
       status: 'Estado'

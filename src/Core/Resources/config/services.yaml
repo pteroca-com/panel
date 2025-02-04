@@ -4,6 +4,10 @@ parameters:
   categories_directory: 'public/uploads/categories'
   products_base_path: '/uploads/products'
   products_directory: 'public/uploads/products'
+  avatar_base_path: '/uploads/avatars'
+  avatar_directory: 'public/uploads/avatars'
+  avatar_max_size: '2M'
+  avatar_allowed_extensions: ['image/jpeg', 'image/png']
 
 services:
   _defaults:

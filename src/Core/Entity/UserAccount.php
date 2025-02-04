@@ -5,12 +5,15 @@ namespace App\Core\Entity;
 use App\Core\Enum\UserRoleEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\MappedSuperclass]
 #[ORM\Table(name: 'user')]
 #[UniqueEntity(fields: ['email'])]
+#[Vich\Uploadable]
 class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -32,6 +35,12 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $surname;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $avatarPath = null;
+
+    #[Vich\UploadableField(mapping: 'user_avatars', fileNameProperty: 'avatarPath')]
+    private ?File $avatarFile = null;
 
     private ?string $plainPassword = null;
 
@@ -120,6 +129,30 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSurname(string $surname): static
     {
         $this->surname = $surname;
+
+        return $this;
+    }
+
+    public function getAvatarPath(): ?string
+    {
+        return $this->avatarPath;
+    }
+
+    public function setAvatarPath(?string $avatarPath): static
+    {
+        $this->avatarPath = $avatarPath;
+
+        return $this;
+    }
+
+    public function getAvatarFile(): ?File
+    {
+        return $this->avatarFile;
+    }
+
+    public function setAvatarFile(?File $avatarFile = null): static
+    {
+        $this->avatarFile = $avatarFile;
 
         return $this;
     }
