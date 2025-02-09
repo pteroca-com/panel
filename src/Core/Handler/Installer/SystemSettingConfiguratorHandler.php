@@ -5,6 +5,7 @@ namespace App\Core\Handler\Installer;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
+use App\Core\Service\SettingService;
 use App\Core\Service\System\EnvironmentConfigurationService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -12,6 +13,7 @@ readonly class SystemSettingConfiguratorHandler
 {
     public function __construct(
         private SettingRepository                       $settingRepository,
+        private SettingService                          $settingService,
         private EnvironmentConfigurationService         $environmentConfigurationHandler,
     ) {}
 
@@ -194,6 +196,7 @@ readonly class SystemSettingConfiguratorHandler
             }
             $setting->setValue($value['value']);
             $this->settingRepository->save($setting);
+            $this->settingService->saveSettingInCache($key, $value['value']);
         }
     }
 }
