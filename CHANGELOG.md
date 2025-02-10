@@ -2,6 +2,16 @@
 
 ---
 
+## [0.3.3] - 2025-02-10
+
+### Changed
+- Default color scheme is now set to light mode.
+
+### Fixed
+- Fixed cache issue in the app:configuration-system command.
+
+---
+
 ## [0.3.2] - 2025-02-02
 
 ### Added
