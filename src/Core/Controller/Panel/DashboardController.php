@@ -19,6 +19,7 @@ use App\Core\Service\SettingService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,7 +63,9 @@ class DashboardController extends AbstractDashboardController
         }
         $logo = sprintf('<img src="%s" alt="%s" style="max-width: 90%%;">', $logoUrl, $title);
         return Dashboard::new()
-            ->setTitle($logo);
+            ->setTitle($logo)
+            ->setDefaultColorScheme(ColorScheme::LIGHT)
+            ;
     }
 
     public function configureMenuItems(): iterable
