@@ -17,6 +17,8 @@ enum SettingEnum: string
     case PTERODACTYL_PANEL_URL = 'pterodactyl_url';
     case PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL = 'pterodactyl_use_as_client_panel';
     case PTERODACTYL_API_KEY = 'pterodactyl_api_key';
+    case PTERODACTYL_SSO_ENABLED = 'pterodactyl_sso_enabled';
+    case PTERODACTYL_SSO_SECRET = 'pterodactyl_sso_secret';
     case STRIPE_SECRET_KEY = 'stripe_secret_key';
     case STRIPE_PAYMENT_METHODS = 'stripe_payment_methods';
     case INTERNAL_CURRENCY_NAME = 'internal_currency_name';
