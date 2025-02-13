@@ -326,6 +326,8 @@ pteroca:
         google_captcha_site_key: 'Ключ сайта Google CAPTCHA'
         terms_of_service: 'Содержание страницы с условиями обслуживания'
         pterodactyl_use_as_client_panel: 'Использовать Pterodactyl как панель управления сервером. Предупреждение: Это отключит возможность управления серверами в этой панели'
+        pterodactyl_sso_enabled: 'Включить вход через Single Sign-On в панели Pterodactyl (необходимо установить секрет SSO)'
+        pterodactyl_sso_secret: 'Секретный ключ для входа в Pterodactyl SSO'
     user:
       email: 'Электронная почта'
       roles: 'Роли'

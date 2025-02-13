@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SSOLoginRedirectController extends AbstractController
 {
-    #[Route('/sso/redirect', name: 'default')]
+    #[Route('/sso/redirect', name: 'sso_redirect')]
     public function index(
         SSOLoginRedirectService $ssoLoginRedirectService,
     ): Response {

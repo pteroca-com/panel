@@ -339,7 +339,8 @@ pteroca:
         google_captcha_site_key: 'Google CAPTCHA-Site-Schlüssel'
         terms_of_service: 'Inhalt der Seite mit den Nutzungsbedingungen'
         pterodactyl_use_as_client_panel: 'Verwenden Sie das Pterodactyl-Panel als Serververwaltungs-Panel. Warnung: Dies deaktiviert die Möglichkeit, Server in diesem Panel zu verwalten'
-
+        pterodactyl_sso_enabled: 'Aktiviere Single-Sign-On-Anmeldung mit dem Pterodactyl-Panel (SSO-Schlüssel muss festgelegt sein)'
+        pterodactyl_sso_secret: 'Pterodactyl SSO-Anmeldeschlüssel'
     user:
       email: 'E-Mail'
       roles: 'Rollen'
