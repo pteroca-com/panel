@@ -102,7 +102,11 @@ class AppExtension extends AbstractExtension
             : $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
 
         if (!empty($path)) {
-            $pterodactylPanelUrl = rtrim($pterodactylPanelUrl, '/') . '/' . ltrim($path, '/');
+            if (!$isPterodactylSSOEnabled) {
+                $pterodactylPanelUrl = rtrim($pterodactylPanelUrl, '/') . '/' . ltrim($path, '/');
+            } else {
+                $pterodactylPanelUrl .= '?redirect_path=' . $path;
+            }
         }
 
         return $pterodactylPanelUrl;

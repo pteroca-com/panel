@@ -9,6 +9,7 @@
 {% block wrapper_wrapper %}
     <form id="sso-redirect-form" action="{{ redirectUrl }}" method="post">
         <input type="hidden" name="pteroca_sso_token" value="{{ redirectToken }}">
+        <input type="hidden" name="pteroca_sso_redirect" value="{{ redirectPath }}">
     </form>
 {% endblock %}
 
