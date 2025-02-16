@@ -2,7 +2,7 @@
 
 namespace App\Core\Controller\API\Admin;
 
-use App\Core\Service\System\TemplateService;
+use App\Core\Service\Template\TemplateService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 

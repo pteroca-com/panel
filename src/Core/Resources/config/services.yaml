@@ -40,3 +40,10 @@ services:
   App\Core\Service\System\SystemVersionService:
     arguments:
       $currentVersion: '%version%'
+
+  App\Core\Twig\DynamicTwigLoader:
+    arguments:
+      $templatesBaseDir: '%kernel.project_dir%/templates'
+    tags:
+      - { name: 'twig.loader', priority: 1 }
+

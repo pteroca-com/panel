@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Service\System;
+namespace App\Core\Service\Template;
 
 use DirectoryIterator;
 use Symfony\Component\HttpKernel\KernelInterface;

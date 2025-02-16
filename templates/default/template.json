@@ -1,0 +1,11 @@
+{
+  "template": {
+    "name": "default",
+    "description": "Default template for the project PteroCA.com",
+    "author": "PteroCA.com",
+    "version": "1.0.0",
+    "license": "MIT",
+    "pterocaVersion": "0.3.0",
+    "phpVersion": ">=8.2"
+  }
+}

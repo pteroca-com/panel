@@ -8,7 +8,7 @@ use App\Core\Repository\SettingRepository;
 use App\Core\Service\LocaleService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
-use App\Core\Service\System\TemplateService;
+use App\Core\Service\Template\TemplateService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
