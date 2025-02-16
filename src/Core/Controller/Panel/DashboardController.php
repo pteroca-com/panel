@@ -21,6 +21,8 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\SystemVersionService;
+use App\Core\Service\Template\TemplateManager;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -39,6 +41,8 @@ class DashboardController extends AbstractDashboardController
         private readonly SettingService $settingService,
         private readonly ServerRepository $serverRepository,
         private readonly LogService $logService,
+        private readonly SystemVersionService $systemVersionService,
+        private readonly TemplateManager $templateManager,
     ) {}
 
     #[Route('/panel', name: 'panel')]
@@ -114,8 +118,11 @@ class DashboardController extends AbstractDashboardController
     public function configureAssets(): Assets
     {
         return Assets::new()
-            ->addCssFile('/assets/css/panel.css')
-            ;
+            ->addCssFile(sprintf(
+                '/assets/theme/%s/css/panel.css?v=%s',
+                $this->templateManager->getCurrentTemplate(),
+                $this->systemVersionService->getCurrentVersion(),
+            ));
     }
 
     public function configureUserMenu(UserInterface $user): UserMenu

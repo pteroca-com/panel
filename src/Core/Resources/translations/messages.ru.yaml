@@ -336,6 +336,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Количество дней после даты приостановки сервера, через которые приостановленные серверы будут окончательно удалены'
         pterodactyl_sso_enabled: 'Включить вход через Single Sign-On в панели Pterodactyl (необходимо установить секрет SSO)'
         pterodactyl_sso_secret: 'Секретный ключ для входа в Pterodactyl SSO'
+        current_theme: 'Текущая тема панели'
     user:
       email: 'Электронная почта'
       roles: 'Роли'

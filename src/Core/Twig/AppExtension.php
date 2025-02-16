@@ -5,6 +5,7 @@ namespace App\Core\Twig;
 use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\SystemVersionService;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -12,7 +13,7 @@ use Twig\TwigFunction;
 class AppExtension extends AbstractExtension
 {
     public function __construct(
-        private readonly string $currentVersion,
+        private readonly SystemVersionService $systemVersionService,
         private readonly SettingService $settingService,
         private readonly RouterInterface $router,
     ) {}
@@ -124,6 +125,6 @@ class AppExtension extends AbstractExtension
 
     public function getAppVersion(): string
     {
-        return $this->currentVersion;
+        return $this->systemVersionService->getCurrentVersion();
     }
 }

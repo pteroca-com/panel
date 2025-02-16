@@ -8,6 +8,8 @@ use App\Core\Repository\SettingRepository;
 use App\Core\Service\LocaleService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\SystemVersionService;
+use App\Core\Service\Template\TemplateManager;
 use App\Core\Service\Template\TemplateService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -19,6 +21,8 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
 {
     public function __construct(
         private readonly TemplateService $templateService,
+        private readonly TemplateManager $templateManager,
+        private readonly SystemVersionService $systemVersionService,
         private readonly TranslatorInterface $translator,
         LogService $logService,
         RequestStack $requestStack,
@@ -58,7 +62,11 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
         $assets = parent::configureAssets($assets);
 
         if (!empty($this->currentEntity) && $this->currentEntity->getName() === SettingEnum::CURRENT_THEME->value) {
-            $assets->addJsFile('assets/js/templateSetting.js');
+            $assets->addJsFile(sprintf(
+                'assets/theme/%s/js/templateSetting.js?v=%s',
+                $this->templateManager->getCurrentTemplate(),
+                $this->systemVersionService->getCurrentVersion(),
+            ));
         }
 
         return $assets;

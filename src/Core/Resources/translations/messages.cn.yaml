@@ -348,6 +348,7 @@ pteroca:
         delete_suspended_servers_days_after: '从服务器暂停日期起，经过多少天后自动删除已暂停的服务器'
         pterodactyl_sso_enabled: '启用使用 Pterodactyl 面板的单点登录 (SSO)（必须设置 SSO 密钥）'
         pterodactyl_sso_secret: 'Pterodactyl SSO 登录密钥'
+        current_theme: '当前面板的主题'
     user:
       email: '电子邮件'
       roles: '角色'

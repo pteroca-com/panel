@@ -30,8 +30,6 @@ services:
 
   App\Core\Twig\AppExtension:
     tags: [ 'twig.extension' ]
-    arguments:
-      $currentVersion: '%version%'
 
   App\Core\Service\System\SystemInformationService:
     arguments:

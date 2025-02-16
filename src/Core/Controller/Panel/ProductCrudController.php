@@ -8,6 +8,8 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\SystemVersionService;
+use App\Core\Service\Template\TemplateManager;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -35,6 +37,8 @@ class ProductCrudController extends AbstractPanelController
         LogService $logService,
         private readonly PterodactylService $pterodactylService,
         private readonly SettingService $settingService,
+        private readonly TemplateManager $templateManager,
+        private readonly SystemVersionService $systemVersionService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
     ) {
@@ -48,7 +52,11 @@ class ProductCrudController extends AbstractPanelController
 
     public function configureAssets(Assets $assets): Assets
     {
-        $assets->addJsFile('assets/js/product.js');
+        $assets->addJsFile(sprintf(
+            'assets/theme/%s/js/product.js?v=%s',
+            $this->templateManager->getCurrentTemplate(),
+            $this->systemVersionService->getCurrentVersion(),
+        ));
         return parent::configureAssets($assets);
     }
 
