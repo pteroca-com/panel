@@ -346,6 +346,8 @@ pteroca:
         pterodactyl_use_as_client_panel: 'Utiliser le panneau Pterodactyl comme panneau de gestion des serveurs. Avertissement : Cela désactivera la capacité de gérer les serveurs dans ce panneau'
         delete_suspended_servers_enabled: 'Activer la suppression automatique des serveurs suspendus (non renouvelés)'
         delete_suspended_servers_days_after: 'Nombre de jours après la date de suspension du serveur avant que les serveurs suspendus ne soient supprimés définitivement'
+        pterodactyl_sso_enabled: 'Activer la connexion Single Sign-On avec le panneau Pterodactyl (Le secret SSO doit être défini)'
+        pterodactyl_sso_secret: 'Clé secrète de connexion SSO de Pterodactyl'
     user:
       email: 'E-mail'
       roles: 'Rôles'

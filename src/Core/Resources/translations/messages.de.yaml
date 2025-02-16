@@ -346,6 +346,8 @@ pteroca:
         pterodactyl_use_as_client_panel: 'Verwenden Sie das Pterodactyl-Panel als Serververwaltungs-Panel. Warnung: Dies deaktiviert die Möglichkeit, Server in diesem Panel zu verwalten'
         delete_suspended_servers_enabled: 'Automatisches Löschen von gesperrten (nicht verlängerten) Servern aktivieren'
         delete_suspended_servers_days_after: 'Anzahl der Tage nach dem Sperrdatum, nach denen gesperrte Server dauerhaft gelöscht werden'
+        pterodactyl_sso_enabled: 'Aktiviere Single-Sign-On-Anmeldung mit dem Pterodactyl-Panel (SSO-Schlüssel muss festgelegt sein)'
+        pterodactyl_sso_secret: 'Pterodactyl SSO-Anmeldeschlüssel'
     user:
       email: 'E-Mail'
       roles: 'Rollen'

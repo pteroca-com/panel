@@ -346,6 +346,8 @@ pteroca:
         pterodactyl_use_as_client_panel: 'Użyj panelu Pterodactyl jako panelu zarządzania serwerami. Ostrzeżenie: To wyłączy możliwość zarządzania serwerami w tym panelu'
         delete_suspended_servers_enabled: 'Włącz automatyczne usuwanie zawieszonych (nieodnawianych) serwerów'
         delete_suspended_servers_days_after: 'Liczba dni od daty zawieszenia serwera, po których zawieszone serwery zostaną trwale usunięte'
+        pterodactyl_sso_enabled: 'Włącz logowanie Single Sign-On z panelem Pterodactyl (Sekret SSO musi być ustawiony)'
+        pterodactyl_sso_secret: 'Sekretny klucz logowania SSO Pterodactyl'
     user:
       email: 'Email'
       roles: 'Role'

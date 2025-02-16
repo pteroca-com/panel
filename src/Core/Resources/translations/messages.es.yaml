@@ -346,6 +346,8 @@ pteroca:
         pterodactyl_use_as_client_panel: 'Usar el panel de Pterodactyl como panel de gestión de servidores. Advertencia: Esto deshabilitará la capacidad de gestionar servidores en este panel'
         delete_suspended_servers_enabled: 'Habilitar la eliminación automática de servidores suspendidos (no renovados)'
         delete_suspended_servers_days_after: 'Número de días después de la fecha de suspensión del servidor antes de eliminar permanentemente los servidores suspendidos'
+        pterodactyl_sso_enabled: 'Habilitar inicio de sesión de Single Sign-On con el panel de Pterodactyl (Se debe configurar la clave SSO)'
+        pterodactyl_sso_secret: 'Clave secreta de inicio de sesión SSO de Pterodactyl'
     user:
       email: 'Correo electrónico'
       roles: 'Roles'

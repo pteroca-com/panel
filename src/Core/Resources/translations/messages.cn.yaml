@@ -346,6 +346,8 @@ pteroca:
         pterodactyl_use_as_client_panel: '使用Pterodactyl面板作为服务器管理面板。警告：这将禁用在此面板中管理服务器的功能'
         delete_suspended_servers_enabled: '启用自动删除已暂停（未续订）的服务器'
         delete_suspended_servers_days_after: '从服务器暂停日期起，经过多少天后自动删除已暂停的服务器'
+        pterodactyl_sso_enabled: '启用使用 Pterodactyl 面板的单点登录 (SSO)（必须设置 SSO 密钥）'
+        pterodactyl_sso_secret: 'Pterodactyl SSO 登录密钥'
     user:
       email: '电子邮件'
       roles: '角色'

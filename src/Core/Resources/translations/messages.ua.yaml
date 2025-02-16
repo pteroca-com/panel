@@ -346,6 +346,8 @@ pteroca:
         pterodactyl_use_as_client_panel: 'Використовуйте панель Pterodactyl як панель управління серверами. Попередження: Це вимкне можливість керувати серверами в цій панелі'
         delete_suspended_servers_enabled: 'Увімкнути автоматичне видалення призупинених (не поновлених) серверів'
         delete_suspended_servers_days_after: 'Кількість днів після дати призупинення сервера, через які призупинені сервери будуть остаточно видалені'
+        pterodactyl_sso_enabled: 'Увімкнути вхід Single Sign-On у панелі Pterodactyl (необхідно встановити секрет SSO)'
+        pterodactyl_sso_secret: 'Секретний ключ для входу в Pterodactyl SSO'
     user:
       email: 'Електронна пошта'
       roles: 'Ролі'

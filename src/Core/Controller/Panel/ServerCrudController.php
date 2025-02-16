@@ -3,10 +3,12 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Server;
+use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
+use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -26,6 +28,7 @@ class ServerCrudController extends AbstractPanelController
         LogService $logService,
         private readonly UpdateServerService $updateServerService,
         private readonly DeleteServerService $deleteServerService,
+        private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($logService);
@@ -59,11 +62,6 @@ class ServerCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
-        $manageServerAction = Action::new(
-            'manageServer',
-            $this->translator->trans('pteroca.crud.server.manage_server'),
-        )->linkToRoute('server', fn (Server $entity) => ['id' => $entity->getPterodactylServerIdentifier()]);
-
         return $actions
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->update(
@@ -74,7 +72,7 @@ class ServerCrudController extends AbstractPanelController
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_INDEX, $manageServerAction)
+            ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
             ;
     }
 
@@ -110,5 +108,36 @@ class ServerCrudController extends AbstractPanelController
     {
         $this->deleteServerService->deleteServer($entityInstance);
         parent::deleteEntity($entityManager, $entityInstance);
+    }
+
+    private function getManageServerAction(): Action
+    {
+        $manageServerAction = Action::new(
+            'manageServer',
+            $this->translator->trans('pteroca.crud.server.manage_server'),
+        );
+
+        $usePterodactyl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);
+        if (empty($usePterodactyl)) {
+            $manageServerAction->linkToRoute(
+                'server',
+                fn (Server $entity) => ['id' => $entity->getPterodactylServerIdentifier()]
+            );
+        } else {
+            if ($this->settingService->getSetting(SettingEnum::PTERODACTYL_SSO_ENABLED->value)) {
+                $manageServerAction->linkToRoute(
+                    'sso_redirect',
+                    fn (Server $entity) => [
+                        'redirect_path' => sprintf('/server/%s', $entity->getPterodactylServerIdentifier()),
+                    ]
+                );
+            } else {
+                $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+                $manageServerAction->linkToUrl($pterodactylUrl);
+            }
+            $manageServerAction->setHtmlAttributes(['target' => '_blank']);
+        }
+
+        return $manageServerAction;
     }
 }
