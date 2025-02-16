@@ -2,6 +2,7 @@
 
 namespace App\Core\Twig;
 
+use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use Twig\Extension\AbstractExtension;

@@ -362,6 +362,7 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl 用户 ID'
       created_at: '创建于'
       updated_at: '更新于'
+      avatar: '头像'
     payment:
       session_id: '会话 ID'
       status: '状态'

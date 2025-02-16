@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -39,11 +40,22 @@ class UserCrudController extends AbstractPanelController
 
     public function configureFields(string $pageName): iterable
     {
+        $uploadDirectory = str_replace(
+            '/',
+            DIRECTORY_SEPARATOR,
+            $this->getParameter('avatar_directory'),
+        );
+
         return [
             NumberField::new('id')
                 ->setDisabled(),
             NumberField::new('pterodactylUserId', $this->translator->trans('pteroca.crud.user.pterodactyl_user_id'))
                 ->setDisabled(),
+            ImageField::new('avatarPath', $this->translator->trans('pteroca.crud.user.avatar'))
+                ->setBasePath($this->getParameter('avatar_base_path'))
+                ->setUploadDir($uploadDirectory)
+                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
+                ->setRequired(false),
             TextField::new('email', $this->translator->trans('pteroca.crud.user.email')),
             ChoiceField::new('roles', $this->translator->trans('pteroca.crud.user.roles'))
                 ->setChoices([
