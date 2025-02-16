@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Core\Controller\Panel;
+namespace App\Core\Controller\Panel\Setting;
 
+use App\Core\Controller\Panel\AbstractPanelController;
 use App\Core\Entity\Setting;
+use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingTypeEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
@@ -10,10 +12,15 @@ use App\Core\Service\LocaleService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
@@ -26,8 +33,10 @@ use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class SettingCrudController extends AbstractPanelController
+abstract class AbstractSettingCrudController extends AbstractPanelController
 {
+    protected SettingContextEnum $context;
+
     public function __construct(
         LogService $logService,
         private readonly RequestStack $requestStack,
@@ -60,6 +69,10 @@ class SettingCrudController extends AbstractPanelController
                 }),
             ChoiceField::new('type', $this->translator->trans('pteroca.crud.setting.type'))
                 ->setChoices(SettingTypeEnum::getValues())
+                ->onlyWhenCreating(),
+            ChoiceField::new('context', $this->translator->trans('pteroca.crud.setting.context'))
+                ->setChoices(SettingContextEnum::getValues())
+                ->setRequired(true)
                 ->onlyWhenCreating(),
         ];
 
@@ -122,9 +135,11 @@ class SettingCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
+        $context = ucfirst(strtolower($this->context->name));
+
         return $crud
-            ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.setting.setting'))
-            ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.setting.settings'))
+            ->setEntityLabelInSingular(sprintf('%s %s', $context, $this->translator->trans('pteroca.crud.setting.setting')))
+            ->setEntityLabelInPlural(sprintf('%s %s', $context, $this->translator->trans('pteroca.crud.setting.settings')))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name);
     }
 
@@ -168,5 +183,14 @@ class SettingCrudController extends AbstractPanelController
     {
         $this->settingService->deleteSettingFromCache($entityInstance->getName());
         parent::deleteEntity($entityManager, $entityInstance);
+    }
+
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        $qb->andWhere('entity.context = :context')
+            ->setParameter('context', $this->context->value);
+
+        return $qb;
     }
 }

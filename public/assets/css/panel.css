@@ -170,6 +170,10 @@ input#command {
     min-width: 300px;
 }
 
+.menu-item .icon.submenu-toggle-icon {
+    color: #FFFFFF !important;
+}
+
 .hover-pointer:hover {
     cursor: pointer;
 }
