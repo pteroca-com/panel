@@ -208,6 +208,9 @@ pteroca:
     console_connection_error: 'Произошла ошибка при подключении к консоли.'
     rules: 'Правила'
     data_validation_error: 'Ошибка при проверке. Пожалуйста, убедитесь, что все правила соблюдены.'
+    enable_auto_renewal: 'Включить автоматическое продление для этого сервера'
+    auto_renewal_tooltip: 'Если включено, сервер будет автоматически продлен на выбранный период. Платеж будет списан с вашего баланса.'
+
   actions:
     login: 'Войти'
     logout: 'Выйти'
@@ -225,6 +228,7 @@ pteroca:
     reinstall: 'Сервер переустановлен'
     change_startup_option: 'Опция запуска изменена'
     change_startup_variable: 'Переменная запуска изменена'
+    toggle_auto_renewal: 'Переключено автоматическое продление'
   crud:
     category:
       name: 'Название категории'
@@ -286,6 +290,7 @@ pteroca:
       server: 'Сервер'
       servers: 'Сервера'
       manage_server: 'Управлять сервером'
+      auto_renewal: 'Автоматическое продление'
     setting:
       name: 'Название настройки'
       value: 'Значение настройки'
@@ -294,6 +299,7 @@ pteroca:
       setting: 'Параметр'
       settings: 'Настройки'
       type: 'Тип'
+      context: 'Контекст'
       yes: 'Да'
       no: 'Нет'
       hint: 'Описание'
@@ -379,6 +385,11 @@ pteroca:
       categories: 'Категории'
       products: 'Товары'
       settings: 'Настройки'
+      general: 'Общее'
+      appearance: 'Внешний вид'
+      security: 'Безопасность'
+      payment_gateways: 'Платежные шлюзы'
+      email: 'Электронная почта'
       users: 'Пользователи'
       logout: 'Выйти'
       phpmyadmin: 'PHPMyAdmin'
