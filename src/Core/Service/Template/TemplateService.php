@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Template;
 
+use App\Core\Service\System\SystemVersionService;
 use DirectoryIterator;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -13,6 +14,7 @@ class TemplateService
     private const METADATA_FILE = 'template.json';
 
     public function __construct(
+        private readonly SystemVersionService $systemVersionService,
         private readonly KernelInterface $kernel,
         private readonly TranslatorInterface $translator,
     )
@@ -42,7 +44,24 @@ class TemplateService
 
     public function getTemplateInfo(string $templateName): array
     {
-        return $this->loadTemplateMetadata($this->getTemplatePath($templateName));
+        $templateInfo = $this->loadTemplateMetadata($this->getTemplatePath($templateName));
+
+        $currentPterocaVersion = $this->systemVersionService->getCurrentVersion();
+        $pterocaVersionIndex = $this->translator->trans('pteroca.crud.setting.template.pterocaVersion');
+        $templatePterocaVersion = $templateInfo[$pterocaVersionIndex] ?? null;
+        $isOutdated = !empty($templatePterocaVersion)
+            && version_compare($templatePterocaVersion, $currentPterocaVersion, '<');
+
+        if ($isOutdated) {
+            $templateInfo[$pterocaVersionIndex] = sprintf(
+                '%s (%s %s)',
+                $templatePterocaVersion,
+                '<i class="fas fa-exclamation-triangle text-warning"></i>',
+                $this->translator->trans('pteroca.crud.setting.template.outdated')
+            );
+        }
+
+        return $templateInfo;
     }
 
     private function loadTemplateMetadata(string $templatePath): array

@@ -349,6 +349,15 @@ pteroca:
         pterodactyl_sso_enabled: 'Włącz logowanie Single Sign-On z panelem Pterodactyl (Sekret SSO musi być ustawiony)'
         pterodactyl_sso_secret: 'Sekretny klucz logowania SSO Pterodactyl'
         current_theme: 'Aktualny motyw panelu'
+      template:
+        name: 'Nazwa szablonu'
+        description: 'Opis szablonu'
+        author: 'Autor'
+        version: 'Wersja'
+        license: 'Licencja'
+        pterocaVersion: 'Wersja PteroCA'
+        outdated: 'Wersja szablonu jest starsza niż aktualna wersja PteroCA. Niektóre funkcje mogą nie działać poprawnie'
+        phpVersion: 'Wersja PHP'
     user:
       email: 'Email'
       roles: 'Role'

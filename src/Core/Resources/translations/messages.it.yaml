@@ -349,6 +349,15 @@ pteroca:
         pterodactyl_sso_enabled: 'Abilita l''accesso Single Sign-On con il pannello Pterodactyl (Il segreto SSO deve essere impostato)'
         pterodactyl_sso_secret: 'Chiave segreta di accesso SSO di Pterodactyl'
         current_theme: 'Tema attuale del pannello'
+      template:
+        name: 'Nome del modello'
+        description: 'Descrizione del modello'
+        author: 'Autore'
+        version: 'Versione'
+        license: 'Licenza'
+        pterocaVersion: 'Versione di PteroCA'
+        outdated: 'La versione del modello è indietro rispetto alla versione attuale di PteroCA. Alcune funzionalità potrebbero non funzionare correttamente'
+        phpVersion: 'Versione di PHP'
     user:
       email: 'E-mail'
       roles: 'Ruoli'

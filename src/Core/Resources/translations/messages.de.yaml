@@ -349,6 +349,15 @@ pteroca:
         pterodactyl_sso_enabled: 'Aktiviere Single-Sign-On-Anmeldung mit dem Pterodactyl-Panel (SSO-Schlüssel muss festgelegt sein)'
         pterodactyl_sso_secret: 'Pterodactyl SSO-Anmeldeschlüssel'
         current_theme: 'Aktuelles Thema des Panels'
+      template:
+        name: 'Vorlagenname'
+        description: 'Vorlagenbeschreibung'
+        author: 'Autor'
+        version: 'Version'
+        license: 'Lizenz'
+        pterocaVersion: 'PteroCA-Version'
+        outdated: 'Die Vorlagenversion liegt hinter der aktuellen Version von PteroCA zurück. Einige Funktionen funktionieren möglicherweise nicht richtig'
+        phpVersion: 'PHP-Version'
     user:
       email: 'E-Mail'
       roles: 'Rollen'

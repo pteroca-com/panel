@@ -349,6 +349,15 @@ pteroca:
         pterodactyl_sso_enabled: '启用使用 Pterodactyl 面板的单点登录 (SSO)（必须设置 SSO 密钥）'
         pterodactyl_sso_secret: 'Pterodactyl SSO 登录密钥'
         current_theme: '当前面板的主题'
+      template:
+        name: '模板名称'
+        description: '模板描述'
+        author: '作者'
+        version: '版本'
+        license: '许可证'
+        pterocaVersion: 'PteroCA版本'
+        outdated: '模板版本落后于当前的PteroCA版本。一些功能可能无法正常工作'
+        phpVersion: 'PHP版本'
     user:
       email: '电子邮件'
       roles: '角色'
