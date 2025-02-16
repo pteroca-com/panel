@@ -218,6 +218,8 @@ pteroca:
     console_connection_error: 'Wystąpił błąd podczas łączenia z konsolą.'
     rules: 'Reguły'
     data_validation_error: 'Błąd podczas walidacji. Proszę sprawdzić, czy wszystkie reguły są spełnione.'
+    enable_auto_renewal: 'Włącz automatyczne odnawianie dla tego serwera'
+    auto_renewal_tooltip: 'Jeśli włączone, serwer zostanie automatycznie odnowiony na wybrany okres. Płatność zostanie pobrana z salda Twojego konta.'
 
   actions:
     login: 'Logowanie'
@@ -237,6 +239,7 @@ pteroca:
     reinstall: 'Ponowna instalacja serwera'
     change_startup_option: 'Zmiana opcji uruchamiania'
     change_startup_variable: 'Zmiana zmiennej uruchamiania'
+    toggle_auto_renewal: 'Przełączono automatyczne odnawianie'
 
   crud:
     category:
@@ -299,6 +302,7 @@ pteroca:
       server: 'Serwer'
       servers: 'Serwery'
       manage_server: 'Zarządzaj serwerem'
+      auto_renewal: 'Automatyczne odnawianie'
     setting:
       name: 'Nazwa ustawienia'
       value: 'Wartość ustawienia'

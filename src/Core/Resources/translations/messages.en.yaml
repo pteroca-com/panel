@@ -218,6 +218,8 @@ pteroca:
     console_connection_error: 'An error occurred while connecting to the console.'
     rules: 'Rules'
     data_validation_error: 'Error during validation. Please check if all rules are met.'
+    enable_auto_renewal: 'Enable auto-renewal for this server'
+    auto_renewal_tooltip: 'If enabled, the server will be automatically renewed for the selected period. The payment will be made from your account balance.'
 
   actions:
     login: 'Login'
@@ -237,6 +239,7 @@ pteroca:
     reinstall: 'Reinstalled server'
     change_startup_option: 'Changed startup option'
     change_startup_variable: 'Changed startup variable'
+    toggle_auto_renewal: 'Toggled auto-renewal'
 
   crud:
     category:
@@ -299,6 +302,7 @@ pteroca:
       server: 'Server'
       servers: 'Servers'
       manage_server: 'Manage server'
+      auto_renewal: 'Auto renewal'
     setting:
       name: 'Setting name'
       value: 'Setting value'

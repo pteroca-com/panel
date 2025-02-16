@@ -218,6 +218,8 @@ pteroca:
     console_connection_error: 'Сталася помилка під час підключення до консолі.'
     rules: 'Правила'
     data_validation_error: 'Помилка під час перевірки. Будь ласка, перевірте, чи виконані всі правила.'
+    enable_auto_renewal: 'Увімкнути автоматичне поновлення для цього сервера'
+    auto_renewal_tooltip: 'Якщо увімкнено, сервер буде автоматично поновлено на вибраний період. Платіж буде знято з вашого балансу.'
 
   actions:
     login: 'Вхід'
@@ -237,6 +239,7 @@ pteroca:
     reinstall: 'Сервер перевстановлено'
     change_startup_option: 'Змінено параметр запуску'
     change_startup_variable: 'Змінено змінну запуску'
+    toggle_auto_renewal: 'Перемикання автоматичного поновлення'
 
   crud:
     category:
@@ -299,6 +302,7 @@ pteroca:
       server: 'Сервер'
       servers: 'Сервери'
       manage_server: 'Керувати сервером'
+      auto_renewal: 'Автоматичне поновлення'
     setting:
       name: 'Назва налаштування'
       value: 'Значення'

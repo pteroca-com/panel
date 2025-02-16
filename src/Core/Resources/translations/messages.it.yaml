@@ -218,6 +218,8 @@ pteroca:
     console_connection_error: 'Si è verificato un errore durante la connessione alla console.'
     rules: 'Regole'
     data_validation_error: 'Errore durante la validazione. Si prega di controllare se tutte le regole sono rispettate.'
+    enable_auto_renewal: 'Abilita il rinnovo automatico per questo server'
+    auto_renewal_tooltip: 'Se abilitato, il server verrà rinnovato automaticamente per il periodo selezionato. Il pagamento sarà effettuato dal saldo del tuo account.'
 
   actions:
     login: 'Login'
@@ -237,6 +239,7 @@ pteroca:
     reinstall: 'Server reinstallato'
     change_startup_option: 'Opzione di avvio modificata'
     change_startup_variable: 'Variabile di avvio modificata'
+    toggle_auto_renewal: 'Rinnovo automatico attivato/disattivato'
 
   crud:
     category:
@@ -299,6 +302,7 @@ pteroca:
       server: 'Server'
       servers: 'Server'
       manage_server: 'Gestisci server'
+      auto_renewal: 'Rinnovo automatico'
     setting:
       name: 'Nome impostazione'
       value: 'Valore'
