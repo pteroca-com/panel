@@ -2,19 +2,20 @@
 
 namespace App\Core\Twig;
 
-use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
+use Symfony\Component\Asset\Packages;
 
 class AppExtension extends AbstractExtension
 {
     public function __construct(
         private readonly SystemVersionService $systemVersionService,
         private readonly SettingService $settingService,
+        private readonly Packages $packages,
         private readonly RouterInterface $router,
     ) {}
 
@@ -33,6 +34,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('use_pterodactyl_panel_as_client_panel', [$this, 'usePterodactylPanelAsClientPanel']),
             new TwigFunction('get_pterodactyl_panel_url', [$this, 'getPterodactylPanelUrl']),
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
+            new TwigFunction('template_asset', [$this, 'templateAsset']),
         ];
     }
 
@@ -126,5 +128,13 @@ class AppExtension extends AbstractExtension
     public function getAppVersion(): string
     {
         return $this->systemVersionService->getCurrentVersion();
+    }
+
+    public function templateAsset(string $path): string
+    {
+        $currentTheme = $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value);
+        $path = sprintf('/assets/theme/%s/%s', $currentTheme, $path);
+
+        return $this->packages->getUrl($path);
     }
 }

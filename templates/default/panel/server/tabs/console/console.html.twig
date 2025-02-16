@@ -1,5 +1,5 @@
 {% block head_stylesheets %}
-    <link rel="stylesheet" href="{{ asset('assets/css/xterm.min.css') }}">
+    <link rel="stylesheet" href="{{ template_asset('css/xterm.min.css') }}">
 {% endblock %}
 
 {% block stylesheets %}
@@ -39,7 +39,7 @@
 {% endblock %}
 
 {% block body_javascript %}
-    <script src="{{ asset('assets/js/libraries/xterm.min.js') }}"></script>
+    <script src="{{ template_asset('js/libraries/xterm.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             terminal.initializeTerminal();

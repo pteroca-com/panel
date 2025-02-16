@@ -4,8 +4,8 @@
 {% block title %}{{ 'pteroca.recovery.change_password'|trans }}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('/assets/css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('/assets/css/panel.css?v=' ~ get_app_version()) }}">
+    <link rel="stylesheet" href="{{ template_asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
 {% endblock %}
 
 {% block body %}

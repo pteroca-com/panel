@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block body_javascript %}
-    <script src="{{ asset('assets/js/libraries/chart.js') }}"></script>
+    <script src="{{ template_asset('js/libraries/chart.js') }}"></script>
     <script>
         const cpuLoadChart = initChart(
             document.getElementById('server-chart-cpu-load'),
