@@ -66,7 +66,8 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                         return sprintf("%s<br><small>(%s)</small>", $value, $hint);
                     }
                     return $value;
-                }),
+                })
+                ->setHelp($this->getHelpText($entity?->getName())),
             ChoiceField::new('type', $this->translator->trans('pteroca.crud.setting.type'))
                 ->setChoices(SettingTypeEnum::getValues())
                 ->onlyWhenCreating(),
@@ -192,5 +193,17 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
             ->setParameter('context', $this->context->value);
 
         return $qb;
+    }
+
+    private function getHelpText(?string $name): string
+    {
+        if (empty ($name)) {
+            return '';
+        }
+
+        $hintIndex = "pteroca.crud.setting.hints.$name";
+        $hint = $this->translator->trans($hintIndex);
+
+        return $hint !== $hintIndex ? $hint : '';
     }
 }
