@@ -19,8 +19,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserAccountCrudController extends AbstractCrudController
@@ -48,6 +50,12 @@ class UserAccountCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        $uploadDirectory = str_replace(
+            '/',
+            DIRECTORY_SEPARATOR,
+            $this->getParameter('avatar_directory'),
+        );
+
         return [
             IdField::new('id')->hideOnForm(),
             EmailField::new('email', $this->translator->trans('pteroca.crud.user.email'))
@@ -60,6 +68,15 @@ class UserAccountCrudController extends AbstractCrudController
                 ->setFormTypeOption('attr', ['type' => 'password'])
                 ->onlyOnForms()
                 ->setHelp($this->translator->trans('pteroca.crud.user.password_hint')),
+            ImageField::new('avatarPath', $this->translator->trans('pteroca.crud.user.avatar'))
+                ->setBasePath($this->getParameter('avatar_base_path'))
+                ->setUploadDir($uploadDirectory)
+                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
+                ->setRequired(false)
+                ->setFileConstraints(new Image([
+                    'maxSize' => $this->getParameter('avatar_max_size'),
+                    'mimeTypes' => $this->getParameter('avatar_allowed_extensions'),
+                ])),
         ];
     }
 

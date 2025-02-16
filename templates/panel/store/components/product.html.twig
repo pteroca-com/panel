@@ -1,5 +1,7 @@
 <div class="card h-100">
-    <img src="{{ product.imagePath ?? asset('/assets/img/placeholders/300x150.png') }}" class="card-img-top product-image" alt="{{ product.name }}">
+    {% if product.imagePath %}
+        <img src="{{ product.imagePath }}" class="card-img-top product-image" alt="{{ product.name }}">
+    {% endif %}
     <div class="card-body d-flex flex-column">
         <h5 class="card-title">{{ product.name }}</h5>
         <p class="card-text">{{ product.description }}</p>

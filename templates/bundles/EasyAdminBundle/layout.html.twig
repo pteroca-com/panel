@@ -79,7 +79,7 @@
         {% endblock flash_messages %}
 
         {% set user_menu_avatar %}
-            {% if null == ea.userMenu.avatarUrl %}
+            {% if ea.user.avatarPath is null %}
                 <span class="user-avatar me-2 mb-1">
                     <span class="fa-stack">
                         <i class="user-avatar-icon-background fas fa-square fa-stack-2x"></i>
@@ -87,16 +87,24 @@
                     </span>
                 </span>
             {% else %}
-                <img class="user-avatar" src="{{ ea.userMenu.avatarUrl }}" />
+                <img class="user-avatar" src="/uploads/avatars/{{ ea.user.avatarPath }}" />
             {% endif %}
         {% endset %}
 
         {% set impersonator_permission = constant('Symfony\\Component\\Security\\Core\\Authorization\\Voter\\AuthenticatedVoter::IS_IMPERSONATOR') is defined ? 'IS_IMPERSONATOR' : 'ROLE_PREVIOUS_ADMIN' %}
 
         {% set user_menu_dropdown %}
-            <ul class="dropdown-menu dropdown-menu-end">
+            <ul class="dropdown-menu dropdown-menu-end p-2 pe-4">
                 <li class="dropdown-user-details">
-                    <!-- <div>{{ user_menu_avatar }}</div> -->
+                    {% if ea.user.avatarPath is not null %}
+                        <div>{{ user_menu_avatar }}</div>
+                    {% else %}
+                        <div class="user-avatar">
+                            <span class="fa-stack">
+                                <i class="{{ ea.user is not null ? 'fa fa-user' : 'fas fa-user-slash' }} fa-2x"></i>
+                            </span>
+                        </div>
+                    {% endif %}
                     <div>
                         <span class="user-label">{{ 'user.logged_in_as'|trans(domain = 'EasyAdminBundle') }}</span>
                         <span class="user-name">{{ ea.user is null ? 'user.anonymous'|trans(domain = 'EasyAdminBundle') : ea.userMenu.name }}</span>

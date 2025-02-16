@@ -173,3 +173,7 @@ input#command {
 .menu-item .icon.submenu-toggle-icon {
     color: #FFFFFF !important;
 }
+
+.hover-pointer:hover {
+    cursor: pointer;
+}

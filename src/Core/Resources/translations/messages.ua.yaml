@@ -216,6 +216,10 @@ pteroca:
     console_token_expired: 'Термін дії токена консолі закінчився. Будь ласка, оновіть сторінку.'
     console_connection_closed: 'З''єднання з консоллю закрито.'
     console_connection_error: 'Сталася помилка під час підключення до консолі.'
+    rules: 'Правила'
+    data_validation_error: 'Помилка під час перевірки. Будь ласка, перевірте, чи виконані всі правила.'
+    enable_auto_renewal: 'Увімкнути автоматичне поновлення для цього сервера'
+    auto_renewal_tooltip: 'Якщо увімкнено, сервер буде автоматично поновлено на вибраний період. Платіж буде знято з вашого балансу.'
 
   actions:
     login: 'Вхід'
@@ -235,6 +239,7 @@ pteroca:
     reinstall: 'Сервер перевстановлено'
     change_startup_option: 'Змінено параметр запуску'
     change_startup_variable: 'Змінено змінну запуску'
+    toggle_auto_renewal: 'Перемикання автоматичного поновлення'
 
   crud:
     category:
@@ -252,6 +257,9 @@ pteroca:
       is_active: 'Активний'
       category: 'Категорія'
       image: 'Зображення'
+      image_help: 'Зображення буде відображено в магазині.'
+      banner: 'Банер'
+      banner_help: 'Банер буде відображено на сторінці продукту.'
       server_resources: 'Ресурси сервера'
       disk_space: 'Місце на диску'
       memory: 'RAM'
@@ -294,6 +302,7 @@ pteroca:
       server: 'Сервер'
       servers: 'Сервери'
       manage_server: 'Керувати сервером'
+      auto_renewal: 'Автоматичне поновлення'
     setting:
       name: 'Назва налаштування'
       value: 'Значення'
@@ -335,7 +344,10 @@ pteroca:
         google_captcha_site_key: 'Ключ сайту CAPTCHA Google'
         terms_of_service: 'Умови надання послуг Зміст сторінки'
         pterodactyl_use_as_client_panel: 'Використовуйте панель Pterodactyl як панель управління серверами. Попередження: Це вимкне можливість керувати серверами в цій панелі'
-
+        delete_suspended_servers_enabled: 'Увімкнути автоматичне видалення призупинених (не поновлених) серверів'
+        delete_suspended_servers_days_after: 'Кількість днів після дати призупинення сервера, через які призупинені сервери будуть остаточно видалені'
+        pterodactyl_sso_enabled: 'Увімкнути вхід Single Sign-On у панелі Pterodactyl (необхідно встановити секрет SSO)'
+        pterodactyl_sso_secret: 'Секретний ключ для входу в Pterodactyl SSO'
     user:
       email: 'Електронна пошта'
       roles: 'Ролі'
@@ -353,6 +365,7 @@ pteroca:
       pterodactyl_user_id: 'ID користувача Pterodactyl'
       created_at: 'Створено'
       updated_at: 'Оновлено'
+      avatar: 'Аватар'
     payment:
       session_id: 'ID сесії'
       status: 'Статус'
@@ -423,8 +436,8 @@ pteroca:
     store:
       subject: 'Покупка сервера'
       server_purchased: 'Ви придбали сервер у нашому магазині.'
-      expiration_date: 'Дата закінчення:'
-      product_details: 'Деталі продукту:'
+      expiration_date: 'Дата закінчення'
+      product_details: 'Деталі продукту'
       product_name: 'Назва продукту'
       product_price: 'Ціна продукту'
       server_details: 'Деталі сервера'

@@ -4,7 +4,6 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\User;
 use App\Core\Form\RegistrationFormType;
-use App\Core\Security\UserAuthenticator;
 use App\Core\Service\Authorization\RegistrationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -29,27 +28,33 @@ class RegistrationController extends AbstractController
         #[Autowire(service: 'App\Core\Security\UserAuthenticator')]
         AuthenticatorInterface $authenticator,
     ): Response {
+        if ($this->getUser() !== null) {
+            return $this->redirectToRoute('panel');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->registrationService
+            $registerActionResult = $this->registrationService
                 ->registerUser($user, $form->get('plainPassword')->getData());
 
-            return $userAuthenticator->authenticateUser(
-                $user,
-                $authenticator,
-                $request
-            );
+            if (!$registerActionResult->success) {
+                $registrationErrors[] = $registerActionResult->error;
+            } else {
+                return $userAuthenticator->authenticateUser(
+                    $registerActionResult->user,
+                    $authenticator,
+                    $request
+                );
+            }
         }
 
-        $errors = $form->getErrors(true);
-        $registrationErrors = [];
-        foreach ($errors as $error) {
-            $registrationErrors[] = $error->getMessage();
+        if (empty($registrationErrors)) {
+            $errors = $form->getErrors(true);
+            $registrationErrors = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
         }
-        $registrationErrors = implode('<br>', $registrationErrors);
 
         return $this->render('panel/registration/register.html.twig', [
             'registrationForm' => $form->createView(),

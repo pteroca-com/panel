@@ -29,8 +29,9 @@
                         {% if errors|length > 0 %}
                             <div class="mb-3">
                                 <div class="w-100 alert alert-danger rounded">
-                                    <i class="fas fa-times-circle mr-1"></i>
-                                    {{ errors|trans|raw }}
+                                    {% for error in errors %}
+                                        <div>{{ error|trans }}</div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         {% endif %}

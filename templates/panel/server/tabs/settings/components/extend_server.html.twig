@@ -8,20 +8,66 @@
             </div>
             <div class="card-body">
                 <div class="row h-100">
-                    <div class="col-12">
+                    <div class="col-12 px-4">
                         <div class="alert alert-info text-center" role="alert">
                             {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.product.name, '{{ expiresAt }}': server.expiresAt|date('Y-m-d H:i:s') })|raw }} <br><br>
                             {{ 'pteroca.server.extend_server_hint'|trans }}<br>
                             {{ 'pteroca.server.extend_server_hint_2'|trans }}
                         </div>
                     </div>
-                    <div class="col-8 offset-2">
+                    <div class="col-8 offset-2 mt-4 px-4">
                         <a href="{{ path('panel', { routeName: 'store_server_renew', id: server.pterodactylServerIdentifier }) }}" class="btn btn-primary w-100">
                             {{ 'pteroca.server.extend_server'|trans }}
                         </a>
+                    </div>
+                    <div class="col-12">
+                        <div class="row pt-4 px-4 pb-1 text-muted">
+                            <div class="col-10">
+                                <label class="form-check-label" for="auto-renewal" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.server.auto_renewal_tooltip'|trans }}">
+                                    {{ 'pteroca.server.enable_auto_renewal'|trans }}
+                                    <i class="fa fa-question-circle"></i>
+                                </label>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" autocomplete="off" id="auto-renewal" {% if server.isAutoRenewal %}checked{% endif %}>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#auto-renewal').addEventListener('change', toggleAutoRenewal)
+        })
+
+        function toggleAutoRenewal() {
+            fetch('{{ path('server_auto_renewal_toggle', { id: server.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key: 'autoRenewal',
+                    value: this.checked
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    alert('{{ 'pteroca.server.data_update_error'|trans }}');
+                    return;
+                }
+
+                alert('{{ 'pteroca.server.data_updated_successfully'|trans }}');
+            }).catch(error => {
+                console.error(error);
+                alert('{{ 'pteroca.server.data_update_error'|trans }}');
+            });
+        }
+    </script>
 {% endblock %}

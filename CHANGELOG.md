@@ -2,6 +2,52 @@
 
 ---
 
+## [0.3.3] - 2025-02-10
+
+### Changed
+- Default color scheme is now set to light mode.
+
+### Fixed
+- Fixed cache issue in the app:configuration-system command.
+
+---
+
+## [0.3.2] - 2025-02-02
+
+### Added
+- Added a new command to change the user's password via CLI.
+- Added a new language: Russian (thanks to @Futuraura for the translation).
+- Added discord link in the admin overview page (as a support link).
+
+### Changed
+- Improved error handling during user registration.
+
+### Fixed
+- Cache issue with the current version of the application.
+
+---
+
+## [0.3.1] - 2025-01-28
+
+### Added
+- Added a role confirmation prompt to the user creation command.
+- Added banner files to products.
+- Added validation rules for updating server variables.
+
+### Changed
+- Improved error handling during user creation via CLI.
+- Enhanced error handling when updating server variables.
+- Updated translations for the "Add Balance" button.
+- Revised the README.md file.
+
+### Fixed
+- Fixed an issue where missing images caused empty spaces to appear.
+- Resolved a bug with email translations.
+- Blocked access to the registration page for logged-in users.
+- Corrected a layout issue by separating product images from banners.
+
+---
+
 ## [0.3.0] - 2025-01-12
 
 ### Added
@@ -22,6 +68,8 @@
 - Empty space on product page when no image is provided
 - Grid layout issue on categories page
 
+---
+
 ## [0.2.4] - 2024-11-25
 
 ### Changed
@@ -30,6 +78,8 @@
 - Removed the "Edit Log" option from the log details view to simplify navigation and improve usability.
 - Adjusted default database configurator variables (DB_HOST, DB_NAME, DB_USER) for a more streamlined setup experience.
 
+---
+
 ## [0.2.3] - 2024-11-19
 
 ### Added
@@ -37,6 +87,8 @@
 
 ### Fixed
 - Fixed route name in url.
+
+---
 
 ## [0.2.2] - 2024-09-09
 
@@ -50,6 +102,8 @@
 - Split store template into multiple files.
 - Moved css from the templates to the css file.
 - Set default settings as a migration.
+
+---
 
 ## [0.2.1] - 2024-09-08
 
@@ -70,6 +124,8 @@
 ### Fixed
 - Fixed the issue with viewing price in the renewal product page.
 
+---
+
 ## [0.2.0] - 2024-09-02
 
 ### Added
@@ -85,12 +141,14 @@
 ### Fixed
 - Bug fixes related to application logic.
 - Dashboard template loading server data issue fix.
+
 ---
 
 ## [0.1.1] - 2024-08-28
 
 ### Fixed
 - Minor css loading issue fix.
+
 ---
 
 ## [0.1.0] - 2024-08-27

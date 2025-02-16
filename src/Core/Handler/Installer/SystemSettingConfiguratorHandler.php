@@ -3,7 +3,9 @@
 namespace App\Core\Handler\Installer;
 
 use App\Core\Enum\SettingEnum;
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
+use App\Core\Service\SettingService;
 use App\Core\Service\System\EnvironmentConfigurationService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -11,6 +13,7 @@ readonly class SystemSettingConfiguratorHandler
 {
     public function __construct(
         private SettingRepository                       $settingRepository,
+        private SettingService                          $settingService,
         private EnvironmentConfigurationService         $environmentConfigurationHandler,
     ) {}
 
@@ -34,8 +37,10 @@ readonly class SystemSettingConfiguratorHandler
 
             $email = $io->ask('User e-mail', '');
             $password = $io->ask('User password', '');
+            $isAdmin = $io->ask('Is user admin? (yes/no)', 'yes') === 'yes';
 
-            exec(sprintf('php bin/console app:create-new-user %s %s', $email, $password));
+            $userRole = $isAdmin ? UserRoleEnum::ROLE_ADMIN : UserRoleEnum::ROLE_USER;
+            exec(sprintf('php bin/console app:create-new-user %s %s %s', $email, $password, $userRole->name));
         }
     }
 
@@ -191,6 +196,7 @@ readonly class SystemSettingConfiguratorHandler
             }
             $setting->setValue($value['value']);
             $this->settingRepository->save($setting);
+            $this->settingService->saveSettingInCache($key, $value['value']);
         }
     }
 }

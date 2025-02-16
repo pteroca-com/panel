@@ -1,7 +1,7 @@
 {
     "name": "pteroca/panel",
     "description": "PteroCA.com is a free, open-source client area and management panel designed specifically for Pterodactyl server users and hosting providers. The platform simplifies and automates server management with a user-friendly interface and robust billing features.",
-    "version": "0.3.0",
+    "version": "0.3.3",
     "type": "project",
     "license": "MIT",
     "minimum-stability": "stable",
@@ -18,8 +18,10 @@
         "ext-iconv": "*",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "easycorp/easyadmin-bundle": "^4.8",
+        "firebase/php-jwt": "^6.11",
         "lcobucci/jwt": "^5.3",
         "nyholm/psr7": "^1.8",
+        "paragonie/sodium_compat": "^2.1",
         "rajentrivedi/tokenizer-x": "^1.0",
         "stripe/stripe-php": "^15.5",
         "symfony/cache": "^7.0",
@@ -30,15 +32,16 @@
         "symfony/http-client": "^7.0",
         "symfony/http-foundation": "^7.0",
         "symfony/mailer": "^7.0",
+        "symfony/maker-bundle": "^1.52",
         "symfony/messenger": "^7.0",
         "symfony/monolog-bundle": "^3.10",
         "symfony/runtime": "^7.0",
         "symfony/security-bundle": "^7.0",
         "symfony/serializer": "^7.0",
+        "symfony/ux-twig-component": "^2.22",
         "symfony/yaml": "^7.0",
         "timdesm/pterodactyl-php-api": "^1.2",
-        "vich/uploader-bundle": "^2.4",
-        "symfony/maker-bundle": "^1.52"
+        "vich/uploader-bundle": "^2.4"
     },
     "config": {
         "allow-plugins": {

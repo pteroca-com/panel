@@ -17,6 +17,8 @@ enum SettingEnum: string
     case PTERODACTYL_PANEL_URL = 'pterodactyl_url';
     case PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL = 'pterodactyl_use_as_client_panel';
     case PTERODACTYL_API_KEY = 'pterodactyl_api_key';
+    case PTERODACTYL_SSO_ENABLED = 'pterodactyl_sso_enabled';
+    case PTERODACTYL_SSO_SECRET = 'pterodactyl_sso_secret';
     case STRIPE_SECRET_KEY = 'stripe_secret_key';
     case STRIPE_PAYMENT_METHODS = 'stripe_payment_methods';
     case INTERNAL_CURRENCY_NAME = 'internal_currency_name';
@@ -33,5 +35,7 @@ enum SettingEnum: string
     case GOOGLE_CAPTCHA_SITE_KEY = 'google_captcha_site_key';
     case GOOGLE_CAPTCHA_SECRET_KEY = 'google_captcha_secret_key';
     case TERMS_OF_SERVICE = 'terms_of_service';
+    case DELETE_SUSPENDED_SERVERS_ENABLED = 'delete_suspended_servers_enabled';
+    case DELETE_SUSPENDED_SERVERS_DAYS_AFTER = 'delete_suspended_servers_days_after';
     case CURRENT_THEME = 'current_theme';
 }

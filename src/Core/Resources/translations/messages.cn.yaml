@@ -216,6 +216,10 @@ pteroca:
     console_token_expired: '控制台令牌已过期。请刷新页面。'
     console_connection_closed: '控制台连接已关闭。'
     console_connection_error: '连接控制台时发生错误。'
+    enable_auto_renewal: '启用此服务器的自动续费'
+    auto_renewal_tooltip: '如果启用，服务器将根据选定的周期自动续费。付款将从您的账户余额中扣除。'
+    rules: '规则'
+    data_validation_error: '验证过程中出错。请检查是否满足所有规则。'
 
   actions:
     login: '登录'
@@ -235,6 +239,7 @@ pteroca:
     reinstall: '重新安装了服务器'
     change_startup_option: '更改了启动选项'
     change_startup_variable: '更改了启动变量'
+    toggle_auto_renewal: '切换了自动续费'
 
   crud:
     category:
@@ -252,6 +257,9 @@ pteroca:
       is_active: '活跃'
       category: '类别'
       image: '图片'
+      image_help: '图片将显示在商店中。'
+      banner: '横幅'
+      banner_help: '横幅将显示在产品页面上。'
       server_resources: '服务器资源'
       disk_space: '磁盘空间'
       memory: 'RAM 内存'
@@ -294,6 +302,7 @@ pteroca:
       server: '服务器'
       servers: '服务器'
       manage_server: '管理服务器'
+      auto_renewal: '自动续费'
     setting:
       name: '设置名称'
       value: '值'
@@ -335,7 +344,10 @@ pteroca:
         google_captcha_site_key: 'Google CAPTCHA 网站密钥'
         terms_of_service: '服务条款页面内容'
         pterodactyl_use_as_client_panel: '使用Pterodactyl面板作为服务器管理面板。警告：这将禁用在此面板中管理服务器的功能'
-
+        delete_suspended_servers_enabled: '启用自动删除已暂停（未续订）的服务器'
+        delete_suspended_servers_days_after: '从服务器暂停日期起，经过多少天后自动删除已暂停的服务器'
+        pterodactyl_sso_enabled: '启用使用 Pterodactyl 面板的单点登录 (SSO)（必须设置 SSO 密钥）'
+        pterodactyl_sso_secret: 'Pterodactyl SSO 登录密钥'
     user:
       email: '电子邮件'
       roles: '角色'
@@ -353,6 +365,7 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl 用户 ID'
       created_at: '创建于'
       updated_at: '更新于'
+      avatar: '头像'
     payment:
       session_id: '会话 ID'
       status: '状态'
@@ -423,8 +436,8 @@ pteroca:
     store:
       subject: '服务器购买'
       server_purchased: '您已在我们的商店购买了一台服务器。'
-      expiration_date: '到期日期：'
-      product_details: '产品详情：'
+      expiration_date: '到期日期'
+      product_details: '产品详情'
       product_name: '产品名称'
       product_price: '产品价格'
       server_details: '服务器详情'

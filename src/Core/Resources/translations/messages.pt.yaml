@@ -216,6 +216,10 @@ pteroca:
     console_token_expired: 'O token do console expirou. Por favor, atualize a página.'
     console_connection_closed: 'A conexão do console foi fechada.'
     console_connection_error: 'Ocorreu um erro ao conectar ao console.'
+    rules: 'Regras'
+    data_validation_error: 'Erro durante a validação. Por favor, verifique se todas as regras foram atendidas.'
+    enable_auto_renewal: 'Ativar renovação automática para este servidor'
+    auto_renewal_tooltip: 'Se ativado, o servidor será automaticamente renovado para o período selecionado. O pagamento será feito do saldo da sua conta.'
 
   actions:
     login: 'Login'
@@ -235,6 +239,7 @@ pteroca:
     reinstall: 'Servidor reinstalado'
     change_startup_option: 'Opção de inicialização alterada'
     change_startup_variable: 'Variável de inicialização alterada'
+    toggle_auto_renewal: 'Renovação automática alternada'
 
   crud:
     category:
@@ -252,6 +257,9 @@ pteroca:
       is_active: 'Ativo'
       category: 'Categoria'
       image: 'Imagem'
+      image_help: 'A imagem será exibida na loja.'
+      banner: 'Banner'
+      banner_help: 'O banner será exibido na página do produto.'
       server_resources: 'Recursos do servidor'
       disk_space: 'Espaço em disco'
       memory: 'Memória RAM'
@@ -294,6 +302,7 @@ pteroca:
       server: 'Servidor'
       servers: 'Servidores'
       manage_server: 'Gerenciar servidor'
+      auto_renewal: 'Renovação automática'
     setting:
       name: 'Nome da configuração'
       value: 'Valor'
@@ -335,7 +344,10 @@ pteroca:
         google_captcha_site_key: 'Chave do site do Google CAPTCHA'
         terms_of_service: 'Conteúdo da página de termos de serviço'
         pterodactyl_use_as_client_panel: 'Usar o painel Pterodactyl como painel de gestão de servidores. Aviso: Isto desativará a capacidade de gerir servidores neste painel'
-
+        delete_suspended_servers_enabled: 'Ativar exclusão automática de servidores suspensos (não renovados)'
+        delete_suspended_servers_days_after: 'Número de dias após a data de suspensão do servidor antes que os servidores suspensos sejam excluídos permanentemente'
+        pterodactyl_sso_enabled: 'Habilitar login Single Sign-On com o painel Pterodactyl (A chave secreta SSO deve ser definida)'
+        pterodactyl_sso_secret: 'Chave secreta de login SSO do Pterodactyl'
     user:
       email: 'E-mail'
       roles: 'Funções'
@@ -353,6 +365,7 @@ pteroca:
       pterodactyl_user_id: 'ID do usuário no Pterodactyl'
       created_at: 'Criado em'
       updated_at: 'Atualizado em'
+      avatar: 'Avatar'
     payment:
       session_id: 'ID da sessão'
       status: 'Status'
@@ -423,8 +436,8 @@ pteroca:
     store:
       subject: 'Compra de servidor'
       server_purchased: 'Você comprou um servidor em nossa loja.'
-      expiration_date: 'Data de expiração:'
-      product_details: 'Detalhes do produto:'
+      expiration_date: 'Data de expiração'
+      product_details: 'Detalhes do produto'
       product_name: 'Nome do produto'
       product_price: 'Preço do produto'
       server_details: 'Detalhes do servidor'
