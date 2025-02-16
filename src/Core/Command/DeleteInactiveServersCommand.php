@@ -2,7 +2,7 @@
 
 namespace App\Core\Command;
 
-use App\Core\Handler\SuspendUnpaidServersHandler;
+use App\Core\Handler\DeleteInactiveServersHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class DeleteInactiveServersCommand extends Command
 {
     public function __construct(
-        private readonly SuspendUnpaidServersHandler $suspendUnpaidServersHandler
+        private readonly DeleteInactiveServersHandler $deleteInactiveServersHandler
     )
     {
         parent::__construct();
@@ -25,8 +25,8 @@ class DeleteInactiveServersCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $this->suspendUnpaidServersHandler->handle();
-        $io->success('Suspend unpaid servers command executed successfully');
+        $this->deleteInactiveServersHandler->handle();
+        $io->success('Delete inactive servers command executed successfully');
 
         return Command::SUCCESS;
     }
