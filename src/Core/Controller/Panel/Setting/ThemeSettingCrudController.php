@@ -8,10 +8,7 @@ use App\Core\Repository\SettingRepository;
 use App\Core\Service\LocaleService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
-use App\Core\Service\System\SystemVersionService;
-use App\Core\Service\Template\TemplateManager;
 use App\Core\Service\Template\TemplateService;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,8 +18,6 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
 {
     public function __construct(
         private readonly TemplateService $templateService,
-        private readonly TemplateManager $templateManager,
-        private readonly SystemVersionService $systemVersionService,
         private readonly TranslatorInterface $translator,
         LogService $logService,
         RequestStack $requestStack,
@@ -37,6 +32,12 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
     public function configureCrud(Crud $crud): Crud
     {
         $this->context = SettingContextEnum::THEME;
+
+        if (!empty($this->currentEntity) && $this->currentEntity->getName() === SettingEnum::CURRENT_THEME->value) {
+            $crud->overrideTemplates([
+                'crud/edit' => 'panel/crud/setting/current_theme/edit.html.twig',
+            ]);
+        }
 
         return parent::configureCrud($crud);
     }
@@ -55,21 +56,6 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
         }
 
         return $fields;
-    }
-
-    public function configureAssets(Assets $assets): Assets
-    {
-        $assets = parent::configureAssets($assets);
-
-        if (!empty($this->currentEntity) && $this->currentEntity->getName() === SettingEnum::CURRENT_THEME->value) {
-            $assets->addJsFile(sprintf(
-                'assets/theme/%s/js/templateSetting.js?v=%s',
-                $this->templateManager->getCurrentTemplate(),
-                $this->systemVersionService->getCurrentVersion(),
-            ));
-        }
-
-        return $assets;
     }
 
     private function findValueFieldIndexByName(iterable $fields): ?int

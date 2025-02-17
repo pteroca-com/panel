@@ -8,12 +8,9 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
-use App\Core\Service\System\SystemVersionService;
-use App\Core\Service\Template\TemplateManager;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -37,8 +34,6 @@ class ProductCrudController extends AbstractPanelController
         LogService $logService,
         private readonly PterodactylService $pterodactylService,
         private readonly SettingService $settingService,
-        private readonly TemplateManager $templateManager,
-        private readonly SystemVersionService $systemVersionService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
     ) {
@@ -48,16 +43,6 @@ class ProductCrudController extends AbstractPanelController
     public static function getEntityFqcn(): string
     {
         return Product::class;
-    }
-
-    public function configureAssets(Assets $assets): Assets
-    {
-        $assets->addJsFile(sprintf(
-            'assets/theme/%s/js/product.js?v=%s',
-            $this->templateManager->getCurrentTemplate(),
-            $this->systemVersionService->getCurrentVersion(),
-        ));
-        return parent::configureAssets($assets);
     }
 
     public function configureFields(string $pageName): iterable
@@ -154,7 +139,11 @@ class ProductCrudController extends AbstractPanelController
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.product'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.products'))
             ->setDefaultSort(['createdAt' => 'DESC'])
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name);
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
+            ->overrideTemplates([
+                'crud/new' => 'panel/crud/product/new.html.twig',
+                'crud/edit' => 'panel/crud/product/edit.html.twig'
+            ]);
     }
 
     public function configureFilters(Filters $filters): Filters

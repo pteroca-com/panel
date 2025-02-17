@@ -14,7 +14,7 @@ class EggsController extends APIAbstractController
         private readonly TranslatorInterface $translator,
     ) {}
 
-    #[Route('/panel/api/get-eggs/{nestId}', name: 'get_eggs', methods: ['GET'])]
+    #[Route('/panel/api/get-eggs/{nestId}', name: 'api_get_eggs', methods: ['GET'])]
     public function getEggs(int $nestId): JsonResponse
     {
         $this->requireAdminRoleForAPIEndpoint();

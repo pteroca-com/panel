@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TemplateController extends AbstractAdminAPIController
 {
-    #[Route('/panel/api/template/{templateName}', name: 'get_template_info', methods: ['GET'])]
+    #[Route('/panel/api/template/{templateName}', name: 'api_get_template_info', methods: ['GET'])]
     public function checkVersion(
         string $templateName,
         TemplateService $templateService,
