@@ -9,7 +9,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TemplateService
 {
-    private const TEMPLATES_DIRECTORY = 'templates';
+    private const TEMPLATES_DIRECTORY = 'themes';
 
     private const METADATA_FILE = 'template.json';
 

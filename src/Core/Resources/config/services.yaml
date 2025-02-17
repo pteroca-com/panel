@@ -41,7 +41,7 @@ services:
 
   App\Core\Twig\DynamicTwigLoader:
     arguments:
-      $templatesBaseDir: '%kernel.project_dir%/templates'
+      $templatesBaseDir: '%kernel.project_dir%/themes'
     tags:
       - { name: 'twig.loader', priority: 1 }
 
