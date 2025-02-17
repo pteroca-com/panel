@@ -77,6 +77,9 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 ->setChoices(SettingContextEnum::getValues())
                 ->setRequired(true)
                 ->onlyWhenCreating(),
+            NumberField::new('hierarchy', $this->translator->trans('pteroca.crud.setting.hierarchy'))
+                ->setRequired(true)
+                ->onlyWhenCreating(),
         ];
 
         $valueLabel = $this->translator->trans('pteroca.crud.setting.value');
@@ -177,6 +180,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     {
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
         $qb->andWhere('entity.context = :context')
+            ->orderBy('entity.hierarchy', 'ASC')
             ->setParameter('context', $this->context->value);
 
         return $qb;

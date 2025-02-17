@@ -9,6 +9,7 @@ enum SettingContextEnum: string
     case SECURITY = 'security_settings';
     case PAYMENT = 'payment_settings';
     case EMAIL = 'email_settings';
+    case PTERODACTYL = 'pterodactyl_settings';
 
     public static function getValues(): array
     {
