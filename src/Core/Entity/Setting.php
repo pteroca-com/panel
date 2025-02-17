@@ -25,6 +25,9 @@ class Setting
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $context;
 
+    #[ORM\Column(type: "smallint", options: ["default" => 100])]
+    private int $hierarchy = 100;
+
     public function getId(): int
     {
         return $this->id;
@@ -71,6 +74,17 @@ class Setting
     public function setContext(?string $context): self
     {
         $this->context = $context;
+        return $this;
+    }
+
+    public function getHierarchy(): int
+    {
+        return $this->hierarchy;
+    }
+
+    public function setHierarchy(int $hierarchy): self
+    {
+        $this->hierarchy = $hierarchy;
         return $this;
     }
 
