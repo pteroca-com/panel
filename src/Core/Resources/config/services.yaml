@@ -39,7 +39,7 @@ services:
     arguments:
       $currentVersion: '%version%'
 
-  App\Core\Service\Crud\PanelCrudService:
+  App\Core\Service\Crud\CrudTemplateService:
     arguments:
       $projectDirectory: '%kernel.project_dir%'
 
