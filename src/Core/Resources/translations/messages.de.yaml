@@ -342,6 +342,7 @@ pteroca:
         require_email_verification: 'E-Mail-Verifizierung erforderlich'
         google_captcha_verification: 'Google CAPTCHA-Verifizierung erforderlich'
         google_captcha_site_key: 'Google CAPTCHA-Site-Schlüssel'
+        google_captcha_secret_key: 'Google CAPTCHA-Geheimschlüssel'
         terms_of_service: 'Inhalt der Seite mit den Nutzungsbedingungen'
         pterodactyl_use_as_client_panel: 'Verwenden Sie das Pterodactyl-Panel als Serververwaltungs-Panel. Warnung: Dies deaktiviert die Möglichkeit, Server in diesem Panel zu verwalten'
         delete_suspended_servers_enabled: 'Automatisches Löschen von gesperrten (nicht verlängerten) Servern aktivieren'

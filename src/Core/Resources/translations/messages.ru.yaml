@@ -330,6 +330,7 @@ pteroca:
         require_email_verification: 'Требовать подтверждение электронной почты'
         google_captcha_verification: 'Требовать подтверждение Google CAPTCHA'
         google_captcha_site_key: 'Ключ сайта Google CAPTCHA'
+        google_captcha_secret_key: 'Секретный ключ Google CAPTCHA'
         terms_of_service: 'Содержание страницы с условиями обслуживания'
         pterodactyl_use_as_client_panel: 'Использовать Pterodactyl как панель управления сервером. Предупреждение: Это отключит возможность управления серверами в этой панели'
         delete_suspended_servers_enabled: 'Включить автоматическое удаление приостановленных (не продленных) серверов'

@@ -65,7 +65,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                     $hintIndex = "pteroca.crud.setting.hints.$value";
                     $hint = $this->translator->trans($hintIndex);
                     if ($hint !== $hintIndex) {
-                        return sprintf("%s<br><small>(%s)</small>", $value, $hint);
+                        return sprintf("%s<br><small>(%s)</small>", $hint, $value);
                     }
                     return $value;
                 })
