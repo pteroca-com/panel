@@ -4,7 +4,10 @@
         <div class="card-text">{{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}</div>
         <div class="card-text small">{{ 'pteroca.dashboard.account_balance_description'|trans }}</div>
         <div class="card-action mt-2">
-            <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn btn-primary">{{ 'pteroca.dashboard.account_recharge'|trans }}</a>
+            <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn btn-primary">
+                <i class="fas fa-coins fa-xs me-1"></i>
+                {{ 'pteroca.dashboard.account_recharge'|trans }}
+            </a>
         </div>
     </div>
 </div>
