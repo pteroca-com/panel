@@ -5,8 +5,8 @@ namespace App\Core\Controller\Panel\Setting;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Repository\SettingRepository;
+use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\LocaleService;
-use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use App\Core\Service\Template\TemplateService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -17,27 +17,28 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ThemeSettingCrudController extends AbstractSettingCrudController
 {
     public function __construct(
-        private readonly TemplateService $templateService,
-        private readonly TranslatorInterface $translator,
-        LogService $logService,
+        PanelCrudService $panelCrudService,
         RequestStack $requestStack,
         SettingRepository $settingRepository,
         SettingService $settingService,
         LocaleService $localeService,
+        private readonly TemplateService $templateService,
+        private readonly TranslatorInterface $translator,
     )
     {
-        parent::__construct($logService, $requestStack, $translator, $settingRepository, $settingService, $localeService);
+        parent::__construct(
+            $panelCrudService,
+            $requestStack,
+            $translator,
+            $settingRepository,
+            $settingService,
+            $localeService
+        );
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         $this->context = SettingContextEnum::THEME;
-
-        if (!empty($this->currentEntity) && $this->currentEntity->getName() === SettingEnum::CURRENT_THEME->value) {
-            $crud->overrideTemplates([
-                'crud/edit' => 'panel/crud/setting/current_theme/edit.html.twig',
-            ]);
-        }
 
         return parent::configureCrud($crud);
     }

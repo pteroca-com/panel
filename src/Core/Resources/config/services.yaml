@@ -39,6 +39,10 @@ services:
     arguments:
       $currentVersion: '%version%'
 
+  App\Core\Service\Crud\PanelCrudService:
+    arguments:
+      $projectDirectory: '%kernel.project_dir%'
+
   App\Core\Twig\DynamicTwigLoader:
     arguments:
       $templatesBaseDir: '%kernel.project_dir%/themes'

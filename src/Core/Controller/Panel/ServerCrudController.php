@@ -5,7 +5,7 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Server;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\Logs\LogService;
+use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
@@ -25,13 +25,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ServerCrudController extends AbstractPanelController
 {
     public function __construct(
-        LogService $logService,
+        PanelCrudService $panelCrudService,
         private readonly UpdateServerService $updateServerService,
         private readonly DeleteServerService $deleteServerService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
     ) {
-        parent::__construct($logService);
+        parent::__construct($panelCrudService);
     }
 
     public static function getEntityFqcn(): string
@@ -78,11 +78,15 @@ class ServerCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        $this->appendCrudTemplateContext('Server');
+
+        $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.server.server'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.server.servers'))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
             ->setDefaultSort(['createdAt' => 'DESC']);
+
+        return parent::configureCrud($crud);
     }
 
     public function configureFilters(Filters $filters): Filters

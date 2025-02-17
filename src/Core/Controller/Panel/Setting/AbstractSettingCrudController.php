@@ -8,8 +8,8 @@ use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingTypeEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
+use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\LocaleService;
-use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -40,14 +40,14 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     protected ?Setting $currentEntity = null;
 
     public function __construct(
-        LogService $logService,
+        PanelCrudService $panelCrudService,
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingRepository $settingRepository,
         private readonly SettingService $settingService,
         private readonly LocaleService $localeService,
     ) {
-        parent::__construct($logService);
+        parent::__construct($panelCrudService);
         $this->currentEntity = $this->getSettingEntity();
     }
 
@@ -131,22 +131,30 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.setting.save')))
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+
         if (strtolower($_ENV['APP_ENV']) === 'prod') {
             $actions
                 ->remove(Crud::PAGE_INDEX, Action::DELETE)
                 ->remove(Crud::PAGE_INDEX, Action::NEW);
         }
+
         return $actions;
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         $context = ucfirst(strtolower($this->context->name));
+        $this->appendCrudTemplateContext('Setting');
+        if (!empty($this->currentEntity)) {
+            $this->appendCrudTemplateContext($this->currentEntity->getName());
+        }
 
-        return $crud
+        $crud
             ->setEntityLabelInSingular(sprintf('%s %s', $context, $this->translator->trans('pteroca.crud.setting.setting')))
             ->setEntityLabelInPlural(sprintf('%s %s', $context, $this->translator->trans('pteroca.crud.setting.settings')))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name);
+
+        return parent::configureCrud($crud);
     }
 
     public function configureFilters(Filters $filters): Filters

@@ -5,7 +5,7 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Product;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\Logs\LogService;
+use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,13 +31,13 @@ class ProductCrudController extends AbstractPanelController
     private array $flashMessages = [];
 
     public function __construct(
-        LogService $logService,
+        PanelCrudService $panelCrudService,
         private readonly PterodactylService $pterodactylService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
     ) {
-        parent::__construct($logService);
+        parent::__construct($panelCrudService);
     }
 
     public static function getEntityFqcn(): string
@@ -135,15 +135,16 @@ class ProductCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        $this->appendCrudTemplateContext('Product');
+
+        $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.product'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.products'))
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
-            ->overrideTemplates([
-                'crud/new' => 'panel/crud/product/new.html.twig',
-                'crud/edit' => 'panel/crud/product/edit.html.twig'
-            ]);
+        ;
+
+        return parent::configureCrud($crud);
     }
 
     public function configureFilters(Filters $filters): Filters

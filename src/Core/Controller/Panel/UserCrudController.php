@@ -4,7 +4,7 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\User;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\Logs\LogService;
+use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Pterodactyl\PterodactylUsernameService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,19 +18,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserCrudController extends AbstractPanelController
 {
     public function __construct(
-        LogService $logService,
+        PanelCrudService $panelCrudService,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly PterodactylService $pterodactylService,
         private readonly PterodactylUsernameService $usernameService,
         private readonly TranslatorInterface $translator,
     ) {
-        parent::__construct($logService);
+        parent::__construct($panelCrudService);
     }
 
     public static function getEntityFqcn(): string
@@ -101,11 +102,15 @@ class UserCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        $this->appendCrudTemplateContext('User');
+
+        $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.user.user'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.user.users'))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
             ->setDefaultSort(['createdAt' => 'DESC']);
+
+        return parent::configureCrud($crud);
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -137,7 +142,7 @@ class UserCrudController extends AbstractPanelController
                     'password' => $plainPassword,
                 ]);
                 $entityInstance->setPterodactylUserId($createdUser->id);
-            } catch (\Exception $exception) {
+            } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
             }
         }
@@ -173,7 +178,7 @@ class UserCrudController extends AbstractPanelController
                         $pterodactylAccountDetails
                     );
                 }
-            } catch (\Exception $exception) {
+            } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
             }
         }
@@ -186,7 +191,7 @@ class UserCrudController extends AbstractPanelController
         if ($entityInstance instanceof User) {
             try {
                 $this->pterodactylService->getApi()->users->delete($entityInstance->getPterodactylUserId());
-            } catch (\Exception $exception) {
+            } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
             }
         }

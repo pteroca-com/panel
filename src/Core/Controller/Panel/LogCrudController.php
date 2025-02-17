@@ -5,7 +5,7 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Log;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\Logs\LogService;
+use App\Core\Service\Crud\PanelCrudService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -20,10 +20,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class LogCrudController extends AbstractPanelController
 {
     public function __construct(
-        LogService $logService,
+        PanelCrudService $panelCrudService,
         private readonly TranslatorInterface $translator,
     ) {
-        parent::__construct($logService);
+        parent::__construct($panelCrudService);
     }
 
     public static function getEntityFqcn(): string
@@ -66,12 +66,16 @@ class LogCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        $this->appendCrudTemplateContext('Log');
+
+        $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.log.log'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.log.logs'))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->showEntityActionsInlined();
+
+        return parent::configureCrud($crud);
     }
 
     public function configureFilters(Filters $filters): Filters
