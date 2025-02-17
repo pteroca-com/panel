@@ -38,11 +38,21 @@
                 </li>
             </ul>
         </p>
-        <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
-           class="btn btn-primary"
-           target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
-            {{ 'pteroca.servers.manage_server'|trans }}
-        </a>
-        <a href="{{ path('panel', { routeName: 'store_server_renew', id: server.pterodactylServerIdentifier }) }}" class="btn btn-primary">{{ 'pteroca.servers.extend'|trans }}</a>
+        <div class="row mt-4">
+            <div class="col-6">
+                <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
+                   class="btn btn-primary w-100"
+                   target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
+                    <i class="fas fa-cogs fa-xs me-1"></i>
+                    {{ 'pteroca.servers.manage_server'|trans }}
+                </a>
+            </div>
+            <div class="col-6">
+                <a href="{{ path('panel', { routeName: 'store_server_renew', id: server.pterodactylServerIdentifier }) }}" class="btn btn-primary w-100">
+                    <i class="fas fa-sync fa-xs me-1"></i>
+                    {{ 'pteroca.servers.extend'|trans }}
+                </a>
+            </div>
+        </div>
     </div>
 </div>
