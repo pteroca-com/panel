@@ -9,9 +9,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TemplateService
 {
-    private const TEMPLATES_DIRECTORY = 'themes';
+    public const METADATA_FILE = 'template.json';
 
-    private const METADATA_FILE = 'template.json';
+    private const TEMPLATES_DIRECTORY = 'themes';
 
     public function __construct(
         private readonly SystemVersionService $systemVersionService,
@@ -64,6 +64,26 @@ class TemplateService
         return $templateInfo;
     }
 
+    public function getTemplatePath(?string $templateName = null): string
+    {
+        $templatePath = $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . self::TEMPLATES_DIRECTORY;
+        if ($templateName !== null) {
+            $templatePath .= DIRECTORY_SEPARATOR . $templateName;
+        }
+
+        return $templatePath;
+    }
+
+    public function getTemplateAssetsPath(?string $templateName): string
+    {
+        $assetsPath = $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'theme';
+        if ($templateName !== null) {
+            $assetsPath .= DIRECTORY_SEPARATOR . $templateName;
+        }
+
+        return $assetsPath;
+    }
+
     private function loadTemplateMetadata(string $templatePath): array
     {
         $metadataPath = $templatePath . DIRECTORY_SEPARATOR . self::METADATA_FILE;
@@ -86,15 +106,5 @@ class TemplateService
         }
 
         return $preparedMetaData;
-    }
-
-    private function getTemplatePath(?string $templateName = null): string
-    {
-        $templatePath = $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . self::TEMPLATES_DIRECTORY;
-        if ($templateName !== null) {
-            $templatePath .= DIRECTORY_SEPARATOR . $templateName;
-        }
-
-        return $templatePath;
     }
 }

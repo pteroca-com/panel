@@ -17,6 +17,14 @@ class TemplateManager
         return $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value);
     }
 
+    public function getCurrentTemplateVersion(): string
+    {
+        $currentTheme = $this->getCurrentTemplate();
+        $metadata = $this->templateService->getTemplateInfo($currentTheme);
+
+        return $metadata['Pteroca version'] ?? '0.0.0';
+    }
+
     public function isTemplateValid(string $template): bool
     {
         return !empty($this->templateService->getTemplateInfo($template));
