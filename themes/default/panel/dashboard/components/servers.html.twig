@@ -1,0 +1,73 @@
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title">
+            {{ 'pteroca.dashboard.my_servers'|trans }}
+            <a href="{{ path('panel', { routeName: 'servers' }) }}" class="btn btn-primary btm-sm float-end">{{ 'pteroca.dashboard.view_all_servers'|trans }} <i class="fa fa-arrow-right-long"></i></a>
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if servers is not empty %}
+            <ul class="list-group list-group-flush">
+                {% for server in servers %}
+                    <li class="list-group-item placeholder-glow placeholder-wave" data-server-id="{{ server.id }}">
+                        {% if not server.isSuspended %}
+                            <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
+                        {% else %}
+                            <span class="badge badge-danger">{{ 'pteroca.servers.suspended'|trans }}</span>
+                        {% endif %}
+                        <strong class="m-2">{{ server.product.name }}</strong>
+                        <span class="placeholder col-4 rounded-1" data-ip></span>
+                        <span class="float-end">
+                            <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
+                               target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
+                                <i class="fa fa-cog"></i>
+                                {{ 'pteroca.servers.manage_server'|trans }}
+                            </a>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info">{{ 'pteroca.dashboard.no_servers'|trans }}</div>
+        {% endif %}
+    </div>
+</div>
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const servers = document.querySelectorAll('[data-server-id]');
+
+            servers.forEach(server => {
+                const serverId = server.getAttribute('data-server-id'),
+                    endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details'
+
+                fetch(endpointUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateServerDashboardElements(server, data);
+                    })
+                    .catch(error => console.error('Error fetching server details:', error));
+            })
+
+            function updateServerDashboardElements(server, data, prefix = '') {
+                for (const [key, value] of Object.entries(data)) {
+                    const dataKey = prefix ? `${prefix}-${key}` : key;
+                    if (typeof value === 'object' && value !== null) {
+                        updateServerDashboardElements(server, value, dataKey);
+                    } else {
+                        const element = server.querySelector(`[data-${dataKey}]`);
+                        if (element) {
+                            if (element.hasAttribute('data-unit')) {
+                                element.textContent = `${value} ${element.getAttribute('data-unit')}`;
+                            } else {
+                                element.textContent = value;
+                            }
+                            element.classList.remove('placeholder');
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

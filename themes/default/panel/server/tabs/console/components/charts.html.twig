@@ -1,0 +1,96 @@
+{% block main %}
+    <div class="col-12">
+        <div class="row">
+            <div class="col-4">
+                <canvas id="server-chart-cpu-load"></canvas>
+            </div>
+            <div class="col-4">
+                <canvas id="server-chart-memory"></canvas>
+            </div>
+            <div class="col-4">
+                <canvas id="server-chart-network"></canvas>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script src="{{ template_asset('js/libraries/chart.js') }}"></script>
+    <script>
+        const cpuLoadChart = initChart(
+            document.getElementById('server-chart-cpu-load'),
+            '{{ 'pteroca.server.cpu_load'|trans }}',
+            (value) => {
+                return value + '%';
+            },
+                100,
+                50
+        ),
+            memoryChart = initChart(
+                document.getElementById('server-chart-memory'),
+                '{{ 'pteroca.server.memory'|trans }}',
+                (value) => {
+                    return value + 'MiB';
+                },
+                {{ serverData.pterodactylServer.limits.memory }},
+                {{ serverData.pterodactylServer.limits.memory / 2 }}
+            ),
+            networkChart = initChart(
+                document.getElementById('server-chart-network'),
+                '{{ 'pteroca.server.network_inbound'|trans }}',
+                (value) => {
+                    return value + 'KiB/s';
+                },
+                null,
+                100
+            );
+
+        function initChart(element, label, callback = null, suggestedMax = null, stepSize = null) {
+            return new Chart(element, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: label,
+                        data: [],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    elements: {
+                        line: {
+                            tension: 0.2,
+                            fill: true,
+                            backgroundColor: 'rgba(4,67,141,0.5)',
+                            borderColor: 'rgba(4,67,141,1)',
+                        },
+                        point: {
+                            radius: 0
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: suggestedMax,
+                            ticks: {
+                                stepSize: stepSize,
+                                callback: callback
+                            },
+                        },
+                        x: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function addChartData(chart, label, newData) {
+            chart.data.labels.push(label);
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.push(newData);
+            });
+            chart.update();
+        }
+    </script>
+{% endblock %}

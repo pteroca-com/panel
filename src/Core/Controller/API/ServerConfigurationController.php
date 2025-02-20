@@ -7,6 +7,7 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Exception\NotAllowedInDemoModeException;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\ServerLogService;
+use App\Core\Service\Server\ServerConfiguration\ServerAutoRenewalService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationOptionService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationVariableService;
@@ -116,6 +117,26 @@ class ServerConfigurationController extends APIAbstractController
             $this->getUser(),
             $server,
             ServerLogActionEnum::REINSTALL,
+            $variableData,
+        );
+
+        return new JsonResponse();
+    }
+
+    #[Route('/panel/api/server/{id}/auto-renewal/toggle', name: 'server_auto_renewal_toggle', methods: ['POST'])]
+    public function toggleAutoRenewal(
+        Request $request,
+        ServerAutoRenewalService $serverAutoRenewalService,
+        int $id,
+    ): JsonResponse
+    {
+        [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
+        $serverAutoRenewalService->toggleAutoRenewal($server, $request->toArray()['value']);
+
+        $this->serverLogService->logServerAction(
+            $this->getUser(),
+            $server,
+            ServerLogActionEnum::TOGGLE_AUTO_RENEWAL,
             $variableData,
         );
 

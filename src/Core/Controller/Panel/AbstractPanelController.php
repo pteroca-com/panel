@@ -2,42 +2,31 @@
 
 namespace App\Core\Controller\Panel;
 
-use App\Core\Entity\Setting;
 use App\Core\Enum\LogActionEnum;
-use App\Core\Enum\SettingTypeEnum;
-use App\Core\Service\Logs\LogService;
+use App\Core\Service\Crud\PanelCrudService;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 abstract class AbstractPanelController extends AbstractCrudController
 {
-    private Serializer $serializer;
+    private array $crudTemplateContext = [];
 
     public function __construct(
-        private readonly LogService $logService,
+        private readonly PanelCrudService $panelCrudService,
     ) {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $this->serializer = new Serializer($normalizers, $encoders);
     }
 
-    private function logEntityAction(LogActionEnum $action, $entityInstance): void
+    public function appendCrudTemplateContext(string $templateContext): void
     {
-        if (is_a($entityInstance, Setting::class)
-            && $entityInstance->getType() === SettingTypeEnum::SECRET->value) {
-            $entityInstance->setValue('********');
-        }
-        $this->logService->logAction(
-            $this->getUser(),
-            $action,
-            [
-                'entityName' => $this->getEntityFqcn(),
-                'entity' => $this->serializer->normalize($entityInstance, null, ['groups' => 'log'])
-            ],
-        );
+        $this->crudTemplateContext[] = $templateContext;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        $crud->overrideTemplates($this->panelCrudService->getTemplatesToOverride($this->crudTemplateContext));
+
+        return parent::configureCrud($crud);
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
@@ -59,6 +48,12 @@ abstract class AbstractPanelController extends AbstractCrudController
         $this->disallowForDemoMode();
         parent::deleteEntity($entityManager, $entityInstance);
         $this->logEntityAction(LogActionEnum::ENTITY_DELETE, $entityInstance);
+    }
+
+    private function logEntityAction(LogActionEnum $action, $entityInstance): void
+    {
+        $this->panelCrudService
+            ->logEntityAction($action, $entityInstance, $this->getUser(), $this->getEntityFqcn());
     }
 
     protected function disallowForDemoMode(): void

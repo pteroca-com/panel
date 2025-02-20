@@ -2,23 +2,32 @@
 
 namespace App\Core\Controller\Panel;
 
+use App\Core\Controller\Panel\Setting\EmailSettingCrudController;
+use App\Core\Controller\Panel\Setting\GeneralSettingCrudController;
+use App\Core\Controller\Panel\Setting\PaymentSettingCrudController;
+use App\Core\Controller\Panel\Setting\PterodactylSettingCrudController;
+use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
+use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
 use App\Core\Entity\Category;
 use App\Core\Entity\Log;
 use App\Core\Entity\Payment;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
-use App\Core\Entity\Setting;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
+use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\SystemVersionService;
+use App\Core\Service\Template\TemplateManager;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +42,8 @@ class DashboardController extends AbstractDashboardController
         private readonly SettingService $settingService,
         private readonly ServerRepository $serverRepository,
         private readonly LogService $logService,
+        private readonly SystemVersionService $systemVersionService,
+        private readonly TemplateManager $templateManager,
     ) {}
 
     #[Route('/panel', name: 'panel')]
@@ -62,7 +73,9 @@ class DashboardController extends AbstractDashboardController
         }
         $logo = sprintf('<img src="%s" alt="%s" style="max-width: 90%%;">', $logoUrl, $title);
         return Dashboard::new()
-            ->setTitle($logo);
+            ->setTitle($logo)
+            ->setDefaultColorScheme(ColorScheme::LIGHT)
+            ;
     }
 
     public function configureMenuItems(): iterable
@@ -82,7 +95,14 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars-progress', ServerLog::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs', Setting::class);
+            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([
+                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.general'), 'fa fa-cog', $this->generateSettingsUrl(SettingContextEnum::GENERAL)),
+                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.pterodactyl'), 'fa fa-network-wired', $this->generateSettingsUrl(SettingContextEnum::PTERODACTYL)),
+                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.security'), 'fa fa-shield-halved', $this->generateSettingsUrl(SettingContextEnum::SECURITY)),
+                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.payment_gateways'), 'fa fa-hand-holding-dollar', $this->generateSettingsUrl(SettingContextEnum::PAYMENT)),
+                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.email'), 'fa fa-envelope', $this->generateSettingsUrl(SettingContextEnum::EMAIL)),
+                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.appearance'), 'fa fa-brush', $this->generateSettingsUrl(SettingContextEnum::THEME)),
+            ]);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class);
         }
 
@@ -100,8 +120,11 @@ class DashboardController extends AbstractDashboardController
     public function configureAssets(): Assets
     {
         return Assets::new()
-            ->addCssFile('/assets/css/panel.css')
-            ;
+            ->addCssFile(sprintf(
+                '/assets/theme/%s/css/panel.css?v=%s',
+                $this->templateManager->getCurrentTemplate(),
+                $this->systemVersionService->getCurrentVersion(),
+            ));
     }
 
     public function configureUserMenu(UserInterface $user): UserMenu
@@ -121,5 +144,22 @@ class DashboardController extends AbstractDashboardController
         ]);
 
         return $userMenu;
+    }
+
+    private function generateSettingsUrl(SettingContextEnum $context): string
+    {
+        $crudFqcn = match ($context) {
+            SettingContextEnum::THEME => ThemeSettingCrudController::class,
+            SettingContextEnum::SECURITY => SecuritySettingCrudController::class,
+            SettingContextEnum::PAYMENT => PaymentSettingCrudController::class,
+            SettingContextEnum::EMAIL => EmailSettingCrudController::class,
+            SettingContextEnum::PTERODACTYL => PterodactylSettingCrudController::class,
+            default => GeneralSettingCrudController::class,
+        };
+
+        return $this->generateUrl('panel', [
+            'crudAction' => 'index',
+            'crudControllerFqcn' => $crudFqcn,
+        ]);
     }
 }

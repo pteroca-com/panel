@@ -222,6 +222,8 @@ pteroca:
     console_connection_error: 'An error occurred while connecting to the console.'
     rules: 'Rules'
     data_validation_error: 'Error during validation. Please check if all rules are met.'
+    enable_auto_renewal: 'Enable auto-renewal for this server'
+    auto_renewal_tooltip: 'If enabled, the server will be automatically renewed for the selected period. The payment will be made from your account balance.'
 
   actions:
     login: 'Login'
@@ -241,6 +243,7 @@ pteroca:
     reinstall: 'Reinstalled server'
     change_startup_option: 'Changed startup option'
     change_startup_variable: 'Changed startup variable'
+    toggle_auto_renewal: 'Toggled auto-renewal'
 
   crud:
     category:
@@ -303,6 +306,7 @@ pteroca:
       server: 'Server'
       servers: 'Servers'
       manage_server: 'Manage server'
+      auto_renewal: 'Auto renewal'
     setting:
       name: 'Setting name'
       value: 'Setting value'
@@ -311,6 +315,8 @@ pteroca:
       setting: 'Setting'
       settings: 'Settings'
       type: 'Type'
+      context: 'Context'
+      hierarchy: 'Hierarchy'
       yes: 'Yes'
       no: 'No'
       hint: 'Description'
@@ -341,8 +347,23 @@ pteroca:
         require_email_verification: 'Require email verification'
         google_captcha_verification: 'Require Google CAPTCHA verification'
         google_captcha_site_key: 'Google CAPTCHA site key'
+        google_captcha_secret_key: 'Google CAPTCHA secret key'
         terms_of_service: 'Terms of service page content'
         pterodactyl_use_as_client_panel: 'Use Pterodactyl Panel as server management panel. Warning: This will disable the ability to manage servers in this panel'
+        delete_suspended_servers_enabled: 'Enable automatic deletion of suspended (not renewed) servers'
+        delete_suspended_servers_days_after: 'Number of days after the server suspension date before suspended servers are permanently deleted'
+        pterodactyl_sso_enabled: 'Enable Single Sign-On Login with Pterodactyl Panel (SSO Secret must be set)'
+        pterodactyl_sso_secret: 'Pterodactyl SSO Login Secret Key'
+        current_theme: 'Current theme of the panel'
+      template:
+        name: 'Template name'
+        description: 'Template description'
+        author: 'Author'
+        version: 'Version'
+        license: 'License'
+        pterocaVersion: 'Pteroca version'
+        outdated: 'The template version is behind the current version of PteroCA. Some features may not work correctly'
+        phpVersion: 'PHP version'
 
     user:
       email: 'Email'
@@ -361,6 +382,7 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl User ID'
       created_at: 'Created at'
       updated_at: 'Last activity'
+      avatar: 'Avatar'
     payment:
       session_id: 'Session ID'
       status: 'Status'
@@ -392,6 +414,12 @@ pteroca:
       categories: 'Categories'
       products: 'Products'
       settings: 'Settings'
+      general: 'General'
+      pterodactyl: 'Pterodactyl'
+      appearance: 'Appearance'
+      security: 'Security'
+      payment_gateways: 'Payment gateways'
+      email: 'Email'
       users: 'Users'
       logout: 'Logout'
       phpmyadmin: 'PHPMyAdmin'
