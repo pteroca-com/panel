@@ -10,6 +10,7 @@ use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\StoreService;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -274,7 +275,7 @@ class StoreServiceTest extends TestCase
             ->with('pteroca.store.not_enough_funds')
             ->willReturn('Not enough funds');
 
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Not enough funds');
 
         $this->storeService->validateBoughtProduct($user, $product, 1, $server);

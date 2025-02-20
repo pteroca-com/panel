@@ -218,6 +218,8 @@ pteroca:
     console_connection_error: 'Wystąpił błąd podczas łączenia z konsolą.'
     rules: 'Reguły'
     data_validation_error: 'Błąd podczas walidacji. Proszę sprawdzić, czy wszystkie reguły są spełnione.'
+    enable_auto_renewal: 'Włącz automatyczne odnawianie dla tego serwera'
+    auto_renewal_tooltip: 'Jeśli włączone, serwer zostanie automatycznie odnowiony na wybrany okres. Płatność zostanie pobrana z salda Twojego konta.'
 
   actions:
     login: 'Logowanie'
@@ -237,6 +239,7 @@ pteroca:
     reinstall: 'Ponowna instalacja serwera'
     change_startup_option: 'Zmiana opcji uruchamiania'
     change_startup_variable: 'Zmiana zmiennej uruchamiania'
+    toggle_auto_renewal: 'Przełączono automatyczne odnawianie'
 
   crud:
     category:
@@ -299,6 +302,7 @@ pteroca:
       server: 'Serwer'
       servers: 'Serwery'
       manage_server: 'Zarządzaj serwerem'
+      auto_renewal: 'Automatyczne odnawianie'
     setting:
       name: 'Nazwa ustawienia'
       value: 'Wartość ustawienia'
@@ -307,6 +311,8 @@ pteroca:
       setting: 'Ustawienie'
       settings: 'Ustawienia'
       type: 'Typ'
+      context: 'Kontekst'
+      hierarchy: 'Hierarchia'
       yes: 'Tak'
       no: 'Nie'
       hint: 'Opis'
@@ -337,9 +343,23 @@ pteroca:
         require_email_verification: 'Wymagaj weryfikacji adresu e-mail'
         google_captcha_verification: 'Wymagaj weryfikacji CAPTCHA Google'
         google_captcha_site_key: 'Klucz witryny CAPTCHA Google'
+        google_captcha_secret_key: 'Sekretny klucz Google CAPTCHA'
         terms_of_service: 'Zawartość strony z warunkami korzystania z usługi'
         pterodactyl_use_as_client_panel: 'Użyj panelu Pterodactyl jako panelu zarządzania serwerami. Ostrzeżenie: To wyłączy możliwość zarządzania serwerami w tym panelu'
-
+        delete_suspended_servers_enabled: 'Włącz automatyczne usuwanie zawieszonych (nieodnawianych) serwerów'
+        delete_suspended_servers_days_after: 'Liczba dni od daty zawieszenia serwera, po których zawieszone serwery zostaną trwale usunięte'
+        pterodactyl_sso_enabled: 'Włącz logowanie Single Sign-On z panelem Pterodactyl (Sekret SSO musi być ustawiony)'
+        pterodactyl_sso_secret: 'Sekretny klucz logowania SSO Pterodactyl'
+        current_theme: 'Aktualny motyw panelu'
+      template:
+        name: 'Nazwa szablonu'
+        description: 'Opis szablonu'
+        author: 'Autor'
+        version: 'Wersja'
+        license: 'Licencja'
+        pterocaVersion: 'Wersja PteroCA'
+        outdated: 'Wersja szablonu jest starsza niż aktualna wersja PteroCA. Niektóre funkcje mogą nie działać poprawnie'
+        phpVersion: 'Wersja PHP'
     user:
       email: 'Email'
       roles: 'Role'
@@ -357,6 +377,7 @@ pteroca:
       pterodactyl_user_id: 'ID użytkownika Pterodactyl'
       created_at: 'Utworzono'
       updated_at: 'Ostatnia aktywność'
+      avatar: 'Awatar'
     payment:
       session_id: 'ID sesji'
       status: 'Status'
@@ -388,6 +409,12 @@ pteroca:
       categories: 'Kategorie'
       products: 'Produkty'
       settings: 'Ustawienia'
+      general: 'Ogólne'
+      pterodactyl: 'Pterodactyl'
+      appearance: 'Wygląd'
+      security: 'Bezpieczeństwo'
+      payment_gateways: 'Bramki płatności'
+      email: 'E-mail'
       users: 'Użytkownicy'
       logout: 'Wyloguj'
       phpmyadmin: 'PHPMyAdmin'

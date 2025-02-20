@@ -218,6 +218,8 @@ pteroca:
     console_connection_error: 'Beim Verbinden mit der Konsole ist ein Fehler aufgetreten.'
     rules: 'Regeln'
     data_validation_error: 'Fehler bei der Validierung. Bitte überprüfen Sie, ob alle Regeln erfüllt sind.'
+    enable_auto_renewal: 'Automatische Verlängerung für diesen Server aktivieren'
+    auto_renewal_tooltip: 'Wenn aktiviert, wird der Server automatisch für den ausgewählten Zeitraum verlängert. Die Zahlung erfolgt aus Ihrem Kontoguthaben.'
 
   actions:
     login: 'Login'
@@ -237,6 +239,7 @@ pteroca:
     reinstall: 'Server neu installiert'
     change_startup_option: 'Startoption geändert'
     change_startup_variable: 'Startvariable geändert'
+    toggle_auto_renewal: 'Automatische Verlängerung umgeschaltet'
 
   crud:
     category:
@@ -299,6 +302,7 @@ pteroca:
       server: 'Server'
       servers: 'Server'
       manage_server: 'Server verwalten'
+      auto_renewal: 'Automatische Verlängerung'
     setting:
       name: 'Einstellungsname'
       value: 'Wert'
@@ -307,6 +311,8 @@ pteroca:
       setting: 'Einstellung'
       settings: 'Einstellungen'
       type: 'Typ'
+      context: 'Kontext'
+      hierarchy: 'Hierarchie'
       yes: 'Ja'
       no: 'Nein'
       hint: 'Beschreibung'
@@ -337,9 +343,23 @@ pteroca:
         require_email_verification: 'E-Mail-Verifizierung erforderlich'
         google_captcha_verification: 'Google CAPTCHA-Verifizierung erforderlich'
         google_captcha_site_key: 'Google CAPTCHA-Site-Schlüssel'
+        google_captcha_secret_key: 'Google CAPTCHA-Geheimschlüssel'
         terms_of_service: 'Inhalt der Seite mit den Nutzungsbedingungen'
         pterodactyl_use_as_client_panel: 'Verwenden Sie das Pterodactyl-Panel als Serververwaltungs-Panel. Warnung: Dies deaktiviert die Möglichkeit, Server in diesem Panel zu verwalten'
-
+        delete_suspended_servers_enabled: 'Automatisches Löschen von gesperrten (nicht verlängerten) Servern aktivieren'
+        delete_suspended_servers_days_after: 'Anzahl der Tage nach dem Sperrdatum, nach denen gesperrte Server dauerhaft gelöscht werden'
+        pterodactyl_sso_enabled: 'Aktiviere Single-Sign-On-Anmeldung mit dem Pterodactyl-Panel (SSO-Schlüssel muss festgelegt sein)'
+        pterodactyl_sso_secret: 'Pterodactyl SSO-Anmeldeschlüssel'
+        current_theme: 'Aktuelles Thema des Panels'
+      template:
+        name: 'Vorlagenname'
+        description: 'Vorlagenbeschreibung'
+        author: 'Autor'
+        version: 'Version'
+        license: 'Lizenz'
+        pterocaVersion: 'PteroCA-Version'
+        outdated: 'Die Vorlagenversion liegt hinter der aktuellen Version von PteroCA zurück. Einige Funktionen funktionieren möglicherweise nicht richtig'
+        phpVersion: 'PHP-Version'
     user:
       email: 'E-Mail'
       roles: 'Rollen'
@@ -357,6 +377,7 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl-Benutzer-ID'
       created_at: 'Erstellt am'
       updated_at: 'Aktualisiert am'
+      avatar: 'Avatar'
     payment:
       session_id: 'Sitzungs-ID'
       status: 'Status'
@@ -388,6 +409,12 @@ pteroca:
       categories: 'Kategorien'
       products: 'Produkte'
       settings: 'Einstellungen'
+      general: 'Allgemein'
+      pterodactyl: 'Pterodactyl'
+      appearance: 'Aussehen'
+      security: 'Sicherheit'
+      payment_gateways: 'Zahlungsgateways'
+      email: 'E-Mail'
       users: 'Benutzer'
       logout: 'Abmelden'
       phpmyadmin: 'PHPMyAdmin'

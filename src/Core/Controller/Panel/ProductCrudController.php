@@ -5,13 +5,12 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Product;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\Logs\LogService;
+use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -32,24 +31,18 @@ class ProductCrudController extends AbstractPanelController
     private array $flashMessages = [];
 
     public function __construct(
-        LogService $logService,
+        PanelCrudService $panelCrudService,
         private readonly PterodactylService $pterodactylService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
     ) {
-        parent::__construct($logService);
+        parent::__construct($panelCrudService);
     }
 
     public static function getEntityFqcn(): string
     {
         return Product::class;
-    }
-
-    public function configureAssets(Assets $assets): Assets
-    {
-        $assets->addJsFile('assets/js/product.js');
-        return parent::configureAssets($assets);
     }
 
     public function configureFields(string $pageName): iterable
@@ -142,11 +135,16 @@ class ProductCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        $this->appendCrudTemplateContext('Product');
+
+        $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.product'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.products'))
             ->setDefaultSort(['createdAt' => 'DESC'])
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name);
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
+        ;
+
+        return parent::configureCrud($crud);
     }
 
     public function configureFilters(Filters $filters): Filters

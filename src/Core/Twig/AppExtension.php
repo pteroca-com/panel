@@ -4,14 +4,19 @@ namespace App\Core\Twig;
 
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\SystemVersionService;
+use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
+use Symfony\Component\Asset\Packages;
 
 class AppExtension extends AbstractExtension
 {
     public function __construct(
-        private readonly string $currentVersion,
+        private readonly SystemVersionService $systemVersionService,
         private readonly SettingService $settingService,
+        private readonly Packages $packages,
+        private readonly RouterInterface $router,
     ) {}
 
     public function getFunctions(): array
@@ -28,6 +33,8 @@ class AppExtension extends AbstractExtension
             new TwigFunction('get_favicon', [$this, 'getFavicon']),
             new TwigFunction('use_pterodactyl_panel_as_client_panel', [$this, 'usePterodactylPanelAsClientPanel']),
             new TwigFunction('get_pterodactyl_panel_url', [$this, 'getPterodactylPanelUrl']),
+            new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
+            new TwigFunction('template_asset', [$this, 'templateAsset']),
         ];
     }
 
@@ -86,9 +93,27 @@ class AppExtension extends AbstractExtension
         return (bool)$this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);
     }
 
-    public function getPterodactylPanelUrl(): string
+    public function isPterodactylSSOEnabled(): bool
     {
-        return $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+        return (bool)$this->settingService->getSetting(SettingEnum::PTERODACTYL_SSO_ENABLED->value);
+    }
+
+    public function getPterodactylPanelUrl(string $path = ''): string
+    {
+        $isPterodactylSSOEnabled = $this->settingService->getSetting(SettingEnum::PTERODACTYL_SSO_ENABLED->value);
+        $pterodactylPanelUrl = $isPterodactylSSOEnabled
+            ? $this->router->generate('sso_redirect')
+            : $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+
+        if (!empty($path)) {
+            if (!$isPterodactylSSOEnabled) {
+                $pterodactylPanelUrl = rtrim($pterodactylPanelUrl, '/') . '/' . ltrim($path, '/');
+            } else {
+                $pterodactylPanelUrl .= '?redirect_path=' . $path;
+            }
+        }
+
+        return $pterodactylPanelUrl;
     }
 
     public function getCaptchaSiteKey(): ?string
@@ -102,6 +127,14 @@ class AppExtension extends AbstractExtension
 
     public function getAppVersion(): string
     {
-        return $this->currentVersion;
+        return $this->systemVersionService->getCurrentVersion();
+    }
+
+    public function templateAsset(string $path): string
+    {
+        $currentTheme = $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value);
+        $path = sprintf('/assets/theme/%s/%s', $currentTheme, $path);
+
+        return $this->packages->getUrl($path);
     }
 }

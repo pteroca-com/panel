@@ -1,0 +1,22 @@
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
+{% endblock %}
+
+{% block head_favicon %}
+    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
+{% endblock %}
+
+{% block wrapper_wrapper %}
+    <form id="sso-redirect-form" action="{{ redirectUrl }}" method="post">
+        <input type="hidden" name="pteroca_sso_token" value="{{ redirectToken }}">
+        <input type="hidden" name="pteroca_sso_redirect" value="{{ redirectPath }}">
+    </form>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('sso-redirect-form').submit();
+        });
+    </script>
+{% endblock %}

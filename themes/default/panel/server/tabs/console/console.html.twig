@@ -1,0 +1,223 @@
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ template_asset('css/xterm.min.css') }}">
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        #terminal > div {
+            padding: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="tab-pane active" id="console">
+        <div class="row">
+            <div class="col-12 col-xl-9 mb-3">
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div id="terminal"></div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <div class="row">
+                            <div class="col-10 d-flex justify-content-center align-items-center">
+                                <input type="text" class="form-control w-100 h-100" id="command" placeholder="> {{ 'pteroca.server.command'|trans }}" disabled>
+                            </div>
+                            <div class="col-2 d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary w-100 h-100" id="send-command" disabled>{{ 'pteroca.server.send'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% include 'panel/server/tabs/console/components/charts.html.twig' %}
+                </div>
+            </div>
+            {% include 'panel/server/tabs/console/components/stats.html.twig' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script src="{{ template_asset('js/libraries/xterm.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            terminal.initializeTerminal();
+            {% if not server.isSuspended %}
+                terminal.getWebsocketToken()
+                    .then(data => {
+                        terminal.initializeWebsocket(data.token, data.socket);
+                    });
+            {% else %}
+                terminal.showSuspendedServerMessage();
+            {% endif %}
+        });
+
+        const terminal = {
+            currentServerState: null,
+            terminal: null,
+            ws: null,
+            colors: {
+                red: "\x1b[38;2;248;113;133m",
+                green: "\x1b[38;2;134;239;172m",
+                yellow: "\x1b[38;2;253;224;71m",
+                blue: "\x1b[38;2;147;197;253m",
+                magenta: "\x1b[38;2;249;168;212m",
+                cyan: "\x1b[38;2;103;232;249m",
+                default: "\x1b[38;2;255;255;255m"
+            },
+            initializeTerminal: function() {
+                this.terminal = new Terminal();
+                this.terminal.open(document.getElementById('terminal'));
+            },
+            getWebsocketToken() {
+                return fetch('{{ path('server_websocket_token', { id: server.id }) }}')
+                    .then(response => response.json());
+            },
+            showSuspendedServerMessage() {
+                this.terminal.write(this.colors.red + '{{ 'pteroca.server.console_suspended_hint'|trans }}' + this.colors.default + '\r\n');
+            },
+            initializeWebsocket: function(token, socket) {
+                this.ws = new WebSocket(socket);
+                this.ws.onopen = function() {
+                    terminal.ws.send(JSON.stringify({ event: 'auth', args: [token] }));
+
+                    terminal.bindButtons();
+                };
+                this.ws.onmessage = function(event) {
+                    const eventData = JSON.parse(event.data);
+                    switch (eventData.event) {
+                        case 'auth success':
+                            terminal.ws.send(JSON.stringify({ event: 'send stats', args: [null]}));
+                            terminal.ws.send(JSON.stringify({ event: 'send logs', args: [null]}));
+                            break;
+                        case 'console output':
+                        case 'install output':
+                            terminal.terminal.write(eventData.args.join(' ') + '\r\n');
+                            break;
+                        case 'status':
+                            const serverStatus = eventData.args.join(' '),
+                                isOffline = serverStatus.includes('offline'),
+                                color = isOffline ? terminal.colors.red : terminal.colors.green;
+                            terminal.terminal.write('{{ 'pteroca.server.console_server_marked_as'|trans }} ' + color + serverStatus + terminal.colors.default + '\r\n');
+                            terminal.currentServerState = serverStatus;
+                            terminal.toggleButtons(isOffline);
+                            terminal.toggleKillButton(serverStatus === 'stopping');
+                            break;
+                        case 'stats':
+                            const parsedStats = JSON.parse(eventData.args);
+                            terminal.currentServerState = parsedStats.state;
+                            terminal.loadStatisticsFromWebsocket(parsedStats);
+                            break;
+                        case 'token expiring':
+                            terminal.getWebsocketToken()
+                                .then(data => {
+                                    terminal.ws.send(JSON.stringify({ event: 'auth', args: [data.token] }));
+                                })
+                            break;
+                        case 'token expired':
+                            terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_token_expired'|trans }}' + terminal.colors.default + '\r\n');
+                            break;
+                    }
+                };
+                this.ws.onclose = function() {
+                    terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_connection_closed'|trans }}' + terminal.colors.default + '\r\n');
+                    terminal.toggleButtons(true);
+                };
+                this.ws.onerror = function(event) {
+                    terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_connection_error'|trans }}' + terminal.colors.default + '\r\n');
+                    terminal.toggleButtons(true);
+                };
+            },
+            sendCommand: function(command) {
+                this.ws.send(JSON.stringify({ event: 'send command', args: [command] }));
+                this.terminal.write('> ' + command + '\r\n');
+            },
+            sendState: function(state) {
+                this.ws.send(JSON.stringify({ event: 'set state', args: [state] }));
+            },
+            loadStatisticsFromWebsocket: function(stats) {
+                const isOnline = stats.state !== 'offline',
+                    uptimeIcon = document.querySelector('[data-uptime-icon]');
+
+                uptimeIcon.classList.toggle('text-success', isOnline);
+                uptimeIcon.classList.toggle('text-danger', !isOnline);
+
+                this.updateStatisticValue('[data-disk]', `${this.parseBytesToBestFit(stats.disk_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverData.serverDetails.limits.disk }}'))}`);
+                this.updateStatisticValue('[data-uptime]', isOnline ? `${this.parseMillisecondsToHumanReadable(stats.uptime)}` : 'Offline');
+                this.updateStatisticValue('[data-memory]', isOnline ? `${this.parseBytesToBestFit(stats.memory_bytes)} / ${this.parseBytesToBestFit(this.parseMegabytesToBytes('{{ serverData.serverDetails.limits.memory }}'))}` : 'Offline');
+                this.updateStatisticValue('[data-cpu-load]', isOnline ? `${this.parseToPercentage(stats.cpu_absolute)}% / {{ serverData.serverDetails.limits.cpu }}%` : 'Offline');
+                this.updateStatisticValue('[data-network-inbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.rx_bytes)}` : 'Offline');
+                this.updateStatisticValue('[data-network-outbound]', isOnline ? `${this.parseBytesToBestFit(stats.network.tx_bytes)}` : 'Offline');
+
+                addChartData(cpuLoadChart, new Date().toLocaleTimeString(), this.parseToPercentage(stats.cpu_absolute));
+                addChartData(memoryChart, new Date().toLocaleTimeString(), stats.memory_bytes / 1024 / 1024);
+                addChartData(networkChart, new Date().toLocaleTimeString(), stats.network.rx_bytes / 1024);
+            },
+            updateStatisticValue(selector, value) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.textContent = value;
+                    element.classList.remove('placeholder');
+                }
+            },
+            parseBytesToBestFit: function(bytes) {
+                const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                let unitIndex = 0;
+                while (bytes >= 1024) {
+                    bytes /= 1024;
+                    unitIndex++;
+                }
+
+                return `${bytes.toFixed(2)} ${units[unitIndex]}`;
+            },
+            parseMegabytesToBytes: function(value) {
+                return value * 1024 * 1024;
+            },
+            parseToPercentage: function(value) {
+                return value.toFixed(2);
+            },
+            parseMillisecondsToHumanReadable: function(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+
+                return `${days}d ${hours % 24}h ${minutes % 60}m ${seconds % 60}s`;
+            },
+            bindButtons: function() {
+                document.querySelector('#send-command').addEventListener('click', function() {
+                    const commandInput = document.querySelector('#command');
+                    terminal.sendCommand(commandInput.value);
+                    commandInput.value = '';
+                });
+
+                this.toggleButtons(false);
+
+                document.querySelector('#server-start').addEventListener('click', function() {
+                    terminal.sendState('start');
+                });
+
+                document.querySelector('#server-restart').addEventListener('click', function() {
+                    terminal.sendState('restart');
+                });
+
+                document.querySelector('#server-stop').addEventListener('click', function() {
+                    terminal.sendState('stop');
+                });
+
+                document.querySelector('#server-kill').addEventListener('click', function() {
+                    terminal.sendState('kill');
+                });
+            },
+            toggleButtons(disabledState) {
+                document.querySelector('#send-command').disabled = disabledState;
+                document.querySelector('#command').disabled = disabledState;
+            },
+            toggleKillButton(show = true) {
+                document.querySelector('#server-stop').parentElement.classList.toggle('d-none', show);
+                document.querySelector('#server-kill').parentElement.classList.toggle('d-none', !show);
+            }
+        };
+    </script>
+{% endblock %}

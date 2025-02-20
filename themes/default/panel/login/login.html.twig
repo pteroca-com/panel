@@ -1,0 +1,110 @@
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
+
+{% block body_class 'page-login' %}
+{% block page_title %}{{ get_title() }} | {{ 'pteroca.login.title'|trans }}{% endblock %}
+
+{% block head_stylesheets %}
+    {% if get_captcha_site_key() %}
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% endif %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
+{% endblock %}
+
+{% block head_favicon %}
+    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
+{% endblock %}
+
+{% block wrapper_wrapper %}
+    {% set page_title = block('page_title') %}
+    {% set _username_label = username_label is defined ? username_label|trans : 'login_page.username'|trans({}, 'EasyAdminBundle') %}
+    {% set _password_label = password_label is defined ? password_label|trans : 'login_page.password'|trans({}, 'EasyAdminBundle') %}
+    {% set _forgot_password_label = forgot_password_label is defined ? forgot_password_label|trans : 'login_page.forgot_password'|trans({}, 'EasyAdminBundle') %}
+    {% set _remember_me_label = remember_me_label is defined ? remember_me_label|trans : 'login_page.remember_me'|trans({}, 'EasyAdminBundle') %}
+    {% set _sign_in_label = sign_in_label is defined ? sign_in_label|trans : 'login_page.sign_in'|trans({}, 'EasyAdminBundle') %}
+
+    {% include '@EasyAdmin/flash_messages.html.twig' %}
+
+    <div class="login-wrapper pt-5">
+        <header class="main-header mt-5">
+            <div id="header-logo">
+                {% block header_logo %}
+                    <div class="logo mb-1">
+                        <img src="{{ get_logo() }}" alt="{{ get_title() }}" />
+                    </div>
+                {% endblock header_logo %}
+            </div>
+        </header>
+
+        <section class="content">
+            <div class="login-title mt-3">
+                {{ 'pteroca.login.title'|trans }}
+            </div>
+
+            {% if error|default(false) %}
+                <div class="mb-3">
+                    <div class="w-100 alert alert-danger rounded">
+                        <i class="fas fa-times-circle mr-1"></i>
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post" action="{{ action|default('') }}">
+                {% if csrf_token_intention|default(false) %}
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token(csrf_token_intention) }}">
+                {% endif %}
+
+                <input type="hidden" name="{{ target_path_parameter|default('_target_path') }}" value="/" />
+
+                <div class="form-group">
+                    <label class="form-control-label required" for="username">{{ 'pteroca.login.email_address'|trans }}</label>
+                    <div class="form-widget">
+                        <input type="text" id="username" name="{{ username_parameter|default('_username') }}" class="form-control" value="{{ last_username|default('') }}" required autofocus autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label required" for="password">{{ 'pteroca.login.password'|trans }}</label>
+                    <div class="form-widget">
+                        <input type="password" id="password" name="{{ password_parameter|default('_password') }}" class="form-control" required autocomplete="current-password">
+                    </div>
+
+                    {% if forgot_password_enabled|default(false) %}
+                        <div class="form-text">
+                            <a href="{{ forgot_password_path|default('#') }}">{{ 'pteroca.login.forgot_password'|trans }}</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if remember_me_enabled|default(false) %}
+                    <div class="form-group">
+                        <input class="form-check-input" type="checkbox" id="remember_me" name="{{ remember_me_parameter|default('_remember_me') }}" {{ remember_me_checked|default(false) ? 'checked' }}>
+                        <label class="form-check-label" for="remember_me">
+                            {{ 'pteroca.login.remember_me'|trans }}
+                        </label>
+                    </div>
+                {% endif %}
+
+                {% if get_captcha_site_key() %}
+                    <div class="g-recaptcha-container d-flex justify-content-center mb-4">
+                        <div class="g-recaptcha" data-sitekey="{{ get_captcha_site_key() }}"></div>
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-lg btn-block">{{ 'pteroca.login.sign_in'|trans }}</button>
+                </div>
+            </form>
+            <div class="text-center small">
+                <a href="{{ path('app_register') }}">
+                    {{ 'pteroca.login.dont_have_account_yet'|trans }}
+                </a>
+            </div>
+        </section>
+        <div class="col-12 text-center mt-2 powered-by">
+            Powered by <a href="https://pteroca.com" target="_blank">Pteroca v{{ get_app_version() }}</a> &copy; {{ 'now'|date('Y') }}
+        </div>
+    </div>
+    <script src="{{ asset('login.js', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}"></script>
+{% endblock %}

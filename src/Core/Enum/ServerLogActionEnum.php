@@ -8,4 +8,5 @@ enum ServerLogActionEnum
    case REINSTALL;
    case CHANGE_STARTUP_OPTION;
    case CHANGE_STARTUP_VARIABLE;
+   case TOGGLE_AUTO_RENEWAL;
 }

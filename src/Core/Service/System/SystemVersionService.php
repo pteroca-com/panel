@@ -24,6 +24,11 @@ class SystemVersionService
     {
     }
 
+    public function getCurrentVersion(): string
+    {
+        return $this->currentVersion;
+    }
+
     public function getVersionInformation(): SystemVersionDTO
     {
         $currentVersion = $this->getCurrentReleaseVersion();
