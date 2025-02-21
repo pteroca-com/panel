@@ -41,6 +41,9 @@
             {% endif %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}
             {% include 'panel/server/tabs/activity/activity.html.twig' %}
+            {% if server.product.backups > 0 %}
+                {% include 'panel/server/tabs/backups/backups.html.twig' %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

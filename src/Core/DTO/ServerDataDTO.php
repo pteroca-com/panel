@@ -17,6 +17,7 @@ class ServerDataDTO
         public bool $hasConfigurableOptions,
         public bool $hasConfigurableVariables,
         public ServerVariableCollection $serverVariables,
+        public array $serverBackups,
     )
     {
     }

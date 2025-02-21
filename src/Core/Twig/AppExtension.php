@@ -5,13 +5,17 @@ namespace App\Core\Twig;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
+use App\Core\Trait\FormatBytesTrait;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Symfony\Component\Asset\Packages;
 
 class AppExtension extends AbstractExtension
 {
+    use FormatBytesTrait;
+
     public function __construct(
         private readonly SystemVersionService $systemVersionService,
         private readonly SettingService $settingService,
@@ -35,6 +39,13 @@ class AppExtension extends AbstractExtension
             new TwigFunction('get_pterodactyl_panel_url', [$this, 'getPterodactylPanelUrl']),
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
+        ];
+    }
+
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('format_bytes', [$this, 'formatBytes']),
         ];
     }
 

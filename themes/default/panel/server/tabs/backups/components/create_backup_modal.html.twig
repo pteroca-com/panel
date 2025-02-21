@@ -1,0 +1,73 @@
+{% block main %}
+    <div class="modal fade" id="createBackupModal" tabindex="-1" aria-labelledby="createBackupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createBackupModalLabel">{{ 'pteroca.server.create_backup'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="create-backup-form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text form-group">
+                                    <label for="Backup_name" class="form-control-label required">
+                                        {{ 'pteroca.server.backup_name'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Backup_name" name="Backup[name]" required="required" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="field-text form-group">
+                                    <label for="Backup_ignoredFiles" class="form-control-label required">
+                                        {{ 'pteroca.server.backup_ignored_files'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <textarea id="Backup_ignoredFiles" name="Backup[ignoredFiles]" rows="5" data-ea-textarea-field="data-ea-textarea-field" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="create-backup">{{ 'pteroca.server.create_backup'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('create-backup-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                var form = event.target
+                var formData = new FormData(form)
+
+                fetch('{{ path('server_backup_create', { id: server.id }) }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(function (response) {
+                        if (response.ok) {
+                            window.location.reload()
+                        } else {
+                            response.json().then(function () {
+                                const responseCode = response.status
+
+                                if (responseCode === 429) {
+                                    alert('{{ 'pteroca.server.backup_time_limit'|trans }}')
+                                } else {
+                                    alert('{{ 'pteroca.server.error_during_backup'|trans }}')
+                                }
+                            })
+                        }
+                    })
+            })
+        })
+    </script>
+{% endblock %}

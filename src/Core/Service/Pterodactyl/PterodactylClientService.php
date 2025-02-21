@@ -20,6 +20,19 @@ class PterodactylClientService
     ) {
     }
 
+    public function getApi(User $user): PterodactylApi
+    {
+        if (empty($user->getPterodactylUserApiKey())) {
+            throw new \Exception('User has no Pterodactyl API key');
+        }
+
+        if (empty($this->api)) {
+            $this->connect($user->getPterodactylUserApiKey());
+        }
+
+        return $this->api;
+    }
+
     private function setCredentials(): void
     {
         $this->url = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
@@ -32,18 +45,5 @@ class PterodactylClientService
             $this->setCredentials();
         }
         $this->api = new PterodactylApi($this->url, $apiKey, 'client');
-    }
-
-    public function getApi(User $user): PterodactylApi
-    {
-        if (empty($user->getPterodactylUserApiKey())) {
-            throw new \Exception('User has no Pterodactyl API key');
-        }
-
-        if (empty($this->api)) {
-            $this->connect($user->getPterodactylUserApiKey());
-        }
-
-        return $this->api;
     }
 }

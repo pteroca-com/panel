@@ -14,12 +14,14 @@ class ServerService
         private readonly ServerRepository $serverRepository,
     ) {}
 
-    public function getServerDetails(Server $server): ?ServerDetailsDTO
+    public function getServerDetails(Server $server, ?object $pterodactylServer = null): ?ServerDetailsDTO
     {
-        $pterodactylServer = $this->pterodactylService->getApi()->servers->get(
-            $server->getPterodactylServerId(),
-            ['include' => ['allocations', 'egg']],
-        );
+        if (empty($pterodactylServer)) {
+            $pterodactylServer = $this->pterodactylService->getApi()->servers->get(
+                $server->getPterodactylServerId(),
+                ['include' => ['allocations', 'egg']],
+            );
+        }
 
         if (!$pterodactylServer->has('relationships')) {
             return null;

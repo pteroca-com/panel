@@ -7,11 +7,14 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
+use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ServerController extends APIAbstractController
 {
+    use InternalServerApiTrait;
+
     public function __construct(
         private readonly ServerService $serverService,
         private readonly ServerRepository $serverRepository,
@@ -41,19 +44,5 @@ class ServerController extends APIAbstractController
             'token' => $websocket?->getToken(),
             'socket' => $websocket?->getSocket(),
         ]);
-    }
-
-    private function getServer(int $id): Server
-    {
-        $server = $this->serverRepository->find($id);
-        if (empty($server)) {
-            throw $this->createNotFoundException();
-        }
-
-        if ($server->getUser() !== $this->getUser() || !$this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
-            throw $this->createAccessDeniedException();
-        }
-
-        return $server;
     }
 }

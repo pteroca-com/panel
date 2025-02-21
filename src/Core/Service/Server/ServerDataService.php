@@ -27,7 +27,7 @@ class ServerDataService
             ->getApi()
             ->servers
             ->get($server->getPterodactylServerId(), [
-                'include' => ['variables', 'egg'],
+                'include' => ['variables', 'egg', 'allocations'],
             ]);
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
         $pterodactylClientApi = $this->pterodactylClientService
@@ -64,6 +64,13 @@ class ServerDataService
         $serverVariables = $this->serverVariableFactory
             ->createFromCollection($pterodactylServer->get('relationships')['variables']->all());
 
+        if ($server->getProduct()->getBackups()) {
+            $serverBackups = $pterodactylClientApi
+                ->server_backups
+                ->paginate($server->getPterodactylServerIdentifier())
+                ->toArray();
+        }
+
         return new ServerDataDTO(
             $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
@@ -75,6 +82,7 @@ class ServerDataService
             $hasConfigurableOptions,
             $hasConfigurableVariables,
             new ServerVariableCollection($serverVariables),
+            $serverBackups ?? [],
         );
     }
 
