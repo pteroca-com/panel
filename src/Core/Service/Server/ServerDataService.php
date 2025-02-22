@@ -67,7 +67,8 @@ class ServerDataService
         if ($server->getProduct()->getBackups()) {
             $serverBackups = $pterodactylClientApi
                 ->server_backups
-                ->paginate($server->getPterodactylServerIdentifier())
+                ->http
+                ->get(sprintf('servers/%s/backups', $server->getPterodactylServerIdentifier()))
                 ->toArray();
         }
 
