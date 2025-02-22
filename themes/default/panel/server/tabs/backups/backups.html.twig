@@ -26,7 +26,7 @@
                                     {% if backup.is_successful %}
                                         <span class="badge bg-success text-white">{{ 'pteroca.server.successful'|trans }}</span>
                                     {% else %}
-                                        <span class="badge bg-danger text-white">{{ 'pteroca.server.failed'|trans }}</span>
+                                        <span class="badge bg-primary text-white">{{ 'pteroca.server.in_progress'|trans }}</span>
                                     {% endif %}
                                 </td>
                                 <td>{{ backup.name }}</td>

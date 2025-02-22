@@ -232,7 +232,7 @@ pteroca:
     status: 'स्थिति'
     created_at: 'बनाया गया'
     successful: 'सफल'
-    failed: 'असफल'
+    in_progress: 'प्रगति पर है'
     checksum: 'चेकसम'
     size: 'आकार'
     download: 'डाउनलोड करें'

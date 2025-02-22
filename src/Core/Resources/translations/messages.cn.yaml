@@ -232,7 +232,7 @@ pteroca:
     status: '状态'
     created_at: '创建于'
     successful: '成功'
-    failed: '失败'
+    in_progress: '进行中'
     checksum: '校验和'
     size: '大小'
     download: '下载'

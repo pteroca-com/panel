@@ -232,7 +232,7 @@ pteroca:
     status: 'Статус'
     created_at: 'Створено'
     successful: 'Успішно'
-    failed: 'Не вдалося'
+    in_progress: 'В процесі'
     checksum: 'Контрольна сума'
     size: 'Розмір'
     download: 'Завантажити'

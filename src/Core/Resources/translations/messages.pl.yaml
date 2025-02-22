@@ -232,7 +232,7 @@ pteroca:
     status: 'Status'
     created_at: 'Utworzono'
     successful: 'Pomyślnie'
-    failed: 'Niepowodzenie'
+    in_progress: 'W toku'
     checksum: 'Suma kontrolna'
     size: 'Rozmiar'
     download: 'Pobierz'

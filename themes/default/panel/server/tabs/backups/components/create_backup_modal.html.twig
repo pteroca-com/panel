@@ -31,7 +31,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
-                        <button type="submit" class="btn btn-primary" id="create-backup">{{ 'pteroca.server.create_backup'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="create-backup"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.create_backup'|trans }}</button>
                     </div>
                 </form>
             </div>
@@ -45,9 +45,13 @@
             document.getElementById('create-backup-form').addEventListener('submit', function (event) {
                 event.preventDefault()
 
-                var form = event.target
-                var formData = new FormData(form)
+                const form = event.target,
+                    formData = new FormData(form),
+                    submitButton = document.getElementById('create-backup'),
+                    spinner = submitButton.querySelector('i')
 
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
                 fetch('{{ path('server_backup_create', { id: server.id }) }}', {
                     method: 'POST',
                     body: formData
@@ -56,6 +60,9 @@
                         if (response.ok) {
                             window.location.reload()
                         } else {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+
                             response.json().then(function () {
                                 const responseCode = response.status
 
@@ -66,6 +73,12 @@
                                 }
                             })
                         }
+                    })
+                    .catch(function () {
+                        submitButton.disabled = false
+                        spinner.classList.add('d-none')
+
+                        alert('{{ 'pteroca.server.error_during_backup'|trans }}')
                     })
             })
         })

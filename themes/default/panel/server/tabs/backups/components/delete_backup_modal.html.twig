@@ -20,7 +20,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
-                        <button type="submit" class="btn btn-danger" id="delete-backup">{{ 'pteroca.server.delete_backup'|trans }}</button>
+                        <button type="submit" class="btn btn-danger" id="delete-backup"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.delete_backup'|trans }}</button>
                     </div>
                 </form>
             </div>
@@ -36,15 +36,28 @@
 
                 const form = event.target,
                     formData = new FormData(form),
-                    endpointUrl = '{{ path('server_backup_delete', { id: server.id, backupId: 'BACKUP_ID' }) }}'.replace('BACKUP_ID', formData.get('backupId'))
+                    endpointUrl = '{{ path('server_backup_delete', { id: server.id, backupId: 'BACKUP_ID' }) }}'.replace('BACKUP_ID', formData.get('backupId')),
+                    submitButton = document.getElementById('delete-backup'),
+                    spinner = submitButton.querySelector('i')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
 
                 sendRequest(endpointUrl, 'DELETE')
                     .then(response => {
                         if (response.ok) {
                             window.location.reload()
                         } else {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+
                             alert('{{ 'pteroca.server.error_during_deleting_backup'|trans }}')
                         }
+                    }).catch(() => {
+                        submitButton.disabled = false
+                        spinner.classList.add('d-none')
+
+                        alert('{{ 'pteroca.server.error_during_deleting_backup'|trans }}')
                     })
             })
         })
