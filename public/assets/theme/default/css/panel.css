@@ -156,6 +156,8 @@ a:hover {
 
 .card-header {
     padding-top: 0.8rem;
+    background-color: var(--primary-color);
+    color: #FFFFFF;
 }
 
 input#command {
