@@ -240,6 +240,22 @@ pteroca:
     delete_backup: 'Eliminar copia de seguridad'
     delete_backup_confirmation: '¿Está seguro de que desea eliminar esta copia de seguridad?'
     error_during_deleting_backup: 'Ocurrió un error al eliminar la copia de seguridad.'
+    databases: 'Bases de datos'
+    no_databases: 'No hay bases de datos para este servidor todavía.'
+    create_database: 'Crear base de datos'
+    database_name: 'Nombre de la base de datos'
+    connections_from: 'Conexiones desde'
+    error_during_creating_database: 'Ocurrió un error al crear la base de datos.'
+    endpoint: 'Punto final'
+    username: 'Nombre de usuario'
+    show: 'Mostrar'
+    delete_database: 'Eliminar base de datos'
+    delete_database_confirmation: '¿Está seguro de que desea eliminar esta base de datos?'
+    show_database: 'Mostrar base de datos'
+    database_endpoint: 'Punto final de la base de datos'
+    password: 'Contraseña'
+    jdbc_connection_string: 'Cadena de conexión JDBC'
+    rotate_password: 'Cambiar contraseña'
 
 
   actions:

@@ -27,7 +27,7 @@ class ServerDataService
             ->getApi()
             ->servers
             ->get($server->getPterodactylServerId(), [
-                'include' => ['variables', 'egg', 'allocations'],
+                'include' => ['variables', 'egg', 'allocations', 'databases'],
             ]);
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
         $pterodactylClientApi = $this->pterodactylClientService

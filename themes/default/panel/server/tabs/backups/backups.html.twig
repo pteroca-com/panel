@@ -11,12 +11,12 @@
                     <table class="table datagrid text-center">
                         <thead>
                             <tr>
-                                <th style="width:1rem;">{{ 'pteroca.server.status'|trans }}</th>
-                                <th>{{ 'pteroca.server.name'|trans }}</th>
-                                <th>{{ 'pteroca.server.size'|trans }}</th>
-                                <th>{{ 'pteroca.server.checksum'|trans }}</th>
-                                <th>{{ 'pteroca.server.created_at'|trans }}</th>
-                                <th style="width:1rem;">{{ 'pteroca.server.action'|trans }}</th>
+                                <th class="pb-2" style="width:1rem;">{{ 'pteroca.server.status'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.name'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.size'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.checksum'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.created_at'|trans }}</th>
+                                <th class="pb-2" style="width:1rem;">{{ 'pteroca.server.action'|trans }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,21 +81,21 @@
                 </button>
             </div>
         </div>
-
-        {% if server.product.backups > serverData.serverBackups|length %}
-            {% include 'panel/server/tabs/backups/components/create_backup_modal.html.twig' %}
-        {% endif %}
-
-        {% if serverData.serverBackups|length > 0 %}
-            {% include 'panel/server/tabs/backups/components/delete_backup_modal.html.twig' %}
-        {% endif %}
     </div>
+
+    {% if server.product.backups > serverData.serverBackups|length %}
+        {% include 'panel/server/tabs/backups/components/create_backup_modal.html.twig' %}
+    {% endif %}
+
+    {% if serverData.serverBackups|length > 0 %}
+        {% include 'panel/server/tabs/backups/components/delete_backup_modal.html.twig' %}
+    {% endif %}
 {% endblock %}
 
 {% block body_javascript %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.dropdown-actions .dropdown-menu .action-edit').forEach(function (element) {
+            document.querySelectorAll('#backups .dropdown-actions .dropdown-menu .action-edit').forEach(function (element) {
                 element.addEventListener('click', function (event) {
                     event.preventDefault()
 
@@ -126,14 +126,5 @@
                 })
             })
         })
-
-        function sendRequest(endpointUrl, method = 'GET') {
-            return fetch(endpointUrl, {
-                method: method,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-        }
     </script>
 {% endblock %}

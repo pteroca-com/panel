@@ -41,9 +41,25 @@
             {% endif %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}
             {% include 'panel/server/tabs/activity/activity.html.twig' %}
-            {% if server.product.backups > 0 %}
+            {% if server.product.dbCount %}
+                {% include 'panel/server/tabs/databases/databases.html.twig' %}
+            {% endif %}
+            {% if server.product.backups %}
                 {% include 'panel/server/tabs/backups/backups.html.twig' %}
             {% endif %}
         </div>
     </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        function sendRequest(endpointUrl, method = 'GET') {
+            return fetch(endpointUrl, {
+                method: method,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+        }
+    </script>
 {% endblock %}
