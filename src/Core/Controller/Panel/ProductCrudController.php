@@ -58,57 +58,89 @@ class ProductCrudController extends AbstractPanelController
         $fields = [
             FormField::addTab($this->translator->trans('pteroca.crud.product.details'))
                 ->setIcon('fa fa-info-circle'),
-            TextField::new('name', $this->translator->trans('pteroca.crud.product.name')),
-            TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description')),
+            TextField::new('name', $this->translator->trans('pteroca.crud.product.name'))
+                ->setColumns(7),
             NumberField::new('price', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price'), $internalCurrency)),
-            BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active')),
-            AssociationField::new('category', $this->translator->trans('pteroca.crud.product.category')),
+            TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description'))
+                ->setColumns(10),
+            BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active'))
+                ->setColumns(12),
+            AssociationField::new('category', $this->translator->trans('pteroca.crud.product.category'))
+                ->setColumns(5),
+            FormField::addRow(),
             ImageField::new('imagePath', $this->translator->trans('pteroca.crud.product.image'))
                 ->setBasePath($this->getParameter('products_base_path'))
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
                 ->setRequired(false)
-                ->setHelp($this->translator->trans('pteroca.crud.product.image_help')),
+                ->setHelp($this->translator->trans('pteroca.crud.product.image_help'))
+                ->setColumns(5),
             ImageField::new('bannerPath', $this->translator->trans('pteroca.crud.product.banner'))
                 ->setBasePath($this->getParameter('products_base_path'))
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
                 ->setRequired(false)
-                ->setHelp($this->translator->trans('pteroca.crud.product.banner_help')),
+                ->setHelp($this->translator->trans('pteroca.crud.product.banner_help'))
+                ->setColumns(5),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
                 ->setIcon('fa fa-server'),
-            NumberField::new('diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space'))),
-            NumberField::new('memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory'))),
-            NumberField::new('io', $this->translator->trans('pteroca.crud.product.io')),
-            NumberField::new('cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu'))),
-            NumberField::new('dbCount', $this->translator->trans('pteroca.crud.product.db_count')),
-            NumberField::new('swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap'))),
-            NumberField::new('backups', $this->translator->trans('pteroca.crud.product.backups')),
-            NumberField::new('ports', $this->translator->trans('pteroca.crud.product.ports')),
+            NumberField::new('diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.disk_space_hint'))
+                ->setColumns(4),
+            NumberField::new('memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.memory_hint'))
+                ->setColumns(4),
+            FormField::addRow(),
+            NumberField::new('io', $this->translator->trans('pteroca.crud.product.io'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.io_hint'))
+                ->setColumns(4),
+            NumberField::new('cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.cpu_hint'))
+                ->setColumns(4),
+            FormField::addRow(),
+            NumberField::new('dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.db_count_hint'))
+                ->setColumns(4),
+            NumberField::new('swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.swap_hint'))
+                ->setColumns(4),
+            FormField::addRow(),
+            NumberField::new('backups', $this->translator->trans('pteroca.crud.product.backups'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.backups_hint'))
+                ->setColumns(4),
+            NumberField::new('ports', $this->translator->trans('pteroca.crud.product.ports'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.ports_hint'))
+                ->setColumns(4),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
                 ->setIcon('fa fa-link'),
             ChoiceField::new('nodes', $this->translator->trans('pteroca.crud.product.nodes'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.nodes_hint'))
                 ->setChoices(fn () => $this->getNodesChoices())
                 ->allowMultipleChoices()
                 ->setRequired(true)
-                ->onlyOnForms(),
+                ->onlyOnForms()
+                ->setColumns(6),
             ChoiceField::new('nest', $this->translator->trans('pteroca.crud.product.nest'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.nest_hint'))
                 ->setChoices(fn () => $nests)
                 ->onlyOnForms()
                 ->setRequired(true)
-                ->setFormTypeOption('attr', ['class' => 'nest-selector']),
+                ->setFormTypeOption('attr', ['class' => 'nest-selector'])
+                ->setColumns(6),
             HiddenField::new('eggsConfiguration')->onlyOnForms(),
             BooleanField::new('allowChangeEgg', $this->translator->trans('pteroca.crud.product.egg_allow_change'))
                 ->setRequired(false)
                 ->hideOnIndex(),
             ChoiceField::new('eggs', $this->translator->trans('pteroca.crud.product.eggs'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.eggs_hint'))
                 ->setChoices(fn() => $this->getEggsChoices($nests))
                 ->allowMultipleChoices()
                 ->onlyOnForms()
                 ->setRequired(true)
-                ->setFormTypeOption('attr', ['class' => 'egg-selector']),
+                ->setFormTypeOption('attr', ['class' => 'egg-selector'])
+                ->setColumns(12),
 
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
