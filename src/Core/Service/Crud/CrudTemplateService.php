@@ -12,6 +12,8 @@ class CrudTemplateService
 {
     private const TEMPLATES_CACHE_KEY = 'templates_to_override';
 
+    private const DEFAULT_TEMPLATE = 'default';
+
     public function __construct(
         private readonly SettingService $settingService,
         private readonly CacheInterface $cache,
@@ -39,6 +41,16 @@ class CrudTemplateService
 
                     if ($this->fileSystem->exists(implode('', $templatePaths))) {
                         $templatesToOverride[$template] = end($templatePaths);
+                    } else if ($currentTemplate !== self::DEFAULT_TEMPLATE) {
+                        $templatePaths = $this->getCrudTemplatePaths(
+                            $template,
+                            self::DEFAULT_TEMPLATE,
+                            $templateContext
+                        );
+
+                        if ($this->fileSystem->exists(implode('', $templatePaths))) {
+                            $templatesToOverride[$template] = end($templatePaths);
+                        }
                     }
                 }
 
