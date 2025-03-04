@@ -66,7 +66,7 @@ pteroca:
     date: 'तारीख'
     ip_address: 'आईपी पता'
     view_all_servers: 'सभी सर्वर देखें'
-
+    title: 'डैशबोर्ड'
   recharge:
     recharge_balance: 'शेष राशि जोड़ें'
     recharge: 'रिचार्ज करें'
@@ -249,6 +249,7 @@ pteroca:
       add: 'श्रेणी जोड़ें'
       save: 'श्रेणी सहेजें'
       category: 'श्रेणी'
+      categories: 'श्रेणियाँ'
     product:
       details: 'उत्पाद विवरण'
       name: 'उत्पाद का नाम'

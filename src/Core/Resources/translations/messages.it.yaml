@@ -66,7 +66,7 @@ pteroca:
     date: 'Data'
     ip_address: 'Indirizzo IP'
     view_all_servers: 'Visualizza tutti i server'
-
+    title: 'Cruscotto'
   recharge:
     recharge_balance: 'Ricarica saldo'
     recharge: 'Ricarica'
@@ -249,6 +249,7 @@ pteroca:
       add: 'Aggiungi categoria'
       save: 'Salva categoria'
       category: 'Categoria'
+      categories: 'Categorie'
     product:
       details: 'Dettagli prodotto'
       name: 'Nome prodotto'

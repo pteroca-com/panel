@@ -66,7 +66,7 @@ pteroca:
     date: 'Дата'
     ip_address: 'IP-адреса'
     view_all_servers: 'Переглянути всі сервери'
-
+    title: 'Панель приладів'
   recharge:
     recharge_balance: 'Поповнити баланс'
     recharge: 'Поповнити'
@@ -249,6 +249,7 @@ pteroca:
       add: 'Додати категорію'
       save: 'Зберегти категорію'
       category: 'Категорія'
+      categories: 'Категорії'
     product:
       details: 'Деталі продукту'
       name: 'Назва продукту'

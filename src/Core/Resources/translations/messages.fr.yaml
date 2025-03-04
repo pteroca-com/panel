@@ -66,7 +66,7 @@ pteroca:
     date: 'Date'
     ip_address: 'Adresse IP'
     view_all_servers: 'Voir tous les serveurs'
-
+    title: 'Tableau de bord'
   recharge:
     recharge_balance: 'Recharger le solde'
     recharge: 'Recharger'
@@ -249,6 +249,7 @@ pteroca:
       add: 'Ajouter une catégorie'
       save: 'Enregistrer la catégorie'
       category: 'Catégorie'
+      categories: 'Catégories'
     product:
       details: 'Détails du produit'
       name: 'Nom du produit'
