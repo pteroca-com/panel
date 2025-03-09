@@ -6,7 +6,7 @@ class EnvironmentConfigurationService
 {
     private string $envFilePath;
 
-    public function __construct(string $envFilePath = null)
+    public function __construct(?string $envFilePath = null)
     {
         $this->envFilePath = $envFilePath ?? dirname(__DIR__, 4) . '/.env';
     }
