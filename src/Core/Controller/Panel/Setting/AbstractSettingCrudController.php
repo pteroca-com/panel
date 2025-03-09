@@ -4,6 +4,7 @@ namespace App\Core\Controller\Panel\Setting;
 
 use App\Core\Controller\Panel\AbstractPanelController;
 use App\Core\Entity\Setting;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingTypeEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -144,7 +145,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     public function configureCrud(Crud $crud): Crud
     {
         $context = ucfirst(strtolower($this->context->name));
-        $this->appendCrudTemplateContext('Setting');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::SETTING->value);
         if (!empty($this->currentEntity)) {
             $this->appendCrudTemplateContext($this->currentEntity->getName());
         }

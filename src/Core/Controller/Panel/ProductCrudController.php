@@ -3,6 +3,7 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Product;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
@@ -135,7 +136,7 @@ class ProductCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext('Product');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::PRODUCT->value);
 
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.product'))

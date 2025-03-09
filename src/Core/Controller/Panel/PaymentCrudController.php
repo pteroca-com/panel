@@ -2,6 +2,7 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Payment;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -68,7 +69,7 @@ class PaymentCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext('Payment');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::PAYMENT->value);
 
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.payment.payment'))
