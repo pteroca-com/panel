@@ -24,10 +24,13 @@
 
         function toggleSetting(settingName, isStartupOption = false) {
             const element = getSettingElement(settingName, isStartupOption),
-                icon = document.querySelector(`i[data-option-name="${settingName}"]`),
-                disabled = toggleDisabledElement(element);
+                icon = document.querySelector(`i[data-option-name="${settingName}"]`);
 
-            if (!disabled) {
+            if (icon.classList.contains('fa-spin')) {
+                return;
+            }
+
+            if (!toggleDisabledElement(element)) {
                 element.focus();
             } else if (!saveSetting(settingName, isStartupOption)) {
                 toggleDisabledElement(element);
@@ -114,6 +117,10 @@
                 return false;
             }
 
+            const icon = document.querySelector(`i[data-option-name="${settingName}"]`);
+            icon.classList.remove('fa-edit');
+            icon.classList.add('fa-spinner', 'fa-spin');
+
             const endpointUrl = !isStartupOption
                     ? '{{ path('server_startup_variable_update', { id: server.id }) }}'
                     : '{{ path('server_startup_option_update', { id: server.id }) }}';
@@ -134,6 +141,9 @@
                 alert('{{ 'pteroca.server.data_updated_successfully'|trans }}');
             }).catch(error => {
                 return handleError('{{ 'pteroca.server.data_update_error'|trans }}');
+            }).finally(() => {
+                icon.classList.remove('fa-spinner', 'fa-spin');
+                icon.classList.add('fa-edit');
             });
 
             return true;
