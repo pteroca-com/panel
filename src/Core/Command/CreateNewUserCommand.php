@@ -53,6 +53,9 @@ class CreateNewUserCommand extends Command
             );
             if ($continueWithoutKey === 'yes') {
                 $this->createNewUserHandler->handle(true);
+            } else {
+                $io->error('User creation failed. Could not create Pterodactyl Client Account API key.');
+                return Command::FAILURE;
             }
         }
 
