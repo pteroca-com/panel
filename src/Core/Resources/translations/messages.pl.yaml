@@ -66,7 +66,7 @@ pteroca:
     date: 'Data'
     ip_address: 'Adres IP'
     view_all_servers: 'Przejdź do serwerów'
-
+    title: 'Dashboard'
   recharge:
     recharge_balance: 'Doładuj balans'
     recharge: 'Doładuj'
@@ -249,6 +249,7 @@ pteroca:
       add: 'Dodaj kategorię'
       save: 'Zapisz kategorię'
       category: 'Kategoria'
+      categories: 'Kategorie'
     product:
       details: 'Szczegóły produktu'
       name: 'Nazwa produktu'

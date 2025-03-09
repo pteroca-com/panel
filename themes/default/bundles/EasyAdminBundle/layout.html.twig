@@ -12,7 +12,12 @@
     {% endblock head_metas %}
 
     {% set page_title_block_output %}{% block page_title %}{{ block('content_title') }}{% endblock %}{% endset %}
-    <title>{{ get_title() }}</title>
+    <title>
+        {{ get_title() }} {% block title %}{% endblock %}
+        {% if page_title_block_output %}
+            | {{ page_title_block_output|striptags }}
+        {% endif %}
+    </title>
 
     {% block head_stylesheets %}
         <link rel="stylesheet" href="{{ asset('app.css', ea.assets.defaultAssetPackageName) }}">
