@@ -3,9 +3,9 @@
     "name": "default",
     "description": "Default template for the project PteroCA.com",
     "author": "PteroCA.com",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
-    "pterocaVersion": "0.4.0",
+    "pterocaVersion": "0.4.1",
     "phpVersion": ">=8.2"
   }
 }
