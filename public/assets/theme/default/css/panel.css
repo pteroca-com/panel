@@ -179,3 +179,31 @@ input#command {
 .hover-pointer:hover {
     cursor: pointer;
 }
+
+.user-menu-wrapper .user-avatar {
+    background: unset;
+}
+
+.responsive-header {
+    background: var(--primary-color);
+}
+
+.responsive-header i {
+    color: #FFFFFF;
+}
+
+.responsive-header i.fa-user {
+    color: var(--primary-color);
+}
+
+.responsive-header .dropdown-menu i {
+    color: inherit;
+}
+
+.responsive-header .user-balance a {
+    color: #FFFFFF;
+}
+
+.logo-compact {
+    color: #FFFFFF;
+}

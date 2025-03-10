@@ -55,7 +55,8 @@
 
             function updateCardElements(card, data, prefix = '') {
                 for (const [key, value] of Object.entries(data)) {
-                    const dataKey = prefix ? `${prefix}-${key}` : key;
+                    let dataKey = prefix ? `${prefix}-${key}` : key;
+                    dataKey = dataKey.replaceAll(' ', '-').replaceAll('.', '-').toLowerCase();
                     if (typeof value === 'object' && value !== null) {
                         updateCardElements(card, value, dataKey);
                     } else {

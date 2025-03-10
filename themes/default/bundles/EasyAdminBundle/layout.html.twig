@@ -21,17 +21,7 @@
 
     {% block head_stylesheets %}
         <link rel="stylesheet" href="{{ asset('app.css', ea.assets.defaultAssetPackageName) }}">
-        {% set defaultThemeColors = get_default_theme_primary_colors() %}
-        <style>
-            :root {
-                --primary-color: {{ defaultThemeColors.light }};
-                --pagination-active-bg: {{ defaultThemeColors.light }};
-            }
-            .ea-dark-scheme {
-                --primary-color: {{ defaultThemeColors.dark }};
-                --pagination-active-bg: {{ defaultThemeColors.dark }};
-            }
-        </style>
+        {% include 'components/theme_styles.html.twig' %}
     {% endblock %}
 
     {% block configured_stylesheets %}
@@ -321,11 +311,13 @@
                                 </div>
                             {% endblock search_wrapper %}
 
-                            <div class="user-balance me-4">
-                                <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}">
-                                    <i class="fas fa-coins"></i>
-                                    {{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}
-                                </a>
+                            <div class="navbar-custom-menu">
+                                <div class="user-balance me-4">
+                                    <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}">
+                                        <i class="fas fa-coins"></i>
+                                        {{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}
+                                    </a>
+                                </div>
                             </div>
 
                             {% block header_custom_menu_wrapper %}
