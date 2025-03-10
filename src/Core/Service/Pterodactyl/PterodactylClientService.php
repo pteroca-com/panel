@@ -22,7 +22,8 @@ class PterodactylClientService
 
     private function setCredentials(): void
     {
-        $this->url = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+        $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value) ?? '';
+        $this->url = rtrim($pterodactylUrl, '/');
         $this->isConfigured = true;
     }
 
