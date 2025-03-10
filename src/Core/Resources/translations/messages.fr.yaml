@@ -70,7 +70,7 @@ pteroca:
     date: 'Date'
     ip_address: 'Adresse IP'
     view_all_servers: 'Voir tous les serveurs'
-
+    title: 'Tableau de bord'
   recharge:
     recharge_balance: 'Recharger le solde'
     recharge: 'Recharger'
@@ -253,6 +253,7 @@ pteroca:
       add: 'Ajouter une catégorie'
       save: 'Enregistrer la catégorie'
       category: 'Catégorie'
+      categories: 'Catégories'
     product:
       details: 'Détails du produit'
       name: 'Nom du produit'
@@ -294,6 +295,17 @@ pteroca:
       egg_variable_user_viewable: 'Visible par l''utilisateur'
       egg_variable_user_editable: 'Modifiable par l''utilisateur'
       egg_allow_change: 'Permettre de changer l''egg lors de la réinstallation'
+      disk_space_hint: 'La quantité totale de stockage disque allouée pour ce serveur (en Mo). Par exemple, 10240 équivaut à 10 Go.'
+      memory_hint: 'La limite totale de RAM allouée à ce serveur (en Mo). Le serveur ne peut pas dépasser cette limite de mémoire.'
+      io_hint: 'Priorité d''E/S relative pour le conteneur du serveur. Des valeurs plus élevées signifient une priorité plus élevée (la valeur par défaut est 500).'
+      cpu_hint: 'Limite de CPU en pourcentage, où 100% équivaut à un cœur de CPU complet. Par exemple, 200% équivaut à deux cœurs de CPU complets.'
+      db_count_hint: 'Le nombre maximum de bases de données que ce serveur peut créer ou utiliser.'
+      swap_hint: 'Quantité de mémoire swap (en Mo) allouée à ce serveur. Réglez sur 0 pour désactiver le swap.'
+      backups_hint: 'Le nombre maximum de sauvegardes pouvant être stockées pour ce serveur.'
+      ports_hint: 'Nombre de ports supplémentaires (en plus du principal) que le serveur peut allouer. 0 signifie pas de ports supplémentaires.'
+      nodes_hint: 'Sélectionnez une ou plusieurs machines physiques ou virtuelles (nœuds) de votre configuration Pterodactyl.'
+      nest_hint: 'Un Nest est une catégorie qui regroupe des Eggs liés. Choisissez un Nest pour charger ses Eggs.'
+      eggs_hint: 'Les Eggs définissent des configurations de serveur spécifiques (jeux ou applications). Sélectionnez les Eggs que vous souhaitez que ce produit prenne en charge.'
     server:
       pterodactyl_server_id: 'ID du serveur Pterodactyl'
       pterodactyl_server_identifier: 'Identifiant du serveur Pterodactyl'

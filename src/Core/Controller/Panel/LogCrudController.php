@@ -4,6 +4,7 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Log;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -66,7 +67,7 @@ class LogCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext('Log');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::LOG->value);
 
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.log.log'))

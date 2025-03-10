@@ -20,9 +20,9 @@
                                     <button id="toggle-btn-{{ log.id }}" class="btn btn-info" onclick="toggleDetails('{{ log.id }}')">
                                         {{ 'pteroca.server.show_details'|trans }}
                                     </button>
-                                    <pre id="log-details-{{ log.id }}" style="display:none;">
-                                        {{ log.details|raw }}
-                                    </pre>
+                                    <div id="log-details-{{ log.id }}" class="mt-3" style="display:none;">
+                                        <pre>{{ log.details|raw }}</pre>
+                                    </div>
                                 </td>
                                 <td>
                                     {% set isAdminLog = log.user.email != server.user.email and 'ROLE_ADMIN' in log.user.roles %}
@@ -93,8 +93,8 @@
         }
 
         function toggleDetails(logId) {
-            var detailsElement = document.getElementById('log-details-' + logId);
-            var buttonElement = document.getElementById('toggle-btn-' + logId);
+            const detailsElement = document.getElementById('log-details-' + logId),
+                buttonElement = document.getElementById('toggle-btn-' + logId);
 
             if (detailsElement.style.display === "none") {
                 detailsElement.style.display = "block";
@@ -107,7 +107,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             {% for log in serverLogs %}
-            var logDetails = document.getElementById('log-details-{{ log.id }}');
+            const logDetails = document.getElementById('log-details-{{ log.id }}');
             if (logDetails) {
                 logDetails.innerText = formatJSON(logDetails.innerText);
             }

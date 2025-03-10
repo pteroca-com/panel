@@ -1,5 +1,9 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
+{% block title %}
+    | {{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}
+{% endblock %}
+
 {% block content_title %}
     {{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}
 {% endblock %}
