@@ -1,5 +1,7 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
+{% block title %}| {{ 'pteroca.servers.title'|trans }}{% endblock %}
+
 {% block content_title %}{{ 'pteroca.servers.title'|trans }}{% endblock %}
 
 {% block page_actions %}
@@ -16,7 +18,7 @@
                 {% if row == 1 %}
                     <div class="row">
                 {% endif %}
-                <div class="col-md-4 mb-4">
+                <div class="col-12 col-lg-6 col-xl-4 mb-4">
                     {% include 'panel/servers/components/server.html.twig' %}
                 </div>
                 {% if row % 3 == 0 %}
@@ -53,7 +55,8 @@
 
             function updateCardElements(card, data, prefix = '') {
                 for (const [key, value] of Object.entries(data)) {
-                    const dataKey = prefix ? `${prefix}-${key}` : key;
+                    let dataKey = prefix ? `${prefix}-${key}` : key;
+                    dataKey = dataKey.replaceAll(' ', '-').replaceAll('.', '-').toLowerCase();
                     if (typeof value === 'object' && value !== null) {
                         updateCardElements(card, value, dataKey);
                     } else {

@@ -3,6 +3,7 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\User;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -102,7 +103,7 @@ class UserCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext('User');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::USER->value);
 
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.user.user'))

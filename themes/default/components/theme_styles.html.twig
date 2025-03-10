@@ -1,0 +1,11 @@
+{% set defaultThemeColors = get_default_theme_primary_colors() %}
+<style>
+    :root {
+        --primary-color: {{ defaultThemeColors.light }};
+        --pagination-active-bg: {{ defaultThemeColors.light }};
+    }
+    .ea-dark-scheme {
+        --primary-color: {{ defaultThemeColors.dark }};
+        --pagination-active-bg: {{ defaultThemeColors.dark }};
+    }
+</style>

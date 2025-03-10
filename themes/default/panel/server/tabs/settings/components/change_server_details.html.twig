@@ -6,7 +6,7 @@
                     {{ 'pteroca.server.change_server_details'|trans }}
                     {% if not server.isSuspended %}
                     <a href="#" class="float-end toggle-server-details" onclick="toggleServerDetails()">
-                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-edit text-white"></i>
                     </a>
                     {% endif %}
                 </h5>
@@ -42,11 +42,16 @@
         }
 
         function toggleServerDetails() {
+            const icon = document.querySelector('.toggle-server-details i');
+
+            if (icon.classList.contains('fa-spin')) {
+                return;
+            }
+
             const serverName = document.getElementById('server-name');
             serverName.readOnly = !serverName.readOnly;
             document.getElementById('server-description').readOnly = !document.getElementById('server-description').readOnly;
 
-            const icon = document.querySelector('.toggle-server-details i');
             icon.classList.toggle('fa-edit');
             icon.classList.toggle('fa-save');
 
@@ -58,8 +63,9 @@
         }
 
         function saveServerDetails() {
-            const serverName = document.getElementById('server-name');
-            const serverDescription = document.getElementById('server-description');
+            const serverName = document.getElementById('server-name'),
+                serverDescription = document.getElementById('server-description'),
+                icon = document.querySelector('.toggle-server-details i');
 
             if (serverName.value.length === 0) {
                 alert('{{ 'pteroca.server.server_name_required'|trans }}');
@@ -67,6 +73,11 @@
                 serverDescription.value = savedValues.serverDescription;
                 return;
             }
+
+            icon.classList.remove('fa-save');
+            icon.classList.remove('fa-edit');
+            icon.classList.add('fa-spin');
+            icon.classList.add('fa-spinner');
 
             fetch('{{ path('server_details_update', { id: server.id }) }}', {
                 method: 'POST',
@@ -91,6 +102,11 @@
                 alert('{{ 'pteroca.server.data_update_error'|trans }}');
                 serverName.value = savedValues.serverName;
                 serverDescription.value = savedValues.serverDescription;
+            }).finally(() => {
+                icon.classList.remove('fa-spin');
+                icon.classList.remove('fa-spinner');
+                icon.classList.add('fa-edit');
+                savedValues = getSavedValues();
             });
         }
     </script>
