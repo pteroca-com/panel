@@ -48,4 +48,3 @@ services:
       $templatesBaseDir: '%kernel.project_dir%/themes'
     tags:
       - { name: 'twig.loader', priority: 1 }
-

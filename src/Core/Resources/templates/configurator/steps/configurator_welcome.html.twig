@@ -1,0 +1,30 @@
+<div class="col-12 d-none" data-step="0">
+    <form data-step="0">
+        <div class="row">
+            <div class="col-12 text-center fw-bold">
+                {{ 'pteroca.first_configuration.configurator_welcome'|trans }}
+            </div>
+            <div class="col-12 text-center mt-3">
+                {{ 'pteroca.first_configuration.configurator_welcome_description'|trans }}
+            </div>
+            <div class="col-12 text-center mt-3">
+                {{ 'pteroca.first_configuration.configurator_welcome_description_2'|trans }}
+            </div>
+            <div class="col-6 offset-3 text-center mt-5">
+                <div class="form-group">
+                    <label class="form-control-label required" for="configurator_language">{{ 'pteroca.first_configuration.configurator_language'|trans }}</label>
+                    <div class="form-widget">
+                        <select id="configurator_language" name="configurator_language" class="form-control" required>
+                            {% for language in availableLanguages %}
+                                <option value="{{ language }}" {% if language == configuratorLanguage %}selected{% endif %}>{{ language }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 offset-3 text-center mt-3">
+                <button type="submit" class="btn btn-primary btn-lg w-100 float-end me-2">{{ 'pteroca.first_configuration.start_configuration'|trans }}</button>
+            </div>
+        </div>
+    </form>
+</div>

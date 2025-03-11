@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class 'page-configurator' %}
+{% block title %}{{ get_title() }} | {{ 'pteroca.first_configuration.title'|trans }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ template_asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-4 offset-4 mt-5">
+                <header class="main-header mt-5">
+                    <div id="header-logo">
+                        <div class="logo">
+                            <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="panel-login-logo">
+                        </div>
+                    </div>
+                </header>
+            </div>
+            <div class="col-8 offset-2">
+                <div class="configuration-wrapper">
+                    <section class="content">
+                        <div class="configuration-title mt-3">
+                            {{ 'pteroca.first_configuration.title'|trans }}
+                        </div>
+                        <div class="configuration-subtitle">
+                            {{ 'pteroca.first_configuration.step'|trans }} <span id="current-step">1</span>/5
+                        </div>
+
+                        <div class="row">
+                            {% include '@core_templates/configurator/steps/configurator_welcome.html.twig' %}
+                            {% include '@core_templates/configurator/steps/site_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/email_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/pterodactyl_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/payment_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/user_creator.html.twig' %}
+                        </div>
+
+                        <div class="row mt-5 mb-4">
+                            <div class="col-12">
+                                <div class="text-center small">
+                                    <a href="https://docs.pteroca.com" target="_blank">
+                                        {{ 'pteroca.first_configuration.documentation_hint'|trans }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-12 text-center mt-2 powered-by mb-5">
+                    Powered by <a href="https://pteroca.com" target="_blank">Pteroca v{{ get_app_version() }}</a> &copy; {{ 'now'|date('Y') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentStep = 0
+
+        const stepCount = 5,
+            forms = document.querySelectorAll('form[data-step]'),
+            skipButtons = document.querySelectorAll('.configuration-skip-step'),
+            backButtons = document.querySelectorAll('.configuration-previous-step'),
+            languageSelect = document.getElementById('configurator_language')
+
+        languageSelect.addEventListener('change', function() {
+            const url = new URL(window.location.href)
+            url.searchParams.set('language', this.value)
+
+            window.location.href = url.toString()
+        })
+
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault()
+
+                const submitButton = form.querySelector('button[type="submit"]')
+                submitButton.disabled = true
+
+                validateStep(currentStep)
+                    .then(response => {
+                        if (response.ok) {
+                            if (currentStep === stepCount) {
+                                return sendConfiguration()
+                            }
+
+                            setCurrentStep(currentStep + 1)
+                        }
+                    })
+                    .finally(() => {
+                        submitButton.disabled = false
+                    })
+            })
+        })
+
+        skipButtons.forEach(skipButton => {
+            skipButton.addEventListener('click', function() {
+                setCurrentStep(currentStep + 1)
+            })
+        })
+
+        backButtons.forEach(backButton => {
+            backButton.addEventListener('click', function() {
+                setCurrentStep(currentStep - 1)
+            })
+        })
+
+        function setCurrentStep(step) {
+            document.querySelector('div[data-step="' + currentStep + '"]')?.classList.add('d-none')
+            document.querySelector('div[data-step="' + step + '"]')?.classList.remove('d-none')
+            currentStep = step
+            document.getElementById('current-step').innerText = currentStep
+        }
+
+        function validateStep(step) {
+            const validateEndpointUrl = '{{ path('first_configuration_validate_step') }}',
+                form = document.querySelector('form[data-step="' + step + '"]'),
+                formData = new FormData(form)
+
+            formData.append('step', step)
+
+            return fetch(validateEndpointUrl, {
+                method: 'POST',
+                body: formData
+            })
+        }
+
+        function sendConfiguration() {
+            const sendConfigurationEndpointUrl = '{{ path('first_configuration_finish') }}',
+                successUrl = '{{ path('app_login') }}',
+                allForms = document.querySelectorAll('form'),
+                formData = new FormData()
+
+            allForms.forEach(form => {
+                const formElements = form.querySelectorAll('input, select')
+
+                formElements.forEach(element => {
+                    formData.append(element.name, element.value)
+                })
+            })
+
+            fetch(sendConfigurationEndpointUrl, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = successUrl
+                }
+            })
+        }
+
+        setCurrentStep(currentStep)
+    })
+</script>
+{% endblock %}

@@ -512,3 +512,6 @@ pteroca:
       support: '支持'
       up_to_date: '最新'
       update_available: '有可用更新'
+
+  first_configuration:
+    title: 'aaaaaa'

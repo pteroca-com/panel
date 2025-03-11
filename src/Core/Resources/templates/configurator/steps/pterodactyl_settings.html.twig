@@ -1,0 +1,31 @@
+<div class="col-6 offset-3 d-none" data-step="3">
+    <div class="configuration-subtitle mt-2">
+        {{ 'pteroca.first_configuration.pterodactyl_settings'|trans }}
+    </div>
+    <form data-step="3">
+        <div class="form-group">
+            <label class="form-control-label required" for="pterodactyl_panel_url">{{ 'pteroca.first_configuration.pterodactyl_panel_url'|trans }}</label>
+            <div class="form-widget">
+                <input type="url" id="pterodactyl_panel_url" name="pterodactyl_panel_url" class="form-control" value="" required autofocus autocomplete="pterodactyl_panel_url">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.pterodactyl_panel_url_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="pterodactyl_panel_api_key">{{ 'pteroca.first_configuration.pterodactyl_panel_api_key'|trans }}</label>
+            <div class="form-widget">
+                <input type="password" id="pterodactyl_panel_api_key" name="pterodactyl_panel_api_key" class="form-control" value="" required autofocus autocomplete="pterodactyl_panel_api_key">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.pterodactyl_panel_api_key_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="button" class="btn btn-lg btn-block configuration-previous-step float-start me-2">{{ 'pteroca.first_configuration.back'|trans }}</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
+        </div>
+    </form>
+</div>
