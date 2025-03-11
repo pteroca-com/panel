@@ -2,6 +2,8 @@
 
 namespace App\Core\Service\System\WebConfigurator;
 
+use App\Core\DTO\Action\Result\ConfiguratorVerificationResult;
+
 abstract class AbstractVerificationService
 {
     protected const REQUIRED_FIELDS = [];
@@ -11,5 +13,5 @@ abstract class AbstractVerificationService
         return count(array_intersect_key(array_flip(self::REQUIRED_FIELDS), $data)) === count(self::REQUIRED_FIELDS);
     }
 
-    abstract public function validateConnection(array $data): bool;
+    abstract public function validateConnection(array $data): ConfiguratorVerificationResult;
 }

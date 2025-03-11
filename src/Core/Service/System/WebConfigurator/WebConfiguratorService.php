@@ -2,6 +2,8 @@
 
 namespace App\Core\Service\System\WebConfigurator;
 
+use App\Core\DTO\Action\Result\ConfiguratorVerificationResult;
+use App\Core\Enum\SettingEnum;
 use App\Core\Service\LocaleService;
 use App\Core\Service\SettingService;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,26 +34,34 @@ class WebConfiguratorService
         ];
     }
 
-    public function validateStep(array $data): bool
+    public function validateStep(array $data): ConfiguratorVerificationResult
     {
         if (!isset($data['step'])) {
-            return false;
+            return new ConfiguratorVerificationResult(
+                false,
+                $this->translator->trans('pteroca.first_configuration.errors.invalid_step'),
+            );
         }
 
         return match ((int) $data['step']) {
             2 => $this->emailConnectionVerificationService->validateConnection($data),
             3 => $this->pterodactylConnectionVerificationService->validateConnection($data),
-            default => true,
+            default => new ConfiguratorVerificationResult(true),
         };
     }
 
-    public function finishConfiguration(array $data): bool
+    public function finishConfiguration(array $data): ConfiguratorVerificationResult
     {
         return $this->finishConfigurationService->finishConfiguration($data);
     }
 
     public function isConfiguratorEnabled(): bool
     {
+        $isAlreadyConfigured = $this->settingService->getSetting(SettingEnum::IS_CONFIGURED->value);
+        if (!empty($isAlreadyConfigured)) {
+            return false;
+        }
+
         foreach ($this->finishConfigurationService->getRequiredSettingsMap() as $settingName) {
             $settingValue = $this->settingService->getSetting($settingName);
 

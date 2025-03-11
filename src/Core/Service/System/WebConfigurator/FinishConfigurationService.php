@@ -2,11 +2,13 @@
 
 namespace App\Core\Service\System\WebConfigurator;
 
+use App\Core\DTO\Action\Result\ConfiguratorVerificationResult;
 use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Authorization\RegistrationService;
 use App\Core\Service\SettingService;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FinishConfigurationService
 {
@@ -34,6 +36,7 @@ class FinishConfigurationService
         private readonly EmailConnectionVerificationService $emailConnectionVerificationService,
         private readonly PterodactylConnectionVerificationService $pterodactylConnectionVerificationService,
         private readonly RegistrationService $registrationService,
+        private readonly TranslatorInterface $translator,
     ) {}
 
     public function getRequiredSettingsMap(): array
@@ -41,20 +44,24 @@ class FinishConfigurationService
         return self::REQUIRED_SETTINGS_MAP;
     }
 
-    public function finishConfiguration(array $data): bool
+    public function finishConfiguration(array $data): ConfiguratorVerificationResult
     {
         if (!$this->emailConnectionVerificationService->validateConnection($data)) {
             $data = $this->clearEmailSettings($data);
         }
 
         if (!$this->pterodactylConnectionVerificationService->validateConnection($data)) {
-            return false;
+            return new ConfiguratorVerificationResult(
+                false,
+                $this->translator->trans('pteroca.first_configuration.errors.pterodactyl_api_error'),
+            );
         }
 
         $this->saveConfigurationSettings($data);
         $this->createAdminAccount($data);
+        $this->disableConfigurator();
 
-        return true;
+        return new ConfiguratorVerificationResult(true);
     }
 
     private function saveConfigurationSettings(array $data): void
@@ -84,6 +91,11 @@ class FinishConfigurationService
             true,
             false,
         );
+    }
+
+    private function disableConfigurator(): void
+    {
+        $this->settingService->saveSetting(SettingEnum::IS_CONFIGURED->value, '1');
     }
 
     private function clearEmailSettings(array $data): array

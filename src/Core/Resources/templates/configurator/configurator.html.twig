@@ -91,6 +91,10 @@
                             }
 
                             setCurrentStep(currentStep + 1)
+                        } else {
+                            return response.text().then(text => {
+                                alert(text)
+                            })
                         }
                     })
                     .finally(() => {

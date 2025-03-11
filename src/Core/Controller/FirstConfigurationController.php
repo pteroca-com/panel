@@ -36,9 +36,12 @@ class FirstConfigurationController extends AbstractController
         $this->validateConfiguratorAccess();
 
         $isStepValidated = $this->webConfiguratorService->validateStep($request->request->all());
-        $responseStatus = $isStepValidated ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
+        $responseStatus = $isStepValidated->isVerificationSuccessful ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
 
-        return new JsonResponse(status: $responseStatus);
+        return new JsonResponse(
+            data: $isStepValidated->errorMessage,
+            status: $responseStatus,
+        );
     }
 
     #[Route('/first-configuration/finish', name: 'first_configuration_finish', methods: ['POST'])]
@@ -49,9 +52,12 @@ class FirstConfigurationController extends AbstractController
         $this->validateConfiguratorAccess();
 
         $isSuccessfulFinished = $this->webConfiguratorService->finishConfiguration($request->request->all());
-        $responseStatus = $isSuccessfulFinished ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
+        $responseStatus = $isSuccessfulFinished->isVerificationSuccessful ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
 
-        return new JsonResponse(status: $responseStatus);
+        return new JsonResponse(
+            data: $isSuccessfulFinished->errorMessage,
+            status: $responseStatus
+        );
     }
 
     private function validateConfiguratorAccess(): void

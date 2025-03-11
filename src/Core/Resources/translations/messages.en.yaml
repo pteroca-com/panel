@@ -561,3 +561,8 @@ pteroca:
     skip: 'Skip'
     back: 'Back'
     documentation_hint: 'Having trouble with the configurator? Check the documentation!'
+    errors:
+      invalid_step: 'Invalid step.'
+      pterodactyl_api_error: 'Could not connect to the Pterodactyl API. Check the API key and panel URL.'
+      smtp_error: 'Could not connect to the SMTP server. Check the SMTP settings.'
+      missing_fields: 'Please fill in all required fields.'
