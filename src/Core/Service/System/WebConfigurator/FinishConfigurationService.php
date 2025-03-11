@@ -46,11 +46,21 @@ class FinishConfigurationService
 
     public function finishConfiguration(array $data): ConfiguratorVerificationResult
     {
-        if (!$this->emailConnectionVerificationService->validateConnection($data)) {
+        $isEmailConnectionValidated = $this->emailConnectionVerificationService->validateConnection(
+            $data['email_smtp_username'],
+            $data['email_smtp_password'],
+            $data['email_smtp_server'],
+            $data['email_smtp_port'],
+        );
+        if (!$isEmailConnectionValidated->isVerificationSuccessful) {
             $data = $this->clearEmailSettings($data);
         }
 
-        if (!$this->pterodactylConnectionVerificationService->validateConnection($data)) {
+        $isPterodactylApiConnectionValidated = $this->pterodactylConnectionVerificationService->validateConnection(
+            $data['pterodactyl_panel_url'],
+            $data['pterodactyl_panel_api_key'],
+        );
+        if (!$isPterodactylApiConnectionValidated->isVerificationSuccessful) {
             return new ConfiguratorVerificationResult(
                 false,
                 $this->translator->trans('pteroca.first_configuration.errors.pterodactyl_api_error'),

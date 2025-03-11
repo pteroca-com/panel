@@ -7,25 +7,40 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\EnvironmentConfigurationService;
+use App\Core\Service\System\WebConfigurator\EmailConnectionVerificationService;
+use App\Core\Service\System\WebConfigurator\PterodactylConnectionVerificationService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-readonly class SystemSettingConfiguratorHandler
+class SystemSettingConfiguratorHandler
 {
+    private bool $isSaved = false;
+
     public function __construct(
-        private SettingRepository                       $settingRepository,
-        private SettingService                          $settingService,
-        private EnvironmentConfigurationService         $environmentConfigurationHandler,
+        private readonly SettingRepository $settingRepository,
+        private readonly SettingService $settingService,
+        private readonly EnvironmentConfigurationService $environmentConfigurationHandler,
+        private readonly EmailConnectionVerificationService $emailConnectionVerificationService,
+        private readonly PterodactylConnectionVerificationService $pterodactylConnectionVerificationService,
     ) {}
 
     public function configureSystemSettings(SymfonyStyle $io): void
     {
+        $isAlreadyConfigured = $this->settingService->getSetting(SettingEnum::IS_CONFIGURED->value);
+        if ($isAlreadyConfigured) {
+            $io->warning('System is already configured. Current settings will be overwritten.');
+        }
+
         if ($io->ask('Do you want to configure system settings? (yes/no)', 'yes') === 'yes') {
-            $this->generateAppSecretKeyIfNeeded();
+            $this->generateAppSecretKeyIfNeeded($io);
             $this->askForSiteSettings($io);
             $this->askForEmailSettings($io);
             $this->askForPterodactylPanelCredentialsSettings($io);
             $this->askForPaymentSettings($io);
             $this->askForConfigureUser($io);
+
+            if ($this->isSaved) {
+                $this->settingService->saveSetting(SettingEnum::IS_CONFIGURED->value, '1');
+            }
         }
     }
 
@@ -94,6 +109,18 @@ readonly class SystemSettingConfiguratorHandler
                     ),
                 ],
             ];
+
+            $pterodactylConnectionVerification = $this->pterodactylConnectionVerificationService->validateConnection(
+                $settings[SettingEnum::PTERODACTYL_PANEL_URL->value]['value'],
+                $settings[SettingEnum::PTERODACTYL_API_KEY->value]['value'],
+            );
+
+            if (!$pterodactylConnectionVerification->isVerificationSuccessful) {
+                $io->error($pterodactylConnectionVerification->errorMessage);
+                $this->askForPterodactylPanelCredentialsSettings($io);
+                return;
+            }
+
             $this->saveSettings($settings);
         }
     }
@@ -136,6 +163,20 @@ readonly class SystemSettingConfiguratorHandler
                     ),
                 ],
             ];
+
+            $emailConnectionVerification = $this->emailConnectionVerificationService->validateConnection(
+                $settings[SettingEnum::EMAIL_SMTP_USERNAME->value]['value'],
+                $settings[SettingEnum::EMAIL_SMTP_PASSWORD->value]['value'],
+                $settings[SettingEnum::EMAIL_SMTP_SERVER->value]['value'],
+                $settings[SettingEnum::EMAIL_SMTP_PORT->value]['value'],
+            );
+
+            if (!$emailConnectionVerification->isVerificationSuccessful) {
+                $io->error($emailConnectionVerification->errorMessage);
+                $this->askForEmailSettings($io);
+                return;
+            }
+
             $this->saveSettings($settings);
         }
     }
@@ -166,11 +207,12 @@ readonly class SystemSettingConfiguratorHandler
                     ),
                 ],
             ];
+
             $this->saveSettings($settings);
         }
     }
 
-    private function generateAppSecretKeyIfNeeded(): void
+    private function generateAppSecretKeyIfNeeded(SymfonyStyle $io): void
     {
         $appKey = $this->environmentConfigurationHandler->getEnvValue('/^APP_SECRET=(.*)$/m');
 
@@ -183,6 +225,7 @@ readonly class SystemSettingConfiguratorHandler
             }
 
             $this->environmentConfigurationHandler->writeToEnvFile($pattern, "APP_SECRET=$appKey");
+            $io->info('App secret key has been generated and saved in .env file');
         }
     }
 
@@ -197,6 +240,7 @@ readonly class SystemSettingConfiguratorHandler
             $setting->setValue($value['value']);
             $this->settingRepository->save($setting);
             $this->settingService->saveSettingInCache($key, $value['value']);
+            $this->isSaved = true;
         }
     }
 }

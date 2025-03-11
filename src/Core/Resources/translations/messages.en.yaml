@@ -516,6 +516,7 @@ pteroca:
 
   first_configuration:
     title: 'First Configuration'
+    description: 'This page is available only once after installation. Please fill in the required fields to configure the panel.'
     step: 'Step'
     next: 'Next'
     configurator_welcome: 'Welcome to the PteroCA configurator.'
