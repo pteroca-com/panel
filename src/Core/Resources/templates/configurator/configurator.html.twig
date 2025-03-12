@@ -30,7 +30,9 @@
                                 </div>
                             </div>
                             <div class="col-6 offset-3 text-center mb-4 small">
-                                {{ 'pteroca.first_configuration.description'|trans }}
+                                <div class="alert alert-light text-center" role="alert">
+                                    {{ 'pteroca.first_configuration.description'|trans }}
+                                </div>
                             </div>
                             <div class="col-12">
                                 <div class="configuration-subtitle">
@@ -42,8 +44,8 @@
                         <div class="row">
                             {% include '@core_templates/configurator/steps/configurator_welcome.html.twig' %}
                             {% include '@core_templates/configurator/steps/site_settings.html.twig' %}
-                            {% include '@core_templates/configurator/steps/email_settings.html.twig' %}
                             {% include '@core_templates/configurator/steps/pterodactyl_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/email_settings.html.twig' %}
                             {% include '@core_templates/configurator/steps/payment_settings.html.twig' %}
                             {% include '@core_templates/configurator/steps/user_creator.html.twig' %}
                         </div>

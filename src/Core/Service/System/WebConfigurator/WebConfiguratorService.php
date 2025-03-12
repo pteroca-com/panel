@@ -44,16 +44,16 @@ class WebConfiguratorService
         }
 
         return match ((int) $data['step']) {
-            2 => $this->emailConnectionVerificationService->validateConnection(
-                    $data['email_smtp_username'],
-                    $data['email_smtp_password'],
-                    $data['email_smtp_server'],
-                    $data['email_smtp_port'],
-                ),
-            3 => $this->pterodactylConnectionVerificationService->validateConnection(
+            2 => $this->pterodactylConnectionVerificationService->validateConnection(
                     $data['pterodactyl_panel_url'],
                     $data['pterodactyl_panel_api_key'],
                 ),
+            3 => $this->emailConnectionVerificationService->validateConnection(
+                $data['email_smtp_username'],
+                $data['email_smtp_password'],
+                $data['email_smtp_server'],
+                $data['email_smtp_port'],
+            ),
             default => new ConfiguratorVerificationResult(true),
         };
     }

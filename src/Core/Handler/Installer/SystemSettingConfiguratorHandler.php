@@ -33,8 +33,8 @@ class SystemSettingConfiguratorHandler
         if ($io->ask('Do you want to configure system settings? (yes/no)', 'yes') === 'yes') {
             $this->generateAppSecretKeyIfNeeded($io);
             $this->askForSiteSettings($io);
-            $this->askForEmailSettings($io);
             $this->askForPterodactylPanelCredentialsSettings($io);
+            $this->askForEmailSettings($io);
             $this->askForPaymentSettings($io);
             $this->askForConfigureUser($io);
 
