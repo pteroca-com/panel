@@ -57,7 +57,7 @@ class FirstConfigurationController extends AbstractController
         $responseStatus = $isSuccessfulFinished->isVerificationSuccessful ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
 
         return new JsonResponse(
-            data: $isSuccessfulFinished->errorMessage,
+            data: $isSuccessfulFinished->message,
             status: $responseStatus
         );
     }

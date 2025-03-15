@@ -36,10 +36,14 @@ class WebConfiguratorService
 
     public function validateStep(array $data): ConfiguratorVerificationResult
     {
+        if (!empty($data['language'])) {
+            $this->translator->setLocale($data['language']);
+        }
+
         if (!isset($data['step'])) {
             return new ConfiguratorVerificationResult(
                 false,
-                $this->translator->trans('pteroca.first_configuration.errors.invalid_step'),
+                $this->translator->trans('pteroca.first_configuration.messages.invalid_step'),
             );
         }
 

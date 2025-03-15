@@ -63,7 +63,7 @@ class FinishConfigurationService
         if (!$isPterodactylApiConnectionValidated->isVerificationSuccessful) {
             return new ConfiguratorVerificationResult(
                 false,
-                $this->translator->trans('pteroca.first_configuration.errors.pterodactyl_api_error'),
+                $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_error'),
             );
         }
 

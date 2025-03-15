@@ -32,11 +32,14 @@ class EmailConnectionVerificationService
             $transport = Transport::fromDsn($dsn);
             $transport->start();
 
-            return new ConfiguratorVerificationResult(true);
+            return new ConfiguratorVerificationResult(
+                true,
+                $this->translator->trans('pteroca.first_configuration.messages.email_smtp_connection_success'),
+            );
         } catch (Exception) {
             return new ConfiguratorVerificationResult(
                 false,
-                $this->translator->trans('pteroca.first_configuration.errors.smtp_error'),
+                $this->translator->trans('pteroca.first_configuration.messages.smtp_error'),
             );
         }
     }

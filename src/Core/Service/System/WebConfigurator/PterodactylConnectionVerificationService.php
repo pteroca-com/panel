@@ -24,12 +24,12 @@ class PterodactylConnectionVerificationService
 
             return new ConfiguratorVerificationResult(
                 true,
-                $this->translator->trans('pteroca.first_configuration.pterodactyl_api_connection_success'),
+                $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_connection_success'),
             );
         } catch (Exception) {
             return new ConfiguratorVerificationResult(
                 false,
-                $this->translator->trans('pteroca.first_configuration.errors.pterodactyl_api_error'),
+                $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_error'),
             );
         }
     }

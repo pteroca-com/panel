@@ -57,6 +57,11 @@
                                         {{ 'pteroca.first_configuration.documentation_hint'|trans }}
                                     </a>
                                 </div>
+                                <div class="text-center small pt-3">
+                                    <a href="https://discord.com/invite/Gz5phhuZym" target="_blank">
+                                        {{ 'pteroca.first_configuration.discord_hint'|trans }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -112,13 +117,10 @@
                         } else {
                             return response.json().then(response => {
                                 submitButton.disabled = false
-                                switch (currentStep) {
-                                    case 2:
-                                        handleStepError(currentStep, response.message)
-                                        break;
-                                    default:
-                                        alert(response.message)
-                                        break;
+                                if ([2, 3].includes(currentStep)) {
+                                    handleStepError(currentStep, response.message)
+                                } else {
+                                    alert(response.message)
                                 }
                             })
                         }
@@ -151,6 +153,7 @@
                 formData = new FormData(form)
 
             formData.append('step', step)
+            formData.append('language', languageSelect.value)
 
             return fetch(validateEndpointUrl, {
                 method: 'POST',
@@ -189,8 +192,13 @@
                 return
             }
 
-            if (step === 2) {
-                textError.innerText = '{{ 'pteroca.first_configuration.pterodactyl_checking_api_connection'|trans }}'
+            switch (step) {
+                case 2:
+                    textError.innerText = '{{ 'pteroca.first_configuration.messages.pterodactyl_checking_api_connection'|trans }}'
+                    break;
+                case 3:
+                    textError.innerText = '{{ 'pteroca.first_configuration.messages.email_checking_smtp_connection'|trans }}'
+                    break;
             }
 
             textError.classList.remove('text-danger')
