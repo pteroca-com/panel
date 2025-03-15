@@ -78,7 +78,7 @@ class WebConfiguratorService
             $settingValue = $this->settingService->getSetting($settingName);
 
             if (!empty($settingValue)) {
-                //return false; // @todo: uncomment this line
+                return false;
             }
         }
 
