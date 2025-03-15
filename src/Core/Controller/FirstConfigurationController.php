@@ -39,7 +39,9 @@ class FirstConfigurationController extends AbstractController
         $responseStatus = $isStepValidated->isVerificationSuccessful ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
 
         return new JsonResponse(
-            data: $isStepValidated->errorMessage,
+            data: [
+                'message' => $isStepValidated->message,
+            ],
             status: $responseStatus,
         );
     }

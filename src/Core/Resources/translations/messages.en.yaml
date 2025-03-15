@@ -547,6 +547,8 @@ pteroca:
     pterodactyl_panel_url_help: 'Enter the URL of your Pterodactyl panel with the protocol (http:// or https://).'
     pterodactyl_panel_api_key: 'Pterodactyl Panel API Key'
     pterodactyl_panel_api_key_help: 'Enter the API key of your Pterodactyl panel.'
+    pterodactyl_checking_api_connection: 'Checking the connection to the Pterodactyl API...'
+    pterodactyl_api_connection_success: 'Successfully connected to the Pterodactyl API.'
     payment_settings: 'Payment Settings'
     stripe_secret_key: 'Stripe Secret Key'
     stripe_secret_key_help: 'Enter the secret key of your Stripe account (optional, may be set later).'
@@ -562,6 +564,8 @@ pteroca:
     skip: 'Skip'
     back: 'Back'
     documentation_hint: 'Having trouble with the configurator? Check the documentation!'
+    pterodactyl_plugin_hint: 'It is recommended to install the PteroCA plugin on your Pterodactyl to access to all features.'
+    pterodactyl_plugin_hint_link: 'Read more in the documentation.'
     errors:
       invalid_step: 'Invalid step.'
       pterodactyl_api_error: 'Could not connect to the Pterodactyl API. Check the API key and panel URL.'

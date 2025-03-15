@@ -6,6 +6,6 @@ class ConfiguratorVerificationResult
 {
     public function __construct(
         public bool $isVerificationSuccessful,
-        public string $errorMessage = '',
+        public string $message = '',
     ) {}
 }

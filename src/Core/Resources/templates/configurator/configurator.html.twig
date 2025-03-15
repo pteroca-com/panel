@@ -94,6 +94,7 @@
                 const submitButton = form.querySelector('button[type="submit"]')
                 submitButton.disabled = true
 
+                resetStepError(currentStep)
                 validateStep(currentStep)
                     .then(response => {
                         if (response.ok) {
@@ -101,15 +102,26 @@
                                 return sendConfiguration()
                             }
 
-                            setCurrentStep(currentStep + 1)
+                            response.json().then(response => {
+                                handleStepSuccess(currentStep, response.message)
+                                setTimeout(() => {
+                                    submitButton.disabled = false
+                                    setCurrentStep(currentStep + 1)
+                                }, 1000)
+                            })
                         } else {
-                            return response.text().then(text => {
-                                alert(text)
+                            return response.json().then(response => {
+                                submitButton.disabled = false
+                                switch (currentStep) {
+                                    case 2:
+                                        handleStepError(currentStep, response.message)
+                                        break;
+                                    default:
+                                        alert(response.message)
+                                        break;
+                                }
                             })
                         }
-                    })
-                    .finally(() => {
-                        submitButton.disabled = false
                     })
             })
         })
@@ -168,6 +180,47 @@
                     window.location.href = successUrl
                 }
             })
+        }
+
+        function resetStepError(step) {
+            const textError = document.querySelector(`.text-error[data-step="${step}"]`)
+
+            if (!textError) {
+                return
+            }
+
+            if (step === 2) {
+                textError.innerText = '{{ 'pteroca.first_configuration.pterodactyl_checking_api_connection'|trans }}'
+            }
+
+            textError.classList.remove('text-danger')
+            textError.classList.remove('text-success')
+            textError.classList.add('text-secondary')
+            textError.classList.remove('d-none')
+        }
+
+        function handleStepError(step, error) {
+            const textError = document.querySelector(`.text-error[data-step="${step}"]`)
+
+            if (!textError) {
+                return
+            }
+
+            textError.innerText = error
+            textError.classList.add('text-danger')
+            textError.classList.remove('text-secondary')
+        }
+
+        function handleStepSuccess(step, message) {
+            const textElement = document.querySelector(`.text-error[data-step="${step}"]`)
+
+            if (!textElement) {
+                return
+            }
+
+            textElement.innerText = message
+            textElement.classList.add('text-success')
+            textElement.classList.remove('text-secondary')
         }
 
         setCurrentStep(currentStep)

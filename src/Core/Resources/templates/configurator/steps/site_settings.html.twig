@@ -27,8 +27,8 @@
             <label class="form-control-label required" for="site_locale">{{ 'pteroca.first_configuration.site_locale'|trans }}</label>
             <div class="form-widget">
                 <select id="site_locale" name="site_locale" class="form-control" required>
-                    {% for language in availableLanguages %}
-                        <option value="{{ language }}" {% if language == 'en' %}selected{% endif %}>{{ language }}</option>
+                    {% for languageCode, language in availableLanguages %}
+                        <option value="{{ languageCode|lower }}" {% if languageCode|lower == 'en' %}selected{% endif %}>{{ language }}</option>
                     {% endfor %}
                 </select>
                 <div class="form-text">

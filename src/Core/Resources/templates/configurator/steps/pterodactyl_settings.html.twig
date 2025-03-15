@@ -2,6 +2,15 @@
     <div class="configuration-subtitle mt-2">
         {{ 'pteroca.first_configuration.pterodactyl_settings'|trans }}
     </div>
+    <div class="alert alert-info text-center mb-4" role="alert">
+        {{ 'pteroca.first_configuration.pterodactyl_plugin_hint'|trans }}
+        <div class="pt-2">
+            <a href="https://docs.pteroca.com/guidebook/pteroca-pterodactyl-addon" target="_blank">
+                {{ 'pteroca.first_configuration.pterodactyl_plugin_hint_link'|trans }}
+            </a>
+        </div>
+    </div>
+
     <form data-step="2">
         <div class="form-group">
             <label class="form-control-label required" for="pterodactyl_panel_url">{{ 'pteroca.first_configuration.pterodactyl_panel_url'|trans }}</label>
@@ -21,6 +30,10 @@
                     {{ 'pteroca.first_configuration.pterodactyl_panel_api_key_help'|trans }}
                 </div>
             </div>
+        </div>
+
+        <div class="col-12 text-center text-secondary mb-4 text-error d-none" data-step="2">
+            {{ 'pteroca.first_configuration.pterodactyl_checking_api_connection'|trans }}
         </div>
 
         <div class="form-group">

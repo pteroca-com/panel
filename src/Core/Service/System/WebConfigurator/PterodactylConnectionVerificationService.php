@@ -22,7 +22,10 @@ class PterodactylConnectionVerificationService
             $pterodactylApi = new PterodactylApi($pterodactylPanelUrl, $pterodactylPanelApiKey);
             $pterodactylApi->servers->paginate();
 
-            return new ConfiguratorVerificationResult(true);
+            return new ConfiguratorVerificationResult(
+                true,
+                $this->translator->trans('pteroca.first_configuration.pterodactyl_api_connection_success'),
+            );
         } catch (Exception) {
             return new ConfiguratorVerificationResult(
                 false,

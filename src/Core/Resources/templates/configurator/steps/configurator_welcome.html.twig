@@ -19,8 +19,8 @@
                     <label class="form-control-label required" for="configurator_language">{{ 'pteroca.first_configuration.configurator_language'|trans }}</label>
                     <div class="form-widget">
                         <select id="configurator_language" name="configurator_language" class="form-control" required>
-                            {% for language in availableLanguages %}
-                                <option value="{{ language }}" {% if language == configuratorLanguage %}selected{% endif %}>{{ language }}</option>
+                            {% for languageCode, language in availableLanguages %}
+                                <option value="{{ languageCode|lower }}" {% if languageCode|lower == configuratorLanguage|lower %}selected{% endif %}>{{ language }}</option>
                             {% endfor %}
                         </select>
                     </div>
