@@ -116,7 +116,7 @@ class SystemSettingConfiguratorHandler
             );
 
             if (!$pterodactylConnectionVerification->isVerificationSuccessful) {
-                $io->error($pterodactylConnectionVerification->errorMessage);
+                $io->error($pterodactylConnectionVerification->message);
                 $this->askForPterodactylPanelCredentialsSettings($io);
                 return;
             }
@@ -172,7 +172,7 @@ class SystemSettingConfiguratorHandler
             );
 
             if (!$emailConnectionVerification->isVerificationSuccessful) {
-                $io->error($emailConnectionVerification->errorMessage);
+                $io->error($emailConnectionVerification->message);
                 $this->askForEmailSettings($io);
                 return;
             }

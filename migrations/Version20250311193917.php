@@ -11,7 +11,7 @@ final class Version20250311193917 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Add is_configured setting';
     }
 
     public function up(Schema $schema): void
