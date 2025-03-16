@@ -74,14 +74,6 @@ class WebConfiguratorService
             return false;
         }
 
-        foreach ($this->finishConfigurationService->getRequiredSettingsMap() as $settingName) {
-            $settingValue = $this->settingService->getSetting($settingName);
-
-            if (!empty($settingValue)) {
-                return false;
-            }
-        }
-
         return true;
     }
 }
