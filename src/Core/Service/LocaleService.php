@@ -2,6 +2,7 @@
 
 namespace App\Core\Service;
 
+use App\Core\Enum\LanguageEnum;
 use Symfony\Component\Finder\Finder;
 
 class LocaleService
@@ -24,7 +25,7 @@ class LocaleService
             $locale = explode('.', $locale);
             $locale = end($locale);
             if (!in_array($locale, $locales)) {
-                $locales[strtoupper($locale)] = $locale;
+                $locales[strtoupper($locale)] = LanguageEnum::tryFrom($locale)?->name ?? $locale;
             }
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Core\Service;
 
+use App\Core\Entity\Setting;
 use App\Core\Repository\SettingRepository;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -25,6 +26,20 @@ class SettingService
                 return $setting?->getValue();
             }
         );
+    }
+
+    public function saveSetting(string $name, string $value): void
+    {
+        $setting = $this->settingRepository->findOneBy(['name' => $name]);
+
+        if (empty($setting)) {
+            $setting = new Setting();
+            $setting->setName($name);
+        }
+
+        $setting->setValue($value);
+        $this->settingRepository->save($setting);
+        $this->saveSettingInCache($name, $value);
     }
 
     public function saveSettingInCache(string $name, string $value): void

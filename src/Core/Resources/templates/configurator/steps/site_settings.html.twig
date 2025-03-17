@@ -1,0 +1,44 @@
+<div class="col-6 offset-3 d-none" data-step="1">
+    <div class="configuration-subtitle mt-2">
+        {{ 'pteroca.first_configuration.site_settings'|trans }}
+    </div>
+    <form data-step="1">
+        <div class="form-group">
+            <label class="form-control-label required" for="site_url">{{ 'pteroca.first_configuration.site_url'|trans }}</label>
+            <div class="form-widget">
+                <input type="url" id="site_url" name="site_url" class="form-control" value="{{ currentSiteUrl }}" required autofocus autocomplete="site_url">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.site_url_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="site_title">{{ 'pteroca.first_configuration.site_title'|trans }}</label>
+            <div class="form-widget">
+                <input type="text" id="site_title" name="site_title" class="form-control" value="" required autofocus autocomplete="site_title">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.site_title_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="site_locale">{{ 'pteroca.first_configuration.site_locale'|trans }}</label>
+            <div class="form-widget">
+                <select id="site_locale" name="site_locale" class="form-control" required>
+                    {% for languageCode, language in availableLanguages %}
+                        <option value="{{ languageCode|lower }}" {% if languageCode|lower == 'en' %}selected{% endif %}>{{ language }}</option>
+                    {% endfor %}
+                </select>
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.site_locale_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
+        </div>
+    </form>
+</div>

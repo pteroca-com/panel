@@ -1,0 +1,45 @@
+<div class="col-6 offset-3 d-none" data-step="4">
+    <div class="configuration-subtitle mt-2">
+        {{ 'pteroca.first_configuration.payment_settings'|trans }}
+    </div>
+    <form data-step="4">
+        <div class="form-group">
+            <label class="form-control-label" for="stripe_secret_key">{{ 'pteroca.first_configuration.stripe_secret_key'|trans }}</label>
+            <div class="form-widget">
+                <input type="password" id="stripe_secret_key" name="stripe_secret_key" class="form-control" value="" autofocus autocomplete="stripe_secret_key">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.stripe_secret_key_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="currency">{{ 'pteroca.first_configuration.currency'|trans }}</label>
+            <div class="form-widget">
+                <select id="currency" name="currency" class="form-control" required>
+                    {% for currency in currencies %}
+                        <option value="{{ currency }}" {% if currency == 'USD' %}selected{% endif %}>{{ currency }}</option>
+                    {% endfor %}
+                </select>
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.currency_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="internal_currency_name">{{ 'pteroca.first_configuration.internal_currency_name'|trans }}</label>
+            <div class="form-widget">
+                <input type="text" id="internal_currency_name" name="internal_currency_name" class="form-control" value="" required autofocus autocomplete="internal_currency_name">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.internal_currency_name_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="button" class="btn btn-lg btn-block configuration-previous-step float-start me-2">{{ 'pteroca.first_configuration.back'|trans }}</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
+        </div>
+    </form>
+</div>

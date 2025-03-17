@@ -207,3 +207,30 @@ input#command {
 .logo-compact {
     color: #FFFFFF;
 }
+
+.configuration-wrapper {
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.configuration-wrapper .configuration-title,
+.configuration-wrapper .configuration-subtitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 1.5rem;
+}
+
+.configuration-wrapper .configuration-subtitle {
+    font-size: 1rem;
+}
+
+.page-configurator {
+    background: rgb(89, 134, 165) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
