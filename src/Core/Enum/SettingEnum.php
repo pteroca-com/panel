@@ -38,4 +38,5 @@ enum SettingEnum: string
     case DELETE_SUSPENDED_SERVERS_ENABLED = 'delete_suspended_servers_enabled';
     case DELETE_SUSPENDED_SERVERS_DAYS_AFTER = 'delete_suspended_servers_days_after';
     case CURRENT_THEME = 'current_theme';
+    case IS_CONFIGURED = 'is_configured';
 }

@@ -2,6 +2,20 @@
 
 ---
 
+## [0.4.2] - 2025-03-16
+
+### Added
+- Introduced a web wizard for the initial setup. The CLI setup remains available as an alternative.
+- Added a CLI notification when attempting to create a user with an email address that already exists in Pterodactyl.
+
+### Changed
+- The Pterodactyl Client API Key is no longer required to access server management pages.
+
+### Fixed
+- Resolved an issue with logging in the production environment.
+
+---
+
 ## [0.4.1] - 2025-03-10
 
 ### Added
