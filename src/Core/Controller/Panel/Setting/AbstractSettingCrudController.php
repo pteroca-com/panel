@@ -99,7 +99,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 ->setLanguage('twig')
                 ->setNumOfRows(20),
             SettingTypeEnum::LOCALE->value => ChoiceField::new('value', $valueLabel)
-                ->setChoices($this->localeService->getAvailableLocales()),
+                ->setChoices(array_flip($this->localeService->getAvailableLocales(false))),
             SettingTypeEnum::URL->value => UrlField::new('value', $valueLabel),
             SettingTypeEnum::EMAIL->value => EmailField::new('value', $valueLabel),
             SettingTypeEnum::IMAGE->value => ImageField::new('value', $valueLabel)

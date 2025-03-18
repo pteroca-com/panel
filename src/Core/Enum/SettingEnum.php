@@ -24,7 +24,17 @@ enum SettingEnum: string
     case INTERNAL_CURRENCY_NAME = 'internal_currency_name';
     case CURRENCY_NAME = 'currency_name';
     case DEFAULT_THEME_PRIMARY_COLOR = 'theme_default_primary_color';
+    case DEFAULT_THEME_SECONDARY_COLOR = 'theme_default_secondary_color';
+    case DEFAULT_THEME_BACKGROUND_COLOR = 'theme_default_background_color';
+    case DEFAULT_THEME_LINK_COLOR = 'theme_default_link_color';
+    case DEFAULT_THEME_LINK_HOVER_COLOR = 'theme_default_link_hover_color';
     case DEFAULT_THEME_DARK_PRIMARY_COLOR = 'theme_default_dark_primary_color';
+    case DEFAULT_THEME_DARK_SECONDARY_COLOR = 'theme_default_dark_secondary_color';
+    case DEFAULT_THEME_DARK_BACKGROUND_COLOR = 'theme_default_dark_background_color';
+    case DEFAULT_THEME_DARK_LINK_COLOR = 'theme_default_dark_link_color';
+    case DEFAULT_THEME_DARK_LINK_HOVER_COLOR = 'theme_default_dark_link_hover_color';
+    case THEME_DISABLE_DARK_MODE = 'theme_disable_dark_mode';
+    case THEME_DEFAULT_MODE = 'theme_default_mode';
     case SHOW_PHPMYADMIN_URL = 'show_phpmyadmin_url';
     case PHPMYADMIN_URL = 'phpmyadmin_url';
     case CUSTOMER_MOTD_ENABLED = 'customer_motd_enabled';

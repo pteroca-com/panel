@@ -21,7 +21,9 @@
 
     {% block head_stylesheets %}
         <link rel="stylesheet" href="{{ asset('app.css', ea.assets.defaultAssetPackageName) }}">
-        {% include 'components/theme_styles.html.twig' %}
+        {% if get_current_template_options().isSupportCustomColors() %}
+            {% include 'components/theme_styles.html.twig' %}
+        {% endif %}
     {% endblock %}
 
     {% block configured_stylesheets %}

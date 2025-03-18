@@ -64,6 +64,11 @@ class TemplateService
         return $templateInfo;
     }
 
+    public function getRawTemplateInfo(string $templateName): array
+    {
+        return $this->loadTemplateMetadata($this->getTemplatePath($templateName), true);
+    }
+
     public function getTemplatePath(?string $templateName = null): string
     {
         $templatePath = $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . self::TEMPLATES_DIRECTORY;
@@ -84,7 +89,7 @@ class TemplateService
         return $assetsPath;
     }
 
-    private function loadTemplateMetadata(string $templatePath): array
+    private function loadTemplateMetadata(string $templatePath, bool $loadRawData = false): array
     {
         $metadataPath = $templatePath . DIRECTORY_SEPARATOR . self::METADATA_FILE;
         if (!file_exists($metadataPath)) {
@@ -98,7 +103,9 @@ class TemplateService
 
         $preparedMetaData = [];
         foreach ($metaData['template'] as $key => $value) {
-            $label = $this->translator->trans(sprintf('pteroca.crud.setting.template.%s', $key));
+            $label = !$loadRawData
+                ? $this->translator->trans(sprintf('pteroca.crud.setting.template.%s', $key))
+                : $key;
 
             if (!empty($label)) {
                 $preparedMetaData[$label] = $value;

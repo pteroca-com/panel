@@ -14,7 +14,7 @@ class LocaleService
         $this->translationPath = __DIR__ . '/../Resources/translations';
     }
 
-    public function getAvailableLocales(): array
+    public function getAvailableLocales(bool $uppercase = true): array
     {
         $finder = new Finder();
         $finder->files()->in($this->translationPath)->name('*.yaml');
@@ -25,7 +25,8 @@ class LocaleService
             $locale = explode('.', $locale);
             $locale = end($locale);
             if (!in_array($locale, $locales)) {
-                $locales[strtoupper($locale)] = LanguageEnum::tryFrom($locale)?->name ?? $locale;
+                $localeIndex = $uppercase ? strtoupper($locale) : $locale;
+                $locales[$localeIndex] = LanguageEnum::tryFrom($locale)?->name ?? $locale;
             }
         }
 
