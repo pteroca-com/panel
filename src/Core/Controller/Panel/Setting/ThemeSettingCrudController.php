@@ -98,7 +98,15 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
 
         if (!$this->currentTemplateOptions->isSupportCustomColors()) {
             $hiddenSettings[] = SettingEnum::DEFAULT_THEME_PRIMARY_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_SECONDARY_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_BACKGROUND_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_LINK_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_LINK_HOVER_COLOR->value;
             $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_PRIMARY_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_SECONDARY_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_BACKGROUND_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_LINK_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_LINK_HOVER_COLOR->value;
         }
 
         if ($this->disableDarkMode) {
