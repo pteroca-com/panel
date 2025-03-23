@@ -101,11 +101,20 @@ class TemplateService
             return [];
         }
 
+        return $this->prepareTemplateMetadata($metaData['template'], $loadRawData);
+    }
+
+    private function prepareTemplateMetadata(array $templateMetadata, bool $loadRawData = false): array
+    {
         $preparedMetaData = [];
-        foreach ($metaData['template'] as $key => $value) {
+        foreach ($templateMetadata as $key => $value) {
             $label = !$loadRawData
                 ? $this->translator->trans(sprintf('pteroca.crud.setting.template.%s', $key))
                 : $key;
+
+            if (is_array($value)) {
+                $value = $this->prepareTemplateMetadata($value, $loadRawData);
+            }
 
             if (!empty($label)) {
                 $preparedMetaData[$label] = $value;

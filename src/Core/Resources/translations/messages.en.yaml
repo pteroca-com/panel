@@ -382,6 +382,9 @@ pteroca:
         pterocaVersion: 'Pteroca version'
         outdated: 'The template version is behind the current version of PteroCA. Some features may not work correctly'
         phpVersion: 'PHP version'
+        options: 'Options'
+        supportDarkMode: 'Support dark mode'
+        supportCustomColors: 'Allow configuring custom colors'
 
     user:
       email: 'Email'
