@@ -16,7 +16,12 @@
             fetch(endpointUrl.replace('TEMPLATE_NAME', templateName))
                 .then(response => response.json())
                 .then(data => {
-                    prepareTemplateTableContent(data)
+                    const row = prepareTemplateTableContent(data)
+                    const formGroups = document.querySelectorAll('.form-group'),
+                        lastFormGroup = formGroups[formGroups.length - 1]
+
+                    document.querySelector('.template-info')?.remove()
+                    lastFormGroup.parentNode.after(row)
                 })
         }
 
@@ -31,22 +36,20 @@
                 const keyCol = document.createElement('div'),
                     valueCol = document.createElement('div')
 
-                keyCol.classList.add('col-3')
+                keyCol.classList.add('col-4', 'col-sm-3', 'col-md-2')
                 keyCol.classList.add('fw-bolder')
                 keyCol.innerHTML = `${key}:`
 
-                valueCol.classList.add('col-9')
-                valueCol.innerHTML = value
+                valueCol.classList.add('col-8', 'col-sm-9', 'col-md-10')
+                valueCol.innerHTML = typeof value === 'object'
+                    ? prepareTemplateTableContent(value).outerHTML
+                    : value
 
                 row.appendChild(keyCol)
                 row.appendChild(valueCol)
             }
 
-            const formGroups = document.querySelectorAll('.form-group'),
-                lastFormGroup = formGroups[formGroups.length - 1]
-
-            document.querySelector('.template-info')?.remove()
-            lastFormGroup.parentNode.after(row)
+            return row
         }
     </script>
 {% endblock %}

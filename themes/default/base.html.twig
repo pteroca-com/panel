@@ -8,7 +8,9 @@
         {% endblock %}
 
         {% block head_stylesheets %}
-            {% include 'components/theme_styles.html.twig' %}
+            {% if get_current_template_options().isSupportCustomColors() %}
+                {% include 'components/theme_styles.html.twig' %}
+            {% endif %}
         {% endblock %}
 
         {% block javascripts %}

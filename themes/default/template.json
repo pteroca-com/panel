@@ -6,6 +6,10 @@
     "version": "1.0.1",
     "license": "MIT",
     "pterocaVersion": "0.4.2",
-    "phpVersion": ">=8.2"
+    "phpVersion": ">=8.2",
+    "options": {
+      "supportDarkMode": true,
+      "supportCustomColors": true
+    }
   }
 }
