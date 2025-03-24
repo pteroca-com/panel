@@ -41,7 +41,7 @@ class ServerBackupService
             $server,
             ServerLogActionEnum::CREATE_BACKUP,
             [
-                'backup_id' => $createdBackup['attributes']['uuid'],
+                'backup_id' => $createdBackup['uuid'],
                 'backup_name' => $backupName,
             ]
         );
