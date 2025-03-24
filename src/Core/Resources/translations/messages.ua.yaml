@@ -276,6 +276,9 @@ pteroca:
     change_startup_option: 'Змінено параметр запуску'
     change_startup_variable: 'Змінено змінну запуску'
     toggle_auto_renewal: 'Перемикання автоматичного поновлення'
+    create_database: 'Створено базу даних'
+    delete_database: 'Видалено базу даних'
+    rotate_database_password: 'Змінено пароль бази даних'
 
   crud:
     category:

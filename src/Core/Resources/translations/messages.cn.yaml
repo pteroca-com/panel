@@ -276,6 +276,9 @@ pteroca:
     change_startup_option: '更改了启动选项'
     change_startup_variable: '更改了启动变量'
     toggle_auto_renewal: '切换了自动续费'
+    create_database: '创建了数据库'
+    delete_database: '删除了数据库'
+    rotate_database_password: '旋转了数据库密码'
 
   crud:
     category:

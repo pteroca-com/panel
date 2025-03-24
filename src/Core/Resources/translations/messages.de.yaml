@@ -276,6 +276,9 @@ pteroca:
     change_startup_option: 'Startoption geändert'
     change_startup_variable: 'Startvariable geändert'
     toggle_auto_renewal: 'Automatische Verlängerung umgeschaltet'
+    create_database: 'Datenbank erstellt'
+    delete_database: 'Datenbank gelöscht'
+    rotate_database_password: 'Datenbank-Passwort zurückgesetzt'
 
   crud:
     category:

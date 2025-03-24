@@ -266,6 +266,10 @@ pteroca:
     change_startup_option: 'Опция запуска изменена'
     change_startup_variable: 'Переменная запуска изменена'
     toggle_auto_renewal: 'Переключено автоматическое продление'
+    create_database: 'Создана база данных'
+    delete_database: 'Удалена база данных'
+    rotate_database_password: 'Смена пароля базы данных'
+
   crud:
     category:
       name: 'Название категории'
