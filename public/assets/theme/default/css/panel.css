@@ -36,18 +36,6 @@
     background-color: var(--bs-secondary-bg);
 }
 
-a {
-    color: var(--primary-color);
-}
-
-a:hover {
-    color: var(--primary-color);
-}
-
-.dropdown-settings .dropdown-item.active, .dropdown-settings .dropdown-item.active i {
-    color: var(--primary-color);
-    background: rgba(89, 134, 165, 0.05);
-}
 
 .dropdown-settings .dropdown-item.active {
     box-shadow: inset 0 0 0 1px rgba(89, 134, 165, 0.5);
@@ -161,6 +149,7 @@ a:hover {
 }
 
 input#command {
+    border: 0.1 solid var(--secondary-color);
     border-bottom: 0.13rem solid var(--primary-color);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;

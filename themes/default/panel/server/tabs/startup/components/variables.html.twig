@@ -39,7 +39,9 @@
                                         </div>
                                     {% endif %}
                                     <div class="col-12">
-                                        <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                        <div class="form-widget">
+                                            <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

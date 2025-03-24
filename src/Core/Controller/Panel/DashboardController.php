@@ -72,9 +72,18 @@ class DashboardController extends AbstractDashboardController
             $logoUrl = '/assets/img/logo/logo.png';
         }
         $logo = sprintf('<img src="%s" alt="%s" style="max-width: 90%%;">', $logoUrl, $title);
+
+        $currentTemplateOptions = $this->templateManager->getCurrentTemplateOptions();
+        $disableDarkMode = !$currentTemplateOptions->isSupportDarkMode()
+            || $this->settingService->getSetting(SettingEnum::THEME_DISABLE_DARK_MODE->value);
+        $defaultMode = $disableDarkMode
+            ? ColorScheme::LIGHT
+            : $this->settingService->getSetting(SettingEnum::THEME_DEFAULT_MODE->value);
+
         return Dashboard::new()
             ->setTitle($logo)
-            ->setDefaultColorScheme(ColorScheme::LIGHT)
+            ->setDefaultColorScheme($defaultMode)
+            ->disableDarkMode($disableDarkMode)
             ;
     }
 

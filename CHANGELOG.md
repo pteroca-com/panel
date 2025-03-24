@@ -2,6 +2,22 @@
 
 ---
 
+## [0.4.3] - 2025-03-24
+
+### Added
+- Introduced a new `app:update-system` command to automate project updates.
+- Added configuration options to enable/disable dark mode and specify a default mode.
+
+### Changed
+- Refined default theme colors for dark mode.
+- Minor CSS changes in the default theme for improved layout consistency.
+
+### Fixed
+- Resolved an issue preventing emails from being sent.
+- Addressed a bug that caused Stripe payments to fail.
+
+---
+
 ## [0.4.2] - 2025-03-16
 
 ### Added

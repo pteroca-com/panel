@@ -67,7 +67,7 @@ class FirstConfigurationController extends AbstractController
         $isConfiguratorEnabled = $this->webConfiguratorService->isConfiguratorEnabled();
 
         if (!$isConfiguratorEnabled || $this->getUser()) {
-            throw $this->createNotFoundException();
+            throw $this->createNotFoundException('System is already configured.');
         }
     }
 }

@@ -15,12 +15,16 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="mb-3">
-                            <label for="server-name" class="form-label">{{ 'pteroca.server.server_name'|trans }}</label>
-                            <input type="text" class="form-control" id="server-name" value="{{ serverData.pterodactylServer.name }}" readonly minlength="1" maxlength="255">
+                            <div class="form-widget">
+                                <label for="server-name" class="form-label">{{ 'pteroca.server.server_name'|trans }}</label>
+                                <input type="text" class="form-control" id="server-name" value="{{ serverData.pterodactylServer.name }}" readonly minlength="1" maxlength="255">
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="server-description" class="form-label">{{ 'pteroca.server.server_description'|trans }}</label>
-                            <textarea class="form-control" id="server-description" rows="3" readonly minlength="0" maxlength="255">{{ serverData.pterodactylServer.description }}</textarea>
+                            <div class="form-widget">
+                                <label for="server-description" class="form-label">{{ 'pteroca.server.server_description'|trans }}</label>
+                                <textarea class="form-control" id="server-description" rows="3" readonly minlength="0" maxlength="255">{{ serverData.pterodactylServer.description }}</textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
