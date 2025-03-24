@@ -260,6 +260,9 @@ pteroca:
     change_startup_option: '更改了启动选项'
     change_startup_variable: '更改了启动变量'
     toggle_auto_renewal: '切换了自动续费'
+    download_backup: '下载了备份'
+    create_backup: '创建了备份'
+    delete_backup: '删除了备份'
 
   crud:
     category:

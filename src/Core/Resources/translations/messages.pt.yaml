@@ -260,6 +260,9 @@ pteroca:
     change_startup_option: 'Opção de inicialização alterada'
     change_startup_variable: 'Variável de inicialização alterada'
     toggle_auto_renewal: 'Renovação automática alternada'
+    download_backup: 'Backup baixado'
+    create_backup: 'Backup criado'
+    delete_backup: 'Backup excluído'
 
   crud:
     category:

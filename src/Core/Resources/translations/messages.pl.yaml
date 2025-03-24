@@ -260,6 +260,9 @@ pteroca:
     change_startup_option: 'Zmiana opcji uruchamiania'
     change_startup_variable: 'Zmiana zmiennej uruchamiania'
     toggle_auto_renewal: 'Przełączono automatyczne odnawianie'
+    download_backup: 'Pobrano kopię zapasową'
+    create_backup: 'Utworzono kopię zapasową'
+    delete_backup: 'Usunięto kopię zapasową'
 
   crud:
     category:
