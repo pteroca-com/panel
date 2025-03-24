@@ -94,6 +94,11 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
 
         if (!$this->currentTemplateOptions->isSupportDarkMode()) {
             $hiddenSettings[] = SettingEnum::THEME_DISABLE_DARK_MODE->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_PRIMARY_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_SECONDARY_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_BACKGROUND_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_LINK_COLOR->value;
+            $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_LINK_HOVER_COLOR->value;
         }
 
         if (!$this->currentTemplateOptions->isSupportCustomColors()) {
@@ -113,6 +118,7 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
             $hiddenSettings[] = SettingEnum::THEME_DEFAULT_MODE->value;
         }
 
+        $hiddenSettings = array_unique($hiddenSettings);
         if (!empty($hiddenSettings)) {
             $qb->andWhere('entity.name NOT IN (:hiddenSettings)')
                 ->setParameter('hiddenSettings', $hiddenSettings);

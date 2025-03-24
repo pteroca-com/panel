@@ -25,6 +25,7 @@ class UpdateSystemHandler implements HandlerInterface
         $this->composerInstall();
         $this->updateDatabase();
         $this->clearCache();
+        $this->adjustFilePermissions();
     }
 
     public function setIo(SymfonyStyle $io): self
@@ -156,6 +157,34 @@ class UpdateSystemHandler implements HandlerInterface
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to clear cache.');
+        }
+    }
+
+    private function adjustFilePermissions(): void
+    {
+        if (PHP_OS_FAMILY !== 'Linux') {
+            return;
+        }
+
+        $directoryToCheck = \dirname(__DIR__, 3);
+        $directoryToCheck = escapeshellarg($directoryToCheck);
+        $candidateOwners = [
+            'www-data:www-data',
+            'nginx:nginx',
+            'apache:apache',
+        ];
+
+        foreach ($candidateOwners as $candidate) {
+            [$user, $group] = explode(':', $candidate);
+
+            $exitCode = 0;
+            $output = [];
+            exec(sprintf('id -u %s 2>/dev/null', escapeshellarg($user)), $output, $exitCode);
+
+            if ($exitCode === 0) {
+                exec(sprintf('chown -R %s %s', escapeshellarg($candidate), $directoryToCheck));
+                return;
+            }
         }
     }
 }
