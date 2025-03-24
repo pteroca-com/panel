@@ -9,4 +9,7 @@ enum ServerLogActionEnum
    case CHANGE_STARTUP_OPTION;
    case CHANGE_STARTUP_VARIABLE;
    case TOGGLE_AUTO_RENEWAL;
+   case CREATE_BACKUP;
+   case DELETE_BACKUP;
+   case DOWNLOAD_BACKUP;
 }
