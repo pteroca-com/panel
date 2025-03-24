@@ -4,12 +4,15 @@ namespace App\Core\Service\Server;
 
 use App\Core\Entity\Server;
 use App\Core\Entity\User;
+use App\Core\Enum\ServerLogActionEnum;
+use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 
 class ServerDatabaseService
 {
     public function __construct(
         private readonly PterodactylClientService $pterodactylClientService,
+        private readonly ServerLogService $serverLogService,
     ) {}
 
     public function getAllDatabases(
@@ -44,6 +47,16 @@ class ServerDatabaseService
             'database' => $databaseName,
             'remote' => $connectionsFrom,
         ]);
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::CREATE_DATABASE,
+            [
+                'database' => $databaseName,
+                'remote' => $connectionsFrom,
+            ]
+        );
     }
 
     public function deleteDatabase(
@@ -56,6 +69,15 @@ class ServerDatabaseService
             ->getApi($user)
             ->server_databases
             ->delete($server->getPterodactylServerIdentifier(), $databaseId);
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::DELETE_DATABASE,
+            [
+                'database_id' => $databaseId,
+            ]
+        );
     }
 
     public function rotatePassword(
@@ -64,11 +86,22 @@ class ServerDatabaseService
         string $databaseId,
     ): array
     {
-        return $this->pterodactylClientService
+        $rotatedPassword = $this->pterodactylClientService
             ->getApi($user)
             ->server_databases
             ->http
             ->post("servers/{$server->getPterodactylServerIdentifier()}/databases/$databaseId/rotate-password")
             ->toArray();
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::ROTATE_DATABASE_PASSWORD,
+            [
+                'database_id' => $databaseId,
+            ]
+        );
+
+        return $rotatedPassword;
     }
 }
