@@ -2,8 +2,6 @@
 
 namespace App\Core\DTO;
 
-use App\Core\Entity\User;
-
 readonly class PaymentSessionDTO
 {
     public function __construct(
@@ -11,7 +9,7 @@ readonly class PaymentSessionDTO
         private float $amountTotal,
         private string $currency,
         private string $paymentStatus,
-        private string $url,
+        private ?string $url,
     ) {}
 
     public function getId(): string
@@ -34,7 +32,7 @@ readonly class PaymentSessionDTO
         return $this->paymentStatus;
     }
 
-    public function getUrl(): string
+    public function getUrl(): ?string
     {
         return $this->url;
     }

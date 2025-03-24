@@ -3,6 +3,7 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Category;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,12 +65,13 @@ class CategoryCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext('Category');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::CATEGORY->value);
 
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.category.category'))
-            ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.category.category'))
-            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name);
+            ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.category.categories'))
+            ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
+            ;
 
         return parent::configureCrud($crud);
     }

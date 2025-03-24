@@ -66,7 +66,7 @@ pteroca:
     date: 'Data'
     ip_address: 'Adres IP'
     view_all_servers: 'Przejdź do serwerów'
-
+    title: 'Dashboard'
   recharge:
     recharge_balance: 'Doładuj balans'
     recharge: 'Doładuj'
@@ -269,6 +269,7 @@ pteroca:
       add: 'Dodaj kategorię'
       save: 'Zapisz kategorię'
       category: 'Kategoria'
+      categories: 'Kategorie'
     product:
       details: 'Szczegóły produktu'
       name: 'Nazwa produktu'
@@ -310,6 +311,17 @@ pteroca:
       egg_variable_user_viewable: 'Widoczne dla użytkownika'
       egg_variable_user_editable: 'Edytowalne przez użytkownika'
       egg_allow_change: 'Zezwól na zmianę egga przy reinstalacji'
+      disk_space_hint: 'Całkowita ilość miejsca na dysku przydzielona dla tego serwera (w MB). Na przykład, 10240 to 10 GB.'
+      memory_hint: 'Całkowity limit RAM przydzielony dla tego serwera (w MB). Serwer nie może przekroczyć tego limitu pamięci.'
+      io_hint: 'Względny priorytet I/O dla kontenera serwera. Wyższe wartości oznaczają wyższy priorytet (domyślnie 500).'
+      cpu_hint: 'Limit CPU jako procent, gdzie 100% to jeden pełny rdzeń CPU. Na przykład, 200% to dwa pełne rdzenie CPU.'
+      db_count_hint: 'Maksymalna liczba baz danych, które ten serwer może utworzyć lub używać.'
+      swap_hint: 'Ilość pamięci swap (w MB) przydzielona dla tego serwera. Ustaw na 0, aby wyłączyć swap.'
+      backups_hint: 'Maksymalna liczba kopii zapasowych, które można przechowywać dla tego serwera.'
+      ports_hint: 'Liczba dodatkowych portów (oprócz głównego), które serwer może przydzielić. 0 oznacza brak dodatkowych portów.'
+      nodes_hint: 'Wybierz jedną lub więcej fizycznych lub wirtualnych maszyn (węzłów) z konfiguracji Pterodactyl.'
+      nest_hint: 'Nest to kategoria grupująca powiązane Eggs. Wybierz Nest, aby załadować jego Eggs.'
+      eggs_hint: 'Eggs definiują specyficzne konfiguracje serwera (gry lub aplikacje). Wybierz Eggs, które chcesz, aby ten produkt obsługiwał.'
     server:
       pterodactyl_server_id: 'ID serwera Pterodactyl'
       pterodactyl_server_identifier: 'Identyfikator serwera Pterodactyl'
@@ -349,7 +361,17 @@ pteroca:
         internal_currency_name: 'Nazwa wewnętrznej waluty'
         currency_name: 'Nazwa waluty'
         theme_default_primary_color: 'Domyślny kolor główny motywu'
-        theme_default_dark_primary_color: 'Domyślny ciemny kolor główny motywu'
+        theme_default_dark_primary_color: 'Domyślny kolor główny motywu w trybie ciemnym'
+        theme_disable_dark_mode: 'Wyłącz tryb ciemny'
+        theme_default_mode: 'Domyślny tryb motywu'
+        theme_default_background_color: 'Domyślny kolor tła'
+        theme_default_link_color: 'Domyślny kolor linku'
+        theme_default_link_hover_color: 'Domyślny kolor linku po najechaniu'
+        theme_default_dark_background_color: 'Domyślny kolor tła w trybie ciemnym'
+        theme_default_dark_link_color: 'Domyślny kolor linku w trybie ciemnym'
+        theme_default_dark_link_hover_color: 'Domyślny kolor linku po najechaniu w trybie ciemnym'
+        theme_default_secondary_color: 'Domyślny kolor drugorzędny motywu'
+        theme_default_dark_secondary_color: 'Domyślny kolor drugorzędny w trybie ciemnym'
         show_phpmyadmin_url: 'Pokaż link do PHPMyAdmin'
         phpmyadmin_url: 'Adres URL PHPMyAdmin'
         smtp_server: 'Serwer SMTP'
@@ -380,6 +402,9 @@ pteroca:
         pterocaVersion: 'Wersja PteroCA'
         outdated: 'Wersja szablonu jest starsza niż aktualna wersja PteroCA. Niektóre funkcje mogą nie działać poprawnie'
         phpVersion: 'Wersja PHP'
+        options: 'Opcje'
+        supportDarkMode: 'Obsługa trybu ciemnego'
+        supportCustomColors: 'Zezwól na konfigurację niestandardowych kolorów'
     user:
       email: 'Email'
       roles: 'Role'
@@ -520,3 +545,64 @@ pteroca:
       support: 'Wsparcie'
       up_to_date: 'Aktualne'
       update_available: 'Dostępna aktualizacja'
+
+  first_configuration:
+    title: "Pierwsza Konfiguracja"
+    description: "Ta strona jest dostępna tylko raz po instalacji. Proszę wypełnić wymagane pola, aby skonfigurować panel."
+    step: "Krok"
+    next: "Dalej"
+    configurator_welcome: "Witamy w konfiguratorze PteroCA."
+    configurator_welcome_description: "Ten kreator pomoże Ci skonfigurować podstawowe ustawienia panelu."
+    configurator_welcome_description_2: "Proszę wybrać język konfiguratora i kliknąć 'Rozpocznij', aby zacząć."
+    configurator_language: "Język konfiguratora"
+    start_configuration: "Rozpocznij konfigurację"
+    site_settings: "Ustawienia strony"
+    site_url: "Adres URL strony"
+    site_url_help: "Wprowadź adres URL swojej strony wraz z protokołem (http:// lub https://)."
+    site_title: "Tytuł strony"
+    site_title_help: "Wprowadź tytuł swojej strony."
+    site_locale: "Język interfejsu"
+    site_locale_help: "Wybierz język interfejsu użytkownika."
+    email_settings: "Ustawienia e-mail"
+    email_smtp_server: "Serwer SMTP"
+    email_smtp_server_help: "Wprowadź adres serwera SMTP."
+    email_smtp_port: "Port SMTP"
+    email_smtp_port_help: "Wprowadź port serwera SMTP."
+    email_smtp_username: "Nazwa użytkownika SMTP"
+    email_smtp_username_help: "Wprowadź nazwę użytkownika SMTP."
+    email_smtp_password: "Hasło SMTP"
+    email_smtp_password_help: "Wprowadź hasło SMTP."
+    email_smtp_from: "Adres e-mail nadawcy"
+    email_smtp_from_help: "Wprowadź adres e-mail, z którego będą wysyłane wiadomości."
+    pterodactyl_settings: "Ustawienia Pterodactyl"
+    pterodactyl_panel_url: "Adres URL panelu Pterodactyl"
+    pterodactyl_panel_url_help: "Wprowadź adres URL swojego panelu Pterodactyl wraz z protokołem (http:// lub https://)."
+    pterodactyl_panel_api_key: "Klucz API panelu Pterodactyl"
+    pterodactyl_panel_api_key_help: "Wprowadź klucz API swojego panelu Pterodactyl."
+    payment_settings: "Ustawienia płatności"
+    stripe_secret_key: "Klucz tajny Stripe"
+    stripe_secret_key_help: "Wprowadź tajny klucz swojego konta Stripe (opcjonalnie, może być ustawiony później)."
+    currency: "Waluta"
+    currency_help: "Wprowadź nazwę waluty, w której będą dokonywane płatności."
+    internal_currency_name: "Nazwa waluty wewnętrznej"
+    internal_currency_name_help: "Wprowadź nazwę waluty wewnętrznej (np. monety)."
+    create_admin_account: "Utwórz konto administratora"
+    admin_email: "E-mail administratora"
+    admin_email_help: "Wprowadź adres e-mail administratora."
+    admin_password: "Hasło administratora"
+    admin_password_help: "Wprowadź hasło do konta administratora."
+    skip: "Pomiń"
+    back: "Wstecz"
+    documentation_hint: "Masz problemy z konfiguracją? Sprawdź dokumentację!"
+    discord_hint: "A może potrzebujesz pomocy? Dołącz do naszego serwera Discord!"
+    pterodactyl_plugin_hint: "Zaleca się zainstalowanie wtyczki PteroCA w swoim Pterodactyl, aby uzyskać dostęp do wszystkich funkcji."
+    pterodactyl_plugin_hint_link: "Przeczytaj więcej w dokumentacji."
+    messages:
+      invalid_step: "Nieprawidłowy krok."
+      pterodactyl_api_error: "Nie udało się połączyć z API Pterodactyl. Sprawdź klucz API oraz adres URL panelu."
+      smtp_error: "Nie udało się połączyć z serwerem SMTP. Sprawdź ustawienia SMTP."
+      missing_fields: "Proszę wypełnić wszystkie wymagane pola."
+      pterodactyl_checking_api_connection: "Sprawdzanie połączenia z API Pterodactyl..."
+      pterodactyl_api_connection_success: "Pomyślnie połączono z API Pterodactyl."
+      email_checking_smtp_connection: "Sprawdzanie połączenia z serwerem SMTP..."
+      email_smtp_connection_success: "Pomyślnie połączono z serwerem SMTP."

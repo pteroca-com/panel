@@ -26,7 +26,7 @@ class CreateNewUserHandler implements HandlerInterface
         private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
     ) {}
 
-    public function handle(): void
+    public function handle(bool $allowToCreateWithNoPterodactylApiKey = false): void
     {
         if (empty($this->userEmail) || empty($this->userPassword)) {
             throw new \RuntimeException('User credentials not set');
@@ -59,8 +59,10 @@ class CreateNewUserHandler implements HandlerInterface
                 $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
                 $user->setPterodactylUserApiKey($pterodactylClientApiKey);
             } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
-                $this->pterodactylAccountService->deletePterodactylAccount($user);
-                throw $exception;
+                if (!$allowToCreateWithNoPterodactylApiKey) {
+                    $this->pterodactylAccountService->deletePterodactylAccount($user);
+                    throw $exception;
+                }
             }
         }
 

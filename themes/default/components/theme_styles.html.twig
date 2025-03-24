@@ -1,0 +1,23 @@
+{% set defaultThemeColors = get_default_theme_colors() %}
+<style>
+    :root {
+        --primary-color: {{ defaultThemeColors.theme_default_primary_color }};
+        --secondary-color: {{ defaultThemeColors.theme_default_secondary_color }};
+        --pagination-active-bg: {{ defaultThemeColors.theme_default_primary_color }};
+        --body-bg: {{ defaultThemeColors.theme_default_background_color }};
+        --link-color: {{ defaultThemeColors.theme_default_link_color }};
+        --link-hover-color: {{ defaultThemeColors.theme_default_link_hover_color }};
+        --table-hover-cell-bg: var(--secondary-color);
+        --bs-border-color: var(--bs-border-color-translucent);
+    }
+    .ea-dark-scheme {
+        --primary-color: {{ defaultThemeColors.theme_default_dark_primary_color }};
+        --secondary-color: {{ defaultThemeColors.theme_default_dark_secondary_color }};
+        --pagination-active-bg: {{ defaultThemeColors.theme_default_dark_primary_color }};
+        --body-bg: {{ defaultThemeColors.theme_default_dark_background_color }};
+        --link-color: {{ defaultThemeColors.theme_default_dark_link_color }};
+        --link-hover-color: {{ defaultThemeColors.theme_default_dark_link_hover_color }};
+        --table-hover-cell-bg: var(--secondary-color);
+        --bs-border-color:  var(--bs-border-color-translucent);
+    }
+</style>

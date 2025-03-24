@@ -15,14 +15,16 @@
                     </div>
                     {% if serverData.availableNestEggs %}
                         <div class="col-12 mb-3">
-                            <label for="reinstall-server-egg" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
-                            <select class="form-select" id="reinstall-server-egg" {% if server.isSuspended %}disabled{% endif %}>
-                                {% for egg in serverData.availableNestEggs %}
-                                    <option value="{{ egg.id }}" {% if serverData.pterodactylServer.egg == egg.id %}selected{% endif %}>
-                                        {{ egg.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+                            <div class="form-widget">
+                                <label for="reinstall-server-egg" class="form-label">{{ 'pteroca.server.select_software'|trans }}</label>
+                                <select class="form-select" id="reinstall-server-egg" {% if server.isSuspended %}disabled{% endif %}>
+                                    {% for egg in serverData.availableNestEggs %}
+                                        <option value="{{ egg.id }}" {% if serverData.pterodactylServer.egg == egg.id %}selected{% endif %}>
+                                            {{ egg.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                     {% endif %}
                     <div class="col-4">

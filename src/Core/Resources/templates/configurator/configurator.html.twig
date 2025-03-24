@@ -1,0 +1,237 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class 'page-configurator' %}
+{% block title %}{{ get_title() }} | {{ 'pteroca.first_configuration.title'|trans }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ template_asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-4 offset-4 mt-5">
+                <header class="main-header mt-5">
+                    <div id="header-logo">
+                        <div class="logo">
+                            <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="panel-login-logo">
+                        </div>
+                    </div>
+                </header>
+            </div>
+            <div class="col-8 offset-2">
+                <div class="configuration-wrapper">
+                    <section class="content">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="configuration-title mt-3">
+                                    {{ 'pteroca.first_configuration.title'|trans }}
+                                </div>
+                            </div>
+                            <div class="col-6 offset-3 text-center mb-4 small">
+                                <div class="alert alert-light text-center" role="alert">
+                                    {{ 'pteroca.first_configuration.description'|trans }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="configuration-subtitle">
+                                    {{ 'pteroca.first_configuration.step'|trans }} <span id="current-step">1</span>/5
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            {% include '@core_templates/configurator/steps/configurator_welcome.html.twig' %}
+                            {% include '@core_templates/configurator/steps/site_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/pterodactyl_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/email_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/payment_settings.html.twig' %}
+                            {% include '@core_templates/configurator/steps/user_creator.html.twig' %}
+                        </div>
+
+                        <div class="row mt-5 mb-4">
+                            <div class="col-12">
+                                <div class="text-center small">
+                                    <a href="https://docs.pteroca.com" target="_blank">
+                                        {{ 'pteroca.first_configuration.documentation_hint'|trans }}
+                                    </a>
+                                </div>
+                                <div class="text-center small pt-3">
+                                    <a href="https://discord.com/invite/Gz5phhuZym" target="_blank">
+                                        {{ 'pteroca.first_configuration.discord_hint'|trans }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-12 text-center mt-2 powered-by mb-5">
+                    Powered by <a href="https://pteroca.com" target="_blank">Pteroca v{{ get_app_version() }}</a> &copy; {{ 'now'|date('Y') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentStep = 0
+
+        const stepCount = 5,
+            forms = document.querySelectorAll('form[data-step]'),
+            skipButtons = document.querySelectorAll('.configuration-skip-step'),
+            backButtons = document.querySelectorAll('.configuration-previous-step'),
+            languageSelect = document.getElementById('configurator_language')
+
+        languageSelect.addEventListener('change', function() {
+            const url = new URL(window.location.href)
+            url.searchParams.set('language', this.value)
+
+            window.location.href = url.toString()
+        })
+
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault()
+
+                const submitButton = form.querySelector('button[type="submit"]')
+                submitButton.disabled = true
+
+                resetStepError(currentStep)
+                validateStep(currentStep)
+                    .then(response => {
+                        if (response.ok) {
+                            if (currentStep === stepCount) {
+                                return sendConfiguration()
+                            }
+
+                            response.json().then(response => {
+                                handleStepSuccess(currentStep, response.message)
+                                setTimeout(() => {
+                                    submitButton.disabled = false
+                                    setCurrentStep(currentStep + 1)
+                                }, 1000)
+                            })
+                        } else {
+                            return response.json().then(response => {
+                                submitButton.disabled = false
+                                if ([2, 3].includes(currentStep)) {
+                                    handleStepError(currentStep, response.message)
+                                } else {
+                                    alert(response.message)
+                                }
+                            })
+                        }
+                    })
+            })
+        })
+
+        skipButtons.forEach(skipButton => {
+            skipButton.addEventListener('click', function() {
+                setCurrentStep(currentStep + 1)
+            })
+        })
+
+        backButtons.forEach(backButton => {
+            backButton.addEventListener('click', function() {
+                setCurrentStep(currentStep - 1)
+            })
+        })
+
+        function setCurrentStep(step) {
+            document.querySelector('div[data-step="' + currentStep + '"]')?.classList.add('d-none')
+            document.querySelector('div[data-step="' + step + '"]')?.classList.remove('d-none')
+            currentStep = step
+            document.getElementById('current-step').innerText = currentStep
+        }
+
+        function validateStep(step) {
+            const validateEndpointUrl = '{{ path('first_configuration_validate_step') }}',
+                form = document.querySelector('form[data-step="' + step + '"]'),
+                formData = new FormData(form)
+
+            formData.append('step', step)
+            formData.append('language', languageSelect.value)
+
+            return fetch(validateEndpointUrl, {
+                method: 'POST',
+                body: formData
+            })
+        }
+
+        function sendConfiguration() {
+            const sendConfigurationEndpointUrl = '{{ path('first_configuration_finish') }}',
+                successUrl = '{{ path('app_login') }}',
+                allForms = document.querySelectorAll('form'),
+                formData = new FormData()
+
+            allForms.forEach(form => {
+                const formElements = form.querySelectorAll('input, select')
+
+                formElements.forEach(element => {
+                    formData.append(element.name, element.value)
+                })
+            })
+
+            fetch(sendConfigurationEndpointUrl, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = successUrl
+                }
+            })
+        }
+
+        function resetStepError(step) {
+            const textError = document.querySelector(`.text-error[data-step="${step}"]`)
+
+            if (!textError) {
+                return
+            }
+
+            switch (step) {
+                case 2:
+                    textError.innerText = '{{ 'pteroca.first_configuration.messages.pterodactyl_checking_api_connection'|trans }}'
+                    break;
+                case 3:
+                    textError.innerText = '{{ 'pteroca.first_configuration.messages.email_checking_smtp_connection'|trans }}'
+                    break;
+            }
+
+            textError.classList.remove('text-danger')
+            textError.classList.remove('text-success')
+            textError.classList.add('text-secondary')
+            textError.classList.remove('d-none')
+        }
+
+        function handleStepError(step, error) {
+            const textError = document.querySelector(`.text-error[data-step="${step}"]`)
+
+            if (!textError) {
+                return
+            }
+
+            textError.innerText = error
+            textError.classList.add('text-danger')
+            textError.classList.remove('text-secondary')
+        }
+
+        function handleStepSuccess(step, message) {
+            const textElement = document.querySelector(`.text-error[data-step="${step}"]`)
+
+            if (!textElement) {
+                return
+            }
+
+            textElement.innerText = message
+            textElement.classList.add('text-success')
+            textElement.classList.remove('text-secondary')
+        }
+
+        setCurrentStep(currentStep)
+    })
+</script>
+{% endblock %}

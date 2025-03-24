@@ -3,6 +3,7 @@
 namespace App\Core\Command;
 
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Handler\CreateNewUserHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -41,8 +42,22 @@ class CreateNewUserCommand extends Command
         $password = $input->getArgument('password');
         $role = UserRoleEnum::tryFrom($input->getArgument('role')) ?? UserRoleEnum::ROLE_USER;
 
-        $this->createNewUserHandler->setUserCredentials($email, $password, $role);
-        $this->createNewUserHandler->handle();
+        try {
+            $this->createNewUserHandler->setUserCredentials($email, $password, $role);
+            $this->createNewUserHandler->handle();
+        } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
+            $io->warning($exception->getMessage());
+            $continueWithoutKey = $io->ask(
+                'Do you want to create account without creating a Pterodactyl API key? Not all features will be available. (yes/no)',
+                'no'
+            );
+            if ($continueWithoutKey === 'yes') {
+                $this->createNewUserHandler->handle(true);
+            } else {
+                $io->error('User creation failed. Could not create Pterodactyl Client Account API key.');
+                return Command::FAILURE;
+            }
+        }
 
         $io->success('New user created!');
 

@@ -20,7 +20,7 @@
                                     {% endif %}
                                     {% if not server.isSuspended and (serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is defined or isAdminView) %}
                                         <a class="float-end hover-pointer" onclick="toggleSetting('{{ variable.attributes.env_variable }}')">
-                                            <i class="fas fa-edit" data-option-name="{{ variable.attributes.env_variable }}"></i>
+                                            <i class="fas fa-edit text-white" data-option-name="{{ variable.attributes.env_variable }}"></i>
                                         </a>
                                     {% endif %}
                                 </h5>
@@ -39,7 +39,9 @@
                                         </div>
                                     {% endif %}
                                     <div class="col-12">
-                                        <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                        <div class="form-widget">
+                                            <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

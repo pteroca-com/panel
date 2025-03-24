@@ -3,11 +3,14 @@
 namespace App\Core\Service\Pterodactyl;
 
 use App\Core\Entity\User;
+use App\Core\Exception\PterodactylAccountEmailAlreadyExists;
 use Exception;
 use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class PterodactylAccountService
 {
+    private const PTERODACTYL_ACCOUNT_EXISTS_ERROR = 'The email has already been taken.';
+
     public function __construct(
         private readonly PterodactylService $pterodactylService,
         private readonly PterodactylUsernameService $usernameService,
@@ -28,6 +31,15 @@ class PterodactylAccountService
        } catch (Exception $e) {
            $deepErrors = $e->errors['errors'] ?? [];
            $errors = array_map(fn($error) => $error['detail'], $deepErrors);
+
+           if (in_array(self::PTERODACTYL_ACCOUNT_EXISTS_ERROR, $errors)) {
+               $error = sprintf(
+                   'Error during creating Pterodactyl account: %s',
+                   PterodactylAccountEmailAlreadyExists::MESSAGE,
+               );
+               throw new PterodactylAccountEmailAlreadyExists($error);
+           }
+
            $error = sprintf(
                'Error during creating Pterodactyl account: %s (%s)',
                $e->getMessage(),
@@ -56,6 +68,9 @@ class PterodactylAccountService
 
     public function deletePterodactylAccount(User $user): void
     {
-        $this->pterodactylService->getApi()->users->delete($user->getPterodactylUserId());
+        $this->pterodactylService
+            ->getApi()
+            ->users
+            ->delete($user->getPterodactylUserId());
     }
 }

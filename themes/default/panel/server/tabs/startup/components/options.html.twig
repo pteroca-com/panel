@@ -18,7 +18,7 @@
                                 {% endif %}
                                 {% if not server.isSuspended and (serverData.productEggConfiguration.options.startup.user_editable is defined or isAdminView) %}
                                     <a class="float-end hover-pointer" onclick="toggleSetting('startup', true)">
-                                        <i class="fas fa-edit" data-option-name="startup"></i>
+                                        <i class="fas fa-edit text-white" data-option-name="startup"></i>
                                     </a>
                                 {% endif %}
                             </h5>
@@ -26,7 +26,9 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12">
-                                    <input type="text" class="form-control" data-option-name="startup" value="{{ serverData.pterodactylServer.container.startup_command }}" {% if serverData.productEggConfiguration.options.startup.user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                    <div class="form-widget">
+                                        <input type="text" class="form-control" data-option-name="startup" value="{{ serverData.pterodactylServer.container.startup_command }}" {% if serverData.productEggConfiguration.options.startup.user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +49,7 @@
                                 {% endif %}
                                 {% if not server.isSuspended and (serverData.productEggConfiguration.options.docker_image.user_editable is defined or isAdminView) %}
                                     <a class="float-end hover-pointer" onclick="toggleSetting('docker_image', true)">
-                                        <i class="fas fa-edit" data-option-name="docker_image"></i>
+                                        <i class="fas fa-edit text-white" data-option-name="docker_image"></i>
                                     </a>
                                 {% endif %}
                             </h5>
@@ -55,11 +57,13 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12">
-                                    <select class="form-select" data-option-name="docker-image" disabled>
-                                        {% for dockerImageName, dockerImage in serverData.dockerImages %}
-                                            <option value="{{ dockerImage }}" {% if dockerImage == serverData.pterodactylServer.container.image %}selected{% endif %}>{{ dockerImageName }} - {{ dockerImage }}</option>
-                                        {% endfor %}
-                                    </select>
+                                   <div class="form-widget">
+                                       <select class="form-select" data-option-name="docker-image" disabled>
+                                           {% for dockerImageName, dockerImage in serverData.dockerImages %}
+                                               <option value="{{ dockerImage }}" {% if dockerImage == serverData.pterodactylServer.container.image %}selected{% endif %}>{{ dockerImageName }} - {{ dockerImage }}</option>
+                                           {% endfor %}
+                                       </select>
+                                   </div>
                                 </div>
                             </div>
                         </div>

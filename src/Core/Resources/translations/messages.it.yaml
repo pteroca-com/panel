@@ -66,7 +66,7 @@ pteroca:
     date: 'Data'
     ip_address: 'Indirizzo IP'
     view_all_servers: 'Visualizza tutti i server'
-
+    title: 'Cruscotto'
   recharge:
     recharge_balance: 'Ricarica saldo'
     recharge: 'Ricarica'
@@ -269,6 +269,7 @@ pteroca:
       add: 'Aggiungi categoria'
       save: 'Salva categoria'
       category: 'Categoria'
+      categories: 'Categorie'
     product:
       details: 'Dettagli prodotto'
       name: 'Nome prodotto'
@@ -310,6 +311,17 @@ pteroca:
       egg_variable_user_viewable: 'Visibile dall''utente'
       egg_variable_user_editable: 'Modificabile dall''utente'
       egg_allow_change: 'Permettere di cambiare l''egg con la reinstallazione'
+      disk_space_hint: 'La quantità totale di spazio su disco allocata per questo server (in MB). Ad esempio, 10240 equivale a 10 GB.'
+      memory_hint: 'Il limite totale di RAM allocato a questo server (in MB). Il server non può superare questo limite di memoria.'
+      io_hint: 'Priorità I/O relativa per il contenitore del server. Valori più alti significano priorità più alta (il valore predefinito è 500).'
+      cpu_hint: 'Limite della CPU in percentuale, dove il 100% è uguale a un core CPU completo. Ad esempio, il 200% è uguale a due core CPU completi.'
+      db_count_hint: 'Il numero massimo di database che questo server può creare o utilizzare.'
+      swap_hint: 'Quantità di memoria di swap (in MB) allocata a questo server. Impostare su 0 per disabilitare lo swap.'
+      backups_hint: 'Il numero massimo di backup che possono essere memorizzati per questo server.'
+      ports_hint: 'Numero di porte aggiuntive (oltre a quella principale) che il server può allocare. 0 significa nessuna porta aggiuntiva.'
+      nodes_hint: 'Seleziona una o più macchine fisiche o virtuali (nodi) dalla tua configurazione Pterodactyl.'
+      nest_hint: 'Un Nest è una categoria che raggruppa Eggs correlati. Scegli un Nest per caricare i suoi Eggs.'
+      eggs_hint: 'Gli Eggs definiscono configurazioni specifiche del server (giochi o applicazioni). Seleziona gli Eggs che desideri che questo prodotto supporti.'
     server:
       pterodactyl_server_id: 'ID server Pterodactyl'
       pterodactyl_server_identifier: 'Identificatore server Pterodactyl'
@@ -348,8 +360,18 @@ pteroca:
         stripe_payment_methods: 'Metodi di pagamento Stripe (separati da virgole)'
         internal_currency_name: 'Nome della valuta interna'
         currency_name: 'Nome della valuta'
-        theme_default_primary_color: 'Colore primario predefinito del tema'
-        theme_default_dark_primary_color: 'Colore primario scuro predefinito del tema'
+        theme_default_primary_color: 'Colore primario predefinito'
+        theme_default_dark_primary_color: 'Colore primario in modalità scura predefinito'
+        theme_disable_dark_mode: 'Disabilita modalità scura'
+        theme_default_mode: 'Modalità predefinita'
+        theme_default_background_color: 'Colore di sfondo predefinito'
+        theme_default_link_color: 'Colore del link predefinito'
+        theme_default_link_hover_color: 'Colore del link al passaggio del mouse predefinito'
+        theme_default_dark_background_color: 'Colore di sfondo in modalità scura predefinito'
+        theme_default_dark_link_color: 'Colore del link in modalità scura predefinito'
+        theme_default_dark_link_hover_color: 'Colore del link al passaggio del mouse in modalità scura predefinito'
+        theme_default_secondary_color: 'Colore secondario predefinito'
+        theme_default_dark_secondary_color: 'Colore secondario in modalità scura predefinito'
         show_phpmyadmin_url: 'Mostra link a PHPMyAdmin'
         phpmyadmin_url: 'URL di PHPMyAdmin'
         smtp_server: 'Server SMTP'
@@ -380,6 +402,9 @@ pteroca:
         pterocaVersion: 'Versione di PteroCA'
         outdated: 'La versione del modello è indietro rispetto alla versione attuale di PteroCA. Alcune funzionalità potrebbero non funzionare correttamente'
         phpVersion: 'Versione di PHP'
+        options: 'Opzioni'
+        supportDarkMode: 'Supporta la modalità scura'
+        supportCustomColors: 'Consenti la configurazione di colori personalizzati'
     user:
       email: 'E-mail'
       roles: 'Ruoli'
@@ -520,3 +545,64 @@ pteroca:
       support: 'Supporto'
       up_to_date: 'Aggiornato'
       update_available: 'Aggiornamento disponibile'
+
+  first_configuration:
+    title: "Prima Configurazione"
+    description: "Questa pagina è disponibile solo una volta dopo l'installazione. Si prega di compilare i campi obbligatori per configurare il pannello."
+    step: "Passo"
+    next: "Avanti"
+    configurator_welcome: "Benvenuto nel configuratore PteroCA."
+    configurator_welcome_description: "Questa procedura guidata ti aiuterà a configurare le impostazioni di base del tuo pannello."
+    configurator_welcome_description_2: "Seleziona la lingua del configuratore e clicca su 'Avvia' per iniziare."
+    configurator_language: "Lingua del configuratore"
+    start_configuration: "Avvia configurazione"
+    site_settings: "Impostazioni del sito"
+    site_url: "URL del sito"
+    site_url_help: "Inserisci l'URL del tuo sito con il protocollo (http:// o https://)."
+    site_title: "Titolo del sito"
+    site_title_help: "Inserisci il titolo del tuo sito."
+    site_locale: "Lingua dell'interfaccia"
+    site_locale_help: "Seleziona la lingua dell'interfaccia utente."
+    email_settings: "Impostazioni email"
+    email_smtp_server: "Server SMTP"
+    email_smtp_server_help: "Inserisci l'indirizzo del server SMTP."
+    email_smtp_port: "Porta SMTP"
+    email_smtp_port_help: "Inserisci la porta del server SMTP."
+    email_smtp_username: "Nome utente SMTP"
+    email_smtp_username_help: "Inserisci il nome utente SMTP."
+    email_smtp_password: "Password SMTP"
+    email_smtp_password_help: "Inserisci la password SMTP."
+    email_smtp_from: "Indirizzo email del mittente"
+    email_smtp_from_help: "Inserisci l'indirizzo email da cui verranno inviati i messaggi."
+    pterodactyl_settings: "Impostazioni Pterodactyl"
+    pterodactyl_panel_url: "URL del pannello Pterodactyl"
+    pterodactyl_panel_url_help: "Inserisci l'URL del tuo pannello Pterodactyl con il protocollo (http:// o https://)."
+    pterodactyl_panel_api_key: "Chiave API del pannello Pterodactyl"
+    pterodactyl_panel_api_key_help: "Inserisci la chiave API del tuo pannello Pterodactyl."
+    payment_settings: "Impostazioni di pagamento"
+    stripe_secret_key: "Chiave segreta Stripe"
+    stripe_secret_key_help: "Inserisci la chiave segreta del tuo account Stripe (opzionale, può essere impostata in seguito)."
+    currency: "Valuta"
+    currency_help: "Inserisci il nome della valuta in cui verranno effettuati i pagamenti."
+    internal_currency_name: "Nome della valuta interna"
+    internal_currency_name_help: "Inserisci il nome della valuta interna (es. monete)."
+    create_admin_account: "Crea account amministratore"
+    admin_email: "Email amministratore"
+    admin_email_help: "Inserisci l'indirizzo email dell'amministratore."
+    admin_password: "Password amministratore"
+    admin_password_help: "Inserisci la password per l'account amministratore."
+    skip: "Salta"
+    back: "Indietro"
+    documentation_hint: "Hai problemi con il configuratore? Consulta la documentazione!"
+    discord_hint: "Oppure hai bisogno di aiuto? Unisciti al nostro server Discord!"
+    pterodactyl_plugin_hint: "Si consiglia di installare il plugin PteroCA sul tuo Pterodactyl per accedere a tutte le funzionalità."
+    pterodactyl_plugin_hint_link: "Leggi di più nella documentazione."
+    messages:
+      invalid_step: "Passo non valido."
+      pterodactyl_api_error: "Impossibile connettersi all'API di Pterodactyl. Verifica la chiave API e l'URL del pannello."
+      smtp_error: "Impossibile connettersi al server SMTP. Verifica le impostazioni SMTP."
+      missing_fields: "Si prega di compilare tutti i campi obbligatori."
+      pterodactyl_checking_api_connection: "Verifica della connessione all'API di Pterodactyl in corso..."
+      pterodactyl_api_connection_success: "Connessione all'API di Pterodactyl avvenuta con successo."
+      email_checking_smtp_connection: "Verifica della connessione al server SMTP in corso..."
+      email_smtp_connection_success: "Connessione al server SMTP avvenuta con successo."

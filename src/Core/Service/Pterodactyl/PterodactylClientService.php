@@ -4,6 +4,7 @@ namespace App\Core\Service\Pterodactyl;
 
 use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
+use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Service\SettingService;
 use Timdesm\PterodactylPhpApi\PterodactylApi;
 
@@ -23,7 +24,7 @@ class PterodactylClientService
     public function getApi(User $user): PterodactylApi
     {
         if (empty($user->getPterodactylUserApiKey())) {
-            throw new \Exception('User has no Pterodactyl API key');
+            throw new UserDoesNotHaveClientApiKeyException();
         }
 
         if (empty($this->api)) {
@@ -35,7 +36,8 @@ class PterodactylClientService
 
     private function setCredentials(): void
     {
-        $this->url = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+        $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value) ?? '';
+        $this->url = rtrim($pterodactylUrl, '/');
         $this->isConfigured = true;
     }
 

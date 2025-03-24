@@ -70,7 +70,7 @@ class PaymentService
         }
 
         if ($session->getPaymentStatus() === $this->paymentProvider::PAID_STATUS) {
-            $amount = $session->getAmountTotal();
+            $amount = $session->getAmountTotal() / 100;
             $newBalance = $user->getBalance() + $amount;
             $user->setBalance($newBalance);
             $this->userRepository->save($user);

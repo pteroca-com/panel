@@ -66,7 +66,7 @@ pteroca:
     date: 'तारीख'
     ip_address: 'आईपी पता'
     view_all_servers: 'सभी सर्वर देखें'
-
+    title: 'डैशबोर्ड'
   recharge:
     recharge_balance: 'शेष राशि जोड़ें'
     recharge: 'रिचार्ज करें'
@@ -269,6 +269,7 @@ pteroca:
       add: 'श्रेणी जोड़ें'
       save: 'श्रेणी सहेजें'
       category: 'श्रेणी'
+      categories: 'श्रेणियाँ'
     product:
       details: 'उत्पाद विवरण'
       name: 'उत्पाद का नाम'
@@ -310,6 +311,17 @@ pteroca:
       egg_variable_user_viewable: 'उपयोगकर्ता द्वारा देखा जा सकता है'
       egg_variable_user_editable: 'उपयोगकर्ता द्वारा संपादित किया जा सकता है'
       egg_allow_change: 'इंस्टॉलेशन के साथ सॉफ़्टवेयर बदलने की अनुमति दें'
+      disk_space_hint: 'इस सर्वर के लिए आवंटित कुल डिस्क स्टोरेज (MB में)। उदाहरण के लिए, 10240 का मतलब 10 GB है।'
+      memory_hint: 'इस सर्वर के लिए आवंटित कुल RAM सीमा (MB में)। सर्वर इस मेमोरी सीमा को पार नहीं कर सकता।'
+      io_hint: 'सर्वर कंटेनर के लिए सापेक्ष I/O प्राथमिकता। उच्च मान उच्च प्राथमिकता को दर्शाते हैं (डिफ़ॉल्ट 500 है)।'
+      cpu_hint: 'CPU सीमा प्रतिशत के रूप में, जहां 100% एक पूर्ण CPU कोर के बराबर है। उदाहरण के लिए, 200% दो पूर्ण CPU कोर के बराबर है।'
+      db_count_hint: 'इस सर्वर द्वारा बनाई या उपयोग की जा सकने वाली अधिकतम डेटाबेस की संख्या।'
+      swap_hint: 'इस सर्वर को आवंटित स्वैप मेमोरी (MB में)। स्वैप को अक्षम करने के लिए 0 पर सेट करें।'
+      backups_hint: 'इस सर्वर के लिए संग्रहीत की जा सकने वाली अधिकतम बैकअप की संख्या।'
+      ports_hint: 'अतिरिक्त पोर्टों की संख्या (प्राथमिक के अलावा) जो सर्वर आवंटित कर सकता है। 0 का मतलब कोई अतिरिक्त पोर्ट नहीं है।'
+      nodes_hint: 'अपने Pterodactyl सेटअप से एक या अधिक भौतिक या वर्चुअल मशीन (नोड्स) चुनें।'
+      nest_hint: 'Nest एक श्रेणी है जो संबंधित Eggs को समूहित करती है। इसके Eggs को लोड करने के लिए एक Nest चुनें।'
+      eggs_hint: 'Eggs विशिष्ट सर्वर कॉन्फ़िगरेशन (गेम्स या एप्लिकेशन) को परिभाषित करते हैं। उन Eggs का चयन करें जिन्हें आप इस उत्पाद का समर्थन करना चाहते हैं।'
     server:
       pterodactyl_server_id: 'Pterodactyl सर्वर आईडी'
       pterodactyl_server_identifier: 'Pterodactyl सर्वर पहचानकर्ता'
@@ -348,8 +360,18 @@ pteroca:
         stripe_payment_methods: 'Stripe भुगतान विधियाँ (अल्पविराम से अलग की गईं)'
         internal_currency_name: 'आंतरिक मुद्रा का नाम'
         currency_name: 'मुद्रा का नाम'
-        theme_default_primary_color: 'डिफ़ॉल्ट प्राथमिक थीम रंग'
-        theme_default_dark_primary_color: 'डिफ़ॉल्ट डार्क प्राथमिक थीम रंग'
+        theme_default_primary_color: 'डिफ़ॉल्ट प्रमुख थीम रंग'
+        theme_default_dark_primary_color: 'डिफ़ॉल्ट प्रमुख थीम रंग (डार्क मोड)'
+        theme_disable_dark_mode: 'डार्क मोड निष्क्रिय करें'
+        theme_default_mode: 'डिफ़ॉल्ट थीम मोड'
+        theme_default_background_color: 'डिफ़ॉल्ट बैकग्राउंड रंग'
+        theme_default_link_color: 'डिफ़ॉल्ट लिंक रंग'
+        theme_default_link_hover_color: 'डिफ़ॉल्ट लिंक होवर रंग'
+        theme_default_dark_background_color: 'डिफ़ॉल्ट डार्क बैकग्राउंड रंग'
+        theme_default_dark_link_color: 'डिफ़ॉल्ट डार्क लिंक रंग'
+        theme_default_dark_link_hover_color: 'डिफ़ॉल्ट डार्क लिंक होवर रंग'
+        theme_default_secondary_color: 'डिफ़ॉल्ट माध्यमिक थीम रंग'
+        theme_default_dark_secondary_color: 'डिफ़ॉल्ट डार्क माध्यमिक थीम रंग'
         show_phpmyadmin_url: 'PHPMyAdmin लिंक दिखाएँ'
         phpmyadmin_url: 'PHPMyAdmin URL'
         smtp_server: 'SMTP सर्वर'
@@ -380,7 +402,9 @@ pteroca:
         pterocaVersion: 'Pteroca संस्करण'
         outdated: 'टेम्पलेट संस्करण वर्तमान PteroCA संस्करण से पीछे है। कुछ विशेषताएँ सही ढंग से काम नहीं कर सकतीं'
         phpVersion: 'PHP संस्करण'
-
+        options: 'विकल्प'
+        supportDarkMode: 'डार्क मोड का समर्थन करें'
+        supportCustomColors: 'अनुकूलित रंग कॉन्फ़िगर करने की अनुमति दें'
     user:
       email: 'ईमेल'
       roles: 'भूमिकाएँ'
@@ -521,3 +545,65 @@ pteroca:
       support: 'सहायता'
       up_to_date: 'अप टू डेट'
       update_available: 'अपडेट उपलब्ध'
+
+  first_configuration:
+    title: "प्रथम विन्यास"
+    description: "यह पृष्ठ केवल स्थापना के बाद एक बार उपलब्ध होता है। कृपया पैनल को कॉन्फ़िगर करने के लिए आवश्यक फ़ील्ड भरें।"
+    step: "चरण"
+    next: "अगला"
+    configurator_welcome: "PteroCA विन्यासकर्ता में आपका स्वागत है।"
+    configurator_welcome_description: "यह विज़ार्ड आपके पैनल की बुनियादी सेटिंग्स कॉन्फ़िगर करने में आपकी मदद करेगा।"
+    configurator_welcome_description_2: "कृपया विन्यासकर्ता की भाषा चुनें और शुरू करने के लिए 'शुरू करें' पर क्लिक करें।"
+    configurator_language: "विन्यासकर्ता भाषा"
+    start_configuration: "विन्यास शुरू करें"
+    site_settings: "साइट सेटिंग्स"
+    site_url: "साइट URL"
+    site_url_help: "अपने साइट का URL प्रोटोकॉल (http:// या https://) के साथ दर्ज करें।"
+    site_title: "साइट शीर्षक"
+    site_title_help: "अपनी साइट का शीर्षक दर्ज करें।"
+    site_locale: "इंटरफेस भाषा"
+    site_locale_help: "यूजर इंटरफेस की भाषा चुनें।"
+    email_settings: "ईमेल सेटिंग्स"
+    email_smtp_server: "SMTP सर्वर"
+    email_smtp_server_help: "SMTP सर्वर का पता दर्ज करें।"
+    email_smtp_port: "SMTP पोर्ट"
+    email_smtp_port_help: "SMTP सर्वर का पोर्ट दर्ज करें।"
+    email_smtp_username: "SMTP उपयोगकर्ता नाम"
+    email_smtp_username_help: "SMTP उपयोगकर्ता नाम दर्ज करें।"
+    email_smtp_password: "SMTP पासवर्ड"
+    email_smtp_password_help: "SMTP पासवर्ड दर्ज करें।"
+    email_smtp_from: "प्रेषक ईमेल पता"
+    email_smtp_from_help: "वह ईमेल पता दर्ज करें जिससे ईमेल भेजे जाएंगे।"
+    pterodactyl_settings: "Pterodactyl सेटिंग्स"
+    pterodactyl_panel_url: "Pterodactyl पैनल URL"
+    pterodactyl_panel_url_help: "अपने Pterodactyl पैनल का URL प्रोटोकॉल (http:// या https://) के साथ दर्ज करें।"
+    pterodactyl_panel_api_key: "Pterodactyl पैनल API कुंजी"
+    pterodactyl_panel_api_key_help: "अपने Pterodactyl पैनल की API कुंजी दर्ज करें।"
+    payment_settings: "भुगतान सेटिंग्स"
+    stripe_secret_key: "Stripe सीक्रेट की"
+    stripe_secret_key_help: "अपने Stripe खाते की सीक्रेट की दर्ज करें (वैकल्पिक, बाद में सेट किया जा सकता है)।"
+    currency: "मुद्रा"
+    currency_help: "उस मुद्रा का नाम दर्ज करें जिसमें भुगतान किया जाएगा।"
+    internal_currency_name: "आंतरिक मुद्रा का नाम"
+    internal_currency_name_help: "आंतरिक मुद्रा का नाम दर्ज करें (जैसे, सिक्के)।"
+    create_admin_account: "एडमिन खाता बनाएँ"
+    admin_email: "एडमिन ईमेल"
+    admin_email_help: "एडमिन का ईमेल पता दर्ज करें।"
+    admin_password: "एडमिन पासवर्ड"
+    admin_password_help: "एडमिन खाते का पासवर्ड दर्ज करें।"
+    skip: "छोड़ें"
+    back: "पीछे"
+    documentation_hint: "विन्यासकर्ता में समस्या है? दस्तावेज देखें!"
+    discord_hint: "या शायद आपको मदद चाहिए? हमारे Discord सर्वर में शामिल हों!"
+    pterodactyl_plugin_hint: "सभी फीचर्स का उपयोग करने के लिए अपने Pterodactyl पर PteroCA प्लगइन स्थापित करना अनुशंसित है।"
+    pterodactyl_plugin_hint_link: "दस्तावेज में और पढ़ें।"
+    messages:
+      invalid_step: "अमान्य चरण।"
+      pterodactyl_api_error: "Pterodactyl API से कनेक्ट नहीं हो सका। कृपया API कुंजी और पैनल URL की जाँच करें।"
+      smtp_error: "SMTP सर्वर से कनेक्ट नहीं हो सका। कृपया SMTP सेटिंग्स की जाँच करें।"
+      missing_fields: "कृपया सभी आवश्यक फ़ील्ड भरें।"
+      pterodactyl_checking_api_connection: "Pterodactyl API कनेक्शन की जाँच की जा रही है..."
+      pterodactyl_api_connection_success: "Pterodactyl API से सफलतापूर्वक कनेक्ट हो गया।"
+      email_checking_smtp_connection: "SMTP सर्वर कनेक्शन की जाँच की जा रही है..."
+      email_smtp_connection_success: "SMTP सर्वर से सफलतापूर्वक कनेक्ट हो गया।"
+

@@ -2,6 +2,83 @@
 
 ---
 
+## [0.4.3] - 2025-03-24
+
+### Added
+- Introduced a new `app:update-system` command to automate project updates.
+- Added configuration options to enable/disable dark mode and specify a default mode.
+
+### Changed
+- Refined default theme colors for dark mode.
+- Minor CSS changes in the default theme for improved layout consistency.
+
+### Fixed
+- Resolved an issue preventing emails from being sent.
+- Addressed a bug that caused Stripe payments to fail.
+
+---
+
+## [0.4.2] - 2025-03-16
+
+### Added
+- Introduced a web wizard for the initial setup. The CLI setup remains available as an alternative.
+- Added a CLI notification when attempting to create a user with an email address that already exists in Pterodactyl.
+
+### Changed
+- The Pterodactyl Client API Key is no longer required to access server management pages.
+
+### Fixed
+- Resolved an issue with logging in the production environment.
+
+---
+
+## [0.4.1] - 2025-03-10
+
+### Added
+- Added titles to all pages.
+- Implemented a loading spinner when sending requests on the server management page.
+- Added a confirmation prompt in the user creation command for creating a user without a Pterodactyl Client API key.
+- Added database indexes to improve performance.
+
+### Changed
+- Updated UI styling.
+- Redesigned the product creation page.
+- Modified theme loading behavior to fall back to the default view if a custom theme view is not found.
+
+### Fixed
+- Refactored and cleaned up the codebase.
+- Fixed JavaScript console errors.
+- Resolved responsive design issues on the servers list page.
+- Fixed styling issues in the responsive header.
+- Updated functions to remove deprecated dependencies.
+- Resolved issues with server activity logs details layout.
+
+---
+
+## [0.4.0] - 2025-02-20
+
+### Added
+- Descriptions are now displayed for each setting when editing.
+- Automatic server renewal has been introduced.
+- Users can now upload an avatar in profile settings.
+- A configuration option has been added to specify the number of days after which suspended (unpaid) servers are removed.
+- SSO login support has been implemented for the Pterodactyl plugin.
+- An option to enable or disable SSO login for the Pterodactyl panel has been introduced.
+- Custom templates can now be created and uploaded.
+- Several buttons in the default template now feature icons.
+- A command for generating new templates has been added.
+- Hindi has been added as a supported language.
+
+### Changed
+- The Settings tab has been redesigned and is now divided into five categories.
+- Settings are now displayed in a structured order.
+- JavaScript files controlling the panel’s behavior have been moved into dedicated JS files, making them dependent on the selected template.
+
+### Fixed
+- Missing translations have been added.
+
+---
+
 ## [0.3.3] - 2025-02-10
 
 ### Changed
