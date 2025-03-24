@@ -1,0 +1,31 @@
+<div class="col-6 offset-3 d-none" data-step="5">
+    <div class="configuration-subtitle mt-2">
+        {{ 'pteroca.first_configuration.create_admin_account'|trans }}
+    </div>
+    <form data-step="5">
+        <div class="form-group">
+            <label class="form-control-label required" for="admin_email">{{ 'pteroca.first_configuration.admin_email'|trans }}</label>
+            <div class="form-widget">
+                <input type="email" id="admin_email" name="admin_email" class="form-control" value="" required autofocus autocomplete="admin_email">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.admin_email_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="admin_password">{{ 'pteroca.first_configuration.admin_password'|trans }}</label>
+            <div class="form-widget">
+                <input type="password" id="admin_password" name="admin_password" class="form-control" value="" required autofocus autocomplete="admin_password">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.admin_password_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="button" class="btn btn-lg btn-block configuration-previous-step float-start me-2">{{ 'pteroca.first_configuration.back'|trans }}</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
+        </div>
+    </form>
+</div>

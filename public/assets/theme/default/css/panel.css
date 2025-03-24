@@ -36,18 +36,6 @@
     background-color: var(--bs-secondary-bg);
 }
 
-a {
-    color: var(--primary-color);
-}
-
-a:hover {
-    color: var(--primary-color);
-}
-
-.dropdown-settings .dropdown-item.active, .dropdown-settings .dropdown-item.active i {
-    color: var(--primary-color);
-    background: rgba(89, 134, 165, 0.05);
-}
 
 .dropdown-settings .dropdown-item.active {
     box-shadow: inset 0 0 0 1px rgba(89, 134, 165, 0.5);
@@ -156,9 +144,12 @@ a:hover {
 
 .card-header {
     padding-top: 0.8rem;
+    background-color: var(--primary-color);
+    color: #FFFFFF;
 }
 
 input#command {
+    border: 0.1 solid var(--secondary-color);
     border-bottom: 0.13rem solid var(--primary-color);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -176,4 +167,59 @@ input#command {
 
 .hover-pointer:hover {
     cursor: pointer;
+}
+
+.user-menu-wrapper .user-avatar {
+    background: unset;
+}
+
+.responsive-header {
+    background: var(--primary-color);
+}
+
+.responsive-header i {
+    color: #FFFFFF;
+}
+
+.responsive-header i.fa-user {
+    color: var(--primary-color);
+}
+
+.responsive-header .dropdown-menu i {
+    color: inherit;
+}
+
+.responsive-header .user-balance a {
+    color: #FFFFFF;
+}
+
+.logo-compact {
+    color: #FFFFFF;
+}
+
+.configuration-wrapper {
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.configuration-wrapper .configuration-title,
+.configuration-wrapper .configuration-subtitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 1.5rem;
+}
+
+.configuration-wrapper .configuration-subtitle {
+    font-size: 1rem;
+}
+
+.page-configurator {
+    background: rgb(89, 134, 165) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }

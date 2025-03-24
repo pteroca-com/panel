@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body_class 'page-login' %}
-{% block title %}{{ 'pteroca.recovery.change_password'|trans }}{% endblock %}
+{% block title %}{{ get_title() }} | {{ 'pteroca.recovery.change_password'|trans }}{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ template_asset('css/app.css') }}">

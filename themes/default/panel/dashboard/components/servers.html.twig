@@ -21,7 +21,9 @@
                             <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
                                target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
                                 <i class="fa fa-cog"></i>
-                                {{ 'pteroca.servers.manage_server'|trans }}
+                                <span class="d-none d-md-inline-block">
+                                    {{ 'pteroca.servers.manage_server'|trans }}
+                                </span>
                             </a>
                         </span>
                     </li>
@@ -46,13 +48,16 @@
                     .then(response => response.json())
                     .then(data => {
                         updateServerDashboardElements(server, data);
+                        document.querySelectorAll('.placeholder-glow').forEach(element => element.classList.remove('placeholder-glow'));
+                        document.querySelectorAll('.placeholder-wave').forEach(element => element.classList.remove('placeholder-wave'));
                     })
                     .catch(error => console.error('Error fetching server details:', error));
             })
 
             function updateServerDashboardElements(server, data, prefix = '') {
                 for (const [key, value] of Object.entries(data)) {
-                    const dataKey = prefix ? `${prefix}-${key}` : key;
+                    let dataKey = prefix ? `${prefix}-${key}` : key;
+                    dataKey = dataKey.replaceAll(' ', '-').replaceAll('.', '-').toLowerCase();
                     if (typeof value === 'object' && value !== null) {
                         updateServerDashboardElements(server, value, dataKey);
                     } else {

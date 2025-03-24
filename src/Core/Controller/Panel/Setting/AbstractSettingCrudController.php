@@ -4,6 +4,7 @@ namespace App\Core\Controller\Panel\Setting;
 
 use App\Core\Controller\Panel\AbstractPanelController;
 use App\Core\Entity\Setting;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingTypeEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -98,7 +99,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 ->setLanguage('twig')
                 ->setNumOfRows(20),
             SettingTypeEnum::LOCALE->value => ChoiceField::new('value', $valueLabel)
-                ->setChoices($this->localeService->getAvailableLocales()),
+                ->setChoices(array_flip($this->localeService->getAvailableLocales(false))),
             SettingTypeEnum::URL->value => UrlField::new('value', $valueLabel),
             SettingTypeEnum::EMAIL->value => EmailField::new('value', $valueLabel),
             SettingTypeEnum::IMAGE->value => ImageField::new('value', $valueLabel)
@@ -144,7 +145,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     public function configureCrud(Crud $crud): Crud
     {
         $context = ucfirst(strtolower($this->context->name));
-        $this->appendCrudTemplateContext('Setting');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::SETTING->value);
         if (!empty($this->currentEntity)) {
             $this->appendCrudTemplateContext($this->currentEntity->getName());
         }

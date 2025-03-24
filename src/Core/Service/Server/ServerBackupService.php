@@ -4,6 +4,8 @@ namespace App\Core\Service\Server;
 
 use App\Core\Entity\Server;
 use App\Core\Entity\User;
+use App\Core\Enum\ServerLogActionEnum;
+use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use Timdesm\PterodactylPhpApi\PterodactylApi;
 
@@ -11,6 +13,7 @@ class ServerBackupService
 {
     public function __construct(
         private readonly PterodactylClientService $pterodactylClientService,
+        private readonly ServerLogService $serverLogService,
     ) {}
 
     public function createBackup(
@@ -25,13 +28,25 @@ class ServerBackupService
             throw new \InvalidArgumentException('Backup name is required');
         }
 
-        return $this->getPterodactylClientApi($user)
+        $createdBackup = $this->getPterodactylClientApi($user)
             ->server_backups
             ->create($server->getPterodactylServerIdentifier(), [
                 'name' => $backupName,
                 'is_locked' => $isLocked,
                 'ignored' => $ignoredFiles ?? '',
             ])->toArray();
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::CREATE_BACKUP,
+            [
+                'backup_id' => $createdBackup['attributes']['uuid'],
+                'backup_name' => $backupName,
+            ]
+        );
+
+        return $createdBackup;
     }
 
     public function getBackupDownloadUrl(
@@ -55,6 +70,15 @@ class ServerBackupService
             throw new \RuntimeException('Failed to get backup download URL');
         }
 
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::DOWNLOAD_BACKUP,
+            [
+                'backup_id' => $backupId,
+            ]
+        );
+
         return $downloadUrl;
     }
 
@@ -64,9 +88,20 @@ class ServerBackupService
         string $backupId,
     ): string
     {
-        return $this->getPterodactylClientApi($user)
+        $deletedBackup = $this->getPterodactylClientApi($user)
             ->server_backups
             ->delete($server->getPterodactylServerIdentifier(), $backupId, []);
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::DELETE_BACKUP,
+            [
+                'backup_id' => $backupId,
+            ]
+        );
+
+        return $deletedBackup;
     }
 
     private function getPterodactylClientApi(User $user): PterodactylApi

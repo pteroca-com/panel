@@ -1,0 +1,66 @@
+<div class="col-6 offset-3 d-none" data-step="3">
+    <div class="configuration-subtitle mt-2">
+        {{ 'pteroca.first_configuration.email_settings'|trans }}
+    </div>
+    <form data-step="3">
+        <div class="form-group">
+            <label class="form-control-label required" for="email_smtp_server">{{ 'pteroca.first_configuration.email_smtp_server'|trans }}</label>
+            <div class="form-widget">
+                <input type="text" id="email_smtp_server" name="email_smtp_server" class="form-control" value="" required autofocus autocomplete="email_smtp_server">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.email_smtp_server_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="email_smtp_port">{{ 'pteroca.first_configuration.email_smtp_port'|trans }}</label>
+            <div class="form-widget">
+                <input type="text" id="email_smtp_port" name="email_smtp_port" class="form-control" value="" required autofocus autocomplete="email_smtp_port">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.email_smtp_port_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="email_smtp_username">{{ 'pteroca.first_configuration.email_smtp_username'|trans }}</label>
+            <div class="form-widget">
+                <input type="text" id="email_smtp_username" name="email_smtp_username" class="form-control" value="" required autofocus autocomplete="email_smtp_username">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.email_smtp_username_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="email_smtp_password">{{ 'pteroca.first_configuration.email_smtp_password'|trans }}</label>
+            <div class="form-widget">
+                <input type="password" id="email_smtp_password" name="email_smtp_password" class="form-control" value="" required autofocus autocomplete="email_smtp_password">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.email_smtp_password_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label required" for="email_smtp_from">{{ 'pteroca.first_configuration.email_smtp_from'|trans }}</label>
+            <div class="form-widget">
+                <input type="email" id="email_smtp_from" name="email_smtp_from" class="form-control" value="" required autofocus autocomplete="email_smtp_from">
+                <div class="form-text">
+                    {{ 'pteroca.first_configuration.email_smtp_from_help'|trans }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 text-center text-secondary mb-4 text-error d-none" data-step="3">
+            {{ 'pteroca.first_configuration.messages.email_checking_smtp_connection'|trans }}
+        </div>
+
+        <div class="form-group">
+            <button type="button" class="btn btn-lg btn-block configuration-previous-step float-start me-2">{{ 'pteroca.first_configuration.back'|trans }}</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
+            <button type="button" class="btn btn-lg btn-block configuration-skip-step float-end me-2">{{ 'pteroca.first_configuration.skip'|trans }}</button>
+        </div>
+    </form>
+</div>

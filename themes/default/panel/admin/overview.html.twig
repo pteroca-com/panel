@@ -1,5 +1,7 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
+{% block title %}| {{ 'pteroca.admin.overview.title'|trans }}{% endblock %}
+
 {% block content_title %}{{ 'pteroca.admin.overview.title'|trans }}{% endblock %}
 
 {% block page_actions %}
@@ -11,7 +13,7 @@
 {% block main %}
     <div class="container pt-3">
         <div class="row">
-            <div class="col-6 col-lg-3 mb-3">
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fa-solid fa-server"></i> {{ 'pteroca.admin.overview.servers'|trans }}</h5>
@@ -20,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-lg-3 mb-3">
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fa-solid fa-users"></i> {{ 'pteroca.admin.overview.users'|trans }}</h5>
@@ -29,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-lg-3 mb-3">
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fa-solid fa-money-bill"></i> {{ 'pteroca.admin.overview.payments'|trans }}</h5>
@@ -38,7 +40,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-lg-3 mb-3">
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fa-solid fa-life-ring"></i> {{ 'pteroca.admin.overview.links'|trans }}</h5>
@@ -52,7 +54,7 @@
             </div>
         </div>
         <div class="row mt-3">
-            <div class="col-8">
+            <div class="col-12 col-xl-8">
                 <div class="row">
                     <div class="col-12 mb-3">
                         <div class="card">
@@ -82,7 +84,7 @@
                                             <tr>
                                                 <th scope="row">{{ payment.id }}</th>
                                                 <td>{{ payment.user.email }}</td>
-                                                <td>{{ payment.amount|number_format(2, ',', ' ') }}</td>
+                                                <td>{{ (payment.amount / 100)|number_format(2, ',', ' ') }}</td>
                                                 <td>{{ payment.currency }}</td>
                                                 <td>{{ payment.status }}</td>
                                                 <td>{{ payment.createdAt|date('Y-m-d H:i') }}</td>
@@ -130,7 +132,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-xl-4">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">

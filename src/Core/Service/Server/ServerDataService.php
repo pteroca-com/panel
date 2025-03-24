@@ -5,6 +5,7 @@ namespace App\Core\Service\Server;
 use App\Core\DTO\Collection\ServerVariableCollection;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
+use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -30,13 +31,19 @@ class ServerDataService
                 'include' => ['variables', 'egg', 'allocations', 'databases'],
             ]);
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
-        $pterodactylClientApi = $this->pterodactylClientService
-            ->getApi($server->getUser());
+
+        try {
+            $pterodactylClientApi = $this->pterodactylClientService
+                ->getApi($server->getUser());
+        } catch (UserDoesNotHaveClientApiKeyException) {
+            $pterodactylClientApi = null;
+        }
+
         $pterodactylClientServer = $pterodactylClientApi
-            ->servers
+            ?->servers
             ->get($server->getPterodactylServerIdentifier());
         $pterodactylClientAccount = $pterodactylClientApi
-            ->account
+            ?->account
             ->details();
         $productEggsConfiguration = $server->getProduct()->getEggsConfiguration();
 
@@ -76,8 +83,8 @@ class ServerDataService
             $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
             $dockerImages,
-            $pterodactylClientServer->toArray(),
-            $pterodactylClientAccount->toArray(),
+            $pterodactylClientServer?->toArray(),
+            $pterodactylClientAccount?->toArray(),
             $productEggConfiguration,
             $availableNestEggs ?? null,
             $hasConfigurableOptions,

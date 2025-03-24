@@ -116,9 +116,13 @@ class PaymentServiceTest extends TestCase
 
     public function testFinalizePayment(): void
     {
-        $user = $this->prepareMockUser(5000);
+        $initialBalance = 50;
+        $additionalBalance = 100;
+        $summaryBalance = $initialBalance + $additionalBalance;
+
+        $user = $this->prepareMockUser($initialBalance);
         $userEmail = 'test@test.com';
-        $session = $this->createPaymentSessionDTO('session_id', 10000, 'USD', 'paid', 'https://example.com/');
+        $session = $this->createPaymentSessionDTO('session_id', $additionalBalance * 100, 'USD', 'paid', 'https://example.com/');
 
         $this->paymentProvider
             ->method('retrieveSession')
@@ -133,7 +137,7 @@ class PaymentServiceTest extends TestCase
             ->with(['sessionId' => $session->getId()])
             ->willReturn($payment);
 
-        $user->expects($this->once())->method('setBalance')->with(15000);
+        $user->expects($this->once())->method('setBalance')->with($summaryBalance);
         $user->expects($this->once())->method('getEmail')->willReturn($userEmail);
 
         $this->userRepository
@@ -151,7 +155,7 @@ class PaymentServiceTest extends TestCase
             $this->translator->trans('pteroca.email.payment.subject'),
             'email/payment_success.html.twig',
             [
-                'amount' => 10000,
+                'amount' => $summaryBalance,
                 'currency' => $session->getCurrency(),
                 'internalCurrency' => 'Credits',
                 'user' => $user,
@@ -167,7 +171,7 @@ class PaymentServiceTest extends TestCase
         $this->logService
             ->expects($this->once())
             ->method('logAction')
-            ->with($user, LogActionEnum::BOUGHT_BALANCE, ['amount' => 10000, 'currency' => 'USD', 'newBalance' => 15000]);
+            ->with($user, LogActionEnum::BOUGHT_BALANCE, ['amount' => $additionalBalance, 'currency' => 'USD', 'newBalance' => $summaryBalance]);
 
         $this->paymentRepository
             ->expects($this->once())

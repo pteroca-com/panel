@@ -62,6 +62,7 @@ pteroca:
     date: 'Дата'
     ip_address: 'IP-адрес'
     view_all_servers: 'Посмотреть все сервера'
+    title: 'Панель управления'
   recharge:
     recharge_balance: 'Пополнить баланс'
     recharge: 'Пополнить'
@@ -273,6 +274,7 @@ pteroca:
       add: 'Добавить категорию'
       save: 'Сохранить категорию'
       category: 'Категория'
+      categories: 'Категории'
     product:
       details: 'Подробности о товаре'
       name: 'Название товара'
@@ -314,6 +316,17 @@ pteroca:
       egg_variable_user_viewable: 'Доступно пользователю'
       egg_variable_user_editable: 'Редактируемо пользователем'
       egg_allow_change: 'Разрешить замену яиц с переустановкой'
+      disk_space_hint: 'Общий объем дискового пространства, выделенного для этого сервера (в МБ). Например, 10240 равно 10 ГБ.'
+      memory_hint: 'Общий лимит ОЗУ, выделенный для этого сервера (в МБ). Сервер не может превышать этот лимит памяти.'
+      io_hint: 'Относительный приоритет ввода-вывода для контейнера сервера. Более высокие значения означают более высокий приоритет (по умолчанию 500).'
+      cpu_hint: 'Лимит ЦП в процентах, где 100% равно одному полному ядру ЦП. Например, 200% равно двум полным ядрам ЦП.'
+      db_count_hint: 'Максимальное количество баз данных, которые этот сервер может создать или использовать.'
+      swap_hint: 'Количество выделенной для этого сервера памяти подкачки (в МБ). Установите 0, чтобы отключить подкачку.'
+      backups_hint: 'Максимальное количество резервных копий, которые могут быть сохранены для этого сервера.'
+      ports_hint: 'Количество дополнительных портов (помимо основного), которые сервер может выделить. 0 означает отсутствие дополнительных портов.'
+      nodes_hint: 'Выберите одну или несколько физических или виртуальных машин (узлов) из вашей конфигурации Pterodactyl.'
+      nest_hint: 'Nest - это категория, которая группирует связанные Eggs. Выберите Nest, чтобы загрузить его Eggs.'
+      eggs_hint: 'Eggs определяют конкретные конфигурации сервера (игры или приложения). Выберите Eggs, которые вы хотите, чтобы этот продукт поддерживал.'
     server:
       pterodactyl_server_id: 'ID сервера Pterodactyl'
       pterodactyl_server_identifier: 'Идентификатор сервера Pterodactyl'
@@ -352,8 +365,18 @@ pteroca:
         stripe_payment_methods: 'Способы оплаты Stripe (разделенные запятыми)'
         internal_currency_name: 'Внутреннее название валюты'
         currency_name: 'Название валюты'
-        theme_default_primary_color: 'Основной цвет темы по умолчанию'
-        theme_default_dark_primary_color: 'Основной цвет темной темы по умолчанию'
+        theme_default_primary_color: 'Цвет основной темы по умолчанию'
+        theme_default_dark_primary_color: 'Цвет основной темы по умолчанию в тёмном режиме'
+        theme_disable_dark_mode: 'Отключить тёмный режим'
+        theme_default_mode: 'Режим темы по умолчанию'
+        theme_default_background_color: 'Цвет фона по умолчанию'
+        theme_default_link_color: 'Цвет ссылки по умолчанию'
+        theme_default_link_hover_color: 'Цвет ссылки при наведении по умолчанию'
+        theme_default_dark_background_color: 'Цвет фона в тёмном режиме по умолчанию'
+        theme_default_dark_link_color: 'Цвет ссылки в тёмном режиме по умолчанию'
+        theme_default_dark_link_hover_color: 'Цвет ссылки при наведении в тёмном режиме по умолчанию'
+        theme_default_secondary_color: 'Вторичный цвет темы по умолчанию'
+        theme_default_dark_secondary_color: 'Вторичный цвет темы в тёмном режиме по умолчанию'
         show_phpmyadmin_url: 'Показать PHPMyAdmin ссылку'
         phpmyadmin_url: 'URL-адрес PHPMyAdmin'
         smtp_server: 'SMTP сервер'
@@ -384,6 +407,9 @@ pteroca:
         pterocaVersion: 'Версия PteroCA'
         outdated: 'Версия шаблона устарела по сравнению с текущей версией PteroCA. Некоторые функции могут работать некорректно'
         phpVersion: 'Версия PHP'
+        options: 'Опции'
+        supportDarkMode: 'Поддержка темного режима'
+        supportCustomColors: 'Разрешить настраивать пользовательские цвета'
     user:
       email: 'Электронная почта'
       roles: 'Роли'
@@ -521,3 +547,64 @@ pteroca:
       support: 'Поддержка'
       up_to_date: 'Последняя версия'
       update_available: 'Имеется обновление'
+
+  first_configuration:
+    title: "Первая настройка"
+    description: "Эта страница доступна только один раз после установки. Пожалуйста, заполните обязательные поля для настройки панели."
+    step: "Шаг"
+    next: "Далее"
+    configurator_welcome: "Добро пожаловать в конфигуратор PteroCA."
+    configurator_welcome_description: "Этот мастер поможет вам настроить основные параметры панели."
+    configurator_welcome_description_2: "Пожалуйста, выберите язык конфигуратора и нажмите 'Начать', чтобы начать."
+    configurator_language: "Язык конфигуратора"
+    start_configuration: "Начать настройку"
+    site_settings: "Настройки сайта"
+    site_url: "URL сайта"
+    site_url_help: "Введите URL вашего сайта с протоколом (http:// или https://)."
+    site_title: "Название сайта"
+    site_title_help: "Введите название вашего сайта."
+    site_locale: "Язык интерфейса"
+    site_locale_help: "Выберите язык пользовательского интерфейса."
+    email_settings: "Настройки электронной почты"
+    email_smtp_server: "SMTP сервер"
+    email_smtp_server_help: "Введите адрес SMTP сервера."
+    email_smtp_port: "SMTP порт"
+    email_smtp_port_help: "Введите порт SMTP сервера."
+    email_smtp_username: "SMTP имя пользователя"
+    email_smtp_username_help: "Введите имя пользователя SMTP."
+    email_smtp_password: "SMTP пароль"
+    email_smtp_password_help: "Введите SMTP пароль."
+    email_smtp_from: "Email отправителя"
+    email_smtp_from_help: "Введите адрес электронной почты, с которого будут отправляться письма."
+    pterodactyl_settings: "Настройки Pterodactyl"
+    pterodactyl_panel_url: "URL панели Pterodactyl"
+    pterodactyl_panel_url_help: "Введите URL вашей панели Pterodactyl с протоколом (http:// или https://)."
+    pterodactyl_panel_api_key: "API ключ панели Pterodactyl"
+    pterodactyl_panel_api_key_help: "Введите API ключ вашей панели Pterodactyl."
+    payment_settings: "Настройки платежей"
+    stripe_secret_key: "Секретный ключ Stripe"
+    stripe_secret_key_help: "Введите секретный ключ вашей учетной записи Stripe (необязательно, может быть установлен позже)."
+    currency: "Валюта"
+    currency_help: "Введите название валюты, в которой будут производиться платежи."
+    internal_currency_name: "Название внутренней валюты"
+    internal_currency_name_help: "Введите название внутренней валюты (например, монеты)."
+    create_admin_account: "Создать учетную запись администратора"
+    admin_email: "Email администратора"
+    admin_email_help: "Введите адрес электронной почты администратора."
+    admin_password: "Пароль администратора"
+    admin_password_help: "Введите пароль для учетной записи администратора."
+    skip: "Пропустить"
+    back: "Назад"
+    documentation_hint: "Возникли проблемы с конфигуратором? Ознакомьтесь с документацией!"
+    discord_hint: "Или, может быть, вам нужна помощь? Присоединяйтесь к нашему серверу Discord!"
+    pterodactyl_plugin_hint: "Рекомендуется установить плагин PteroCA на ваш Pterodactyl для доступа ко всем функциям."
+    pterodactyl_plugin_hint_link: "Подробнее в документации."
+    messages:
+      invalid_step: "Неверный шаг."
+      pterodactyl_api_error: "Не удалось подключиться к API Pterodactyl. Проверьте API ключ и URL панели."
+      smtp_error: "Не удалось подключиться к SMTP серверу. Проверьте настройки SMTP."
+      missing_fields: "Пожалуйста, заполните все обязательные поля."
+      pterodactyl_checking_api_connection: "Проверка подключения к API Pterodactyl..."
+      pterodactyl_api_connection_success: "Успешно подключено к API Pterodactyl."
+      email_checking_smtp_connection: "Проверка подключения к SMTP серверу..."
+      email_smtp_connection_success: "Успешно подключено к SMTP серверу."

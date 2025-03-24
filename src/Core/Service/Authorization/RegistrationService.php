@@ -48,7 +48,13 @@ class RegistrationService
         );
     }
 
-    public function registerUser(User $user, string $plainPassword): RegisterUserActionResult
+    public function registerUser(
+        User $user,
+        string $plainPassword,
+        array $roles = [UserRoleEnum::ROLE_USER->name],
+        bool $isVerified = false,
+        bool $sendEmail = true
+    ): RegisterUserActionResult
     {
         try {
             $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $plainPassword);
@@ -60,8 +66,8 @@ class RegistrationService
         }
 
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $plainPassword));
-        $user->setIsVerified(false);
-        $user->setRoles([UserRoleEnum::ROLE_USER->name]);
+        $user->setIsVerified($isVerified);
+        $user->setRoles($roles);
         $user->setPterodactylUserId($pterodactylAccount->id ?? null);
 
         try {
@@ -77,7 +83,10 @@ class RegistrationService
 
         $this->userRepository->save($user);
         $this->logService->logAction($user, LogActionEnum::USER_REGISTERED);
-        $this->sendRegistrationEmail($user);
+
+        if ($sendEmail) {
+            $this->sendRegistrationEmail($user);
+        }
 
         return new RegisterUserActionResult(
             success: true,

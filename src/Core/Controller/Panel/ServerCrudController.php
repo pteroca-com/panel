@@ -3,6 +3,7 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Server;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
@@ -78,7 +79,7 @@ class ServerCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext('Server');
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::SERVER->value);
 
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.server.server'))

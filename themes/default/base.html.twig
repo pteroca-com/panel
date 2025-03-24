@@ -8,17 +8,9 @@
         {% endblock %}
 
         {% block head_stylesheets %}
-            {% set defaultThemeColors = get_default_theme_primary_colors() %}
-            <style>
-                :root {
-                    --primary-color: {{ defaultThemeColors.light }};
-                    --pagination-active-bg: {{ defaultThemeColors.light }};
-                }
-                .ea-dark-scheme {
-                    --primary-color: {{ defaultThemeColors.dark }};
-                    --pagination-active-bg: {{ defaultThemeColors.dark }};
-                }
-            </style>
+            {% if get_current_template_options().isSupportCustomColors() %}
+                {% include 'components/theme_styles.html.twig' %}
+            {% endif %}
         {% endblock %}
 
         {% block javascripts %}
@@ -30,5 +22,6 @@
     </head>
     <body class="{% block body_class '' %}">
         {% block body %}{% endblock %}
+        {% block body_javascript %}{% endblock %}
     </body>
 </html>

@@ -2,10 +2,12 @@
 
 namespace App\Core\Twig;
 
+use App\Core\DTO\TemplateOptionsDTO;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
 use App\Core\Trait\FormatBytesTrait;
+use App\Core\Service\Template\TemplateManager;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -19,6 +21,7 @@ class AppExtension extends AbstractExtension
     public function __construct(
         private readonly SystemVersionService $systemVersionService,
         private readonly SettingService $settingService,
+        private readonly TemplateManager $templateManager,
         private readonly Packages $packages,
         private readonly RouterInterface $router,
     ) {}
@@ -27,7 +30,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('get_currency', [$this, 'getCurrency']),
-            new TwigFunction('get_default_theme_primary_colors', [$this, 'getDefaultThemePrimaryColors']),
+            new TwigFunction('get_default_theme_colors', [$this, 'getDefaultThemeColors']),
             new TwigFunction('get_app_version', [$this, 'getAppVersion']),
             new TwigFunction('get_logo', [$this, 'getLogo']),
             new TwigFunction('get_title', [$this, 'getTitle']),
@@ -39,6 +42,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('get_pterodactyl_panel_url', [$this, 'getPterodactylPanelUrl']),
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
+            new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
         ];
     }
 
@@ -58,12 +62,27 @@ class AppExtension extends AbstractExtension
         return $currency;
     }
 
-    public function getDefaultThemePrimaryColors(): array
+    public function getDefaultThemeColors(): array
     {
-        return [
-            'light' => $this->settingService->getSetting(SettingEnum::DEFAULT_THEME_PRIMARY_COLOR->value),
-            'dark' => $this->settingService->getSetting(SettingEnum::DEFAULT_THEME_DARK_PRIMARY_COLOR->value),
+        $themeSettings = [
+            SettingEnum::DEFAULT_THEME_PRIMARY_COLOR->value,
+            SettingEnum::DEFAULT_THEME_SECONDARY_COLOR->value,
+            SettingEnum::DEFAULT_THEME_BACKGROUND_COLOR->value,
+            SettingEnum::DEFAULT_THEME_LINK_COLOR->value,
+            SettingEnum::DEFAULT_THEME_LINK_HOVER_COLOR->value,
+            SettingEnum::DEFAULT_THEME_DARK_PRIMARY_COLOR->value,
+            SettingEnum::DEFAULT_THEME_DARK_SECONDARY_COLOR->value,
+            SettingEnum::DEFAULT_THEME_DARK_BACKGROUND_COLOR->value,
+            SettingEnum::DEFAULT_THEME_DARK_LINK_COLOR->value,
+            SettingEnum::DEFAULT_THEME_DARK_LINK_HOVER_COLOR->value,
         ];
+
+        $settings = [];
+        foreach ($themeSettings as $setting) {
+            $settings[$setting] = $this->settingService->getSetting($setting);
+        }
+
+        return $settings;
     }
 
     public function getLogo(): string
@@ -147,5 +166,10 @@ class AppExtension extends AbstractExtension
         $path = sprintf('/assets/theme/%s/%s', $currentTheme, $path);
 
         return $this->packages->getUrl($path);
+    }
+
+    public function getCurrentTemplateOptions(): TemplateOptionsDTO
+    {
+        return $this->templateManager->getCurrentTemplateOptions();
     }
 }
