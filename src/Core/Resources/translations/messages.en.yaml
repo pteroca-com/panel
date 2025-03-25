@@ -161,6 +161,7 @@ pteroca:
     console: 'Console'
     startup: 'Startup'
     backups: 'Backups'
+    network: 'Network'
     settings: 'Configuration'
     activity: 'Activity'
     start: 'Start'
@@ -256,6 +257,12 @@ pteroca:
     password: 'Password'
     jdbc_connection_string: 'JDBC connection string'
     rotate_password: 'Rotate password'
+    ip_address: 'IP address'
+    port: 'Port'
+    notes: 'Notes'
+    create_allocation: 'Create allocation'
+    delete_allocation: 'Delete allocation'
+    delete_allocation_confirmation: 'This allocation will be immediately removed from your server. Are you sure you want to continue?'
 
   actions:
     login: 'Login'

@@ -1,0 +1,66 @@
+{% block main %}
+    <div class="tab-pane" id="network">
+        <div class="row pt-3">
+            <div class="col-12 mb-4">
+                <table class="table datagrid text-center">
+                    <thead>
+                        <tr>
+                            <th class="pb-2">{{ 'pteroca.server.ip_address'|trans }}</th>
+                            <th class="pb-2">{{ 'pteroca.server.port'|trans }}</th>
+                            <th class="pb-2">{{ 'pteroca.server.notes'|trans }}</th>
+                            <th class="pb-2">{{ 'pteroca.server.action'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for allocatedPort in serverData.allocatedPorts %}
+                        <tr>
+                            <td>
+                                {{ allocatedPort.ip }}
+                            </td>
+                            <td>
+                                {{ allocatedPort.port }}
+                            </td>
+                            <td>
+                                {{ allocatedPort.notes }}
+                            </td>
+                            <td class="actions actions-as-dropdown text-center">
+                                <div class="dropdown dropdown-actions">
+                                    <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                </svg>
+                                            </span>
+                                    </a>
+                                    <div class="dropdown-overlay">
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item action-edit" href="#" data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteAllocationModal">
+                                                            <span class="action-label">
+                                                                <i class="fas fa-trash"></i>
+                                                                {{ 'pteroca.server.delete'|trans }}
+                                                            </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mb-3">
+                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createAllocationModal" {% if server.product.ports <= serverData.allocatedPorts|length %}disabled{% endif %}>
+                    <i class="fas fa-plus"></i>
+                    {{ 'pteroca.server.create_allocation'|trans }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if serverData.allocatedPorts|length > 0 %}
+        {% include 'panel/server/tabs/network/components/delete_allocation_modal.html.twig' %}
+    {% endif %}
+{% endblock %}

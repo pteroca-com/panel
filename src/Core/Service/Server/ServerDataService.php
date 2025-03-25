@@ -31,6 +31,9 @@ class ServerDataService
                 'include' => ['variables', 'egg', 'allocations', 'databases'],
             ]);
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
+        $allocatedPorts = array_map(function ($allocation) {
+            return $allocation->toArray();
+        }, $pterodactylServer->get('relationships')['allocations']->all());
 
         try {
             $pterodactylClientApi = $this->pterodactylClientService
@@ -91,6 +94,7 @@ class ServerDataService
             $hasConfigurableVariables,
             new ServerVariableCollection($serverVariables),
             $serverBackups ?? [],
+            $allocatedPorts,
         );
     }
 

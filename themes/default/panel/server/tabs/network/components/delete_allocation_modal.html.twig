@@ -1,0 +1,28 @@
+{% block main %}
+    <div class="modal fade" id="deleteAllocationModal" tabindex="-1" aria-labelledby="deleteAllocationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAllocationModalLabel">{{ 'pteroca.server.delete_allocation'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="delete-database-form">
+                    <input type="hidden" name="allocationId" id="allocationId">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text">
+                                    <p>{{ 'pteroca.server.delete_allocation_confirmation'|trans }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-danger" id="delete-allocation"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.delete_allocation'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
