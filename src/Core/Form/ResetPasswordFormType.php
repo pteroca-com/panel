@@ -2,6 +2,7 @@
 
 namespace App\Core\Form;
 
+use App\Core\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -63,6 +64,11 @@ class ResetPasswordFormType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
+        $resolver->setDefaults([
+            'csrf_protection' => !$disableCsrf,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'user_registration',
+        ]);
     }
 }
