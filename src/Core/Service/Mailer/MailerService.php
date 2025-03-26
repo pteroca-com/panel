@@ -14,6 +14,8 @@ class MailerService implements MailerServiceInterface
 {
     private MailerInterface $mailer;
 
+    private const DEFAULT_LOGO_PATH = 'assets/img/logo/logo.png';
+
     private string $from = '';
 
     private string $logo = '';
@@ -50,11 +52,17 @@ class MailerService implements MailerServiceInterface
         $smtpUsername = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_USERNAME->value);
         $smtpPassword = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD->value);
         $this->from = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_FROM->value);
-        $this->logo = sprintf(
+
+        $customLogoPath = sprintf(
             '%s/uploads/settings/%s',
             $_SERVER['DOCUMENT_ROOT'],
             $this->settingsService->getSetting(SettingEnum::LOGO->value),
         );
+        if (is_file($customLogoPath)) {
+            $this->logo = $customLogoPath;
+        } else {
+            $this->logo = sprintf('%s/%s', $_SERVER['DOCUMENT_ROOT'], self::DEFAULT_LOGO_PATH);
+        }
 
         $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUsername, $smtpPassword, $smtpServer, $smtpPort);
         $transport = Transport::fromDsn($dsn);

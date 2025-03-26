@@ -87,3 +87,18 @@ jobs:
         with:
           name: junit-test-report
           path: junit.xml
+
+      - name: Check Missing Translations
+        run: |
+          set -e
+          for FILE in src/Core/Resources/translations/messages.*.yaml; do
+            if [ "$FILE" != "src/Core/Resources/translations/messages.en.yaml" ]; then
+              echo "Checking for missing translations in $FILE"
+              php bin/console app:show-missing-translations \
+                src/Core/Resources/translations/messages.en.yaml \
+                "$FILE" \
+                --env=test
+            fi
+          done
+        env:
+          DATABASE_URL: 'mysql://test_user:test_password@127.0.0.1:3306/test_db'

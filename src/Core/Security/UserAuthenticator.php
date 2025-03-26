@@ -52,13 +52,18 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
+        $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
+        $badges = [
+            new RememberMeBadge(),
+        ];
+        if (!$disableCsrf) {
+            $badges[] = new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token'));
+        }
+
         return new Passport(
             new UserBadge($email),
             new PasswordCredentials($request->request->get('password', '')),
-            [
-                new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
-                new RememberMeBadge(),
-            ]
+            $badges,
         );
     }
 

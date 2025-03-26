@@ -49,6 +49,8 @@
                     .then(response => response.json())
                     .then(data => {
                         updateCardElements(card, data);
+                        document.querySelectorAll('.placeholder-glow').forEach(element => element.classList.remove('placeholder-glow'));
+                        document.querySelectorAll('.placeholder-wave').forEach(element => element.classList.remove('placeholder-wave'));
                     })
                     .catch(error => console.error('Error fetching server details:', error));
             });
