@@ -3,7 +3,6 @@
 namespace App\Core\Controller\API;
 
 use App\Core\Entity\Server;
-use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
@@ -50,7 +49,7 @@ class ServerController extends APIAbstractController
             throw $this->createNotFoundException();
         }
 
-        if ($server->getUser() !== $this->getUser() || !$this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
+        if ($server->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
         }
 

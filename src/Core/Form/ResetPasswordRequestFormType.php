@@ -25,6 +25,11 @@ class ResetPasswordRequestFormType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
+        $resolver->setDefaults([
+            'csrf_protection' => !$disableCsrf,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'user_registration',
+        ]);
     }
 }

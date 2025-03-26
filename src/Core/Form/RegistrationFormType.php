@@ -99,9 +99,10 @@ class RegistrationFormType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
         $resolver->setDefaults([
             'data_class' => User::class,
-            'csrf_protection' => true,
+            'csrf_protection' => !$disableCsrf,
             'csrf_field_name' => '_token',
             'csrf_token_id'   => 'user_registration',
         ]);

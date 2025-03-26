@@ -2,6 +2,17 @@
 
 ---
 
+## [0.4.4] - 2025-03-26
+
+### Added
+- Added TRUSTED_PROXIES environment variable to specify trusted proxies for Symfony.
+- Added DISABLE_CSRF environment variable to allow disabling CSRF protection.
+
+### Fixed
+- Fixed an issue where the user with USER_ROLE could not access server console.
+
+---
+
 ## [0.4.3] - 2025-03-24
 
 ### Added
