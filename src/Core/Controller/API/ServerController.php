@@ -2,8 +2,6 @@
 
 namespace App\Core\Controller\API;
 
-use App\Core\Entity\Server;
-use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;

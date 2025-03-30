@@ -35,7 +35,7 @@
                                     <div class="dropdown-overlay">
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
-                                                <a class="dropdown-item action-edit" href="#" data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteAllocationModal">
+                                                <a class="dropdown-item action-edit" href="#" data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteAllocationModal" data-allocation-id="{{ allocatedPort.id }}">
                                                             <span class="action-label">
                                                                 <i class="fas fa-trash"></i>
                                                                 {{ 'pteroca.server.delete'|trans }}
@@ -63,4 +63,25 @@
     {% if serverData.allocatedPorts|length > 0 %}
         {% include 'panel/server/tabs/network/components/delete_allocation_modal.html.twig' %}
     {% endif %}
+{% endblock %}
+
+{% block body_javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('#network .dropdown-actions .dropdown-menu .action-edit').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                event.preventDefault()
+
+                const anchorElement = event.target.closest('a'),
+                    actionName = anchorElement.getAttribute('data-action-name')
+
+                if (actionName === 'delete') {
+                    document.querySelector('#allocationId').value = anchorElement.getAttribute('data-allocation-id')
+
+                    return
+                }
+            })
+        })
+    })
+</script>
 {% endblock %}

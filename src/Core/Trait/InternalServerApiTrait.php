@@ -14,7 +14,7 @@ trait InternalServerApiTrait
             throw $this->createNotFoundException();
         }
 
-        if ($server->getUser() !== $this->getUser() || !$this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
+        if ($server->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException();
         }
 

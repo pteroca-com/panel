@@ -263,6 +263,8 @@ pteroca:
     create_allocation: 'Create allocation'
     delete_allocation: 'Delete allocation'
     delete_allocation_confirmation: 'This allocation will be immediately removed from your server. Are you sure you want to continue?'
+    error_during_deleting_allocation: 'An error occurred while deleting the allocation.'
+    cannot_delete_primary_allocation: 'The primary allocation cannot be deleted.'
 
   actions:
     login: 'Login'
