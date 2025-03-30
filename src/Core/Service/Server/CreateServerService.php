@@ -88,6 +88,7 @@ class CreateServerService extends AbstractActionServerService
             'feature_limits' => [
                 'databases' => $product->getDbCount(),
                 'backups' => $product->getBackups(),
+                'allocations' => $product->getPorts(),
             ],
             'allocation' => [
                 'default' => $bestAllocationId,

@@ -52,11 +52,11 @@
 }
 
 .page-login {
-    background: rgb(89, 134, 165) !important;
+    background: rgb(93, 137, 186) !important;
 }
 
 .login-wrapper .form-widget input {
-    border-color: rgba(89, 134, 165, 0.5);
+    border-color: rgba(93, 137, 186, 0.5);
 }
 
 .form-widget .custom-file-input:focus~.custom-file-label, .form-widget .form-select:focus, .form-widget input.form-check-input:focus, .form-widget input.form-control:focus, .form-widget textarea.form-control:focus {
@@ -64,12 +64,12 @@
 }
 
 .form-check-input:checked {
-    background-color: rgb(89, 134, 165);
-    border-color: rgb(89, 134, 165);
+    background-color: rgb(93, 137, 186);
+    border-color: rgb(93, 137, 186);
 }
 
 .form-check-input:focus {
-    border-color: rgb(89, 134, 165);
+    border-color: rgb(93, 137, 186);
 }
 
 .main-header.register-header {
