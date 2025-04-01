@@ -2,8 +2,14 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Enum\ProductPriceTypeEnum;
+use App\Core\Enum\ProductPriceUnitEnum;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\ProductRepository")]
@@ -88,6 +94,14 @@ class Product
     #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?Category $category;
+
+    #[ORM\OneToMany(targetEntity: ProductPrice::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $prices;
+
+    public function __construct()
+    {
+        $this->prices = new ArrayCollection();
+    }
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -366,8 +380,108 @@ class Product
         return $this->bannerFile;
     }
 
+    public function getPrices(): Collection
+    {
+        return $this->prices;
+    }
+
+    public function getStaticPrices(): Collection
+    {
+        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::FIXED_DAYS);
+    }
+
+    public function setStaticPrices(iterable $incomingPrices): self
+    {
+        $this->syncPrices(
+            $this->getStaticPrices(),
+            $incomingPrices
+        );
+
+        return $this;
+    }
+
+    public function getDynamicPrices(): Collection
+    {
+        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::DYNAMIC_MINUTES);
+    }
+
+    public function setDynamicPrices(iterable $prices): self
+    {
+        $this->syncPrices(
+            $this->getDynamicPrices(),
+            $prices
+        );
+
+        return $this;
+    }
+
+    public function addPrice(ProductPrice $price): self
+    {
+        if (!$this->prices->contains($price)) {
+            $this->prices[] = $price;
+            $price->setProduct($this);
+        }
+        return $this;
+    }
+
+    public function removePrice(ProductPrice $price): self
+    {
+        if ($this->prices->removeElement($price)) {
+            // set the owning side to null (unless already changed)
+            if ($price->getProduct() === $this) {
+                $price->setProduct(null);
+            }
+        }
+        return $this;
+    }
+
+    #[Assert\Callback]
+    public function validatePrices(ExecutionContextInterface $context): void
+    {
+        if (count($this->getPrices()) === 0) {
+            $context->buildViolation('At least one price must be set')
+                ->atPath('prices')
+                ->addViolation();
+        }
+    }
+
     public function __toString(): string
     {
         return $this->name;
+    }
+
+    private function syncPrices(iterable $existingPrices, iterable $prices): void
+    {
+        foreach ($existingPrices as $existingPrice) {
+            $found = false;
+
+            foreach ($prices as $submittedPrice) {
+                if (
+                    $submittedPrice instanceof ProductPrice &&
+                    $existingPrice->getId() &&
+                    $submittedPrice->getId() === $existingPrice->getId()
+                ) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $this->removePrice($existingPrice);
+            }
+        }
+
+        foreach ($prices as $submittedPrice) {
+            if (!$this->prices->contains($submittedPrice)) {
+                if ($submittedPrice instanceof ProductPrice) {
+                    if ($submittedPrice->getType() === ProductPriceTypeEnum::DYNAMIC_MINUTES) {
+                        $submittedPrice->setValue(1);
+                        $submittedPrice->setUnit(ProductPriceUnitEnum::MINUTES);
+                    }
+
+                    $this->addPrice($submittedPrice);
+                }
+            }
+        }
     }
 }

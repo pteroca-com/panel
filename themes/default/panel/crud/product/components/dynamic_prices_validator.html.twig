@@ -1,0 +1,21 @@
+{% block body_javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('ea.collection.item-added', (event) => {
+                const dynamicCollectionName = '__dynamicPricesname__',
+                    dynamicPricesCollection = document.querySelectorAll('[data-ea-collection-field][data-form-type-name-placeholder="__dynamicPricesname__"] .accordion-item'),
+                    {newElement} = event.detail,
+                    currentCollectionName = newElement.closest('[data-ea-collection-field]').getAttribute('data-form-type-name-placeholder')
+
+                if (currentCollectionName !== dynamicCollectionName) {
+                    return
+                }
+
+                if (dynamicPricesCollection.length > 1) {
+                    newElement.querySelector('.field-collection-delete-button').click()
+                    alert('{{ 'pteroca.crud.product.price_dynamic_only_one_plan'|trans }}')
+                }
+            });
+        })
+    </script>
+{% endblock %}
