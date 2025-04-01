@@ -2,7 +2,7 @@
 
 namespace App\Core\Controller\Panel;
 
-use App\Core\Entity\Product;
+use App\Core\Entity\ServerProduct;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -30,7 +30,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ProductCrudController extends AbstractPanelController
+class ServerProductCrudController extends AbstractPanelController
 {
     private array $flashMessages = [];
 
@@ -46,7 +46,7 @@ class ProductCrudController extends AbstractPanelController
 
     public static function getEntityFqcn(): string
     {
-        return Product::class;
+        return ServerProduct::class;
     }
 
     public function configureFields(string $pageName): iterable
@@ -64,27 +64,6 @@ class ProductCrudController extends AbstractPanelController
                 ->setIcon('fa fa-info-circle'),
             TextField::new('name', $this->translator->trans('pteroca.crud.product.name'))
                 ->setColumns(7),
-            TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description'))
-                ->setColumns(10),
-            BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active'))
-                ->setColumns(12),
-            AssociationField::new('category', $this->translator->trans('pteroca.crud.product.category'))
-                ->setColumns(5),
-            FormField::addRow(),
-            ImageField::new('imagePath', $this->translator->trans('pteroca.crud.product.image'))
-                ->setBasePath($this->getParameter('products_base_path'))
-                ->setUploadDir($uploadDirectory)
-                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-                ->setRequired(false)
-                ->setHelp($this->translator->trans('pteroca.crud.product.image_help'))
-                ->setColumns(5),
-            ImageField::new('bannerPath', $this->translator->trans('pteroca.crud.product.banner'))
-                ->setBasePath($this->getParameter('products_base_path'))
-                ->setUploadDir($uploadDirectory)
-                ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-                ->setRequired(false)
-                ->setHelp($this->translator->trans('pteroca.crud.product.banner_help'))
-                ->setColumns(5),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
                 ->setIcon('fa fa-server'),
@@ -145,30 +124,30 @@ class ProductCrudController extends AbstractPanelController
                 ->setFormTypeOption('attr', ['class' => 'egg-selector'])
                 ->setColumns(12),
 
-            FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
-                ->setIcon('fa fa-money'),
-            CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
-                ->setEntryType(ProductPriceFixedFormType::class)
-                ->allowAdd()
-                ->allowDelete()
-                ->onlyOnForms()
-                ->setColumns(6)
-                ->setHelp($this->translator->trans('pteroca.crud.product.price_static_plan_hint'))
-                ->setRequired(true)
-                ->setEntryIsComplex(),
-            CollectionField::new('dynamicPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_dynamic_plan'), $internalCurrency))
-                ->setEntryType(ProductPriceDynamicFormType::class)
-                ->allowAdd()
-                ->allowDelete()
-                ->setSortable(true)
-                ->onlyOnForms()
-                ->setColumns(6)
-                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint'))
-                ->setRequired(true)
-                ->setEntryIsComplex(),
+//            FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
+//                ->setIcon('fa fa-money'),
+//            CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
+//                ->setEntryType(ProductPriceFixedFormType::class)
+//                ->allowAdd()
+//                ->allowDelete()
+//                ->onlyOnForms()
+//                ->setColumns(6)
+//                ->setHelp($this->translator->trans('pteroca.crud.product.price_static_plan_hint'))
+//                ->setRequired(true)
+//                ->setEntryIsComplex(),
+//            CollectionField::new('dynamicPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_dynamic_plan'), $internalCurrency))
+//                ->setEntryType(ProductPriceDynamicFormType::class)
+//                ->allowAdd()
+//                ->allowDelete()
+//                ->setSortable(true)
+//                ->onlyOnForms()
+//                ->setColumns(6)
+//                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint'))
+//                ->setRequired(true)
+//                ->setEntryIsComplex(),
 
-            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
-            DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
+//            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
+//            DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
 
         ];
 
@@ -192,12 +171,11 @@ class ProductCrudController extends AbstractPanelController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext(CrudTemplateContextEnum::PRODUCT->value);
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::SERVER_PRODUCT->value);
 
         $crud
-            ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.product'))
-            ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.products'))
-            ->setDefaultSort(['createdAt' => 'DESC'])
+            ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.server_product'))
+            ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.server_products'))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
         ;
 
@@ -208,9 +186,6 @@ class ProductCrudController extends AbstractPanelController
     {
         $filters
             ->add('name')
-            ->add('description')
-            ->add('isActive')
-            ->add('category')
             ->add('diskSpace')
             ->add('memory')
             ->add('io')
@@ -225,10 +200,10 @@ class ProductCrudController extends AbstractPanelController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof Product) {
+        if ($entityInstance instanceof ServerProduct) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
-            $entityInstance->setCreatedAtValue();
-            $entityInstance->setUpdatedAtValue();
+//            $entityInstance->setCreatedAtValue();
+//            $entityInstance->setUpdatedAtValue();
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -236,9 +211,9 @@ class ProductCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof Product) {
+        if ($entityInstance instanceof ServerProduct) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
-            $entityInstance->setUpdatedAtValue();
+//            $entityInstance->setUpdatedAtValue();
         }
 
         parent::updateEntity($entityManager, $entityInstance);

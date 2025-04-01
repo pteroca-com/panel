@@ -61,7 +61,7 @@
                 {% endif %}
             </div>
             <div class="col-12 mb-3">
-                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createDatabaseModal" {% if server.product.dbCount <= serverData.pterodactylServer.relationships.databases.toArray()|length %}disabled{% endif %}>
+                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createDatabaseModal" {% if server.serverProduct.dbCount <= serverData.pterodactylServer.relationships.databases.toArray()|length %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_database'|trans }}
                 </button>
@@ -69,7 +69,7 @@
         </div>
     </div>
 
-    {% if server.product.dbCount > serverData.pterodactylServer.relationships.databases.toArray()|length %}
+    {% if server.serverProduct.dbCount > serverData.pterodactylServer.relationships.databases.toArray()|length %}
         {% include 'panel/server/tabs/databases/components/create_database_modal.html.twig' %}
     {% endif %}
 

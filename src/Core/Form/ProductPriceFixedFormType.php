@@ -41,7 +41,7 @@ class ProductPriceFixedFormType extends AbstractType
             'data_class' => ProductPrice::class,
             'empty_data' => function (FormInterface $form) {
                 return (new ProductPrice())
-                    ->setType(ProductPriceTypeEnum::FIXED_DAYS);
+                    ->setType(ProductPriceTypeEnum::STATIC);
             },
         ]);
     }

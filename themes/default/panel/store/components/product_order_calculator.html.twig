@@ -7,7 +7,8 @@
             hours: '{{ 'pteroca.product.hours'|trans }}',
             per_day: '{{ 'pteroca.product.per_day'|trans }}',
             days: '{{ 'pteroca.product.days'|trans }}',
-        }
+        },
+            currentUserBalance = parseFloat('{{ app.user.balance }}')
 
         document.addEventListener('DOMContentLoaded', function() {
             const durationSelect = document.querySelector('#duration')
@@ -55,7 +56,7 @@
             }
 
             const type = selectedOption.dataset.type,
-                isOnDemand = type === 'dynamic_minutes';
+                isOnDemand = type === 'on_demand';
 
             const showPerDay = !isOnDemand && totalMinutes >= 60 * 24,
                 showPerWeek = !isOnDemand && totalMinutes >= 60 * 24 * 7,
@@ -85,6 +86,10 @@
             document.querySelector('div[data-type="perWeek"] span').textContent = formatPrice(result.perWeek);
             document.querySelector('div[data-type="perMonth"] span').textContent = formatPrice(result.perMonth);
             document.querySelector('div[data-type="totalPrice"] span').textContent = formatPrice(price);
+
+            const insufficientBalance = currentUserBalance < price;
+            document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
+            document.querySelector('button#order-submit').disabled = insufficientBalance;
         }
 
         function formatPrice(price) {

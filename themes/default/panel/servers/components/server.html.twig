@@ -2,12 +2,12 @@
     {% if server.imagePath is defined and server.imagePath %}
         <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
             target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
-            <img src="{{ server.imagePath }}" class="card-img-top" alt="{{ server.product.name }}">
+            <img src="{{ server.imagePath }}" class="card-img-top" alt="{{ server.serverProduct.name }}">
         </a>
     {% endif %}
     <div class="card-body">
         <h5 class="card-title mt-2 mb-4 px-3">
-            {{ server.product.name }} #{{ server.pterodactylServerIdentifier }}
+            {{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}
             {% if not server.isSuspended %}
                 <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
             {% else %}

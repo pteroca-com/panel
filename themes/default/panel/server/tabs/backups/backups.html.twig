@@ -75,7 +75,7 @@
                 {% endif %}
             </div>
             <div class="col-12 mb-3">
-                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createBackupModal" {% if server.product.backups <= serverData.serverBackups|length %}disabled{% endif %}>
+                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createBackupModal" {% if server.serverProduct.backups <= serverData.serverBackups|length %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_backup'|trans }}
                 </button>
@@ -83,7 +83,7 @@
         </div>
     </div>
 
-    {% if server.product.backups > serverData.serverBackups|length %}
+    {% if server.serverProduct.backups > serverData.serverBackups|length %}
         {% include 'panel/server/tabs/backups/components/create_backup_modal.html.twig' %}
     {% endif %}
 

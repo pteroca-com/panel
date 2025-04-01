@@ -95,8 +95,8 @@ class ProductPrice
     public function __toString(): string
     {
         $unit = match ($this->type) {
-            ProductPriceTypeEnum::FIXED_DAYS => 'day(s)',
-            ProductPriceTypeEnum::DYNAMIC_MINUTES => 'minute(s)',
+            ProductPriceTypeEnum::STATIC => 'day(s)',
+            ProductPriceTypeEnum::ON_DEMAND => 'minute(s)',
         };
 
         return sprintf(

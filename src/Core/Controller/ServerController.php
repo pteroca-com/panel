@@ -21,9 +21,9 @@ class ServerController extends AbstractController
         $this->checkPermission();
         $imagePath = $this->getParameter('products_base_path') . '/';
 
-        $servers = array_map(function ($server) use ($imagePath) {
-            if (!empty($server->getProduct()->getImagePath())) {
-                $server->imagePath = $imagePath . $server->getProduct()->getImagePath();
+        $servers = array_map(function (Server $server) use ($imagePath) {
+            if (!empty($server->getServerProduct()->getOriginalProduct()?->getImagePath())) {
+                $server->imagePath = $imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath();
             }
             return $server;
         }, $serverRepository->findBy(['user' => $this->getUser()]));

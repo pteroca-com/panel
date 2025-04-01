@@ -20,9 +20,8 @@ class Server
     #[ORM\Column(type: 'string')]
     private string $pterodactylServerIdentifier;
 
-    #[ORM\ManyToOne(targetEntity: Product::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Product $product;
+    #[ORM\OneToOne(targetEntity: ServerProduct::class, mappedBy: 'server', cascade: ['persist', 'remove'])]
+    private ServerProduct $serverProduct;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -73,14 +72,14 @@ class Server
         return $this;
     }
 
-    public function getProduct(): Product
+    public function getServerProduct(): ServerProduct
     {
-        return $this->product;
+        return $this->serverProduct;
     }
 
-    public function setProduct(Product $product): self
+    public function setServerProduct(ServerProduct $serverProduct): self
     {
-        $this->product = $product;
+        $this->serverProduct = $serverProduct;
         return $this;
     }
 

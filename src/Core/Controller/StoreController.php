@@ -77,7 +77,7 @@ class StoreController extends AbstractController
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
         }
 
-        if (!$server->getProduct()->getIsActive()) {
+        if (!$server->getServerProduct()->getOriginalProduct()?->getIsActive()) {
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_available'));
         }
 

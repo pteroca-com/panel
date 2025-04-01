@@ -6,6 +6,7 @@ use App\Core\Entity\Server;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Form\ServerProductFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
@@ -17,7 +18,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -49,7 +53,7 @@ class ServerCrudController extends AbstractPanelController
                 ->setDisabled(),
             TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
                 ->setDisabled(),
-            AssociationField::new('product', $this->translator->trans('pteroca.crud.server.product'))
+            AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product'))
                 ->setDisabled(),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user')),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
@@ -74,6 +78,8 @@ class ServerCrudController extends AbstractPanelController
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
+            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_DETAIL))
+            ->add(Crud::PAGE_EDIT, $this->getServerProductAction(Crud::PAGE_EDIT))
             ;
     }
 
@@ -94,7 +100,6 @@ class ServerCrudController extends AbstractPanelController
     {
         $filters
             ->add('pterodactylServerId')
-            ->add('product')
             ->add('user')
             ->add('createdAt')
             ->add('expiresAt')
@@ -144,5 +149,22 @@ class ServerCrudController extends AbstractPanelController
         }
 
         return $manageServerAction;
+    }
+
+    private function getServerProductAction(string $action): Action
+    {
+        return Action::new(
+            'serverProductEdit',
+            $this->translator->trans(sprintf('pteroca.crud.server.server_product_%s', $action)),
+        )->linkToUrl(
+            fn (Server $entity) => $this->generateUrl(
+                'panel',
+                [
+                    'crudAction' => $action,
+                    'crudControllerFqcn' => ServerProductCrudController::class,
+                    'entityId' => $entity->getServerProduct()->getId(),
+                ]
+            )
+        );
     }
 }

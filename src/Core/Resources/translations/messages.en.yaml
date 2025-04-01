@@ -378,6 +378,8 @@ pteroca:
       days: 'Days'
       hours: 'Hours'
       minutes: 'Minutes'
+      server_product: 'Server product'
+      server_products: 'Server products'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
@@ -391,6 +393,8 @@ pteroca:
       servers: 'Servers'
       manage_server: 'Manage server'
       auto_renewal: 'Auto renewal'
+      server_product_edit: 'Edit server product configuration'
+      server_product_detail: 'Server product details'
     setting:
       name: 'Setting name'
       value: 'Setting value'

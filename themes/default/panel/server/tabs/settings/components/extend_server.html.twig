@@ -10,7 +10,7 @@
                 <div class="row h-100">
                     <div class="col-12 px-4">
                         <div class="alert alert-info text-center" role="alert">
-                            {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.product.name, '{{ expiresAt }}': server.expiresAt|date('Y-m-d H:i:s') })|raw }} <br><br>
+                            {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.serverProduct.name, '{{ expiresAt }}': server.expiresAt|date('Y-m-d H:i:s') })|raw }} <br><br>
                             {{ 'pteroca.server.extend_server_hint'|trans }}<br>
                             {{ 'pteroca.server.extend_server_hint_2'|trans }}
                         </div>

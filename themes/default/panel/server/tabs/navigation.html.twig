@@ -9,12 +9,12 @@
                     <a class="nav-link" href="#startup" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.startup'|trans }}</a>
                 </li>
             {% endif %}
-            {% if server.product.dbCount %}
+            {% if server.serverProduct.dbCount %}
                 <li class="nav-item">
                     <a class="nav-link" href="#databases" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.databases'|trans }}</a>
                 </li>
             {% endif %}
-            {% if server.product.backups %}
+            {% if server.serverProduct.backups %}
                 <li class="nav-item">
                     <a class="nav-link" href="#backups" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.backups'|trans }}</a>
                 </li>

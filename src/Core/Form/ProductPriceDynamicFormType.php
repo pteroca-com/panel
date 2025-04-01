@@ -50,7 +50,7 @@ class ProductPriceDynamicFormType extends AbstractType
             'data_class' => ProductPrice::class,
             'empty_data' => function (FormInterface $form) {
                 return (new ProductPrice())
-                    ->setType(ProductPriceTypeEnum::DYNAMIC_MINUTES);
+                    ->setType(ProductPriceTypeEnum::ON_DEMAND);
             },
         ]);
     }

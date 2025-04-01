@@ -28,9 +28,6 @@ class Product
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
-    private float $price;
-
     #[ORM\Column(type: "boolean")]
     private bool $isActive = false;
 
@@ -139,17 +136,6 @@ class Product
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-        return $this;
-    }
-
-    public function getPrice(): float
-    {
-        return $this->price;
-    }
-
-    public function setPrice(float $price): self
-    {
-        $this->price = $price;
         return $this;
     }
 
@@ -387,7 +373,7 @@ class Product
 
     public function getStaticPrices(): Collection
     {
-        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::FIXED_DAYS);
+        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::STATIC);
     }
 
     public function setStaticPrices(iterable $incomingPrices): self
@@ -402,7 +388,7 @@ class Product
 
     public function getDynamicPrices(): Collection
     {
-        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::DYNAMIC_MINUTES);
+        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
     }
 
     public function setDynamicPrices(iterable $prices): self
@@ -474,7 +460,7 @@ class Product
         foreach ($prices as $submittedPrice) {
             if (!$this->prices->contains($submittedPrice)) {
                 if ($submittedPrice instanceof ProductPrice) {
-                    if ($submittedPrice->getType() === ProductPriceTypeEnum::DYNAMIC_MINUTES) {
+                    if ($submittedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND) {
                         $submittedPrice->setValue(1);
                         $submittedPrice->setUnit(ProductPriceUnitEnum::MINUTES);
                     }

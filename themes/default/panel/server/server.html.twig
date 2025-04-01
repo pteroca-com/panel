@@ -46,10 +46,10 @@
             {% include 'panel/server/tabs/network/network.html.twig' %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}
             {% include 'panel/server/tabs/activity/activity.html.twig' %}
-            {% if server.product.dbCount %}
+            {% if server.serverProduct.dbCount %}
                 {% include 'panel/server/tabs/databases/databases.html.twig' %}
             {% endif %}
-            {% if server.product.backups %}
+            {% if server.serverProduct.backups %}
                 {% include 'panel/server/tabs/backups/backups.html.twig' %}
             {% endif %}
         </div>
