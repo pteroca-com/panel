@@ -6,7 +6,6 @@ use App\Core\Entity\Server;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Form\ServerProductFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
@@ -18,10 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
-use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -53,7 +49,7 @@ class ServerCrudController extends AbstractPanelController
                 ->setDisabled(),
             TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
                 ->setDisabled(),
-            AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product'))
+            AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product_server_build'))
                 ->setDisabled(),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user')),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
@@ -78,7 +74,7 @@ class ServerCrudController extends AbstractPanelController
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
-            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_DETAIL))
+            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_EDIT, $this->getServerProductAction(Crud::PAGE_EDIT))
             ;
     }
@@ -124,7 +120,7 @@ class ServerCrudController extends AbstractPanelController
     {
         $manageServerAction = Action::new(
             'manageServer',
-            $this->translator->trans('pteroca.crud.server.manage_server'),
+            $this->translator->trans('pteroca.crud.server.show_server_dashboard'),
         );
 
         $usePterodactyl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);

@@ -11,6 +11,7 @@ use App\Core\Form\ProductPriceFixedFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -32,6 +33,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerProductCrudController extends AbstractPanelController
 {
+    use ProductCrudControllerTrait;
+
     private array $flashMessages = [];
 
     public function __construct(
@@ -52,18 +55,20 @@ class ServerProductCrudController extends AbstractPanelController
     public function configureFields(string $pageName): iterable
     {
         $nests = $this->getNestsChoices();
-        $uploadDirectory = str_replace(
-            '/',
-            DIRECTORY_SEPARATOR,
-            $this->getParameter('products_directory'),
-        );
         $internalCurrency = $this->settingService
             ->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
         $fields = [
             FormField::addTab($this->translator->trans('pteroca.crud.product.details'))
                 ->setIcon('fa fa-info-circle'),
-            TextField::new('name', $this->translator->trans('pteroca.crud.product.name'))
+            TextField::new('name', $this->translator->trans('pteroca.crud.product.build_name'))
                 ->setColumns(7),
+            FormField::addRow(),
+            AssociationField::new('originalProduct', $this->translator->trans('pteroca.crud.product.original_product'))
+                ->setColumns(7)
+                ->setDisabled(),
+            AssociationField::new('server', $this->translator->trans('pteroca.crud.product.server'))
+                ->setColumns(5)
+                ->setDisabled(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
                 ->setIcon('fa fa-server'),
@@ -162,9 +167,6 @@ class ServerProductCrudController extends AbstractPanelController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
-            ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
-            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.save')))
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
     }
@@ -174,8 +176,8 @@ class ServerProductCrudController extends AbstractPanelController
         $this->appendCrudTemplateContext(CrudTemplateContextEnum::SERVER_PRODUCT->value);
 
         $crud
-            ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.server_product'))
-            ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.server_products'))
+            ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.server_build'))
+            ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.server_builds'))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
         ;
 
@@ -217,70 +219,5 @@ class ServerProductCrudController extends AbstractPanelController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
-    }
-
-    private function getEggsConfigurationFromRequest(): array
-    {
-        $requestData = $this->requestStack->getCurrentRequest()->request->all();
-        return $requestData['eggs_configuration'] ?? [];
-    }
-
-    private function getNodesChoices(): array
-    {
-        try {
-            $nodes = $this->pterodactylService->getApi()->nodes->all()->toArray();
-            $locations = [];
-            $choices = [];
-
-            foreach ($nodes as $node) {
-                if (empty($locations[$node->location_id])) {
-                    $locations[$node->location_id] = $this->pterodactylService
-                        ->getApi()
-                        ->locations
-                        ->get($node->location_id);
-                }
-                $choices[$locations[$node->location_id]->short][$node->name] = $node->id;
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
-    }
-
-    private function getNestsChoices(): array
-    {
-        try {
-            $nests = $this->pterodactylService->getApi()->nests->all()->toArray();
-            $choices = [];
-
-            foreach ($nests as $nest) {
-                $choices[$nest->name] = $nest->id;
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
-    }
-
-    private function getEggsChoices(array $nests): array
-    {
-        try {
-            $choices = [];
-            foreach ($nests as $nestId) {
-                $eggs = $this->pterodactylService->getApi()->nest_eggs->all($nestId)->toArray();
-                foreach ($eggs as $egg) {
-                    $choices[$egg->name] = $egg->id;
-                }
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
     }
 }

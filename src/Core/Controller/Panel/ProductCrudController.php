@@ -11,6 +11,7 @@ use App\Core\Form\ProductPriceFixedFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -32,6 +33,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProductCrudController extends AbstractPanelController
 {
+    use ProductCrudControllerTrait;
+
     private array $flashMessages = [];
 
     public function __construct(
@@ -242,70 +245,5 @@ class ProductCrudController extends AbstractPanelController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
-    }
-
-    private function getEggsConfigurationFromRequest(): array
-    {
-        $requestData = $this->requestStack->getCurrentRequest()->request->all();
-        return $requestData['eggs_configuration'] ?? [];
-    }
-
-    private function getNodesChoices(): array
-    {
-        try {
-            $nodes = $this->pterodactylService->getApi()->nodes->all()->toArray();
-            $locations = [];
-            $choices = [];
-
-            foreach ($nodes as $node) {
-                if (empty($locations[$node->location_id])) {
-                    $locations[$node->location_id] = $this->pterodactylService
-                        ->getApi()
-                        ->locations
-                        ->get($node->location_id);
-                }
-                $choices[$locations[$node->location_id]->short][$node->name] = $node->id;
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
-    }
-
-    private function getNestsChoices(): array
-    {
-        try {
-            $nests = $this->pterodactylService->getApi()->nests->all()->toArray();
-            $choices = [];
-
-            foreach ($nests as $nest) {
-                $choices[$nest->name] = $nest->id;
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
-    }
-
-    private function getEggsChoices(array $nests): array
-    {
-        try {
-            $choices = [];
-            foreach ($nests as $nestId) {
-                $eggs = $this->pterodactylService->getApi()->nest_eggs->all($nestId)->toArray();
-                foreach ($eggs as $egg) {
-                    $choices[$egg->name] = $egg->id;
-                }
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
     }
 }

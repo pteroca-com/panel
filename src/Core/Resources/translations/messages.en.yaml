@@ -380,6 +380,11 @@ pteroca:
       minutes: 'Minutes'
       server_product: 'Server product'
       server_products: 'Server products'
+      original_product: 'Original product'
+      build_name: 'Build name'
+      server_build: 'Server build'
+      server_builds: 'Server builds'
+      server: 'Server'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
@@ -392,9 +397,10 @@ pteroca:
       server: 'Server'
       servers: 'Servers'
       manage_server: 'Manage server'
+      show_server_dashboard: 'Show server dashboard'
       auto_renewal: 'Auto renewal'
-      server_product_edit: 'Edit server product configuration'
-      server_product_detail: 'Server product details'
+      server_product_edit: 'Edit server build configuration'
+      product_server_build: 'Server build configuration'
     setting:
       name: 'Setting name'
       value: 'Setting value'
@@ -528,6 +534,7 @@ pteroca:
       logs: 'Logs'
       server_logs: 'Server logs'
       overview: 'Overview'
+      server_builds: 'Server builds'
 
   api:
     servers:

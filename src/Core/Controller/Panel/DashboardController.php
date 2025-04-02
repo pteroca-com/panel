@@ -14,6 +14,7 @@ use App\Core\Entity\Payment;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
+use App\Core\Entity\ServerProduct;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
 use App\Core\Enum\SettingContextEnum;
@@ -102,8 +103,11 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.products'), 'fa fa-sliders-h', Product::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', Payment::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars-progress', ServerLog::class);
+            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server')->setSubItems([
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_builds'), 'fa fa-bars-progress', ServerProduct::class),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars-progress', ServerLog::class),
+            ]);
             yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.general'), 'fa fa-cog', $this->generateSettingsUrl(SettingContextEnum::GENERAL)),
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.pterodactyl'), 'fa fa-network-wired', $this->generateSettingsUrl(SettingContextEnum::PTERODACTYL)),
