@@ -4,6 +4,7 @@ namespace App\Core\Service;
 
 use App\Core\Entity\Category;
 use App\Core\Entity\Product;
+use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
 use App\Core\Entity\User;
 use App\Core\Repository\CategoryRepository;
@@ -116,18 +117,29 @@ class StoreService
         return false;
     }
 
-    public function validateBoughtProduct(User $user, Product $product, int $eggId, ?Server $server = null): void
+    public function validateBoughtProduct(User $user, Product $product, int $eggId, int $priceId, ?Server $server = null): void
     {
-        if (empty($server) && !in_array($eggId, $product->getEggs())) {
-            throw new NotFoundHttpException($this->translator->trans('pteroca.store.egg_not_found'));
+        if (empty($server)) {
+            if (!in_array($eggId, $product->getEggs())) {
+                throw new NotFoundHttpException($this->translator->trans('pteroca.store.egg_not_found'));
+            }
+
+            $productPrices = $product->getPrices()->toArray();
+        } else {
+            $productPrices = $server->getServerProduct()->getPrices()->toArray();
         }
 
-        $this->validateUserBalance($user, $product);
+        $price = array_filter($productPrices, fn($price) => $price->getId() === $priceId);
+        if (empty($price)) {
+            throw new NotFoundHttpException($this->translator->trans('pteroca.store.price_not_found'));
+        }
+
+        $this->validateUserBalance($user, current($price));
     }
 
-    public function validateUserBalance(User $user, Product $product): void
+    public function validateUserBalance(User $user, ProductPrice $selectedPrice): void
     {
-        if (($product->getPrice() / 100) > $user->getBalance()) {
+        if ($selectedPrice->getPrice() > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
     }

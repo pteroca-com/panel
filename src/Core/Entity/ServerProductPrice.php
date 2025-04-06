@@ -6,17 +6,17 @@ use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: "App\Core\Repository\ProductPriceRepository")]
-class ProductPrice
+#[ORM\Entity(repositoryClass: "App\Core\Repository\ServerProductPriceRepository")]
+class ServerProductPrice
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'prices')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Product $product = null;
+    #[ORM\ManyToOne(targetEntity: ServerProduct::class, inversedBy: 'prices')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ServerProduct $serverProduct;
 
     #[ORM\Column(type: 'string', enumType: ProductPriceTypeEnum::class)]
     private ProductPriceTypeEnum $type;
@@ -30,19 +30,23 @@ class ProductPrice
     #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
     private float $price;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isSelected = false;
+
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getProduct(): ?string
+    public function getServerProduct(): string
     {
-        return $this->product?->getName();
+        return $this->serverProduct->getName();
     }
 
-    public function setProduct(?Product $product): self
+    public function setServerProduct(ServerProduct $serverProduct): self
     {
-        $this->product = $product;
+        $this->serverProduct = $serverProduct;
+
         return $this;
     }
 
@@ -87,6 +91,17 @@ class ProductPrice
     public function setPrice(float $price): self
     {
         $this->price = $price;
+        return $this;
+    }
+
+    public function isSelected(): bool
+    {
+        return $this->isSelected;
+    }
+
+    public function setSelected(bool $isSelected): self
+    {
+        $this->isSelected = $isSelected;
         return $this;
     }
 

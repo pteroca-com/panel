@@ -140,6 +140,7 @@ pteroca:
     error_during_creating_server: 'Error during creating the server'
     no_categories: 'There are no categories yet.'
     no_products: 'There are no products yet.'
+    price_not_found: 'Price not found'
 
   renew:
     title: 'Renew server'
@@ -385,6 +386,10 @@ pteroca:
       server_build: 'Server build'
       server_builds: 'Server builds'
       server: 'Server'
+      build_details: 'Build details'
+      is_selected: 'Selected'
+      yes: 'Yes'
+      no: 'No'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
@@ -401,6 +406,7 @@ pteroca:
       auto_renewal: 'Auto renewal'
       server_product_edit: 'Edit server build configuration'
       product_server_build: 'Server build configuration'
+      server_edit: 'Edit server details'
     setting:
       name: 'Setting name'
       value: 'Setting value'

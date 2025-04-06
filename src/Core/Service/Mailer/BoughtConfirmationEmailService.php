@@ -3,6 +3,7 @@
 namespace App\Core\Service\Mailer;
 
 use App\Core\Entity\Product;
+use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
 use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
@@ -23,12 +24,20 @@ class BoughtConfirmationEmailService
 
     public function sendBoughtConfirmationEmail(
         User $user,
-        Product $product,
         Server $server,
+        Product $product,
+        int $priceId,
         string $pterodactylAccountUsername,
     ): void {
-        $serverDetails = $this->serverService->getServerDetails($server);
+        $price = $product->getPrices()->filter(
+            fn(ProductPrice $price) => $price->getId() === $priceId
+        )->first();
 
+        if (empty($price)) {
+            throw new \InvalidArgumentException('Price not found');
+        }
+
+        $serverDetails = $this->serverService->getServerDetails($server);
         $emailMessage = new SendEmailMessage(
             $user->getEmail(),
             $this->translator->trans('pteroca.email.store.subject'),
@@ -36,6 +45,7 @@ class BoughtConfirmationEmailService
             [
                 'user' => $user,
                 'product' => $product,
+                'selectedPrice' => $price,
                 'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
                 'server' => [
                     'ip' => $serverDetails->ip,

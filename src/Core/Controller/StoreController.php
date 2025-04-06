@@ -123,10 +123,11 @@ class StoreController extends AbstractController
         }
 
         $eggId = $request->request->getInt('egg');
+        $priceId = $request->request->getInt('duration');
         try {
-            $this->storeService->validateBoughtProduct($this->getUser(), $product, $eggId, $server ?? null);
+            $this->storeService->validateBoughtProduct($this->getUser(), $product, $eggId, $priceId,$server ?? null);
             if (empty($server)) {
-                $createServerService->createServer($product, $eggId, $this->getUser());
+                $createServerService->createServer($product, $eggId, $priceId, $this->getUser());
                 $logService->logAction(
                     $this->getUser(),
                     LogActionEnum::BOUGHT_SERVER,

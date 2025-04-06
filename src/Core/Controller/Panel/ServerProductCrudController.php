@@ -2,12 +2,15 @@
 
 namespace App\Core\Controller\Panel;
 
+use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Form\ProductPriceDynamicFormType;
 use App\Core\Form\ProductPriceFixedFormType;
+use App\Core\Form\ServerProductPriceDynamicFormType;
+use App\Core\Form\ServerProductPriceFixedFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
@@ -58,7 +61,7 @@ class ServerProductCrudController extends AbstractPanelController
         $internalCurrency = $this->settingService
             ->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
         $fields = [
-            FormField::addTab($this->translator->trans('pteroca.crud.product.details'))
+            FormField::addTab($this->translator->trans('pteroca.crud.product.build_details'))
                 ->setIcon('fa fa-info-circle'),
             TextField::new('name', $this->translator->trans('pteroca.crud.product.build_name'))
                 ->setColumns(7),
@@ -129,27 +132,27 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setFormTypeOption('attr', ['class' => 'egg-selector'])
                 ->setColumns(12),
 
-//            FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
-//                ->setIcon('fa fa-money'),
-//            CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
-//                ->setEntryType(ProductPriceFixedFormType::class)
-//                ->allowAdd()
-//                ->allowDelete()
-//                ->onlyOnForms()
-//                ->setColumns(6)
-//                ->setHelp($this->translator->trans('pteroca.crud.product.price_static_plan_hint'))
-//                ->setRequired(true)
-//                ->setEntryIsComplex(),
-//            CollectionField::new('dynamicPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_dynamic_plan'), $internalCurrency))
-//                ->setEntryType(ProductPriceDynamicFormType::class)
-//                ->allowAdd()
-//                ->allowDelete()
-//                ->setSortable(true)
-//                ->onlyOnForms()
-//                ->setColumns(6)
-//                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint'))
-//                ->setRequired(true)
-//                ->setEntryIsComplex(),
+            FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
+                ->setIcon('fa fa-money'),
+            CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
+                ->setEntryType(ServerProductPriceFixedFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_static_plan_hint'))
+                ->setRequired(true)
+                ->setEntryIsComplex(),
+            CollectionField::new('dynamicPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_dynamic_plan'), $internalCurrency))
+                ->setEntryType(ServerProductPriceDynamicFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->setSortable(true)
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint'))
+                ->setRequired(true)
+                ->setEntryIsComplex(),
 
 //            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
 //            DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
@@ -168,7 +171,11 @@ class ServerProductCrudController extends AbstractPanelController
     {
         return $actions
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->remove(Crud::PAGE_INDEX, Action::NEW)
+            ->add(Crud::PAGE_INDEX, $this->getServerAction(Crud::PAGE_EDIT))
+            ->add(Crud::PAGE_EDIT, $this->getServerAction(Crud::PAGE_EDIT))
+            ;
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -219,5 +226,22 @@ class ServerProductCrudController extends AbstractPanelController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function getServerAction(string $action): Action
+    {
+        return Action::new(
+            'serverEdit',
+            $this->translator->trans(sprintf('pteroca.crud.server.server_%s', $action)),
+        )->linkToUrl(
+            fn (ServerProduct $entity) => $this->generateUrl(
+                'panel',
+                [
+                    'crudAction' => $action,
+                    'crudControllerFqcn' => ServerCrudController::class,
+                    'entityId' => $entity->getServer()->getId(),
+                ]
+            )
+        );
     }
 }

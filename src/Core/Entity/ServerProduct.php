@@ -7,6 +7,7 @@ use App\Core\Enum\ProductPriceUnitEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -68,12 +69,13 @@ class ServerProduct
     #[ORM\Column(type: "boolean")]
     private bool $allowChangeEgg = false;
 
-//    #[ORM\OneToMany(targetEntity: ProductPrice::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
-//    private Collection $prices;
+    #[ORM\OneToMany(targetEntity: ServerProductPrice::class, mappedBy: 'serverProduct', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['server_product:read'])]
+    private Collection $prices;
 
     public function __construct()
     {
-//        $this->prices = new ArrayCollection();
+        $this->prices = new ArrayCollection();
     }
 
     public function getId(): int
@@ -257,108 +259,113 @@ class ServerProduct
         return $this;
     }
 
-//    public function getPrices(): Collection
-//    {
-//        return $this->prices;
-//    }
-//
-//    public function getStaticPrices(): Collection
-//    {
-//        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::STATIC);
-//    }
-//
-//    public function setStaticPrices(iterable $incomingPrices): self
-//    {
-//        $this->syncPrices(
-//            $this->getStaticPrices(),
-//            $incomingPrices
-//        );
-//
-//        return $this;
-//    }
-//
-//    public function getDynamicPrices(): Collection
-//    {
-//        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
-//    }
-//
-//    public function setDynamicPrices(iterable $prices): self
-//    {
-//        $this->syncPrices(
-//            $this->getDynamicPrices(),
-//            $prices
-//        );
-//
-//        return $this;
-//    }
-//
-//    public function addPrice(ProductPrice $price): self
-//    {
-//        if (!$this->prices->contains($price)) {
-//            $this->prices[] = $price;
-//            $price->setProduct($this);
-//        }
-//        return $this;
-//    }
-//
-//    public function removePrice(ProductPrice $price): self
-//    {
-//        if ($this->prices->removeElement($price)) {
-//            // set the owning side to null (unless already changed)
-//            if ($price->getProduct() === $this) {
-//                $price->setProduct(null);
-//            }
-//        }
-//        return $this;
-//    }
-//
-//    #[Assert\Callback]
-//    public function validatePrices(ExecutionContextInterface $context): void
-//    {
-//        if (count($this->getPrices()) === 0) {
-//            $context->buildViolation('At least one price must be set')
-//                ->atPath('prices')
-//                ->addViolation();
-//        }
-//    }
+    public function getPrices(): Collection
+    {
+        return $this->prices;
+    }
+
+    public function getSelectedPrice(): ?ServerProductPrice
+    {
+        return $this->prices->filter(fn(ServerProductPrice $price) => $price->isSelected())->first() ?: null;
+    }
+
+    public function getStaticPrices(): Collection
+    {
+        return $this->prices->filter(fn(ServerProductPrice $price) => $price->getType() === ProductPriceTypeEnum::STATIC);
+    }
+
+    public function setStaticPrices(iterable $incomingPrices): self
+    {
+        $this->syncPrices(
+            $this->getStaticPrices(),
+            $incomingPrices
+        );
+
+        return $this;
+    }
+
+    public function getDynamicPrices(): Collection
+    {
+        return $this->prices->filter(fn(ServerProductPrice $price) => $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
+    }
+
+    public function setDynamicPrices(iterable $prices): self
+    {
+        $this->syncPrices(
+            $this->getDynamicPrices(),
+            $prices
+        );
+
+        return $this;
+    }
+
+    public function addPrice(ServerProductPrice $price): self
+    {
+        if (!$this->prices->contains($price)) {
+            $this->prices[] = $price;
+            $price->setServerProduct($this);
+        }
+        return $this;
+    }
+
+    public function removePrice(ServerProductPrice $price): self
+    {
+        if ($this->prices->removeElement($price)) {
+            // set the owning side to null (unless already changed)
+            if ($price->getServerProduct() === $this) {
+                $price->setServerProduct(null);
+            }
+        }
+        return $this;
+    }
+
+    #[Assert\Callback]
+    public function validatePrices(ExecutionContextInterface $context): void
+    {
+        if (count($this->getPrices()) === 0) {
+            $context->buildViolation('At least one price must be set')
+                ->atPath('prices')
+                ->addViolation();
+        }
+    }
 
     public function __toString(): string
     {
         return $this->name;
     }
 
-//    private function syncPrices(iterable $existingPrices, iterable $prices): void
-//    {
-//        foreach ($existingPrices as $existingPrice) {
-//            $found = false;
-//
-//            foreach ($prices as $submittedPrice) {
-//                if (
-//                    $submittedPrice instanceof ProductPrice &&
-//                    $existingPrice->getId() &&
-//                    $submittedPrice->getId() === $existingPrice->getId()
-//                ) {
-//                    $found = true;
-//                    break;
-//                }
-//            }
-//
-//            if (!$found) {
-//                $this->removePrice($existingPrice);
-//            }
-//        }
-//
-//        foreach ($prices as $submittedPrice) {
-//            if (!$this->prices->contains($submittedPrice)) {
-//                if ($submittedPrice instanceof ProductPrice) {
-//                    if ($submittedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND) {
-//                        $submittedPrice->setValue(1);
-//                        $submittedPrice->setUnit(ProductPriceUnitEnum::MINUTES);
-//                    }
-//
-//                    $this->addPrice($submittedPrice);
-//                }
-//            }
-//        }
-//    }
+    private function syncPrices(iterable $existingPrices, iterable $prices): void
+    {
+        foreach ($existingPrices as $existingPrice) {
+            $found = false;
+
+            foreach ($prices as $submittedPrice) {
+                if (
+                    $submittedPrice instanceof ServerProductPrice &&
+                    $existingPrice->getId() &&
+                    $submittedPrice->getId() === $existingPrice->getId()
+                ) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $this->removePrice($existingPrice);
+            }
+        }
+
+        foreach ($prices as $submittedPrice) {
+            if (!$this->prices->contains($submittedPrice)) {
+                if ($submittedPrice instanceof ServerProductPrice) {
+                    if ($submittedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND) {
+                        $submittedPrice->setValue(1);
+                        $submittedPrice->setUnit(ProductPriceUnitEnum::MINUTES);
+                    }
+
+                    $this->addPrice($submittedPrice);
+                }
+            }
+        }
+    }
 }
