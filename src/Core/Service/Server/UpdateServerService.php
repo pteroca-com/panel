@@ -3,6 +3,7 @@
 namespace App\Core\Service\Server;
 
 use App\Core\Entity\Server;
+use App\Core\Entity\ServerProduct;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
@@ -10,14 +11,56 @@ class UpdateServerService
 {
     public function __construct(
         private readonly PterodactylService $pterodactylService,
+        private readonly ServerBuildService $serverBuildService,
     )
     {
     }
 
-    public function updateServer(Server $entityInstance): void
+    public function updateServer(Server|ServerProduct $entityInstance): void
     {
-        $pterodactylServer = $this->getPterodactylServerDetails($entityInstance->getPterodactylServerId());
+        $pterodactylServerId = $entityInstance instanceof Server
+            ? $entityInstance->getPterodactylServerId()
+            : $entityInstance->getServer()->getPterodactylServerId();
+        $pterodactylServer = $this->getPterodactylServerDetails($pterodactylServerId);
 
+        switch (true) {
+            case $entityInstance instanceof Server:
+                $this->updateByServerEntity($entityInstance, $pterodactylServer);
+                break;
+            case $entityInstance instanceof ServerProduct:
+                $this->updateByServerProductEntity($entityInstance, $pterodactylServer);
+                break;
+            default:
+                throw new \InvalidArgumentException('Invalid entity type');
+        }
+    }
+
+    private function updateByServerProductEntity(
+        ServerProduct $entityInstance,
+        PterodactylServer $pterodactylServer
+    ): void
+    {
+        $this->updateByServerEntity($entityInstance->getServer(), $pterodactylServer);
+
+        $updatedServerBuild = $this->serverBuildService
+            ->prepareUpdateServerBuild($entityInstance, $pterodactylServer);
+
+        $this->pterodactylService
+            ->getApi()
+            ->servers
+            ->updateBuild($entityInstance->getServer()->getPterodactylServerId(), $updatedServerBuild);
+
+        $updatedServerStartup = $this->serverBuildService
+            ->prepareUpdateServerStartup($entityInstance, $pterodactylServer);
+
+        $this->pterodactylService
+            ->getApi()
+            ->servers
+            ->updateStartup($entityInstance->getServer()->getPterodactylServerId(), $updatedServerStartup);
+    }
+
+    private function updateByServerEntity(Server $entityInstance, PterodactylServer $pterodactylServer): void
+    {
         if ($entityInstance->getIsSuspended() !== $pterodactylServer->get('suspended')) {
             if ($entityInstance->getIsSuspended()) {
                 $this->pterodactylService->getApi()->servers->suspend($entityInstance->getPterodactylServerId());

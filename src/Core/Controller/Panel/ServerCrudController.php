@@ -46,7 +46,8 @@ class ServerCrudController extends AbstractPanelController
             IdField::new('id')
                 ->hideOnForm(),
             IntegerField::new('pterodactylServerId', $this->translator->trans('pteroca.crud.server.pterodactyl_server_id'))
-                ->setDisabled(),
+                ->setDisabled()
+                ->onlyOnForms(),
             TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
                 ->setDisabled(),
             AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product_server_build'))
@@ -73,9 +74,10 @@ class ServerCrudController extends AbstractPanelController
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
-            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_EDIT, $this->getServerProductAction(Crud::PAGE_EDIT))
+            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_EDIT))
+            ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
             ;
     }
 

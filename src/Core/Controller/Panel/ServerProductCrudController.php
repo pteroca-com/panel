@@ -2,24 +2,22 @@
 
 namespace App\Core\Controller\Panel;
 
-use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Form\ProductPriceDynamicFormType;
-use App\Core\Form\ProductPriceFixedFormType;
 use App\Core\Form\ServerProductPriceDynamicFormType;
 use App\Core\Form\ServerProductPriceFixedFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -27,10 +25,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\HiddenField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -43,6 +42,7 @@ class ServerProductCrudController extends AbstractPanelController
     public function __construct(
         PanelCrudService $panelCrudService,
         private readonly PterodactylService $pterodactylService,
+        private readonly UpdateServerService $updateServerService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
@@ -61,6 +61,23 @@ class ServerProductCrudController extends AbstractPanelController
         $internalCurrency = $this->settingService
             ->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
         $fields = [
+            FormField::addTab($this->translator->trans('pteroca.crud.product.server_details'))
+                ->setIcon('fa fa-info-circle'),
+            IdField::new('server.id')
+                ->hideOnForm(),
+            IntegerField::new('server.pterodactylServerId', $this->translator->trans('pteroca.crud.server.pterodactyl_server_id'))
+                ->setDisabled(),
+            TextField::new('server.pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
+                ->setDisabled(),
+            TextField::new('server.user', $this->translator->trans('pteroca.crud.server.user'))
+                ->setDisabled(),
+            DateTimeField::new('server.createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
+                ->hideOnForm(),
+            DateTimeField::new('server.expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
+            BooleanField::new('server.isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
+            BooleanField::new('server.autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
+                ->hideOnIndex(),
+
             FormField::addTab($this->translator->trans('pteroca.crud.product.build_details'))
                 ->setIcon('fa fa-info-circle'),
             TextField::new('name', $this->translator->trans('pteroca.crud.product.build_name'))
@@ -153,10 +170,6 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint'))
                 ->setRequired(true)
                 ->setEntryIsComplex(),
-
-//            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
-//            DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
-
         ];
 
         if (!empty($this->flashMessages)) {
@@ -170,6 +183,7 @@ class ServerProductCrudController extends AbstractPanelController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
+            ->disable(Crud::PAGE_INDEX)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->remove(Crud::PAGE_INDEX, Action::NEW)
@@ -191,29 +205,21 @@ class ServerProductCrudController extends AbstractPanelController
         return parent::configureCrud($crud);
     }
 
-    public function configureFilters(Filters $filters): Filters
+    protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse
     {
-        $filters
-            ->add('name')
-            ->add('diskSpace')
-            ->add('memory')
-            ->add('io')
-            ->add('cpu')
-            ->add('dbCount')
-            ->add('swap')
-            ->add('backups')
-            ->add('ports')
-        ;
-        return parent::configureFilters($filters);
+        return $this->redirect($this->generateUrl('panel', [
+            'crudControllerFqcn' => ServerCrudController::class,
+            'crudAction' => 'index',
+        ]));
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof ServerProduct) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
-//            $entityInstance->setCreatedAtValue();
-//            $entityInstance->setUpdatedAtValue();
         }
+
+        $this->updateServerService->updateServer($entityInstance);
 
         parent::persistEntity($entityManager, $entityInstance);
     }
@@ -222,8 +228,9 @@ class ServerProductCrudController extends AbstractPanelController
     {
         if ($entityInstance instanceof ServerProduct) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
-//            $entityInstance->setUpdatedAtValue();
         }
+
+        $this->updateServerService->updateServer($entityInstance);
 
         parent::updateEntity($entityManager, $entityInstance);
     }

@@ -105,7 +105,6 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class);
             yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server')->setSubItems([
                 MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class),
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_builds'), 'fa fa-bars-progress', ServerProduct::class),
                 MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars-progress', ServerLog::class),
             ]);
             yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([

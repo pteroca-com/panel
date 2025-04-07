@@ -9,6 +9,7 @@ use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use JsonException;
 use Timdesm\PterodactylPhpApi\Resources\Egg as PterodactylEgg;
+use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class ServerBuildService
 {
@@ -58,6 +59,7 @@ class ServerBuildService
                 'disk' => $product->getDiskSpace(),
                 'io' => $product->getIo(),
                 'cpu' => $product->getCpu(),
+                'threads' => 0, // TODO implement
             ],
             'feature_limits' => [
                 'databases' => $product->getDbCount(),
@@ -67,6 +69,63 @@ class ServerBuildService
             'allocation' => [
                 'default' => $bestAllocationId,
             ],
+        ];
+    }
+
+    public function prepareUpdateServerBuild(ServerProduct $product, PterodactylServer $pterodactylServer): array
+    {
+        return [
+            'allocation' => [
+                'default' => $pterodactylServer->get('allocation'),
+            ],
+            'memory' => $product->getMemory(),
+            'swap' => $product->getSwap(),
+            'io' => $product->getIo(),
+            'cpu' => $product->getCpu(),
+            'disk' => $product->getDiskSpace(),
+            'threads' => 0,
+            'feature_limits' => [
+                'databases' => $product->getDbCount(),
+                'backups' => $product->getBackups(),
+                'allocations' => $product->getPorts(),
+            ]
+        ];
+    }
+
+    public function prepareUpdateServerStartup(ServerProduct $product, PterodactylServer $pterodactylServer): array
+    {
+        $eggId = $pterodactylServer->get('egg');
+        $selectedEgg = $this->pterodactylService->getApi()->nest_eggs->get(
+            $product->getNest(),
+            $eggId,
+            ['include' => 'variables']
+        );
+        if (!$selectedEgg->has('id')) {
+            throw new \Exception('Egg not found in nest');
+        }
+
+        try {
+            $productEggConfiguration = json_decode(
+                $product->getEggsConfiguration(),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        } catch (JsonException $e) {
+            $productEggConfiguration = [];
+        }
+
+        $dockerImage = $productEggConfiguration[$eggId]['options']['docker_image']['value']
+            ?? $selectedEgg->get('docker_image');
+        $startup = $productEggConfiguration[$eggId]['options']['startup']['value']
+            ?? $selectedEgg->get('startup');
+
+        return [
+            'startup' => $startup,
+            'environment' => $this->prepareEnvironmentVariables($selectedEgg, $productEggConfiguration),
+            'egg' => $eggId,
+            'image' => $dockerImage,
+            'skip_scripts' => false,
         ];
     }
 
