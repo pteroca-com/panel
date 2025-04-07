@@ -61,9 +61,11 @@ class BoughtConfirmationEmailService
         $this->messageBus->dispatch($emailMessage);
     }
 
-    public function sendRenewConfirmationEmail(User $user, Product $product, Server $server, string $pterodactylAccountUsername): void
+    public function sendRenewConfirmationEmail(User $user, Server $server, string $pterodactylAccountUsername): void
     {
         $serverDetails = $this->serverService->getServerDetails($server);
+        $product = $server->getServerProduct();
+        $selectedPrice = $product->getSelectedPrice();
 
         $emailMessage = new SendEmailMessage(
             $user->getEmail(),
@@ -72,6 +74,7 @@ class BoughtConfirmationEmailService
             [
                 'user' => $user,
                 'product' => $product,
+                'selectedPrice' => $selectedPrice,
                 'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
                 'server' => [
                     'ip' => $serverDetails->ip,

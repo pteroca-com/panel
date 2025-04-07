@@ -4,12 +4,12 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Server;
 use App\Core\Enum\CrudTemplateContextEnum;
-use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\ManageServerActionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -25,6 +25,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerCrudController extends AbstractPanelController
 {
+    use ManageServerActionTrait;
+
     public function __construct(
         PanelCrudService $panelCrudService,
         private readonly UpdateServerService $updateServerService,
@@ -78,6 +80,8 @@ class ServerCrudController extends AbstractPanelController
             ->remove(Crud::PAGE_INDEX, Action::EDIT)
             ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
+            ->remove(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $this->getServerAction(Crud::PAGE_DETAIL))
             ;
     }
 
@@ -116,37 +120,6 @@ class ServerCrudController extends AbstractPanelController
     {
         $this->deleteServerService->deleteServer($entityInstance);
         parent::deleteEntity($entityManager, $entityInstance);
-    }
-
-    private function getManageServerAction(): Action
-    {
-        $manageServerAction = Action::new(
-            'manageServer',
-            $this->translator->trans('pteroca.crud.server.show_server_dashboard'),
-        );
-
-        $usePterodactyl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);
-        if (empty($usePterodactyl)) {
-            $manageServerAction->linkToRoute(
-                'server',
-                fn (Server $entity) => ['id' => $entity->getPterodactylServerIdentifier()]
-            );
-        } else {
-            if ($this->settingService->getSetting(SettingEnum::PTERODACTYL_SSO_ENABLED->value)) {
-                $manageServerAction->linkToRoute(
-                    'sso_redirect',
-                    fn (Server $entity) => [
-                        'redirect_path' => sprintf('/server/%s', $entity->getPterodactylServerIdentifier()),
-                    ]
-                );
-            } else {
-                $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
-                $manageServerAction->linkToUrl($pterodactylUrl);
-            }
-            $manageServerAction->setHtmlAttributes(['target' => '_blank']);
-        }
-
-        return $manageServerAction;
     }
 
     private function getServerProductAction(string $action): Action

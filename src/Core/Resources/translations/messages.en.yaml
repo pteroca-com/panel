@@ -280,6 +280,8 @@ pteroca:
     delete_allocation_confirmation: 'This allocation will be immediately removed from your server. Are you sure you want to continue?'
     error_during_deleting_allocation: 'An error occurred while deleting the allocation.'
     cannot_delete_primary_allocation: 'The primary allocation cannot be deleted.'
+    extend_server_expires_on_demand: 'Your <strong>{{ productName }}</strong> server is currently set to expire on <strong>on demand</strong>.'
+    on_demand_billing_cycle: 'The billing cycle ({{ productPrice }} {{ internalCurrency }} / minute) will be paused when the server is offline, and resources will be free.'
 
   actions:
     login: 'Login'
@@ -372,7 +374,7 @@ pteroca:
       price_static_plan: 'Static plan price'
       price_static_plan_hint: 'The price of the product for a fixed period that users can select as a billing cycle.'
       price_dynamic_plan: 'Dynamic plan price - on demand'
-      price_dynamic_plan_hint: 'The price of the product for a dynamic period that users can select as a billing cycle. When the server is offline, the billing is paused and resources are free.'
+      price_dynamic_plan_hint: 'The price of the product for a dynamic period that users can select as a billing cycle. When the server is offline, the billing is paused.'
       price_dynamic_only_one_plan: 'You can only set the price for one dynamic plan.'
       period: 'Period'
       unit: 'Unit'
@@ -408,6 +410,7 @@ pteroca:
       server_product_edit: 'Edit build configuration'
       product_server_build: 'Server build configuration'
       server_edit: 'Change server owner'
+      server_detail: 'Show server details'
     setting:
       name: 'Setting name'
       value: 'Setting value'

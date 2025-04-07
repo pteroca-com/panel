@@ -38,6 +38,16 @@ class ServerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getServersToSuspend(\DateTime $expiresBefore): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.isSuspended = false')
+            ->andWhere('s.expiresAt < :expiresBefore')
+            ->setParameter('expiresBefore', $expiresBefore)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getActiveServersCount(): int
     {
         return $this->createQueryBuilder('s')

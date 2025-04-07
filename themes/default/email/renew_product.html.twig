@@ -7,7 +7,7 @@
 <p>
     <b>{{ 'pteroca.email.store.product_details'|trans }}:</b><br>
     {{ 'pteroca.email.store.product_name'|trans }}: {{ product.name }}<br>
-    {{ 'pteroca.email.store.product_price'|trans }}: {{ product.price|number_format(2) }} {{ currency|upper }}<br>
+    {{ 'pteroca.email.store.product_price'|trans }}: {{ selectedPrice.value|number_format(2) }} {{ currency|upper }}<br>
 </p>
 <p>
     <b>{{ 'pteroca.email.store.server_details'|trans }}:</b><br>
@@ -15,7 +15,7 @@
     {{ 'pteroca.email.store.management_panel'|trans }}: {{ panel.url }}<br>
     {% if use_pterodactyl_panel_as_client_panel() and not is_pterodactyl_sso_enabled() %}
         {{ 'pteroca.email.store.panel_username'|trans }}: {{ panel.username }}<br>
-        {{ 'pteroca.email.store.panel_password'|trans }}: {{ {{ 'pteroca.email.store.panel_password_hint'|trans }} }}<br>
+        {{ 'pteroca.email.store.panel_password'|trans }}: {{ 'pteroca.email.store.panel_password_hint'|trans }}<br>
     {% endif %}
 </p>
 <p>

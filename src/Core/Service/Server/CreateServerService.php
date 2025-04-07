@@ -8,6 +8,7 @@ use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Entity\ServerProductPrice;
 use App\Core\Entity\User;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\ServerProductPriceRepository;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
@@ -85,7 +86,8 @@ class CreateServerService extends AbstractActionServerService
             ->setPterodactylServerId($server->get('id'))
             ->setPterodactylServerIdentifier($server->get('identifier'))
             ->setUser($user)
-            ->setExpiresAt(new \DateTime($datetimeModifier));
+            ->setExpiresAt(new \DateTime($datetimeModifier))
+            ->setAutoRenewal($selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND);
 
         $this->serverRepository->save($entityServer);
 

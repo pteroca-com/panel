@@ -8,6 +8,7 @@ parameters:
   avatar_directory: 'public/uploads/avatars'
   avatar_max_size: '2M'
   avatar_allowed_extensions: ['image/jpeg', 'image/png']
+  default_logo_path: '%kernel.project_dir%/public/assets/img/logo/logo.png'
 
 services:
   _defaults:
@@ -27,6 +28,7 @@ services:
   App\Core\Service\Mailer\MailerService:
     arguments:
       $twig: '@twig'
+      $defaultLogoPath: '%default_logo_path%'
 
   App\Core\Twig\AppExtension:
     tags: [ 'twig.extension' ]

@@ -59,7 +59,7 @@ class ServerBuildService
                 'disk' => $product->getDiskSpace(),
                 'io' => $product->getIo(),
                 'cpu' => $product->getCpu(),
-                'threads' => 0, // TODO implement
+                'threads' => null, // TODO implement
             ],
             'feature_limits' => [
                 'databases' => $product->getDbCount(),
@@ -83,7 +83,7 @@ class ServerBuildService
             'io' => $product->getIo(),
             'cpu' => $product->getCpu(),
             'disk' => $product->getDiskSpace(),
-            'threads' => 0,
+            'threads' => null,
             'feature_limits' => [
                 'databases' => $product->getDbCount(),
                 'backups' => $product->getBackups(),

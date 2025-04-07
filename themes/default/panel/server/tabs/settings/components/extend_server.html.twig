@@ -10,9 +10,18 @@
                 <div class="row h-100">
                     <div class="col-12 px-4">
                         <div class="alert alert-info text-center" role="alert">
-                            {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.serverProduct.name, '{{ expiresAt }}': server.expiresAt|date('Y-m-d H:i:s') })|raw }} <br><br>
-                            {{ 'pteroca.server.extend_server_hint'|trans }}<br>
-                            {{ 'pteroca.server.extend_server_hint_2'|trans }}
+                            {% if server.getServerProduct().getSelectedPrice().getType().value != 'on_demand' %}
+                                {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.serverProduct.name, '{{ expiresAt }}': server.expiresAt|date('Y-m-d H:i:s') })|raw }}
+                            {% else %}
+                                {{ 'pteroca.server.extend_server_expires_on_demand'|trans({ '{{ productName }}': server.serverProduct.name })|raw }}<br>
+                                {{ 'pteroca.server.on_demand_billing_cycle'|trans({ '{{ productPrice }}': server.getServerProduct().getSelectedPrice().getPrice(), '{{ internalCurrency }}': get_currency() }) }}
+                            {% endif %}
+                            <br><br>
+                            {{ 'pteroca.server.extend_server_hint'|trans }}
+                            {% if server.getServerProduct().getSelectedPrice().getType().value != 'on_demand' %}
+                                <br>
+                                {{ 'pteroca.server.extend_server_hint_2'|trans }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-8 offset-2 mt-4 px-4">
@@ -20,21 +29,23 @@
                             {{ 'pteroca.server.extend_server'|trans }}
                         </a>
                     </div>
-                    <div class="col-12">
-                        <div class="row pt-4 px-4 pb-1 text-muted">
-                            <div class="col-10">
-                                <label class="form-check-label" for="auto-renewal" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.server.auto_renewal_tooltip'|trans }}">
-                                    {{ 'pteroca.server.enable_auto_renewal'|trans }}
-                                    <i class="fa fa-question-circle"></i>
-                                </label>
-                            </div>
-                            <div class="col-2">
-                                <div class="form-check form-switch">
-                                    <input type="checkbox" class="form-check-input" autocomplete="off" id="auto-renewal" {% if server.isAutoRenewal %}checked{% endif %}>
+                    {% if server.getServerProduct().getSelectedPrice().getType().value != 'on_demand' %}
+                        <div class="col-12">
+                            <div class="row pt-4 px-4 pb-1 text-muted">
+                                <div class="col-10">
+                                    <label class="form-check-label" for="auto-renewal" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.server.auto_renewal_tooltip'|trans }}">
+                                        {{ 'pteroca.server.enable_auto_renewal'|trans }}
+                                        <i class="fa fa-question-circle"></i>
+                                    </label>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" autocomplete="off" id="auto-renewal" {% if server.isAutoRenewal %}checked{% endif %}>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

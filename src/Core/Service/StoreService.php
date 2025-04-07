@@ -6,6 +6,7 @@ use App\Core\Entity\Category;
 use App\Core\Entity\Product;
 use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
+use App\Core\Entity\ServerProductPrice;
 use App\Core\Entity\User;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
@@ -137,7 +138,7 @@ class StoreService
         $this->validateUserBalance($user, current($price));
     }
 
-    public function validateUserBalance(User $user, ProductPrice $selectedPrice): void
+    public function validateUserBalance(User $user, ProductPrice|ServerProductPrice $selectedPrice): void
     {
         if ($selectedPrice->getPrice() > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));

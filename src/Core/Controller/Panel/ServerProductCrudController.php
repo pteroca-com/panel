@@ -12,6 +12,7 @@ use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\ManageServerActionTrait;
 use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -36,6 +37,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ServerProductCrudController extends AbstractPanelController
 {
     use ProductCrudControllerTrait;
+    use ManageServerActionTrait;
 
     private array $flashMessages = [];
 
@@ -189,6 +191,8 @@ class ServerProductCrudController extends AbstractPanelController
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->add(Crud::PAGE_INDEX, $this->getServerAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_EDIT, $this->getServerAction(Crud::PAGE_EDIT))
+            ->add(Crud::PAGE_EDIT, $this->getManageServerAction())
+            ->add(Crud::PAGE_DETAIL, $this->getManageServerAction())
             ;
     }
 
@@ -200,6 +204,7 @@ class ServerProductCrudController extends AbstractPanelController
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.product.server_build'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.crud.product.server_builds'))
             ->setEntityPermission(UserRoleEnum::ROLE_ADMIN->name)
+            ->setSearchFields(null)
         ;
 
         return parent::configureCrud($crud);
@@ -233,22 +238,5 @@ class ServerProductCrudController extends AbstractPanelController
         $this->updateServerService->updateServer($entityInstance);
 
         parent::updateEntity($entityManager, $entityInstance);
-    }
-
-    private function getServerAction(string $action): Action
-    {
-        return Action::new(
-            'serverEdit',
-            $this->translator->trans(sprintf('pteroca.crud.server.server_%s', $action)),
-        )->linkToUrl(
-            fn (ServerProduct $entity) => $this->generateUrl(
-                'panel',
-                [
-                    'crudAction' => $action,
-                    'crudControllerFqcn' => ServerCrudController::class,
-                    'entityId' => $entity->getServer()->getId(),
-                ]
-            )
-        );
     }
 }
