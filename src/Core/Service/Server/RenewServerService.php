@@ -4,13 +4,15 @@ namespace App\Core\Service\Server;
 
 use App\Core\Entity\Server;
 use App\Core\Entity\User;
+use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
-use Psr\Log\LoggerInterface;
+use Exception;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class RenewServerService extends AbstractActionServerService
@@ -20,7 +22,7 @@ class RenewServerService extends AbstractActionServerService
         private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerRepository $serverRepository,
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
-        private readonly LoggerInterface $logger,
+        private readonly LogService $logService,
         readonly UserRepository $userRepository,
     ) {
         parent::__construct($userRepository, $pterodactylService);
@@ -43,12 +45,7 @@ class RenewServerService extends AbstractActionServerService
                     ->getApi($user);
                 $serverResources = $pterodactylClientApi->servers
                     ->resources($server->getPterodactylServerIdentifier());
-            } catch (\Exception $e) {
-                $this->logger->error('Failed to get server resources in renewServer action', [
-                    'serverId' => $server->getPterodactylServerIdentifier(),
-                    'userId' => $user->getId(),
-                    'exception' => $e,
-                ]);
+            } catch (Exception) {
                 $serverResources = null;
             }
 
@@ -77,5 +74,11 @@ class RenewServerService extends AbstractActionServerService
                 $this->getPterodactylAccountLogin($user),
             );
         }
+
+        $this->logService->logAction(
+            $user,
+            LogActionEnum::RENEW_SERVER,
+            ['server' => $server],
+        );
     }
 }

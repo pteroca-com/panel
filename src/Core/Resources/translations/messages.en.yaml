@@ -395,6 +395,7 @@ pteroca:
       server_details: 'Server details'
       server_build_offline_alert: 'The server is currently offline. You can only edit the server build properties when the server is online.'
       at_least_one_price_required: 'At least one price is required.'
+      at_least_one_selected_price_required: 'At least one selected price is required.'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'

@@ -87,7 +87,7 @@ class ServerProductCrudController extends AbstractPanelController
                 ->hideOnIndex(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.build_details'))
-                ->setIcon('fa fa-info-circle'),
+                ->setIcon('fa fa-asterisk'),
             TextField::new('name', $this->translator->trans('pteroca.crud.product.build_name'))
                 ->setColumns(7),
             FormField::addRow(),

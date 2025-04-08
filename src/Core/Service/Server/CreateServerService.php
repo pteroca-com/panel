@@ -8,11 +8,13 @@ use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Entity\ServerProductPrice;
 use App\Core\Entity\User;
+use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\ServerProductPriceRepository;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -28,6 +30,7 @@ class CreateServerService extends AbstractActionServerService
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
         private readonly ServerBuildService $serverBuildService,
         private readonly ServerProductPriceRepository $serverProductPriceRepository,
+        private readonly LogService $logService,
         UserRepository $userRepository,
     ) {
         parent::__construct($userRepository, $pterodactylService);
@@ -36,9 +39,11 @@ class CreateServerService extends AbstractActionServerService
     public function createServer(Product $product, int $eggId, int $priceId, User|UserInterface $user): Server
     {
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $user);
+
         $createdEntityServer = $this->createEntityServer($createdPterodactylServer, $user, $product, $priceId);
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
+
         $this->updateUserBalance($user, $product, $priceId);
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
@@ -46,6 +51,12 @@ class CreateServerService extends AbstractActionServerService
             $product,
             $priceId,
             $this->getPterodactylAccountLogin($user),
+        );
+
+        $this->logService->logAction(
+            $user,
+            LogActionEnum::BOUGHT_SERVER,
+            ['product' => $product, 'egg' => $eggId, 'price' => $priceId],
         );
 
         return $createdEntityServer;
@@ -128,7 +139,7 @@ class CreateServerService extends AbstractActionServerService
                 ->setValue($price->getValue())
                 ->setUnit($price->getUnit())
                 ->setPrice($price->getPrice())
-                ->setSelected($price->getId() === $selectedPriceId);
+                ->setIsSelected($price->getId() === $selectedPriceId);
 
             $this->serverProductPriceRepository->save($serverProductPrice);
         }

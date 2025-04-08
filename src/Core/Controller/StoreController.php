@@ -2,9 +2,7 @@
 
 namespace App\Core\Controller;
 
-use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Authorization\UserVerificationService;
-use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerService;
@@ -81,11 +79,18 @@ class StoreController extends AbstractController
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_available'));
         }
 
-        $product = $this->storeService->prepareProduct($server->getProduct());
+        $originalProduct = $server->getServerProduct()->getOriginalProduct();
+        if (!empty($originalProduct) && $originalProduct->getIsActive()) {
+            $product = $this->storeService->prepareProduct($server->getServerProduct()->getOriginalProduct());
+        } else {
+            $product = $server->getServerProduct();
+        }
+
         return $this->render('panel/store/renew.html.twig', [
             'product' => $product,
             'server' => $server,
             'serverDetails' => $serverService->getServerDetails($server),
+            'selectedPrice' => $server->getServerProduct()->getSelectedPrice(),
         ]);
     }
 
@@ -94,7 +99,6 @@ class StoreController extends AbstractController
         Request $request,
         CreateServerService $createServerService,
         RenewServerService $renewServerService,
-        LogService $logService,
         UserVerificationService $userVerificationService,
         ServerService $serverService,
     ): Response {
@@ -102,18 +106,17 @@ class StoreController extends AbstractController
         $serverId = $request->query->getString('server');
         if (!empty($serverId)) {
             $server = $serverService->getServer($serverId);
+
             if (empty($server)) {
                 throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
-            } else {
-                $productId = $server->getProduct()->getId();
             }
+
+            $productId = $server->getServerProduct()->getId();
         }
 
         $productId = $productId ?? $request->request->getInt('product');
-        $product = $this->storeService->getActiveProduct($productId);
-        if (empty($product)) {
-            throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
-        }
+        $eggId = $request->request->getInt('egg');
+        $priceId = $request->request->getInt('duration');
 
         try {
             $userVerificationService->validateUserVerification($this->getUser());
@@ -122,24 +125,17 @@ class StoreController extends AbstractController
             return $this->redirectToRoute('panel', ['routeName' => 'store_product', 'id' => $productId]);
         }
 
-        $eggId = $request->request->getInt('egg');
-        $priceId = $request->request->getInt('duration');
         try {
-            $this->storeService->validateBoughtProduct($this->getUser(), $product, $eggId, $priceId,$server ?? null);
             if (empty($server)) {
+                $product = $this->storeService->getActiveProduct($productId);
+                if (empty($product)) {
+                    throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
+                }
+
+                $this->storeService->validateBoughtProduct($this->getUser(), $product, $eggId, $priceId);
                 $createServerService->createServer($product, $eggId, $priceId, $this->getUser());
-                $logService->logAction(
-                    $this->getUser(),
-                    LogActionEnum::BOUGHT_SERVER,
-                    ['product' => $product, 'egg' => $eggId],
-                );
             } else {
                 $renewServerService->renewServer($server, $this->getUser());
-                $logService->logAction(
-                    $this->getUser(),
-                    LogActionEnum::RENEW_SERVER,
-                    ['serverId' => $server->getId(), 'price' => $product->getPrice()],
-                );
             }
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));

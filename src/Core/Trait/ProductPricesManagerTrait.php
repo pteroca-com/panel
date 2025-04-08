@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-trait PricesManagerTrait
+trait ProductPricesManagerTrait
 {
     public function getPrices(): Collection
     {
