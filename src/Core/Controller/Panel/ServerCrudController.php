@@ -81,7 +81,11 @@ class ServerCrudController extends AbstractPanelController
             ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
             ->remove(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_INDEX, $this->getServerAction(Crud::PAGE_DETAIL))
+            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_DETAIL))
+            ->add(Crud::PAGE_INDEX, $this->getShowServerLogsAction())
+            ->add(Crud::PAGE_EDIT, $this->getShowServerLogsAction())
+            ->add(Crud::PAGE_DETAIL, $this->getManageServerAction())
+            ->add(Crud::PAGE_EDIT, $this->getManageServerAction())
             ;
     }
 
@@ -125,7 +129,7 @@ class ServerCrudController extends AbstractPanelController
     private function getServerProductAction(string $action): Action
     {
         return Action::new(
-            'serverProductEdit',
+            sprintf('serverProduct_%s', $action),
             $this->translator->trans(sprintf('pteroca.crud.server.server_product_%s', $action)),
         )->linkToUrl(
             fn (Server $entity) => $this->generateUrl(

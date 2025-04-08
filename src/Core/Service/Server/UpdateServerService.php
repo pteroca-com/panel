@@ -40,8 +40,6 @@ class UpdateServerService
         PterodactylServer $pterodactylServer
     ): void
     {
-        $this->updateByServerEntity($entityInstance->getServer(), $pterodactylServer);
-
         $updatedServerBuild = $this->serverBuildService
             ->prepareUpdateServerBuild($entityInstance, $pterodactylServer);
 
@@ -50,13 +48,19 @@ class UpdateServerService
             ->servers
             ->updateBuild($entityInstance->getServer()->getPterodactylServerId(), $updatedServerBuild);
 
-        $updatedServerStartup = $this->serverBuildService
-            ->prepareUpdateServerStartup($entityInstance, $pterodactylServer);
+        try {
+            $updatedServerStartup = $this->serverBuildService
+                ->prepareUpdateServerStartup($entityInstance, $pterodactylServer);
 
-        $this->pterodactylService
-            ->getApi()
-            ->servers
-            ->updateStartup($entityInstance->getServer()->getPterodactylServerId(), $updatedServerStartup);
+            $this->pterodactylService
+                ->getApi()
+                ->servers
+                ->updateStartup($entityInstance->getServer()->getPterodactylServerId(), $updatedServerStartup);
+        } catch (\Exception $exception) {
+
+        }
+
+        $this->updateByServerEntity($entityInstance->getServer(), $pterodactylServer);
     }
 
     private function updateByServerEntity(Server $entityInstance, PterodactylServer $pterodactylServer): void

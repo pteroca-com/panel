@@ -2,6 +2,8 @@
 
 namespace App\Core\Trait;
 
+use App\Core\Controller\Panel\ServerCrudController;
+use App\Core\Controller\Panel\ServerLogCrudController;
 use App\Core\Controller\Panel\ServerProductCrudController;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
@@ -13,15 +15,43 @@ trait ManageServerActionTrait
     private function getServerAction(string $action): Action
     {
         return Action::new(
-            'serverEdit',
+            sprintf('serverEdit_%s', $action),
             $this->translator->trans(sprintf('pteroca.crud.server.server_%s', $action)),
         )->linkToUrl(
             fn (Server|ServerProduct $entity) => $this->generateUrl(
                 'panel',
                 [
                     'crudAction' => $action,
-                    'crudControllerFqcn' => ServerProductCrudController::class,
-                    'entityId' => $this->getEntityProductId($entity),
+                    'crudControllerFqcn' => $entity instanceof Server
+                        ? ServerProductCrudController::class
+                        : ServerCrudController::class,
+                    'entityId' => $entity instanceof Server
+                        ? $entity->getId()
+                        : $entity->getServer()->getId(),
+                ]
+            )
+        );
+    }
+
+    private function getShowServerLogsAction(): Action
+    {
+        return Action::new(
+            'showServerLogs',
+            $this->translator->trans('pteroca.crud.server.show_server_logs'),
+        )->linkToUrl(
+            fn (Server|ServerProduct $entity) => $this->generateUrl(
+                'panel',
+                [
+                    'crudAction' => Action::INDEX,
+                    'crudControllerFqcn' => ServerLogCrudController::class,
+                    'filters' => [
+                        'server' => [
+                            'comparison' => '=',
+                            'value' => $entity instanceof Server
+                                ? $entity->getId()
+                                : $entity->getServer()->getId(),
+                        ]
+                    ]
                 ]
             )
         );
@@ -65,14 +95,5 @@ trait ManageServerActionTrait
         }
 
         return $entity->getServer()->getPterodactylServerIdentifier();
-    }
-
-    private function getEntityProductId(Server|ServerProduct $entity): int
-    {
-        if ($entity instanceof Server) {
-            return $entity->getServerProduct()->getId();
-        }
-
-        return $entity->getId();
     }
 }

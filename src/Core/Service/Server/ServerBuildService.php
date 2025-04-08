@@ -75,15 +75,12 @@ class ServerBuildService
     public function prepareUpdateServerBuild(ServerProduct $product, PterodactylServer $pterodactylServer): array
     {
         return [
-            'allocation' => [
-                'default' => $pterodactylServer->get('allocation'),
-            ],
+            'allocation' => $pterodactylServer->get('allocation'),
             'memory' => $product->getMemory(),
             'swap' => $product->getSwap(),
             'io' => $product->getIo(),
             'cpu' => $product->getCpu(),
             'disk' => $product->getDiskSpace(),
-            'threads' => null,
             'feature_limits' => [
                 'databases' => $product->getDbCount(),
                 'backups' => $product->getBackups(),

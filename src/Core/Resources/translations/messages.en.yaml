@@ -393,6 +393,8 @@ pteroca:
       yes: 'Yes'
       no: 'No'
       server_details: 'Server details'
+      server_build_offline_alert: 'The server is currently offline. You can only edit the server build properties when the server is online.'
+      at_least_one_price_required: 'At least one price is required.'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
@@ -410,7 +412,8 @@ pteroca:
       server_product_edit: 'Edit build configuration'
       product_server_build: 'Server build configuration'
       server_edit: 'Change server owner'
-      server_detail: 'Show server details'
+      server_product_detail: 'Show server details'
+      show_server_logs: 'Show server logs'
     setting:
       name: 'Setting name'
       value: 'Setting value'

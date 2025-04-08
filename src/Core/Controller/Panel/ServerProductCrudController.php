@@ -8,7 +8,9 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Form\ServerProductPriceDynamicFormType;
 use App\Core\Form\ServerProductPriceFixedFormType;
+use App\Core\Repository\ServerProductRepository;
 use App\Core\Service\Crud\PanelCrudService;
+use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
@@ -41,11 +43,15 @@ class ServerProductCrudController extends AbstractPanelController
 
     private array $flashMessages = [];
 
+    private bool $isServerOffline = false;
+
     public function __construct(
         PanelCrudService $panelCrudService,
         private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylClientService $pterodactylClientService,
         private readonly UpdateServerService $updateServerService,
         private readonly SettingService $settingService,
+        private readonly ServerProductRepository $serverProductRepository,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
     ) {
@@ -92,35 +98,7 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setColumns(5)
                 ->setDisabled(),
 
-            FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
-                ->setIcon('fa fa-server'),
-            NumberField::new('diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
-                ->setHelp($this->translator->trans('pteroca.crud.product.disk_space_hint'))
-                ->setColumns(4),
-            NumberField::new('memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
-                ->setHelp($this->translator->trans('pteroca.crud.product.memory_hint'))
-                ->setColumns(4),
-            FormField::addRow(),
-            NumberField::new('io', $this->translator->trans('pteroca.crud.product.io'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.io_hint'))
-                ->setColumns(4),
-            NumberField::new('cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu')))
-                ->setHelp($this->translator->trans('pteroca.crud.product.cpu_hint'))
-                ->setColumns(4),
-            FormField::addRow(),
-            NumberField::new('dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.db_count_hint'))
-                ->setColumns(4),
-            NumberField::new('swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
-                ->setHelp($this->translator->trans('pteroca.crud.product.swap_hint'))
-                ->setColumns(4),
-            FormField::addRow(),
-            NumberField::new('backups', $this->translator->trans('pteroca.crud.product.backups'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.backups_hint'))
-                ->setColumns(4),
-            NumberField::new('ports', $this->translator->trans('pteroca.crud.product.ports'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.ports_hint'))
-                ->setColumns(4),
+            ...$this->getServerBuildFields(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
                 ->setIcon('fa fa-link'),
@@ -188,11 +166,10 @@ class ServerProductCrudController extends AbstractPanelController
             ->disable(Crud::PAGE_INDEX)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_INDEX, Action::NEW)
-            ->add(Crud::PAGE_INDEX, $this->getServerAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_EDIT, $this->getServerAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_EDIT, $this->getManageServerAction())
             ->add(Crud::PAGE_DETAIL, $this->getManageServerAction())
+            ->add(Crud::PAGE_EDIT, $this->getShowServerLogsAction())
             ;
     }
 
@@ -210,12 +187,21 @@ class ServerProductCrudController extends AbstractPanelController
         return parent::configureCrud($crud);
     }
 
-    protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse
+    public function edit(AdminContext $context)
     {
-        return $this->redirect($this->generateUrl('panel', [
-            'crudControllerFqcn' => ServerCrudController::class,
-            'crudAction' => 'index',
-        ]));
+        try {
+            $entityId = $context->getRequest()->get('entityId');
+            $serverProduct = $this->serverProductRepository->find($entityId);
+            $pterodactylServerResources = $this->pterodactylClientService
+                ->getApi($serverProduct->getServer()->getUser())
+                ->servers
+                ->resources($serverProduct->getServer()->getPterodactylServerIdentifier());
+            $this->isServerOffline = $pterodactylServerResources->get('current_state') !== 'running';
+        } catch (\Exception $exception) {
+            $this->isServerOffline = true;
+        }
+
+        return parent::edit($context);
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
@@ -238,5 +224,69 @@ class ServerProductCrudController extends AbstractPanelController
         $this->updateServerService->updateServer($entityInstance);
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse
+    {
+        return $this->redirect($this->generateUrl('panel', [
+            'crudControllerFqcn' => ServerCrudController::class,
+            'crudAction' => 'index',
+        ]));
+    }
+
+    private function getServerBuildFields(): array
+    {
+        $panelFieldLabel = sprintf(
+            '<i class="fa fa-info-circle pe-2"></i> %s',
+            $this->translator->trans('pteroca.crud.product.server_build_offline_alert')
+        );
+        $panelField = FormField::addPanel($panelFieldLabel)
+            ->addCssClass('alert alert-danger')
+            ->onlyOnForms();
+        if (!$this->isServerOffline) {
+            $panelField->hideOnForm();
+        }
+
+        return [
+            FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
+                ->setIcon('fa fa-server')
+                ->setDisabled($this->isServerOffline),
+            $panelField,
+            NumberField::new('diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.disk_space_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+            NumberField::new('memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.memory_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+            FormField::addRow(),
+            NumberField::new('io', $this->translator->trans('pteroca.crud.product.io'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.io_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+            NumberField::new('cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.cpu_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+            FormField::addRow(),
+            NumberField::new('dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.db_count_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+            NumberField::new('swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.swap_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+            FormField::addRow(),
+            NumberField::new('backups', $this->translator->trans('pteroca.crud.product.backups'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.backups_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+            NumberField::new('ports', $this->translator->trans('pteroca.crud.product.ports'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.ports_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
+        ];
     }
 }

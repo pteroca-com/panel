@@ -4,12 +4,11 @@ namespace App\Core\Entity;
 
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
+use App\Core\Trait\PricesManagerTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\ProductRepository")]
@@ -17,6 +16,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[Vich\Uploadable]
 class Product
 {
+    use PricesManagerTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
@@ -366,39 +367,14 @@ class Product
         return $this->bannerFile;
     }
 
-    public function getPrices(): Collection
-    {
-        return $this->prices;
-    }
-
     public function getStaticPrices(): Collection
     {
         return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::STATIC);
     }
 
-    public function setStaticPrices(iterable $incomingPrices): self
-    {
-        $this->syncPrices(
-            $this->getStaticPrices(),
-            $incomingPrices
-        );
-
-        return $this;
-    }
-
     public function getDynamicPrices(): Collection
     {
         return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
-    }
-
-    public function setDynamicPrices(iterable $prices): self
-    {
-        $this->syncPrices(
-            $this->getDynamicPrices(),
-            $prices
-        );
-
-        return $this;
     }
 
     public function addPrice(ProductPrice $price): self
@@ -419,16 +395,6 @@ class Product
             }
         }
         return $this;
-    }
-
-    #[Assert\Callback]
-    public function validatePrices(ExecutionContextInterface $context): void
-    {
-        if (count($this->getPrices()) === 0) {
-            $context->buildViolation('At least one price must be set')
-                ->atPath('prices')
-                ->addViolation();
-        }
     }
 
     public function __toString(): string
