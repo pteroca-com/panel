@@ -74,11 +74,16 @@ class ServerCrudController extends AbstractPanelController
         return $actions
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->update(
+                Crud::PAGE_INDEX,
+                Action::DELETE,
+                fn (Action $action) => $action->displayIf(
+                    fn (Server $entity) => empty($entity->getDeletedAt())
+                )
+            )->update(
                 Crud::PAGE_EDIT,
                 Action::SAVE_AND_RETURN,
                 fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.server.save')),
-            )
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
+            )->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->add(Crud::PAGE_EDIT, $this->getServerProductAction(Crud::PAGE_EDIT))
@@ -157,6 +162,12 @@ class ServerCrudController extends AbstractPanelController
                     'entityId' => $entity->getServerProduct()->getId(),
                 ]
             )
-        );
+        )->displayIf(function (Server $entity) use ($action) {
+            if ($action !== Action::DETAIL) {
+                return empty($entity->getDeletedAt());
+            }
+
+            return true;
+        });
     }
 }

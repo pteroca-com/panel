@@ -14,7 +14,6 @@ use App\Core\Entity\Payment;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
-use App\Core\Entity\ServerProduct;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
 use App\Core\Enum\SettingContextEnum;
@@ -52,8 +51,9 @@ class DashboardController extends AbstractDashboardController
     {
         $user = $this->getUser();
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+
         return $this->render('panel/dashboard/dashboard.html.twig', [
-            'servers' => $this->serverRepository->findBy(['user' => $user]),
+            'servers' => $this->serverRepository->getActiveServersByUser($user),
             'user' => $user,
             'logs' => $this->logService->getLogsByUser($user, 10),
             'motdEnabled' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value),

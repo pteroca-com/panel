@@ -83,6 +83,9 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setDisabled(),
             DateTimeField::new('server.createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
                 ->hideOnForm(),
+            DateTimeField::new('server.deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))
+                ->setDisabled()
+                ->hideOnForm(),
             DateTimeField::new('server.expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
             BooleanField::new('server.isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
             BooleanField::new('server.autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
@@ -169,6 +172,22 @@ class ServerProductCrudController extends AbstractPanelController
             ->disable(Crud::PAGE_INDEX)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
+            ->remove(Crud::PAGE_DETAIL, Action::DELETE)
+            ->add(Crud::PAGE_EDIT, Action::DELETE)
+            ->update(
+                Crud::PAGE_DETAIL,
+                Action::EDIT,
+                fn (Action $action) => $action->displayIf(
+                    fn (ServerProduct $entity) => empty($entity->getServer()->getDeletedAt())
+                )
+            )
+            ->update(
+                Crud::PAGE_INDEX,
+                Action::DELETE,
+                fn (Action $action) => $action->displayIf(
+                    fn (ServerProduct $entity) => empty($entity->getServer()->getDeletedAt())
+                )
+            )
             ->add(Crud::PAGE_EDIT, $this->getServerAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_EDIT, $this->getManageServerAction())
             ->add(Crud::PAGE_DETAIL, $this->getManageServerAction())
@@ -240,7 +259,12 @@ class ServerProductCrudController extends AbstractPanelController
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->deleteServerService->deleteServer($entityInstance);
-        parent::deleteEntity($entityManager, $entityInstance);
+
+        if ($entityInstance instanceof ServerProduct) {
+            $entityInstance->getServer()->setDeletedAtValue();
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 
     protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse

@@ -26,7 +26,7 @@ class ServerController extends AbstractController
                 $server->imagePath = $imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath();
             }
             return $server;
-        }, $serverRepository->findBy(['user' => $this->getUser()]));
+        }, $serverRepository->getActiveServersByUser($this->getUser()));
 
         return $this->render('panel/servers/servers.html.twig', [
             'servers' => $servers,
@@ -51,7 +51,7 @@ class ServerController extends AbstractController
 
         /** @var ?Server $server */
         $server = current($serverRepository->findBy(['pterodactylServerIdentifier' => $serverId]));
-        if (empty($server)) {
+        if (empty($server) || !empty($server->getDeletedAt())) {
             throw $this->createNotFoundException();
         }
 

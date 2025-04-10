@@ -3,6 +3,7 @@
 namespace App\Core\Repository;
 
 use App\Core\Entity\Server;
+use App\Core\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,6 +34,7 @@ class ServerRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->where('s.isSuspended = true')
             ->andWhere('s.expiresAt < :expiresBefore')
+            ->andWhere('s.deletedAt IS NULL')
             ->setParameter('expiresBefore', $expiresBefore)
             ->getQuery()
             ->getResult();
@@ -43,7 +45,19 @@ class ServerRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->where('s.isSuspended = false')
             ->andWhere('s.expiresAt < :expiresBefore')
+            ->andWhere('s.deletedAt IS NULL')
             ->setParameter('expiresBefore', $expiresBefore)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getActiveServersByUser(User $user): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.user = :user')
+            ->andWhere('s.isSuspended = false')
+            ->andWhere('s.deletedAt IS NULL')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
     }
@@ -53,6 +67,7 @@ class ServerRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->select('COUNT(s.id)')
             ->where('s.isSuspended = false')
+            ->andWhere('s.deletedAt IS NULL')
             ->getQuery()
             ->getSingleScalarResult();
     }

@@ -32,7 +32,7 @@ class Server
     private DateTime $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private DateTime $deletedAt;
+    private ?DateTime $deletedAt = null;
 
     #[ORM\Column(type: 'datetime')]
     private DateTime $expiresAt;

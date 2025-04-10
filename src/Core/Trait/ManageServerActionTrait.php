@@ -62,7 +62,13 @@ trait ManageServerActionTrait
         $manageServerAction = Action::new(
             'manageServer',
             $this->translator->trans('pteroca.crud.server.show_server_dashboard'),
-        );
+        )->displayIf(function (Server|ServerProduct $entity) {
+            if ($entity instanceof Server) {
+                return empty($entity->getDeletedAt());
+            }
+
+            return empty($entity->getServer()->getDeletedAt());
+        });
 
         $usePterodactyl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);
         if (empty($usePterodactyl)) {

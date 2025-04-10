@@ -189,6 +189,9 @@ class ProductCrudController extends AbstractPanelController
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.save')))
+            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => $action->displayIf(fn (Product $entity) => empty($entity->getDeletedAt())))
+            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => $action->displayIf(fn (Product $entity) => empty($entity->getDeletedAt())))
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
     }
