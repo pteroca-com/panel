@@ -12,8 +12,10 @@ use App\Core\Repository\ServerProductRepository;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\CrudFlashMessagesTrait;
 use App\Core\Trait\ManageServerActionTrait;
 use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,8 +42,7 @@ class ServerProductCrudController extends AbstractPanelController
 {
     use ProductCrudControllerTrait;
     use ManageServerActionTrait;
-
-    private array $flashMessages = [];
+    use CrudFlashMessagesTrait;
 
     private bool $isServerOffline = false;
 
@@ -52,6 +53,7 @@ class ServerProductCrudController extends AbstractPanelController
         private readonly UpdateServerService $updateServerService,
         private readonly SettingService $settingService,
         private readonly ServerProductRepository $serverProductRepository,
+        private readonly DeleteServerService $deleteServerService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
     ) {
@@ -102,6 +104,12 @@ class ServerProductCrudController extends AbstractPanelController
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
                 ->setIcon('fa fa-link'),
+            FormField::addPanel(sprintf(
+                '<i class="fa fa-info-circle pe-2"></i> %s',
+                $this->translator->trans('pteroca.crud.product.product_connections_note'),
+            ))
+                ->addCssClass('alert alert-secondary')
+                ->onlyOnForms(),
             ChoiceField::new('nodes', $this->translator->trans('pteroca.crud.product.nodes'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.nodes_hint'))
                 ->setChoices(fn () => $this->getNodesChoices())
@@ -151,11 +159,6 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setRequired(true)
                 ->setEntryIsComplex(),
         ];
-
-        if (!empty($this->flashMessages)) {
-            $flashMessages = implode(PHP_EOL, $this->flashMessages);
-            $this->addFlash('danger', $flashMessages);
-        }
 
         return $fields;
     }
@@ -210,7 +213,11 @@ class ServerProductCrudController extends AbstractPanelController
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
         }
 
-        $this->updateServerService->updateServer($entityInstance);
+        $this->setFlashMessages(
+            $this->updateServerService
+                ->updateServer($entityInstance)
+                ->getMessages()
+        );
 
         parent::persistEntity($entityManager, $entityInstance);
     }
@@ -221,9 +228,19 @@ class ServerProductCrudController extends AbstractPanelController
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
         }
 
-        $this->updateServerService->updateServer($entityInstance);
+        $this->setFlashMessages(
+            $this->updateServerService
+                ->updateServer($entityInstance)
+                ->getMessages()
+        );
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        $this->deleteServerService->deleteServer($entityInstance);
+        parent::deleteEntity($entityManager, $entityInstance);
     }
 
     protected function getRedirectResponseAfterSave(AdminContext $context, string $action): RedirectResponse
@@ -240,9 +257,11 @@ class ServerProductCrudController extends AbstractPanelController
             '<i class="fa fa-info-circle pe-2"></i> %s',
             $this->translator->trans('pteroca.crud.product.server_build_offline_alert')
         );
+
         $panelField = FormField::addPanel($panelFieldLabel)
             ->addCssClass('alert alert-danger')
             ->onlyOnForms();
+
         if (!$this->isServerOffline) {
             $panelField->hideOnForm();
         }

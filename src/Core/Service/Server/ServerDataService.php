@@ -9,6 +9,7 @@ use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use Exception;
 
 class ServerDataService
 {
@@ -58,7 +59,7 @@ class ServerDataService
                 JSON_THROW_ON_ERROR,
             );
             $productEggConfiguration = $productEggsConfiguration[$pterodactylServer->get('egg')] ?? [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $productEggConfiguration = [];
         }
 
@@ -75,11 +76,15 @@ class ServerDataService
             ->createFromCollection($pterodactylServer->get('relationships')['variables']->all());
 
         if ($server->getServerProduct()->getBackups()) {
-            $serverBackups = $pterodactylClientApi
-                ->server_backups
-                ->http
-                ->get(sprintf('servers/%s/backups', $server->getPterodactylServerIdentifier()))
-                ->toArray();
+            try {
+                $serverBackups = $pterodactylClientApi
+                    ->server_backups
+                    ->http
+                    ->get(sprintf('servers/%s/backups', $server->getPterodactylServerIdentifier()))
+                    ->toArray();
+            } catch (Exception) {
+                $serverBackups = [];
+            }
         }
 
         return new ServerDataDTO(
@@ -107,7 +112,7 @@ class ServerDataService
 
         try {
             $productEggConfiguration = json_decode($productEggConfiguration, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [false, false];
         }
 

@@ -9,6 +9,7 @@ use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\CrudFlashMessagesTrait;
 use App\Core\Trait\ManageServerActionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -26,6 +27,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ServerCrudController extends AbstractPanelController
 {
     use ManageServerActionTrait;
+    use CrudFlashMessagesTrait;
 
     public function __construct(
         PanelCrudService $panelCrudService,
@@ -116,7 +118,12 @@ class ServerCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        $this->updateServerService->updateServer($entityInstance);
+        $this->setFlashMessages(
+            $this->updateServerService
+            ->updateServer($entityInstance)
+            ->getMessages()
+        );
+
         parent::updateEntity($entityManager, $entityInstance);
     }
 
