@@ -3,6 +3,7 @@
 namespace App\Core\Entity;
 
 use App\Core\Repository\ServerRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServerRepository::class)]
@@ -28,10 +29,13 @@ class Server
     private User $user;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $createdAt;
+    private DateTime $createdAt;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private DateTime $deletedAt;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $expiresAt;
+    private DateTime $expiresAt;
 
     #[ORM\Column(type: 'boolean')]
     private bool $isSuspended = false;
@@ -42,7 +46,7 @@ class Server
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -94,17 +98,31 @@ class Server
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    public function getExpiresAt(): \DateTime
+    public function setDeletedAtValue(): void
+    {
+        $this->deletedAt = new DateTime();
+
+        foreach ($this->serverProduct->getPrices() as $price) {
+            $price->setDeletedAt($this->deletedAt);
+        }
+    }
+
+    public function getDeletedAt(): ?DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function getExpiresAt(): DateTime
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(\DateTime $expiresAt): self
+    public function setExpiresAt(DateTime $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
         return $this;

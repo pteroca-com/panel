@@ -5,6 +5,7 @@ namespace App\Core\Entity;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use App\Core\Trait\ProductEntityTrait;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,7 +26,7 @@ class ServerProduct
     #[ORM\JoinColumn(nullable: true)]
     private ?Product $originalProduct;
 
-    #[ORM\OneToMany(targetEntity: ServerProductPrice::class, mappedBy: 'serverProduct', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ServerProductPrice::class, mappedBy: 'serverProduct', cascade: ['persist', 'remove'], orphanRemoval: false)]
     #[Groups(['server_product:read'])]
     private Collection $prices;
 
@@ -58,17 +59,43 @@ class ServerProduct
 
     public function getSelectedPrice(): ?ServerProductPrice
     {
-        return $this->prices->filter(fn(ServerProductPrice $price) => $price->isSelected())->first() ?: null;
+        return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->isSelected())->first() ?: null;
+    }
+
+    public function setStaticPrices(iterable $prices): self
+    {
+        foreach ($this->getStaticPrices() as $existingPrice) {
+            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new \DateTime());
+            }
+        }
+
+        $this->syncPrices($this->getStaticPrices(), $prices);
+
+        return $this;
     }
 
     public function getStaticPrices(): Collection
     {
-        return $this->prices->filter(fn(ServerProductPrice $price) => $price->getType() === ProductPriceTypeEnum::STATIC);
+        return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::STATIC);
+    }
+
+    public function setDynamicPrices(iterable $prices): self
+    {
+        foreach ($this->getDynamicPrices() as $existingPrice) {
+            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new \DateTime());
+            }
+        }
+
+        $this->syncPrices($this->getDynamicPrices(), $prices);
+
+        return $this;
     }
 
     public function getDynamicPrices(): Collection
     {
-        return $this->prices->filter(fn(ServerProductPrice $price) => $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
+        return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
     }
 
     public function addPrice(ServerProductPrice $price): self
@@ -77,17 +104,18 @@ class ServerProduct
             $this->prices[] = $price;
             $price->setServerProduct($this);
         }
+
         return $this;
     }
 
     public function removePrice(ServerProductPrice $price): self
     {
         if ($this->prices->removeElement($price)) {
-            // set the owning side to null (unless already changed)
             if ($price->getServerProduct() === $this) {
-                $price->setServerProduct(null);
+                $price->setDeletedAt(new DateTime());
             }
         }
+
         return $this;
     }
 
@@ -103,6 +131,14 @@ class ServerProduct
 
         if (empty($this->getSelectedPrice())) {
             $context->buildViolation('pteroca.crud.product.at_least_one_selected_price_required')
+                ->setTranslationDomain('messages')
+                ->atPath('prices')
+                ->addViolation();
+        }
+
+        $selectedPrices = $this->getPrices()->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->isSelected());
+        if (count($selectedPrices) > 1) {
+            $context->buildViolation('pteroca.crud.product.only_one_selected_price_allowed')
                 ->setTranslationDomain('messages')
                 ->atPath('prices')
                 ->addViolation();

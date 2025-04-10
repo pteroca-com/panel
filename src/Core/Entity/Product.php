@@ -5,6 +5,7 @@ namespace App\Core\Entity;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use App\Core\Trait\ProductEntityTrait;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -26,12 +27,6 @@ class Product
     #[ORM\Column(type: "boolean")]
     private bool $isActive = false;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTime $createdAt;
-
-    #[ORM\Column(type: "datetime", nullable: true)]
-    private ?\DateTime $updatedAt = null;
-
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $imagePath = null;
 
@@ -48,24 +43,21 @@ class Product
     #[ORM\JoinColumn(nullable: true)]
     private ?Category $category;
 
-    #[ORM\OneToMany(targetEntity: ProductPrice::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ProductPrice::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: false)]
     private Collection $prices;
+
+    #[ORM\Column(type: "datetime")]
+    private DateTime $createdAt;
+
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?DateTime $updatedAt = null;
+
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?DateTime $deletedAt = null;
 
     public function __construct()
     {
         $this->prices = new ArrayCollection();
-    }
-
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
-    {
-        $this->createdAt = new \DateTime();
-    }
-
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updatedAt = new \DateTime();
     }
 
     public function getDescription(): ?string
@@ -88,16 +80,6 @@ class Product
     {
         $this->isActive = $isActive;
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
     }
 
     public function getCategory(): ?Category
@@ -126,9 +108,7 @@ class Product
     {
         $this->imageFile = $imageFile;
         if (null !== $imageFile) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTime();
+            $this->updatedAt = new DateTime();
         }
     }
 
@@ -152,9 +132,7 @@ class Product
     {
         $this->bannerFile = $bannerFile;
         if (null !== $bannerFile) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTime();
+            $this->updatedAt = new DateTime();
         }
     }
 
@@ -163,14 +141,77 @@ class Product
         return $this->bannerFile;
     }
 
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new DateTime();
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new DateTime();
+    }
+
+    public function getUpdatedAt(): ?DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setDeletedAtValue(): void
+    {
+        $this->deletedAt = new DateTime();
+        $this->setIsActive(false);
+
+        foreach ($this->getPrices() as $price) {
+            $price->setDeletedAt($this->deletedAt);
+        }
+    }
+
+    public function getDeletedAt(): ?DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function setStaticPrices(iterable $prices): self
+    {
+        foreach ($this->getStaticPrices() as $existingPrice) {
+            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new \DateTime());
+            }
+        }
+
+        $this->syncPrices($this->getStaticPrices(), $prices);
+
+        return $this;
+    }
+
     public function getStaticPrices(): Collection
     {
-        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::STATIC);
+        return $this->prices->filter(fn(ProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::STATIC);
+    }
+
+    public function setDynamicPrices(iterable $prices): self
+    {
+        foreach ($this->getDynamicPrices() as $existingPrice) {
+            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new \DateTime());
+            }
+        }
+
+        $this->syncPrices($this->getDynamicPrices(), $prices);
+
+        return $this;
     }
 
     public function getDynamicPrices(): Collection
     {
-        return $this->prices->filter(fn(ProductPrice $price) => $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
+        return $this->prices->filter(fn(ProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
     }
 
     public function addPrice(ProductPrice $price): self
@@ -179,17 +220,18 @@ class Product
             $this->prices[] = $price;
             $price->setProduct($this);
         }
+
         return $this;
     }
 
     public function removePrice(ProductPrice $price): self
     {
         if ($this->prices->removeElement($price)) {
-            // set the owning side to null (unless already changed)
             if ($price->getProduct() === $this) {
-                $price->setProduct(null);
+                $price->setDeletedAt(new \DateTime());
             }
         }
+
         return $this;
     }
 

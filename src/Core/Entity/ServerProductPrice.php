@@ -17,9 +17,9 @@ class ServerProductPrice
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $isSelected = false;
 
-    public function getServerProduct(): string
+    public function getServerProduct(): ServerProduct
     {
-        return $this->serverProduct->getName();
+        return $this->serverProduct;
     }
 
     public function setServerProduct(ServerProduct $serverProduct): self

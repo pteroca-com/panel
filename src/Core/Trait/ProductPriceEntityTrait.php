@@ -25,6 +25,9 @@ trait ProductPriceEntityTrait
     #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
     private float $price;
 
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTime $deletedAt = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -71,6 +74,17 @@ trait ProductPriceEntityTrait
     public function setPrice(float $price): self
     {
         $this->price = $price;
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTime $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
         return $this;
     }
 

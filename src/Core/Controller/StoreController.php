@@ -40,6 +40,7 @@ class StoreController extends AbstractController
         }
 
         $products = $this->storeService->getCategoryProducts($category);
+
         return $this->render('panel/store/list.html.twig', [
             'category' => $category,
             'products' => $products,
@@ -58,6 +59,7 @@ class StoreController extends AbstractController
 
         $product = $this->storeService->prepareProduct($product);
         $preparedEggs = $this->storeService->getProductEggs($product);
+
         return $this->render('panel/store/product.html.twig', [
             'product' => $product,
             'eggs' => $preparedEggs,
@@ -73,10 +75,6 @@ class StoreController extends AbstractController
         $server = $serverService->getServer($serverId);
         if (empty($server)) {
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
-        }
-
-        if (!$server->getServerProduct()->getOriginalProduct()?->getIsActive()) {
-            throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_available'));
         }
 
         $originalProduct = $server->getServerProduct()->getOriginalProduct();
@@ -151,6 +149,7 @@ class StoreController extends AbstractController
         if (!empty($server)) {
             return $this->redirectToRoute('panel', ['routeName' => 'servers']);
         }
+
         return $this->redirectToRoute('panel', ['routeName' => 'store_product', 'id' => $productId]);
     }
 }

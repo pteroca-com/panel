@@ -52,15 +52,18 @@ class StoreService
         }, $this->productRepository->findBy([
             'category' => $category,
             'isActive' => true,
+            'deletedAt' => null,
         ]));
     }
 
     public function getActiveProduct(int $productId): ?Product
     {
         $product = $this->productRepository->find($productId);
-        if (empty($product) || $product->getIsActive() === false) {
+
+        if (empty($product) || $product->getIsActive() === false || $product->getDeletedAt() !== null) {
             return null;
         }
+
         return $product;
     }
 
@@ -81,18 +84,29 @@ class StoreService
 
     public function getProductEggs(Product $product): array
     {
-        $eggs = $this->pterodactylService->getApi()->nest_eggs->all($product->getNest())->toArray();
+        $eggs = $this->pterodactylService
+            ->getApi()
+            ->nest_eggs
+            ->all($product->getNest())
+            ->toArray();
+
         return array_filter($eggs, fn($egg) => in_array($egg->id, $product->getEggs()));
     }
 
     public function productHasNodeWithResources(Product $product): bool
     {
         foreach ($product->getNodes() as $node) {
-            $node = $this->pterodactylService->getApi()->nodes->get($node)->toArray();
+            $node = $this->pterodactylService
+                ->getApi()
+                ->nodes
+                ->get($node)
+                ->toArray();
+
             if ($this->checkNodeResources($product->getMemory(), $product->getDiskSpace(), $node)) {
                 return true;
             }
         }
+
         return false;
     }
 

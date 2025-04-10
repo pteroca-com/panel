@@ -396,7 +396,10 @@ pteroca:
       server_build_offline_alert: 'The server is currently offline. You can only edit the server build properties when the server is online.'
       at_least_one_price_required: 'At least one price is required.'
       at_least_one_selected_price_required: 'At least one selected price is required.'
+      only_one_selected_price_allowed: 'Only one selected price is allowed.'
       product_connections_note: 'The following settings will be applied only after reinstalling the server or changing the software.'
+      deleted_at: 'Deleted at'
+      show_archived: 'Show archived'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
@@ -426,6 +429,7 @@ pteroca:
       unsuspended_error: 'An error occurred while unsuspending the server.'
       details_updated_successfully: 'The server details have been successfully updated.'
       details_update_error: 'An error occurred while updating the server details.'
+      deleted_at: 'Deleted at'
     setting:
       name: 'Setting name'
       value: 'Setting value'

@@ -63,6 +63,9 @@ class ServerCrudController extends AbstractPanelController
             BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
             BooleanField::new('autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
                 ->hideOnIndex(),
+
+            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))->onlyOnDetail(),
+            DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))->onlyOnDetail(),
         ];
     }
 
@@ -109,10 +112,12 @@ class ServerCrudController extends AbstractPanelController
         $filters
             ->add('pterodactylServerId')
             ->add('user')
-            ->add('createdAt')
             ->add('expiresAt')
             ->add('isSuspended')
+            ->add('createdAt')
+            ->add('deletedAt')
         ;
+
         return parent::configureFilters($filters);
     }
 
@@ -130,7 +135,12 @@ class ServerCrudController extends AbstractPanelController
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->deleteServerService->deleteServer($entityInstance);
-        parent::deleteEntity($entityManager, $entityInstance);
+
+        if ($entityInstance instanceof Server) {
+            $entityInstance->setDeletedAtValue();
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 
     private function getServerProductAction(string $action): Action

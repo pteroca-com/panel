@@ -172,7 +172,7 @@ class ProductCrudController extends AbstractPanelController
 
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
-
+            DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.product.deleted_at'))->onlyOnDetail(),
         ];
 
         if (!empty($this->flashMessages)) {
@@ -222,6 +222,9 @@ class ProductCrudController extends AbstractPanelController
             ->add('swap')
             ->add('backups')
             ->add('ports')
+            ->add('createdAt')
+            ->add('updatedAt')
+            ->add('deletedAt')
         ;
         return parent::configureFilters($filters);
     }
@@ -242,6 +245,15 @@ class ProductCrudController extends AbstractPanelController
         if ($entityInstance instanceof Product) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
             $entityInstance->setUpdatedAtValue();
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($entityInstance instanceof Product) {
+            $entityInstance->setDeletedAtValue();
         }
 
         parent::updateEntity($entityManager, $entityInstance);
