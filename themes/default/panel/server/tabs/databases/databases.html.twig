@@ -21,8 +21,8 @@
                             {% for database in serverData.pterodactylServer.relationships.databases.toArray() %}
                                 <tr>
                                     <td>{{ database.database }}</td>
-                                    <td><pre>{{ database.remote }}</pre></td>
-                                    <td><pre>{{ database.username }}</pre></td>
+                                    <td class="pt-4"><pre>{{ database.remote }}</pre></td>
+                                    <td class="pt-4"><pre>{{ database.username }}</pre></td>
                                     <td class="actions actions-as-dropdown text-center">
                                         <div class="dropdown dropdown-actions">
                                             <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
