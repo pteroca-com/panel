@@ -282,6 +282,17 @@ pteroca:
     cannot_delete_primary_allocation: '无法删除主要分配。'
     extend_server_expires_on_demand: '您的 <strong>{{ productName }}</strong> 服务器目前设置为 <strong>按需</strong> 到期。'
     on_demand_billing_cycle: '当服务器处于离线状态时，将暂停按 ({{ productPrice }} {{ internalCurrency }} / 分钟) 收费，资源将免费。'
+    type: '类型'
+    primary: '主要'
+    secondary: '次要'
+    edit: '编辑'
+    edit_allocation: '编辑分配'
+    error_during_editing_allocation: '编辑分配时发生错误。'
+    make_primary: '设为主要分配'
+    make_allocation_primary_confirmation: '确定要将此分配设为主要分配吗？'
+    create_allocation_confirmation: '确定要创建额外的分配吗？'
+    error_during_creating_allocation: '创建分配时发生错误。'
+    auto_allocation_disabled_for_this_instance: '此实例禁用自动分配。'
 
   actions:
     login: '登录'

@@ -282,6 +282,17 @@ pteroca:
     cannot_delete_primary_allocation: 'Die primäre Zuweisung kann nicht gelöscht werden.'
     extend_server_expires_on_demand: 'Ihr <strong>{{ productName }}</strong>-Server läuft derzeit <strong>auf Abruf</strong>.'
     on_demand_billing_cycle: 'Der Abrechnungszyklus ({{ productPrice }} {{ internalCurrency }} / Minute) wird unterbrochen, wenn der Server offline ist, und Ressourcen sind kostenlos.'
+    type: 'Typ'
+    primary: 'Primär'
+    secondary: 'Sekundär'
+    edit: 'Bearbeiten'
+    edit_allocation: 'Zuweisung bearbeiten'
+    error_during_editing_allocation: 'Beim Bearbeiten der Zuweisung ist ein Fehler aufgetreten.'
+    make_primary: 'Zuweisung als primär festlegen'
+    make_allocation_primary_confirmation: 'Möchten Sie diese Zuweisung wirklich als primär festlegen?'
+    create_allocation_confirmation: 'Möchten Sie wirklich eine zusätzliche Zuweisung erstellen?'
+    error_during_creating_allocation: 'Beim Erstellen der Zuweisung ist ein Fehler aufgetreten.'
+    auto_allocation_disabled_for_this_instance: 'Die automatische Zuweisung ist für diese Instanz deaktiviert.'
 
   actions:
     login: 'Login'

@@ -282,6 +282,17 @@ pteroca:
     cannot_delete_primary_allocation: 'Неможливо видалити основну алокацію.'
     extend_server_expires_on_demand: 'Ваш сервер <strong>{{ productName }}</strong> наразі налаштовано на завершення <strong>за потребою</strong>.'
     on_demand_billing_cycle: 'Цикл білінгу ({{ productPrice }} {{ internalCurrency }} / хвилина) буде призупинений, коли сервер вимкнено, і ресурси будуть безкоштовними.'
+    type: 'Тип'
+    primary: 'Основний'
+    secondary: 'Другорядний'
+    edit: 'Редагувати'
+    edit_allocation: 'Редагувати алокацію'
+    error_during_editing_allocation: 'Сталася помилка під час редагування алокації.'
+    make_primary: 'Зробити алокацію основною'
+    make_allocation_primary_confirmation: 'Ви впевнені, що хочете зробити цю алокацію основною?'
+    create_allocation_confirmation: 'Ви впевнені, що хочете створити додаткову алокацію?'
+    error_during_creating_allocation: 'Сталася помилка під час створення алокації.'
+    auto_allocation_disabled_for_this_instance: 'Автоматична алокація вимкнена для даного інстансу.'
 
   actions:
     login: 'Вхід'

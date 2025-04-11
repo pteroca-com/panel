@@ -282,6 +282,17 @@ pteroca:
     cannot_delete_primary_allocation: 'मुख्य एलोकेशन को हटाया नहीं जा सकता।'
     extend_server_expires_on_demand: 'आपका <strong>{{ productName }}</strong> सर्वर वर्तमान में <strong>ऑन डिमांड</strong> समाप्त होने के लिए सेट है।'
     on_demand_billing_cycle: 'बिलिंग चक्र ({{ productPrice }} {{ internalCurrency }} / मिनट) तब रोक दिया जाएगा जब सर्वर ऑफ़लाइन हो, और संसाधन निःशुल्क होंगे।'
+    type: 'टाइप'
+    primary: 'प्राथमिक'
+    secondary: 'द्वितीयक'
+    edit: 'संपादित करें'
+    edit_allocation: 'आवंटन संपादित करें'
+    error_during_editing_allocation: 'आवंटन को संपादित करते समय एक त्रुटि हुई।'
+    make_primary: 'आवंटन को प्राथमिक बनाएं'
+    make_allocation_primary_confirmation: 'क्या आप वाकई इस आवंटन को प्राथमिक बनाना चाहते हैं?'
+    create_allocation_confirmation: 'क्या आप वाकई एक अतिरिक्त आवंटन बनाना चाहते हैं?'
+    error_during_creating_allocation: 'आवंटन बनाते समय एक त्रुटि हुई।'
+    auto_allocation_disabled_for_this_instance: 'इस इंस्टेंस के लिए स्वचालित आवंटन अक्षम है।'
 
   actions:
     login: 'लॉगिन'

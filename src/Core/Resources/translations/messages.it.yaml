@@ -282,6 +282,17 @@ pteroca:
     cannot_delete_primary_allocation: 'Non è possibile eliminare l''allocazione primaria.'
     extend_server_expires_on_demand: 'Il tuo server <strong>{{ productName }}</strong> è attualmente impostato per scadere <strong>su richiesta</strong>.'
     on_demand_billing_cycle: 'Il ciclo di fatturazione ({{ productPrice }} {{ internalCurrency }} / minuto) verrà messo in pausa quando il server è offline e le risorse saranno gratuite.'
+    type: 'Tipo'
+    primary: 'Primario'
+    secondary: 'Secondario'
+    edit: 'Modifica'
+    edit_allocation: 'Modifica allocazione'
+    error_during_editing_allocation: 'Si è verificato un errore durante la modifica dell''allocazione.'
+    make_primary: 'Imposta allocazione come primaria'
+    make_allocation_primary_confirmation: 'Sei sicuro di voler rendere questa allocazione primaria?'
+    create_allocation_confirmation: 'Sei sicuro di voler creare un''allocazione aggiuntiva?'
+    error_during_creating_allocation: 'Si è verificato un errore durante la creazione dell''allocazione.'
+    auto_allocation_disabled_for_this_instance: 'L''allocazione automatica è disabilitata per questa istanza.'
 
   actions:
     login: 'Login'
