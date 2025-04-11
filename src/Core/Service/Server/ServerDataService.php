@@ -29,18 +29,27 @@ class ServerDataService
             ->getApi()
             ->servers
             ->get($server->getPterodactylServerId(), [
-                'include' => ['variables', 'egg', 'allocations', 'databases'],
+                'include' => ['variables', 'egg', 'databases'],
             ]);
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
-        $allocatedPorts = array_map(function ($allocation) {
-            return $allocation->toArray();
-        }, $pterodactylServer->get('relationships')['allocations']->all());
 
         try {
             $pterodactylClientApi = $this->pterodactylClientService
                 ->getApi($server->getUser());
         } catch (UserDoesNotHaveClientApiKeyException) {
             $pterodactylClientApi = null;
+        }
+
+        try {
+            $allocatedPorts = $pterodactylClientApi->servers
+                ->http
+                ->get(sprintf('servers/%s/network/allocations', $server->getPterodactylServerIdentifier()))
+                ->toArray();
+            $allocatedPorts = array_map(function ($allocation) {
+                return $allocation->toArray();
+            }, $allocatedPorts);
+        } catch (Exception $exception) {
+            $allocatedPorts = [];
         }
 
         $pterodactylClientServer = $pterodactylClientApi

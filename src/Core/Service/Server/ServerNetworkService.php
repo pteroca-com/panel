@@ -2,7 +2,7 @@
 
 namespace App\Core\Service\Server;
 
-use App\Core\DTO\Action\Result\DeleteServerAllocationResult;
+use App\Core\DTO\Action\Result\ServerAllocationActionResult;
 use App\Core\Entity\Server;
 use App\Core\Entity\User;
 use App\Core\Enum\ServerLogActionEnum;
@@ -21,17 +21,58 @@ class ServerNetworkService
         private readonly TranslatorInterface $translator,
     ) {}
 
+    public function editAllocation(
+        Server $server,
+        User $user,
+        int $allocationId,
+        string $notes,
+    ): ServerAllocationActionResult
+    {
+        $endpointUrl = $this->getEndpointUrl($server, $allocationId);
+
+        try {
+            $this->pterodactylClientService
+                ->getApi($user)
+                ->servers
+                ->http
+                ->post($endpointUrl, [
+                    'notes' => $notes,
+                ]);
+        } catch (Exception $exception) {
+            $errorDetail = $this->translator->trans('pteroca.server.error_during_editing_allocation');
+        }
+
+        if (!empty($errorDetail)) {
+            return new ServerAllocationActionResult(
+                success: false,
+                server: $server,
+                error: $errorDetail,
+            );
+        }
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::EDIT_ALLOCATION,
+            [
+                'allocationId' => $allocationId,
+                'notes' => $notes,
+            ]
+        );
+
+        return new ServerAllocationActionResult(
+            success: true,
+            server: $server,
+        );
+    }
+
     public function deleteAllocation(
         Server $server,
         User $user,
         int $allocationId,
-    ): DeleteServerAllocationResult
+    ): ServerAllocationActionResult
     {
-        $endpointUrl = sprintf(
-            'servers/%s/network/allocations/%d',
-            $server->getPterodactylServerIdentifier(),
-            $allocationId,
-        );
+        $endpointUrl = $this->getEndpointUrl($server, $allocationId);
 
         try {
             $this->pterodactylClientService
@@ -51,7 +92,7 @@ class ServerNetworkService
         }
 
         if (!empty($errorDetail)) {
-            return new DeleteServerAllocationResult(
+            return new ServerAllocationActionResult(
                 success: false,
                 server: $server,
                 error: $errorDetail,
@@ -67,9 +108,18 @@ class ServerNetworkService
             ]
         );
 
-        return new DeleteServerAllocationResult(
+        return new ServerAllocationActionResult(
             success: true,
             server: $server,
+        );
+    }
+
+    private function getEndpointUrl(Server $server, int $allocationId): string
+    {
+        return sprintf(
+            'servers/%s/network/allocations/%d',
+            $server->getPterodactylServerIdentifier(),
+            $allocationId,
         );
     }
 }

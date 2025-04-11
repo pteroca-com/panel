@@ -58,12 +58,13 @@
 
 {% block body_javascript %}
     <script>
-        function sendRequest(endpointUrl, method = 'GET') {
+        function sendRequest(endpointUrl, method = 'GET', data = null) {
             return fetch(endpointUrl, {
                 method: method,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                }
+                },
+                body: JSON.stringify(data),
             })
         }
     </script>

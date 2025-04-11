@@ -282,6 +282,12 @@ pteroca:
     cannot_delete_primary_allocation: 'The primary allocation cannot be deleted.'
     extend_server_expires_on_demand: 'Your <strong>{{ productName }}</strong> server is currently set to expire on <strong>on demand</strong>.'
     on_demand_billing_cycle: 'The billing cycle ({{ productPrice }} {{ internalCurrency }} / minute) will be paused when the server is offline, and resources will be free.'
+    type: 'Type'
+    primary: 'Primary'
+    secondary: 'Secondary'
+    edit: 'Edit'
+    edit_allocation: 'Edit allocation'
+    error_during_editing_allocation: 'An error occurred while editing the allocation.'
 
   actions:
     login: 'Login'

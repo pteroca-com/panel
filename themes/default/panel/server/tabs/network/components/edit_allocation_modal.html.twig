@@ -1,0 +1,73 @@
+{% block main %}
+    <div class="modal fade" id="editAllocationModal" tabindex="-1" aria-labelledby="editAllocationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAllocationModalLabel">{{ 'pteroca.server.edit_allocation'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="edit-allocation-form">
+                    <input type="hidden" name="allocationId" id="allocationId">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text">
+                                    <p><b>{{ 'pteroca.server.ip_address'|trans }}:</b> <span id="edit-allocation-ip"></span></p>
+                                    <p><b>{{ 'pteroca.server.port'|trans }}:</b> <span id="edit-allocation-port"></span></p>
+                                    <p><b>{{ 'pteroca.server.type'|trans }}:</b> <span id="edit-allocation-type"></span></p>
+                                    <p><b>{{ 'pteroca.server.notes'|trans }}:</b></p>
+                                    <div>
+                                        <textarea class="form-control" name="notes" id="edit-allocation-notes" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="edit-allocation"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.edit_allocation'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#edit-allocation-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const form = event.target,
+                    formData = new FormData(form),
+                    endpointUrl = '{{ path('server_allocation_edit', { id: server.id, allocationId: 'ALLOCATION_ID' }) }}'.replace('ALLOCATION_ID', formData.get('allocationId')),
+                    submitButton = document.getElementById('edit-allocation'),
+                    spinner = submitButton.querySelector('i'),
+                    notes = formData.get('notes')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+
+                sendRequest(endpointUrl, 'POST', { notes: notes })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload()
+                        } else {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+
+                            response.json().then(data => {
+                                alert(data.error || '{{ 'pteroca.server.error_during_deleting_allocation'|trans }}')
+                            })
+                        }
+                    }).catch(() => {
+                    submitButton.disabled = false
+                    spinner.classList.add('d-none')
+
+                    alert('{{ 'pteroca.server.error_during_deleting_allocation'|trans }}')
+                })
+            })
+        })
+    </script>
+{% endblock %}

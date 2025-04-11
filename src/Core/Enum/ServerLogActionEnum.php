@@ -16,4 +16,5 @@ enum ServerLogActionEnum
    case DELETE_DATABASE;
    case ROTATE_DATABASE_PASSWORD;
    case DELETE_ALLOCATION;
+   case EDIT_ALLOCATION;
 }

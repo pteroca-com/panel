@@ -8,6 +8,7 @@
                             <th class="pb-2">{{ 'pteroca.server.ip_address'|trans }}</th>
                             <th class="pb-2">{{ 'pteroca.server.port'|trans }}</th>
                             <th class="pb-2">{{ 'pteroca.server.notes'|trans }}</th>
+                            <th class="pb-2">{{ 'pteroca.server.type'|trans }}</th>
                             <th class="pb-2">{{ 'pteroca.server.action'|trans }}</th>
                         </tr>
                     </thead>
@@ -21,7 +22,21 @@
                                 {{ allocatedPort.port }}
                             </td>
                             <td>
-                                {{ allocatedPort.notes }}
+                                {% if allocatedPort.notes and allocatedPort.notes|length > 0 %}
+                                    {{ allocatedPort.notes }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ allocatedPort.is_default ? 'primary' : 'secondary' }}">
+                                    {% if allocatedPort.is_default %}
+                                        <i class="fas fa-check pe-1"></i>
+                                    {% else %}
+                                        <i class="fas fa-asterisk pe-1"></i>
+                                    {% endif %}
+                                    {{ allocatedPort.is_default ? 'pteroca.server.primary'|trans : 'pteroca.server.secondary'|trans }}
+                                </span>
                             </td>
                             <td class="actions actions-as-dropdown text-center">
                                 <div class="dropdown dropdown-actions">
@@ -35,11 +50,28 @@
                                     <div class="dropdown-overlay">
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
+                                                <a class="dropdown-item action-edit" href="#"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editAllocationModal"
+                                                    data-action-name="edit"
+                                                    data-allocation-id="{{ allocatedPort.id }}"
+                                                    data-allocation-ip="{{ allocatedPort.ip }}"
+                                                    data-allocation-port="{{ allocatedPort.port }}"
+                                                    data-allocation-notes="{{ allocatedPort.notes }}"
+                                                    data-allocation-type-label="{{ allocatedPort.is_default ? 'pteroca.server.primary'|trans : 'pteroca.server.secondary'|trans }}"
+                                                >
+                                                    <span class="action-label">
+                                                        <i class="fas fa-edit"></i>
+                                                        {{ 'pteroca.server.edit'|trans }}
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <a class="dropdown-item action-edit" href="#" data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteAllocationModal" data-allocation-id="{{ allocatedPort.id }}">
-                                                            <span class="action-label">
-                                                                <i class="fas fa-trash"></i>
-                                                                {{ 'pteroca.server.delete'|trans }}
-                                                            </span>
+                                                    <span class="action-label">
+                                                        <i class="fas fa-trash"></i>
+                                                        {{ 'pteroca.server.delete'|trans }}
+                                                    </span>
                                                 </a>
                                             </li>
                                         </ul>
@@ -61,6 +93,7 @@
     </div>
 
     {% if serverData.allocatedPorts|length > 0 %}
+        {% include 'panel/server/tabs/network/components/edit_allocation_modal.html.twig' %}
         {% include 'panel/server/tabs/network/components/delete_allocation_modal.html.twig' %}
     {% endif %}
 {% endblock %}
@@ -75,10 +108,15 @@
                 const anchorElement = event.target.closest('a'),
                     actionName = anchorElement.getAttribute('data-action-name')
 
-                if (actionName === 'delete') {
+                if (['delete', 'edit'].includes(actionName)) {
                     document.querySelector('#allocationId').value = anchorElement.getAttribute('data-allocation-id')
+                }
 
-                    return
+                if (actionName === 'edit') {
+                    document.querySelector('#edit-allocation-ip').textContent = anchorElement.getAttribute('data-allocation-ip')
+                    document.querySelector('#edit-allocation-port').textContent = anchorElement.getAttribute('data-allocation-port')
+                    document.querySelector('#edit-allocation-notes').value = anchorElement.getAttribute('data-allocation-notes')
+                    document.querySelector('#edit-allocation-type').textContent = anchorElement.getAttribute('data-allocation-type-label')
                 }
             })
         })

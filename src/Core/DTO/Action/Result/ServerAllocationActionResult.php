@@ -4,7 +4,7 @@ namespace App\Core\DTO\Action\Result;
 
 use App\Core\Entity\Server;
 
-class DeleteServerAllocationResult
+class ServerAllocationActionResult
 {
     public function __construct(
         public readonly bool $success,
