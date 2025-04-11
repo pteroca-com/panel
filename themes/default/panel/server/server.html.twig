@@ -59,13 +59,19 @@
 {% block body_javascript %}
     <script>
         function sendRequest(endpointUrl, method = 'GET', data = null) {
-            return fetch(endpointUrl, {
+            let requestObject = {
                 method: method,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify(data),
-            })
+                }
+            }
+
+            if (data) {
+                requestObject.headers['Content-Type'] = 'application/json'
+                requestObject.body = JSON.stringify(data)
+            }
+
+            return fetch(endpointUrl, requestObject)
         }
     </script>
 {% endblock %}

@@ -49,6 +49,16 @@
                                     </a>
                                     <div class="dropdown-overlay">
                                         <ul class="dropdown-menu dropdown-menu-end">
+                                            {% if allocatedPort.is_default == false %}
+                                                <li>
+                                                    <a class="dropdown-item action-edit" href="#" data-action-name="make-primary" data-bs-toggle="modal" data-bs-target="#makePrimaryAllocationModal" data-allocation-id="{{ allocatedPort.id }}">
+                                                        <span class="action-label">
+                                                            <i class="fas fa-check"></i>
+                                                            {{ 'pteroca.server.make_primary'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
                                             <li>
                                                 <a class="dropdown-item action-edit" href="#"
                                                     data-bs-toggle="modal"
@@ -68,8 +78,8 @@
                                             </li>
                                             <li>
                                                 <a class="dropdown-item action-edit" href="#" data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteAllocationModal" data-allocation-id="{{ allocatedPort.id }}">
-                                                    <span class="action-label">
-                                                        <i class="fas fa-trash"></i>
+                                                    <span class="action-label text-danger">
+                                                        <i class="fas fa-trash text-danger"></i>
                                                         {{ 'pteroca.server.delete'|trans }}
                                                     </span>
                                                 </a>
@@ -96,6 +106,9 @@
         {% include 'panel/server/tabs/network/components/edit_allocation_modal.html.twig' %}
         {% include 'panel/server/tabs/network/components/delete_allocation_modal.html.twig' %}
     {% endif %}
+    {% if serverData.allocatedPorts|length > 1 %}
+        {% include 'panel/server/tabs/network/components/make_primary_allocation_modal.html.twig' %}
+    {% endif %}
 {% endblock %}
 
 {% block body_javascript %}
@@ -108,8 +121,8 @@
                 const anchorElement = event.target.closest('a'),
                     actionName = anchorElement.getAttribute('data-action-name')
 
-                if (['delete', 'edit'].includes(actionName)) {
-                    document.querySelector('#allocationId').value = anchorElement.getAttribute('data-allocation-id')
+                if (['delete', 'edit', 'make-primary'].includes(actionName)) {
+                    document.querySelector(`#${actionName}-allocation-form #allocationId`).value = anchorElement.getAttribute('data-allocation-id')
                 }
 
                 if (actionName === 'edit') {

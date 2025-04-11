@@ -18,6 +18,31 @@ class ServerNetworkController extends APIAbstractController
         private readonly ServerNetworkService $serverNetworkService,
     ) {}
 
+    #[Route('/panel/api/server/{id}/allocation/{allocationId}/primary', name: 'server_allocation_make_primary', methods: ['POST'])]
+    public function makePrimaryAllocation(
+        int $id,
+        int $allocationId,
+    ): JsonResponse
+    {
+        $server = $this->getServer($id);
+        $response = new JsonResponse();
+
+        $makePrimaryAllocationResult = $this->serverNetworkService->makePrimaryAllocation(
+            $server,
+            $this->getUser(),
+            $allocationId,
+        );
+
+        if (!$makePrimaryAllocationResult->success) {
+            $response->setStatusCode(400);
+            $response->setContent(json_encode([
+                'error' => $makePrimaryAllocationResult->error,
+            ]));
+        }
+
+        return $response;
+    }
+
     #[Route('/panel/api/server/{id}/allocation/{allocationId}/edit', name: 'server_allocation_edit', methods: ['POST'])]
     public function editAllocation(
         int $id,

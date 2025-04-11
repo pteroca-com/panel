@@ -288,6 +288,8 @@ pteroca:
     edit: 'Edit'
     edit_allocation: 'Edit allocation'
     error_during_editing_allocation: 'An error occurred while editing the allocation.'
+    make_primary: 'Make allocation primary'
+    make_allocation_primary_confirmation: 'Are you sure you want to make this allocation primary?'
 
   actions:
     login: 'Login'

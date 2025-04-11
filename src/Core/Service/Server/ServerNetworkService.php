@@ -21,6 +21,47 @@ class ServerNetworkService
         private readonly TranslatorInterface $translator,
     ) {}
 
+    public function makePrimaryAllocation(
+        Server $server,
+        User $user,
+        int $allocationId,
+    ): ServerAllocationActionResult
+    {
+        $endpointUrl = $this->getEndpointUrl($server, $allocationId, 'primary');
+
+        try {
+            $this->pterodactylClientService
+                ->getApi($user)
+                ->servers
+                ->http
+                ->post($endpointUrl);
+        } catch (Exception $exception) {
+            $errorDetail = $this->translator->trans('pteroca.server.error_during_editing_allocation');
+        }
+
+        if (!empty($errorDetail)) {
+            return new ServerAllocationActionResult(
+                success: false,
+                server: $server,
+                error: $errorDetail,
+            );
+        }
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::MAKE_PRIMARY_ALLOCATION,
+            [
+                'allocationId' => $allocationId,
+            ]
+        );
+
+        return new ServerAllocationActionResult(
+            success: true,
+            server: $server,
+        );
+    }
+
     public function editAllocation(
         Server $server,
         User $user,
@@ -114,12 +155,22 @@ class ServerNetworkService
         );
     }
 
-    private function getEndpointUrl(Server $server, int $allocationId): string
+    private function getEndpointUrl(Server $server, int $allocationId, string $additionalUri = ''): string
     {
-        return sprintf(
+        $endpointUrl = sprintf(
             'servers/%s/network/allocations/%d',
             $server->getPterodactylServerIdentifier(),
             $allocationId,
         );
+
+        if (!empty($additionalUri)) {
+            $endpointUrl = sprintf(
+                '%s/%s',
+                $endpointUrl,
+                $additionalUri,
+            );
+        }
+
+        return $endpointUrl;
     }
 }
