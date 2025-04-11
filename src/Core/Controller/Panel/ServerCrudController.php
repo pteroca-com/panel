@@ -19,8 +19,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -57,12 +59,28 @@ class ServerCrudController extends AbstractPanelController
             AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product_server_build'))
                 ->setDisabled(),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user')),
-            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
-                ->hideOnForm(),
-            DateTimeField::new('expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
-            BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
             BooleanField::new('autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
                 ->hideOnIndex(),
+
+            NumberField::new('serverProduct.diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.io', $this->translator->trans('pteroca.crud.product.io'))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.backups', $this->translator->trans('pteroca.crud.product.backups'))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.ports', $this->translator->trans('pteroca.crud.product.ports'))
+                ->onlyOnIndex(),
+
+            DateTimeField::new('expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
+            BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
 
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))->onlyOnDetail(),
             DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))->onlyOnDetail(),
