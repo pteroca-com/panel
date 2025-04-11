@@ -109,6 +109,9 @@
     {% if serverData.allocatedPorts|length > 1 %}
         {% include 'panel/server/tabs/network/components/make_primary_allocation_modal.html.twig' %}
     {% endif %}
+    {% if server.serverProduct.ports > serverData.allocatedPorts|length %}
+        {% include 'panel/server/tabs/network/components/create_allocation_modal.html.twig' %}
+    {% endif %}
 {% endblock %}
 
 {% block body_javascript %}

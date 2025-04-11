@@ -290,6 +290,9 @@ pteroca:
     error_during_editing_allocation: 'An error occurred while editing the allocation.'
     make_primary: 'Make allocation primary'
     make_allocation_primary_confirmation: 'Are you sure you want to make this allocation primary?'
+    create_allocation_confirmation: 'Are you sure you want to create additional allocation?'
+    error_during_creating_allocation: 'An error occurred while creating the allocation.'
+    auto_allocation_disabled_for_this_instance: 'Auto allocation is disabled for this instance.'
 
   actions:
     login: 'Login'
