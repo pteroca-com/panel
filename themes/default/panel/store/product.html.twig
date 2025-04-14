@@ -163,19 +163,7 @@
                         </div>
                     </div>
 
-                    {% if not isProductAvailable %}
-                        <div class="alert alert-warning mt-1" role="alert">
-                            <i class="fa fa-exclamation-triangle me-1"></i>
-                            {{ 'pteroca.product.not_available'|trans }}
-                        </div>
-                    {% endif %}
-
-                    <div class="alert alert-warning d-none mt-1" role="alert" data-alert="not_enough_balance">
-                        <i class="fa fa-exclamation-triangle me-1"></i>
-                        {{ 'pteroca.product.not_enough_balance'|trans }}
-                    </div>
-
-                    <button type="submit" id="order-submit" class="btn btn-primary mt-3 w-100" disabled>
+                    <button type="submit" id="order-submit" class="btn btn-primary mt-3 w-100">
                         <i class="fa fa-shopping-basket"></i> {{ 'pteroca.product.order_now'|trans }}
                     </button>
                 </form>

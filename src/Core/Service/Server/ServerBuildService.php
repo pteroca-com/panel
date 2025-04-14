@@ -18,7 +18,12 @@ class ServerBuildService
         private readonly NodeSelectionService $nodeSelectionService,
     ) {}
 
-    public function prepareServerBuild(Product|ServerProduct $product, User $user, int $eggId): array
+    public function prepareServerBuild(
+        Product|ServerProduct $product,
+        User $user,
+        int $eggId,
+        string $serverName = '',
+    ): array
     {
         $selectedEgg = $this->pterodactylService->getApi()->nest_eggs->get(
             $product->getNest(),
@@ -47,7 +52,7 @@ class ServerBuildService
             ?? $selectedEgg->get('startup');
 
         return [
-            'name' => $product->getName(),
+            'name' => $serverName ?: $product->getName(),
             'user' => $user->getPterodactylUserId(),
             'egg' => $selectedEgg->get('id'),
             'docker_image' => $dockerImage,

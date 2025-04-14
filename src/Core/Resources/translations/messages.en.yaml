@@ -147,6 +147,9 @@ pteroca:
     server_name: 'Server name'
     period: 'Period'
     order_summary: 'Order summary'
+    auto_renewal: 'Auto-renewal'
+    enable: 'Enable auto-renewal'
+    disable: 'Disable auto-renewal'
 
   renew:
     title: 'Renew server'

@@ -63,7 +63,6 @@ class StoreController extends AbstractController
         return $this->render('panel/store/product.html.twig', [
             'product' => $product,
             'eggs' => $preparedEggs,
-            'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
         ]);
     }
 

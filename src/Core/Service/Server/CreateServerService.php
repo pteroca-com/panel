@@ -36,11 +36,24 @@ class CreateServerService extends AbstractActionServerService
         parent::__construct($userRepository, $pterodactylService);
     }
 
-    public function createServer(Product $product, int $eggId, int $priceId, User|UserInterface $user): Server
+    public function createServer(
+        Product $product,
+        int $eggId,
+        int $priceId,
+        string $serverName,
+        bool $autoRenewal,
+        User|UserInterface $user
+    ): Server
     {
-        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $user);
+        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user);
 
-        $createdEntityServer = $this->createEntityServer($createdPterodactylServer, $user, $product, $priceId);
+        $createdEntityServer = $this->createEntityServer(
+            $createdPterodactylServer,
+            $user,
+            $product,
+            $priceId,
+            $autoRenewal
+        );
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
 
@@ -62,11 +75,21 @@ class CreateServerService extends AbstractActionServerService
         return $createdEntityServer;
     }
 
-    private function createPterodactylServer(Product $product, int $eggId, User $user): PterodactylServer
+    private function createPterodactylServer(
+        Product $product,
+        int $eggId,
+        string $serverName,
+        User $user
+    ): PterodactylServer
     {
         try {
-            $preparedServerBuild = $this->serverBuildService->prepareServerBuild($product, $user, $eggId);
-            return $this->pterodactylService->getApi()->servers->create($preparedServerBuild);
+            $preparedServerBuild = $this->serverBuildService
+                ->prepareServerBuild($product, $user, $eggId, $serverName);
+
+            return $this->pterodactylService
+                ->getApi()
+                ->servers
+                ->create($preparedServerBuild);
         } catch (ValidationException $exception) {
             $errors = array_map(
                 fn($error) => $error['detail'],
@@ -77,7 +100,13 @@ class CreateServerService extends AbstractActionServerService
         }
     }
 
-    private function createEntityServer(PterodactylServer $server, User $user, Product $product, int $priceId): Server
+    private function createEntityServer(
+        PterodactylServer $server,
+        User $user,
+        Product $product,
+        int $priceId,
+        bool $autoRenewal
+    ): Server
     {
         /** @var ProductPrice $selectedPrice */
         $selectedPrice = $product->getPrices()->filter(
@@ -93,12 +122,13 @@ class CreateServerService extends AbstractActionServerService
             $selectedPrice->getValue(),
             $selectedPrice->getUnit()->value
         );
+        $autoRenewalStatus = $autoRenewal || $selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND;
         $entityServer = (new Server())
             ->setPterodactylServerId($server->get('id'))
             ->setPterodactylServerIdentifier($server->get('identifier'))
             ->setUser($user)
             ->setExpiresAt(new \DateTime($datetimeModifier))
-            ->setAutoRenewal($selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND);
+            ->setAutoRenewal($autoRenewalStatus);
 
         $this->serverRepository->save($entityServer);
 
