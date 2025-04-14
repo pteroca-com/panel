@@ -141,6 +141,12 @@ pteroca:
     no_categories: 'There are no categories yet.'
     no_products: 'There are no products yet.'
     price_not_found: 'Price not found'
+  cart_configuration:
+    title: 'Configure your server'
+    configuration: 'Configuration'
+    server_name: 'Server name'
+    period: 'Period'
+    order_summary: 'Order summary'
 
   renew:
     title: 'Renew server'
@@ -551,6 +557,19 @@ pteroca:
       user: 'User'
       ip_address: 'IP address'
       server: 'Server'
+    voucher:
+      voucher: 'Voucher'
+      vouchers: 'Vouchers'
+      code: 'Code'
+      value: 'Value'
+      new_accounts_only: 'For new accounts only'
+      minimum_top_up_amount: 'Minimum top-up amount'
+      minimum_order_amount: 'Minimum order amount'
+      expiration_date: 'Expiration date'
+      max_global_uses: 'Maximum global uses'
+      used_count: 'Used count'
+      one_use_per_user: 'One use per user'
+      description: 'Description'
     menu:
       menu: 'Menu'
       dashboard: 'Dashboard'
@@ -575,6 +594,7 @@ pteroca:
       server_logs: 'Server logs'
       overview: 'Overview'
       server_builds: 'Servers'
+      vouchers: 'Vouchers'
 
   api:
     servers:

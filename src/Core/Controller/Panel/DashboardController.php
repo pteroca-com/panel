@@ -16,6 +16,7 @@ use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
+use App\Core\Entity\Voucher;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -116,6 +117,7 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.appearance'), 'fa fa-brush', $this->generateSettingsUrl(SettingContextEnum::THEME)),
             ]);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class);
+            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gift', Voucher::class);
         }
 
         yield MenuItem::section();

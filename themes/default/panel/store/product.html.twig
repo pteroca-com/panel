@@ -50,8 +50,9 @@
             </div>
             <div class="col-md-4">
                 <h2>{{ 'pteroca.product.order'|trans }}</h2>
-                <form action="{{ path('panel', { routeName: 'store_product_buy' }) }}" method="post">
-                    <input type="hidden" name="product" value="{{ product.id }}">
+                <form action="{{ path('panel') }}">
+                    <input type="hidden" name="id" value="{{ product.id }}">
+                    <input type="hidden" name="routeName" value="cart_configure">
                     <div class="form-group">
                         <label for="duration">{{ 'pteroca.product.period'|trans }}</label>
                         <select id="duration" name="duration" class="form-control">

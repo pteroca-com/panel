@@ -13,4 +13,5 @@ enum CrudTemplateContextEnum: string
     case SERVER_PRODUCT = 'server_product';
     case USER = 'user';
     case SETTING = 'setting';
+    case VOUCHER = 'voucher';
 }
