@@ -5,12 +5,14 @@ namespace App\Core\Controller\Panel;
 use App\Core\Entity\Voucher;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
@@ -37,6 +39,8 @@ class VoucherCrudController extends AbstractPanelController
     {
         return [
             NumberField::new('id', 'ID')->onlyOnIndex(),
+            ChoiceField::new('type', $this->translator->trans('pteroca.crud.voucher.type'))
+                ->setChoices(VoucherTypeEnum::getChoices()),
             TextareaField::new('description', $this->translator->trans('pteroca.crud.voucher.description')),
             TextField::new('code', $this->translator->trans('pteroca.crud.voucher.code')),
             IntegerField::new('value', $this->translator->trans('pteroca.crud.voucher.value')),
@@ -48,6 +52,7 @@ class VoucherCrudController extends AbstractPanelController
             IntegerField::new('maxGlobalUses', $this->translator->trans('pteroca.crud.voucher.max_global_uses')),
             IntegerField::new('usedCount', $this->translator->trans('pteroca.crud.voucher.used_count'))
                 ->setDisabled()
+                ->hideWhenCreating(),
         ];
     }
 

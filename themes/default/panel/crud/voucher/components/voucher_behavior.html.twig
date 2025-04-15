@@ -1,0 +1,19 @@
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const voucherTypeSelect = document.getElementById('Voucher_type');
+
+            voucherTypeSelect.addEventListener('change', function () {
+                const selectedValue = this.value,
+                    isBalanceTopupType = selectedValue == '0';
+
+                document.querySelector('#Voucher_minimumOrderAmount').disabled = isBalanceTopupType;
+
+                if (isBalanceTopupType) {
+                    document.querySelector('#Voucher_minimumOrderAmount').value = '';
+                }
+            })
+            voucherTypeSelect.dispatchEvent(new Event('change'));
+        })
+    </script>
+{% endblock %}

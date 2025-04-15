@@ -141,6 +141,22 @@ pteroca:
     no_categories: 'Aucune catégorie n’a encore été ajoutée à la boutique.'
     no_products: 'Il n’y a pas encore de produits dans cette catégorie.'
     price_not_found: 'Prix introuvable'
+  cart_configuration:
+    title: 'Configurer votre serveur'
+    configuration: 'Configuration'
+    server_name: 'Nom du serveur'
+    period: 'Période'
+    order_summary: 'Récapitulatif de la commande'
+    auto_renewal: 'Renouvellement automatique'
+    enable: 'Activer le renouvellement automatique'
+    disable: 'Désactiver le renouvellement automatique'
+  cart_topup:
+    title: 'Recharger votre compte'
+    order: 'Commander'
+    order_description: 'Recharger des fonds'
+    payment_method: 'Méthode de paiement'
+  cart_renew:
+    title: 'Renouveler votre serveur'
 
   renew:
     title: 'Renouveler le serveur'
@@ -550,6 +566,19 @@ pteroca:
       user: 'Utilisateur'
       ip_address: 'Adresse IP'
       server: 'Serveur'
+    voucher:
+      voucher: 'Bon'
+      vouchers: 'Bons'
+      code: 'Code'
+      value: 'Valeur'
+      new_accounts_only: 'Uniquement pour les nouveaux comptes'
+      minimum_top_up_amount: 'Montant minimum de rechargement'
+      minimum_order_amount: 'Montant minimum de commande'
+      expiration_date: 'Date d''expiration'
+      max_global_uses: 'Utilisations globales maximales'
+      used_count: 'Nombre d''utilisations'
+      one_use_per_user: 'Une utilisation par utilisateur'
+      description: 'Description'
     menu:
       menu: 'Menu'
       dashboard: 'Tableau de bord'
@@ -574,6 +603,7 @@ pteroca:
       server_logs: 'Journaux du serveur'
       overview: 'Vue d’ensemble'
       server_builds: 'Serveurs'
+      vouchers: 'Bons'
 
   api:
     servers:

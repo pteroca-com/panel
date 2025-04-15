@@ -150,6 +150,16 @@ pteroca:
     auto_renewal: 'Auto-renewal'
     enable: 'Enable auto-renewal'
     disable: 'Disable auto-renewal'
+  cart_topup:
+    title: 'Top up your account'
+    order: 'Order'
+    order_description: 'Top up funds'
+    payment_method: 'Payment method'
+  cart_renew:
+    title: 'Renew your server'
+  cart:
+    use_voucher: 'Use voucher'
+    voucher_code: 'Voucher code'
 
   renew:
     title: 'Renew server'
@@ -573,6 +583,9 @@ pteroca:
       used_count: 'Used count'
       one_use_per_user: 'One use per user'
       description: 'Description'
+      type: 'Type'
+      balance_topup: 'Balance top-up'
+      discount: 'Discount'
     menu:
       menu: 'Menu'
       dashboard: 'Dashboard'
@@ -602,6 +615,12 @@ pteroca:
   api:
     servers:
       not_found: 'Server not found.'
+    voucher:
+      not_found: 'Voucher not found.'
+      expired: 'Voucher has expired.'
+      successfully_applied: 'Voucher successfully applied.'
+      max_global_uses_reached: 'Maximum global uses reached.'
+      already_used: 'Voucher has already been used.'
 
   email:
     general:

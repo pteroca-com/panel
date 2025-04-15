@@ -21,6 +21,7 @@ final class Version20250413171914 extends AbstractMigration
                 id INT AUTO_INCREMENT NOT NULL,
                 code VARCHAR(255) NOT NULL,
                 value NUMERIC(10, 2) NOT NULL,
+                type VARCHAR(255) NOT NULL,
                 new_accounts_only TINYINT(1) NOT NULL,
                 minimum_topup_amount NUMERIC(10, 2) DEFAULT NULL,
                 minimum_order_amount NUMERIC(10, 2) DEFAULT NULL,

@@ -12,4 +12,22 @@ class VoucherUsageRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, VoucherUsage::class);
     }
+
+    public function save(VoucherUsage $voucherUsage): void
+    {
+        $this->getEntityManager()->persist($voucherUsage);
+        $this->getEntityManager()->flush();
+    }
+
+    public function hasUsedVoucher(string $voucherCode, int $userId): bool
+    {
+        return (bool) $this->createQueryBuilder('vu')
+            ->select('COUNT(vu.id)')
+            ->where('vu.voucherCode = :voucherCode')
+            ->andWhere('vu.userId = :userId')
+            ->setParameter('voucherCode', $voucherCode)
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

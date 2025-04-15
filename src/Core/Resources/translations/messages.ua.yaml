@@ -141,6 +141,22 @@ pteroca:
     no_categories: 'Ще не додано жодних категорій у магазин.'
     no_products: 'У цій категорії немає продуктів.'
     price_not_found: 'Ціну не знайдено'
+  cart_configuration:
+    title: 'Налаштувати сервер'
+    configuration: 'Конфігурація'
+    server_name: 'Назва сервера'
+    period: 'Період'
+    order_summary: 'Підсумок замовлення'
+    auto_renewal: 'Автоматичне подовження'
+    enable: 'Увімкнути автоматичне подовження'
+    disable: 'Вимкнути автоматичне подовження'
+  cart_topup:
+    title: 'Поповнити свій рахунок'
+    order: 'Замовити'
+    order_description: 'Поповнити кошти'
+    payment_method: 'Спосіб оплати'
+  cart_renew:
+    title: 'Подовжити сервер'
 
   renew:
     title: 'Продовжити сервер'
@@ -550,6 +566,19 @@ pteroca:
       user: 'Користувач'
       ip_address: 'IP-адреса'
       server: 'Сервер'
+    voucher:
+      voucher: 'Ваучер'
+      vouchers: 'Ваучери'
+      code: 'Код'
+      value: 'Значення'
+      new_accounts_only: 'Тільки для нових акаунтів'
+      minimum_top_up_amount: 'Мінімальна сума поповнення'
+      minimum_order_amount: 'Мінімальна сума замовлення'
+      expiration_date: 'Дата закінчення дії'
+      max_global_uses: 'Максимальна кількість використань'
+      used_count: 'Кількість використань'
+      one_use_per_user: 'Одне використання на користувача'
+      description: 'Опис'
     menu:
       menu: 'Меню'
       dashboard: 'Панель'
@@ -574,6 +603,7 @@ pteroca:
       server_logs: 'Логи сервера'
       overview: 'Огляд'
       server_builds: 'Сервери'
+      vouchers: 'Ваучери'
 
   api:
     servers:

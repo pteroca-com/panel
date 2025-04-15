@@ -1,0 +1,71 @@
+{% block main %}
+    <div class="modal fade" id="useVoucherModal" tabindex="-1" aria-labelledby="useVoucherModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="useVoucherModalLabel">{{ 'pteroca.cart.use_voucher'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="use-voucher-form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text form-group">
+                                    <label for="Voucher_code" class="form-control-label required">
+                                        {{ 'pteroca.cart.voucher_code'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Voucher_code" name="Voucher[code]" required="required" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="use-voucher"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.cart.use_voucher'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#use-voucher-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const form = event.target,
+                    formData = new FormData(form),
+                    endpointUrl = '{{ path('panel') }}'.replace('ALLOCATION_ID', formData.get('allocationId')),
+                    submitButton = document.getElementById('use-voucher'),
+                    spinner = submitButton.querySelector('i'),
+                    notes = formData.get('notes')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+
+                sendRequest(endpointUrl, 'POST', { notes: notes })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload()
+                        } else {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+
+                            response.json().then(data => {
+                                alert(data.error || '{{ 'pteroca.server.error_during_editing_allocation'|trans }}')
+                            })
+                        }
+                    }).catch(() => {
+                    submitButton.disabled = false
+                    spinner.classList.add('d-none')
+
+                    alert('{{ 'pteroca.server.error_during_editing_allocation'|trans }}')
+                })
+            })
+        })
+    </script>
+{% endblock %}

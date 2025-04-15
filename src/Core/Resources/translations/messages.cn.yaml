@@ -141,6 +141,22 @@ pteroca:
     no_categories: '商店中尚未添加任何类别。'
     no_products: '该类别中没有产品。'
     price_not_found: '找不到价格'
+  cart_configuration:
+    title: '配置你的服务器'
+    configuration: '配置'
+    server_name: '服务器名称'
+    period: '周期'
+    order_summary: '订单摘要'
+    auto_renewal: '自动续订'
+    enable: '启用自动续订'
+    disable: '禁用自动续订'
+  cart_topup:
+    title: '充值你的账户'
+    order: '订单'
+    order_description: '充值资金'
+    payment_method: '支付方式'
+  cart_renew:
+    title: '续订你的服务器'
 
   renew:
     title: '续订服务器'
@@ -550,6 +566,19 @@ pteroca:
       user: '用户'
       ip_address: 'IP 地址'
       server: '服务器'
+    voucher:
+      voucher: '优惠券'
+      vouchers: '优惠券'
+      code: '优惠码'
+      value: '金额'
+      new_accounts_only: '仅限新用户'
+      minimum_top_up_amount: '最低充值金额'
+      minimum_order_amount: '最低订单金额'
+      expiration_date: '到期日'
+      max_global_uses: '最大使用次数'
+      used_count: '使用次数'
+      one_use_per_user: '每个用户限用一次'
+      description: '描述'
     menu:
       menu: '菜单'
       dashboard: '仪表盘'
@@ -574,6 +603,7 @@ pteroca:
       server_logs: '服务器日志'
       overview: '概览'
       server_builds: '服务器'
+      vouchers: '优惠券'
 
   api:
     servers:

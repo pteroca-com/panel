@@ -141,6 +141,22 @@ pteroca:
     no_categories: 'Aún no se han añadido categorías a la tienda.'
     no_products: 'No hay productos en esta categoría.'
     price_not_found: 'No se encontró el precio'
+  cart_configuration:
+    title: 'Configura tu servidor'
+    configuration: 'Configuración'
+    server_name: 'Nombre del servidor'
+    period: 'Período'
+    order_summary: 'Resumen del pedido'
+    auto_renewal: 'Renovación automática'
+    enable: 'Habilitar renovación automática'
+    disable: 'Deshabilitar renovación automática'
+  cart_topup:
+    title: 'Recarga tu cuenta'
+    order: 'Ordenar'
+    order_description: 'Recargar fondos'
+    payment_method: 'Método de pago'
+  cart_renew:
+    title: 'Renueva tu servidor'
 
   renew:
     title: 'Renovar servidor'
@@ -550,6 +566,19 @@ pteroca:
       user: 'Usuario'
       ip_address: 'Dirección IP'
       server: 'Servidor'
+    voucher:
+      voucher: 'Vale'
+      vouchers: 'Vales'
+      code: 'Código'
+      value: 'Valor'
+      new_accounts_only: 'Solo para cuentas nuevas'
+      minimum_top_up_amount: 'Cantidad mínima de recarga'
+      minimum_order_amount: 'Cantidad mínima de pedido'
+      expiration_date: 'Fecha de expiración'
+      max_global_uses: 'Usos máximos totales'
+      used_count: 'Cantidad de usos'
+      one_use_per_user: 'Un uso por usuario'
+      description: 'Descripción'
     menu:
       menu: 'Menú'
       dashboard: 'Panel de control'
@@ -574,6 +603,7 @@ pteroca:
       server_logs: 'Registros del servidor'
       overview: 'Resumen'
       server_builds: 'Servidores'
+      vouchers: 'Vales'
 
   api:
     servers:

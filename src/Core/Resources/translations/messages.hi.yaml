@@ -141,6 +141,22 @@ pteroca:
     no_categories: 'अभी तक कोई श्रेणियाँ नहीं हैं।'
     no_products: 'अभी तक कोई उत्पाद नहीं हैं।'
     price_not_found: 'कीमत नहीं मिली'
+  cart_configuration:
+    title: 'अपने सर्वर को कॉन्फ़िगर करें'
+    configuration: 'कॉन्फ़िगरेशन'
+    server_name: 'सर्वर का नाम'
+    period: 'अवधि'
+    order_summary: 'ऑर्डर सारांश'
+    auto_renewal: 'स्वचालित नवीनीकरण'
+    enable: 'स्वचालित नवीनीकरण सक्षम करें'
+    disable: 'स्वचालित नवीनीकरण अक्षम करें'
+  cart_topup:
+    title: 'अपना खाता रिचार्ज करें'
+    order: 'ऑर्डर'
+    order_description: 'फंड्स रिचार्ज करें'
+    payment_method: 'भुगतान विधि'
+  cart_renew:
+    title: 'अपने सर्वर का नवीनीकरण करें'
 
   renew:
     title: 'सर्वर नवीनीकरण'
@@ -550,6 +566,19 @@ pteroca:
       user: 'उपयोगकर्ता'
       ip_address: 'आईपी पता'
       server: 'सर्वर'
+    voucher:
+      voucher: 'वाउचर'
+      vouchers: 'वाउचर'
+      code: 'कोड'
+      value: 'मान'
+      new_accounts_only: 'केवल नए खातों के लिए'
+      minimum_top_up_amount: 'न्यूनतम रिचार्ज राशि'
+      minimum_order_amount: 'न्यूनतम ऑर्डर राशि'
+      expiration_date: 'समाप्ति तिथि'
+      max_global_uses: 'अधिकतम वैश्विक उपयोग'
+      used_count: 'उपयोग गणना'
+      one_use_per_user: 'प्रति उपयोगकर्ता एक उपयोग'
+      description: 'विवरण'
     menu:
       menu: 'मेनू'
       dashboard: 'डैशबोर्ड'
@@ -574,6 +603,7 @@ pteroca:
       server_logs: 'सर्वर लॉग्स'
       overview: 'अवलोकन'
       server_builds: 'सर्वर'
+      vouchers: 'वाउचर'
 
   api:
     servers:

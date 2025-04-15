@@ -12,4 +12,13 @@ class VoucherRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Voucher::class);
     }
+
+    public function getVoucherByCode(string $code): ?Voucher
+    {
+        return $this->createQueryBuilder('v')
+            ->andWhere('v.code = :code')
+            ->setParameter('code', $code)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

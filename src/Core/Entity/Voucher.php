@@ -2,6 +2,7 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Repository\VoucherRepository;
 use DateTime;
 use DateTimeInterface;
@@ -20,6 +21,9 @@ class Voucher
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private string $value;
+
+    #[ORM\Column(type: 'string', enumType: VoucherTypeEnum::class)]
+    private VoucherTypeEnum $type;
 
     #[ORM\Column(type: 'boolean')]
     private bool $newAccountsOnly = false;
@@ -84,6 +88,17 @@ class Voucher
     public function setValue(string $value): self
     {
         $this->value = $value;
+        return $this;
+    }
+
+    public function getType(): VoucherTypeEnum
+    {
+        return $this->type;
+    }
+
+    public function setType(VoucherTypeEnum $type): self
+    {
+        $this->type = $type;
         return $this;
     }
 
