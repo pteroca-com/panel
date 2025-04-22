@@ -126,6 +126,8 @@ pteroca:
     billing_period: 'Billing period'
     total_price: 'Total price'
     ports: 'Ports'
+    discount: 'Discount'
+    discount_hint: 'Discount will be applied only to the first billing cycle.'
 
   store:
     title: 'Store'
@@ -325,6 +327,7 @@ pteroca:
     entity_delete: 'Entity deleted'
     user_registered: 'User registered'
     user_verify_email: 'Email verified'
+    voucher_redeemed: 'Voucher redeemed'
 
   server_actions:
     change_details: 'Changed server details'
@@ -338,6 +341,10 @@ pteroca:
     create_database: 'Created database'
     delete_database: 'Deleted database'
     rotate_database_password: 'Rotated database password'
+
+  voucher:
+    expired: 'The voucher has expired.'
+    discount_value_invalid: 'The discount value is invalid. Maximum is 100 (%).'
 
   crud:
     category:
@@ -585,7 +592,8 @@ pteroca:
       description: 'Description'
       type: 'Type'
       balance_topup: 'Balance top-up'
-      discount: 'Discount'
+      payment_discount: 'Payment discount'
+      server_discount: 'Server discount'
     menu:
       menu: 'Menu'
       dashboard: 'Dashboard'
@@ -621,6 +629,10 @@ pteroca:
       successfully_applied: 'Voucher successfully applied.'
       max_global_uses_reached: 'Maximum global uses reached.'
       already_used: 'Voucher has already been used.'
+      only_for_new_accounts: 'Voucher is only for new accounts.'
+      minimum_top_up_amount_required: 'You must top up your account with at least {{ amount }} {{ currency }} to use this voucher.'
+      error_during_redeeming: 'An error occurred while redeeming the voucher.'
+      only_during_order: 'Voucher can only be used during the order.'
 
   email:
     general:

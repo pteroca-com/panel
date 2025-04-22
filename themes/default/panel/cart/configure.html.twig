@@ -111,6 +111,13 @@
                             <span id="selected-duration"></span> <span id="selected-price" class="float-end"></span>
                             <hr>
                         </div>
+                        <div class="col-12 d-none" id="applied-discount">
+                            {{ 'pteroca.product.discount'|trans }} <small>(<span id="applied-discount-code"></span>, -<span id="applied-discount-value"></span>%)</small>
+                            <i class="fa fa-question-circle-o ps-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.product.discount_hint'|trans }}"></i>
+                            <i class="fa fa-close ps-1 hover-pointer" id="applied-discount-remove"></i>
+                            <span class="float-end">-<span id="applied-discount-amount"></span> {{ get_currency() }}</span>
+                            <hr>
+                        </div>
                         <div class="col-12">
                             <span id="selected-summary" class="fs-3 float-end"></span>
                         </div>
@@ -143,6 +150,7 @@
     </div>
 
     {% include 'components/use_voucher_modal.html.twig' %}
+    {% include 'panel/cart/components/apply_discount.html.twig' %}
 {% endblock %}
 
 {% block body_javascript %}
@@ -161,19 +169,34 @@
             durationSelect.addEventListener('change', calculatePrice);
             durationSelect.dispatchEvent(new Event('change'));
 
-            function calculatePrice() {
-                const selectedOption = durationSelect.options[durationSelect.selectedIndex],
-                    summaryPrice = parseFloat(selectedOption.dataset.price);
-
-                document.querySelector('#selected-duration').textContent = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`
-                document.querySelector('#selected-price').textContent = `${summaryPrice.toFixed(2)} {{ get_currency() }}`
-
-                document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ get_currency() }}`
-
-                const insufficientBalance = currentUserBalance < summaryPrice;
-                document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
-                document.querySelector('button#order-submit').disabled = insufficientBalance && isProductAvailable;
-            }
+            document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
         })
+
+        function calculatePrice() {
+            const durationSelect = document.getElementById('duration'),
+                selectedOption = durationSelect.options[durationSelect.selectedIndex],
+                appliedDiscountValue = document.querySelector('#applied-discount-value'),
+                productPrice = parseFloat(selectedOption.dataset.price)
+
+            let summaryPrice = productPrice
+
+            if (appliedDiscountValue && appliedDiscountValue.innerText) {
+                const discountValue = parseFloat(appliedDiscountValue.innerText);
+                if (!isNaN(discountValue)) {
+                    let discountPrice = summaryPrice * (discountValue / 100);
+                    document.querySelector('#applied-discount-amount').textContent = discountPrice.toFixed(2);
+                    summaryPrice -= discountPrice
+                }
+            }
+
+            document.querySelector('#selected-duration').textContent = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`
+            document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`
+
+            document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ get_currency() }}`
+
+            const insufficientBalance = currentUserBalance < summaryPrice;
+            document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
+            document.querySelector('button#order-submit').disabled = insufficientBalance && isProductAvailable;
+        }
     </script>
 {% endblock %}

@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
@@ -40,19 +41,34 @@ class VoucherCrudController extends AbstractPanelController
         return [
             NumberField::new('id', 'ID')->onlyOnIndex(),
             ChoiceField::new('type', $this->translator->trans('pteroca.crud.voucher.type'))
-                ->setChoices(VoucherTypeEnum::getChoices()),
-            TextareaField::new('description', $this->translator->trans('pteroca.crud.voucher.description')),
-            TextField::new('code', $this->translator->trans('pteroca.crud.voucher.code')),
-            IntegerField::new('value', $this->translator->trans('pteroca.crud.voucher.value')),
-            BooleanField::new('newAccountsOnly', $this->translator->trans('pteroca.crud.voucher.new_accounts_only')),
-            BooleanField::new('oneUsePerUser', $this->translator->trans('pteroca.crud.voucher.one_use_per_user')),
-            IntegerField::new('minimumTopupAmount', $this->translator->trans('pteroca.crud.voucher.minimum_top_up_amount')),
-            IntegerField::new('minimumOrderAmount', $this->translator->trans('pteroca.crud.voucher.minimum_order_amount')),
-            DateTimeField::new('expirationDate', $this->translator->trans('pteroca.crud.voucher.expiration_date')),
-            IntegerField::new('maxGlobalUses', $this->translator->trans('pteroca.crud.voucher.max_global_uses')),
+                ->setChoices(VoucherTypeEnum::getChoices())
+                ->setColumns(4),
+            TextField::new('code', $this->translator->trans('pteroca.crud.voucher.code'))
+                ->setColumns(4),
+            IntegerField::new('value', $this->translator->trans('pteroca.crud.voucher.value'))
+                ->setColumns(4),
+            TextareaField::new('description', $this->translator->trans('pteroca.crud.voucher.description'))
+                ->hideOnIndex()
+                ->setColumns(6),
+            FormField::addRow(),
+            IntegerField::new('minimumTopupAmount', $this->translator->trans('pteroca.crud.voucher.minimum_top_up_amount'))
+                ->setColumns(2),
+            IntegerField::new('minimumOrderAmount', $this->translator->trans('pteroca.crud.voucher.minimum_order_amount'))
+                ->setColumns(2),
+            IntegerField::new('maxGlobalUses', $this->translator->trans('pteroca.crud.voucher.max_global_uses'))
+                ->setColumns(2),
+            DateTimeField::new('expirationDate', $this->translator->trans('pteroca.crud.voucher.expiration_date'))
+                ->setColumns(2),
             IntegerField::new('usedCount', $this->translator->trans('pteroca.crud.voucher.used_count'))
                 ->setDisabled()
                 ->hideWhenCreating(),
+            FormField::addRow(),
+            BooleanField::new('newAccountsOnly', $this->translator->trans('pteroca.crud.voucher.new_accounts_only'))
+                ->hideOnIndex()
+                ->setColumns(3),
+            BooleanField::new('oneUsePerUser', $this->translator->trans('pteroca.crud.voucher.one_use_per_user'))
+                ->hideOnIndex()
+                ->setColumns(3),
         ];
     }
 

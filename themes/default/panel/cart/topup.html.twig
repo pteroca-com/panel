@@ -38,7 +38,7 @@
 {% block main %}
     <div class="container mt-4">
         <form action="{{ path('panel', { routeName: 'cart_topup' }) }}" method="post">
-            <input type="hidden" name="amount" value="{{ request.amount }}">
+            <input type="hidden" name="amount" value="{{ request.amount }}" id="topup-amount">
             <input type="hidden" name="currency" value="{{ request.currency }}">
             <div class="row">
                 <div class="col-8 pe-5">
@@ -89,16 +89,29 @@
                             <h4>{{ 'pteroca.cart_configuration.order_summary'|trans }}</h4>
                         </div>
                         <div class="col-12">
-                            <b>{{ 'pteroca.cart_topup.order_description'|trans }}</b>
+                            <b>{{ 'pteroca.cart_topup.order_description'|trans }}</b> ({{ request.amount|number_format(2, '.', '') }} {{ get_currency() }})
                             <span class="float-end">
-                                {{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}
+                                {{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}
                             </span>
+                            <hr>
+                        </div>
+                        <div class="col-12 d-none" id="applied-discount">
+                            {{ 'pteroca.product.discount'|trans }} <small>(<span id="applied-discount-code"></span>, -<span id="applied-discount-value"></span>%)</small>
+                            <i class="fa fa-close ps-1 hover-pointer" id="applied-discount-remove"></i>
+                            <span class="float-end">-<span id="applied-discount-amount"></span> {{ request.currency|upper }}</span>
                             <hr>
                         </div>
                         <div class="col-12">
                             <span id="selected-summary" class="fs-3 float-end">
                                 {{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}
                             </span>
+                        </div>
+
+                        <div class="col-12 d-none" data-alert="not_enough_balance">
+                            <div class="alert alert-warning mt-1" role="alert">
+                                <i class="fa fa-exclamation-triangle me-1"></i>
+                                {{ 'pteroca.product.not_enough_balance'|trans }}
+                            </div>
                         </div>
 
                         <div class="col-12">
@@ -113,4 +126,35 @@
     </div>
 
     {% include 'components/use_voucher_modal.html.twig' %}
+    {% include 'panel/cart/components/apply_discount.html.twig' %}
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        const currentUserBalance = parseFloat('{{ app.user.balance }}');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
+        })
+
+        function calculatePrice() {
+            const appliedDiscountValue = document.querySelector('#applied-discount-value')
+            let summaryPrice = parseFloat(document.querySelector('#topup-amount').value);
+
+            if (appliedDiscountValue && appliedDiscountValue.innerText) {
+                const discountValue = parseFloat(appliedDiscountValue.innerText);
+                if (!isNaN(discountValue)) {
+                    let discountPrice = summaryPrice * (discountValue / 100);
+                    document.querySelector('#applied-discount-amount').textContent = discountPrice.toFixed(2);
+                    summaryPrice -= discountPrice
+                }
+            }
+
+            document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ request.currency|upper }}`
+
+            const insufficientBalance = currentUserBalance < summaryPrice;
+            document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
+            document.querySelector('button#order-submit').disabled = insufficientBalance;
+        }
+    </script>
 {% endblock %}

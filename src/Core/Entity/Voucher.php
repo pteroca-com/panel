@@ -7,6 +7,8 @@ use App\Core\Repository\VoucherRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VoucherRepository::class)]
 class Voucher
@@ -227,5 +229,26 @@ class Voucher
     {
         $this->deletedAt = $deletedAt;
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateVoucher(ExecutionContextInterface $context): void
+    {
+        if ($this->getExpirationDate() && $this->getExpirationDate() < new DateTime()) {
+            $context->buildViolation('pteroca.voucher.expired')
+                ->setTranslationDomain('messages')
+                ->atPath('expirationDate')
+                ->addViolation();
+        }
+
+        if (
+            in_array($this->getType(), [VoucherTypeEnum::SERVER_DISCOUNT, VoucherTypeEnum::PAYMENT_DISCOUNT])
+            && $this->getValue() > 100
+        ) {
+            $context->buildViolation('pteroca.voucher.discount_value_invalid')
+                ->setTranslationDomain('messages')
+                ->atPath('value')
+                ->addViolation();
+        }
     }
 }

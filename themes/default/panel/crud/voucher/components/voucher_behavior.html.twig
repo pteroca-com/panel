@@ -8,9 +8,11 @@
                     isBalanceTopupType = selectedValue == '0';
 
                 document.querySelector('#Voucher_minimumOrderAmount').disabled = isBalanceTopupType;
+                document.querySelector('#Voucher_oneUsePerUser').disabled = isBalanceTopupType;
 
                 if (isBalanceTopupType) {
                     document.querySelector('#Voucher_minimumOrderAmount').value = '';
+                    document.querySelector('#Voucher_oneUsePerUser').checked = true;
                 }
             })
             voucherTypeSelect.dispatchEvent(new Event('change'));

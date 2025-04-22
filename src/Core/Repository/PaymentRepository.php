@@ -3,6 +3,7 @@
 namespace App\Core\Repository;
 
 use App\Core\Entity\Payment;
+use App\Core\Enum\PaymentStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -36,5 +37,28 @@ class PaymentRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getUserSuccessfulPayments(int $userId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.userId = :userId')
+            ->andWhere('p.status = :status')
+            ->setParameter('userId', $userId)
+            ->setParameter('status', PaymentStatusEnum::PAID->value)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getUserSuccessfulPaymentsCount(int $userId): int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('p.userId = :userId')
+            ->andWhere('p.status = :status')
+            ->setParameter('userId', $userId)
+            ->setParameter('status', PaymentStatusEnum::PAID->value)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

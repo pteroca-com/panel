@@ -39,33 +39,67 @@
 
                 const form = event.target,
                     formData = new FormData(form),
-                    endpointUrl = '{{ path('panel') }}'.replace('ALLOCATION_ID', formData.get('allocationId')),
+                    endpointUrl = '{{ path('api_voucher_redeem') }}',
                     submitButton = document.getElementById('use-voucher'),
                     spinner = submitButton.querySelector('i'),
-                    notes = formData.get('notes')
+                    voucherCode = formData.get('Voucher[code]')
 
                 submitButton.disabled = true
                 spinner.classList.remove('d-none')
 
-                sendRequest(endpointUrl, 'POST', { notes: notes })
+                sendRedeemVoucherRequest(endpointUrl, voucherCode)
                     .then(response => {
                         if (response.ok) {
-                            window.location.reload()
-                        } else {
-                            submitButton.disabled = false
-                            spinner.classList.add('d-none')
-
-                            response.json().then(data => {
-                                alert(data.error || '{{ 'pteroca.server.error_during_editing_allocation'|trans }}')
-                            })
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('useVoucherModal'))
+                            if (modal) {
+                                modal.hide()
+                            }
                         }
+
+                        submitButton.disabled = false
+                        spinner.classList.add('d-none')
+
+                        response.json().then(data => {
+                            if (data.type === 'balance_topup') {
+                                alert(data.message)
+                                window.location.reload()
+                            } else {
+                                const appliedDiscountElement = document.querySelector('#applied-discount')
+
+                                if (!appliedDiscountElement || typeof applyDiscountCode !== 'function') {
+                                    alert('{{ 'pteroca.api.voucher.only_during_order'|trans }}')
+                                    return
+                                }
+
+                                alert(data.message)
+
+                                if (response.ok) {
+                                    applyDiscountCode(voucherCode, data.value)
+                                }
+                            }
+                        })
                     }).catch(() => {
                     submitButton.disabled = false
                     spinner.classList.add('d-none')
 
-                    alert('{{ 'pteroca.server.error_during_editing_allocation'|trans }}')
+                    alert('{{ 'pteroca.api.voucher.error_during_redeeming'|trans }}')
                 })
             })
         })
+
+        function sendRedeemVoucherRequest(endpointUrl, voucherCode) {
+            const formData = new FormData()
+            formData.append('code', voucherCode)
+
+            let requestObject = {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData,
+            }
+
+            return fetch(endpointUrl, requestObject)
+        }
     </script>
 {% endblock %}

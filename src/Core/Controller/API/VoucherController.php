@@ -18,8 +18,9 @@ class VoucherController extends APIAbstractController
         $voucherCode = $request->request->getString('code');
         $voucherRedeemResult = $voucherService->redeemVoucher($voucherCode, $this->getUser());
 
-        return new JsonResponse([
-            'message' => $voucherRedeemResult->getMessage(),
-        ], $voucherRedeemResult->isSuccess() ? 200 : 400);
+        return new JsonResponse(
+            $voucherRedeemResult->toArray(),
+            $voucherRedeemResult->isSuccess() ? 200 : 400,
+        );
     }
 }

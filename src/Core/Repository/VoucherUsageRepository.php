@@ -23,9 +23,20 @@ class VoucherUsageRepository extends ServiceEntityRepository
     {
         return (bool) $this->createQueryBuilder('vu')
             ->select('COUNT(vu.id)')
-            ->where('vu.voucherCode = :voucherCode')
-            ->andWhere('vu.userId = :userId')
+            ->join('vu.voucher', 'v')
+            ->where('v.code = :voucherCode')
+            ->andWhere('vu.user = :userId')
             ->setParameter('voucherCode', $voucherCode)
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function hasUsedAnyVoucher(int $userId): bool
+    {
+        return (bool) $this->createQueryBuilder('vu')
+            ->select('COUNT(vu.id)')
+            ->where('vu.user = :userId')
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getSingleScalarResult();

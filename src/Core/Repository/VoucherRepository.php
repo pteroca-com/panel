@@ -13,6 +13,12 @@ class VoucherRepository extends ServiceEntityRepository
         parent::__construct($registry, Voucher::class);
     }
 
+    public function save(Voucher $voucher): void
+    {
+        $this->getEntityManager()->persist($voucher);
+        $this->getEntityManager()->flush();
+    }
+
     public function getVoucherByCode(string $code): ?Voucher
     {
         return $this->createQueryBuilder('v')
