@@ -345,6 +345,7 @@ pteroca:
   voucher:
     expired: 'The voucher has expired.'
     discount_value_invalid: 'The discount value is invalid. Maximum is 100 (%).'
+    voucher_type_invalid: 'This voucher cannot be used for this type of payment.'
 
   crud:
     category:

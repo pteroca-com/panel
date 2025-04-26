@@ -19,6 +19,7 @@
     <div class="container mt-4">
         <form action="{{ path('panel', { routeName: 'cart_renew_buy' }) }}" method="post">
             <input type="hidden" name="id" value="{{ server.id }}">
+            <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="server_discount">
             <div class="row">
                 <div class="col-8 pe-5">
                     <div class="row">

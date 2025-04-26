@@ -65,14 +65,18 @@
                                 window.location.reload()
                             } else {
                                 const appliedDiscountElement = document.querySelector('#applied-discount')
-
                                 if (!appliedDiscountElement || typeof applyDiscountCode !== 'function') {
                                     alert('{{ 'pteroca.api.voucher.only_during_order'|trans }}')
                                     return
                                 }
 
-                                alert(data.message)
+                                const discountCodeInput = document.querySelector('#voucher-code')
+                                if ((!discountCodeInput || data.type !== discountCodeInput.dataset.voucherType) && data.type !== 'balance_topup') {
+                                    alert('{{ 'pteroca.voucher.voucher_type_invalid'|trans }}')
+                                    return
+                                }
 
+                                alert(data.message)
                                 if (response.ok) {
                                     applyDiscountCode(voucherCode, data.value)
                                 }

@@ -40,6 +40,7 @@
         <form action="{{ path('panel', { routeName: 'cart_topup' }) }}" method="post">
             <input type="hidden" name="amount" value="{{ request.amount }}" id="topup-amount">
             <input type="hidden" name="currency" value="{{ request.currency }}">
+            <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="payment_discount">
             <div class="row">
                 <div class="col-8 pe-5">
                     <div class="row">
