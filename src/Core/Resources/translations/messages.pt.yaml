@@ -126,6 +126,8 @@ pteroca:
     billing_period: 'Período de cobrança'
     total_price: 'Preço total'
     ports: 'Portas'
+    discount: 'Desconto'
+    discount_hint: 'O desconto será aplicado apenas ao primeiro ciclo de cobrança.'
 
   store:
     title: 'Loja'
@@ -157,6 +159,9 @@ pteroca:
     payment_method: 'Método de pagamento'
   cart_renew:
     title: 'Renove seu servidor'
+  cart:
+    use_voucher: 'Usar vale'
+    voucher_code: 'Código do vale'
 
   renew:
     title: 'Renovar servidor'
@@ -322,6 +327,7 @@ pteroca:
     entity_delete: 'Entidade excluída'
     user_registered: 'Conta registrada'
     user_verify_email: 'Verificação de e-mail'
+    voucher_redeemed: 'Voucher resgatado'
 
   server_actions:
     change_details: 'Detalhes do servidor alterados'
@@ -335,6 +341,12 @@ pteroca:
     create_database: 'Banco de dados criado'
     delete_database: 'Banco de dados excluído'
     rotate_database_password: 'Senha do banco de dados redefinida'
+
+  voucher:
+    expired: 'O vale expirou.'
+    discount_value_invalid: 'O valor do desconto é inválido. O máximo é 100(%).'
+    voucher_type_invalid: 'Este vale não pode ser utilizado para este tipo de pagamento.'
+    invalid_voucher_type: 'Tipo de vale inválido.'
 
   crud:
     category:
@@ -555,6 +567,8 @@ pteroca:
       updated_at: 'Atualizado em'
       payment: 'Pagamento'
       payments: 'Pagamentos'
+      balance_amount: 'Valor do saldo'
+      used_voucher: 'Voucher usado'
     log:
       log: 'Registro'
       logs: 'Registros'
@@ -570,15 +584,37 @@ pteroca:
       voucher: 'Vale'
       vouchers: 'Vales'
       code: 'Código'
+      code_help: 'Insira o código do voucher.'
       value: 'Valor'
+      value_help: 'Insira o valor do voucher. O valor deve ser um número.'
       new_accounts_only: 'Apenas para novas contas'
+      new_accounts_only_help: 'O voucher só pode ser utilizado por novas contas.'
       minimum_top_up_amount: 'Valor mínimo de recarga'
+      minimum_top_up_amount_help: 'O voucher só pode ser utilizado se o usuário recarregar a conta com pelo menos este valor. Você pode deixar este campo vazio para permitir o uso sem recarga.'
       minimum_order_amount: 'Valor mínimo de pedido'
+      minimum_order_amount_help: 'O voucher só pode ser usado se o valor do pedido for maior ou igual a este valor. Disponível apenas para descontos em servidores e pagamentos.'
       expiration_date: 'Data de expiração'
+      expiration_date_help: 'O voucher expirará após esta data.'
       max_global_uses: 'Máximo de usos globais'
+      max_global_uses_help: 'Número máximo de vezes que este voucher pode ser usado globalmente.'
       used_count: 'Contagem de usos'
+      used_count_help: 'Número de vezes que o voucher foi usado.'
       one_use_per_user: 'Um uso por usuário'
+      one_use_per_user_help: 'O voucher só pode ser usado uma vez por usuário.'
       description: 'Descrição'
+      description_help: 'Insira uma descrição para o voucher. Apenas para sua informação.'
+      type: 'Tipo'
+      type_help: 'Selecione o tipo de voucher.'
+      balance_topup: 'Recarga de saldo'
+      payment_discount: 'Desconto de pagamento'
+      server_discount: 'Desconto de servidor'
+      show_voucher_usages: 'Mostrar vouchers usados'
+    voucher_usage:
+      voucher_usage: 'Voucher usado'
+      voucher_usages: 'Vouchers usados'
+      voucher_code: 'Código do voucher'
+      user: 'Usuário'
+      used_at: 'Usado em'
     menu:
       menu: 'Menu'
       dashboard: 'Painel'
@@ -604,10 +640,22 @@ pteroca:
       overview: 'Visão Geral'
       server_builds: 'Servidores'
       vouchers: 'Vales'
+      voucher_usages: 'Vouchers resgatados'
 
   api:
     servers:
       not_found: 'Servidor não encontrado.'
+    voucher:
+      not_found: 'Voucher não encontrado.'
+      expired: 'O voucher expirou.'
+      successfully_applied: 'Voucher aplicado com sucesso.'
+      max_global_uses_reached: 'Número máximo de usos globais alcançado.'
+      already_used: 'O voucher já foi usado.'
+      only_for_new_accounts: 'O voucher é apenas para novas contas.'
+      minimum_top_up_amount_required: 'Você deve recarregar sua conta com pelo menos {{ amount }} {{ currency }} para usar este voucher.'
+      minimum_order_amount_required: 'Você deve fazer um pedido de pelo menos {{ amount }} para usar este voucher.'
+      error_during_redeeming: 'Ocorreu um erro ao resgatar o voucher.'
+      only_during_order: 'O voucher só pode ser usado durante o pedido.'
 
   email:
     general:

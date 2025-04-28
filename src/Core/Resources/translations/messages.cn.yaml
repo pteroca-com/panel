@@ -126,6 +126,8 @@ pteroca:
     billing_period: '计费周期'
     total_price: '总价'
     ports: '端口'
+    discount: '折扣'
+    discount_hint: '仅适用于第一个账单周期。'
 
   store:
     title: '商店'
@@ -157,6 +159,9 @@ pteroca:
     payment_method: '支付方式'
   cart_renew:
     title: '续订你的服务器'
+  cart:
+    use_voucher: '使用优惠券'
+    voucher_code: '优惠券代码'
 
   renew:
     title: '续订服务器'
@@ -322,6 +327,7 @@ pteroca:
     entity_delete: '删除实体'
     user_registered: '账户注册'
     user_verify_email: '验证电子邮件'
+    voucher_redeemed: '代金券已兑换'
 
   server_actions:
     change_details: '更改了服务器详细信息'
@@ -335,6 +341,12 @@ pteroca:
     create_database: '创建了数据库'
     delete_database: '删除了数据库'
     rotate_database_password: '旋转了数据库密码'
+
+  voucher:
+    expired: '此优惠券已过期。'
+    discount_value_invalid: '折扣值无效。最大可用值为100(%).'
+    voucher_type_invalid: '此优惠券不可用于此支付方式.'
+    invalid_voucher_type: '无效的优惠券类型.'
 
   crud:
     category:
@@ -555,6 +567,8 @@ pteroca:
       updated_at: '更新于'
       payment: '支付'
       payments: '支付'
+      balance_amount: '余额金额'
+      used_voucher: '已使用的代金券'
     log:
       log: '日志'
       logs: '日志'
@@ -570,15 +584,37 @@ pteroca:
       voucher: '优惠券'
       vouchers: '优惠券'
       code: '优惠码'
+      code_help: '输入代金券代码。'
       value: '金额'
+      value_help: '输入代金券的数值。数值必须是数字。'
       new_accounts_only: '仅限新用户'
+      new_accounts_only_help: '此代金券仅限新账户使用。'
       minimum_top_up_amount: '最低充值金额'
+      minimum_top_up_amount_help: '仅当用户充值金额达到此数值时才能使用代金券。如果希望无需充值即可使用，请留空。'
       minimum_order_amount: '最低订单金额'
+      minimum_order_amount_help: '仅当订单金额大于或等于此数值时才能使用代金券，仅适用于服务器和支付折扣。'
       expiration_date: '到期日'
+      expiration_date_help: '代金券将在此日期后失效。'
       max_global_uses: '最大使用次数'
+      max_global_uses_help: '代金券在全球范围内可使用的最大次数。'
       used_count: '使用次数'
+      used_count_help: '代金券已被使用的次数。'
       one_use_per_user: '每个用户限用一次'
+      one_use_per_user_help: '每个用户只能使用一次代金券。'
       description: '描述'
+      description_help: '输入代金券描述，仅供内部参考。'
+      type: '类型'
+      type_help: '选择代金券类型。'
+      balance_topup: '账户充值'
+      payment_discount: '支付折扣'
+      server_discount: '服务器折扣'
+      show_voucher_usages: '显示已兑换的代金券'
+    voucher_usage:
+      voucher_usage: '已兑换的代金券'
+      voucher_usages: '已兑换的代金券'
+      voucher_code: '代金券代码'
+      user: '用户'
+      used_at: '使用时间'
     menu:
       menu: '菜单'
       dashboard: '仪表盘'
@@ -604,10 +640,22 @@ pteroca:
       overview: '概览'
       server_builds: '服务器'
       vouchers: '优惠券'
+      voucher_usages: '已兑换的代金券'
 
   api:
     servers:
       not_found: '未找到服务器。'
+    voucher:
+      not_found: '未找到代金券。'
+      expired: '代金券已过期。'
+      successfully_applied: '代金券应用成功。'
+      max_global_uses_reached: '已达到代金券最大使用次数。'
+      already_used: '代金券已被使用。'
+      only_for_new_accounts: '代金券仅限新账户使用。'
+      minimum_top_up_amount_required: '您必须至少充值 {{ amount }} {{ currency }} 才能使用此代金券。'
+      minimum_order_amount_required: '您必须至少订购 {{ amount }} 才能使用此代金券。'
+      error_during_redeeming: '兑换代金券时发生错误。'
+      only_during_order: '代金券仅可在下单时使用。'
 
   email:
     general:

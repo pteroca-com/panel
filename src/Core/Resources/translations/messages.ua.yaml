@@ -126,6 +126,8 @@ pteroca:
     billing_period: 'Розрахунковий період'
     total_price: 'Загальна ціна'
     ports: 'Порти'
+    discount: 'Знижка'
+    discount_hint: 'Знижка буде застосована лише до першого платіжного циклу.'
 
   store:
     title: 'Магазин'
@@ -157,6 +159,9 @@ pteroca:
     payment_method: 'Спосіб оплати'
   cart_renew:
     title: 'Подовжити сервер'
+  cart:
+    use_voucher: 'Використати ваучер'
+    voucher_code: 'Код ваучера'
 
   renew:
     title: 'Продовжити сервер'
@@ -322,6 +327,7 @@ pteroca:
     entity_delete: 'Видалено сутність'
     user_registered: 'Реєстрація облікового запису'
     user_verify_email: 'Підтвердження електронної пошти'
+    voucher_redeemed: 'Ваучер використано'
 
   server_actions:
     change_details: 'Змінено деталі сервера'
@@ -335,6 +341,12 @@ pteroca:
     create_database: 'Створено базу даних'
     delete_database: 'Видалено базу даних'
     rotate_database_password: 'Змінено пароль бази даних'
+
+  voucher:
+    expired: 'Термін дії ваучера минув.'
+    discount_value_invalid: 'Невірне значення знижки. Максимум 100(%).'
+    voucher_type_invalid: 'Цей ваучер не можна використати для цього типу оплати.'
+    invalid_voucher_type: 'Невірний тип ваучера.'
 
   crud:
     category:
@@ -555,6 +567,8 @@ pteroca:
       updated_at: 'Оновлено'
       payment: 'Платіж'
       payments: 'Платежі'
+      balance_amount: 'Сума балансу'
+      used_voucher: 'Використаний ваучер'
     log:
       log: 'Журнал'
       logs: 'Журнали'
@@ -570,15 +584,37 @@ pteroca:
       voucher: 'Ваучер'
       vouchers: 'Ваучери'
       code: 'Код'
+      code_help: 'Введіть код ваучера.'
       value: 'Значення'
+      value_help: 'Введіть значення ваучера. Значення повинно бути числом.'
       new_accounts_only: 'Тільки для нових акаунтів'
+      new_accounts_only_help: 'Ваучер можна використовувати тільки новим акаунтам.'
       minimum_top_up_amount: 'Мінімальна сума поповнення'
+      minimum_top_up_amount_help: 'Ваучер можна використати лише при поповненні рахунку на вказану суму. Можна залишити порожнім для дозволу використання без поповнення.'
       minimum_order_amount: 'Мінімальна сума замовлення'
+      minimum_order_amount_help: 'Ваучер можна використати лише якщо сума замовлення більша або дорівнює цій сумі. Доступно лише для знижок на сервери та оплати.'
       expiration_date: 'Дата закінчення дії'
+      expiration_date_help: 'Ваучер стане недійсним після цієї дати.'
       max_global_uses: 'Максимальна кількість використань'
+      max_global_uses_help: 'Максимальна кількість глобальних використань ваучера.'
       used_count: 'Кількість використань'
+      used_count_help: 'Кількість разів використання ваучера.'
       one_use_per_user: 'Одне використання на користувача'
+      one_use_per_user_help: 'Ваучер можна використати лише один раз на користувача.'
       description: 'Опис'
+      description_help: 'Введіть опис ваучера. Тільки для вашої інформації.'
+      type: 'Тип'
+      type_help: 'Виберіть тип ваучера.'
+      balance_topup: 'Поповнення балансу'
+      payment_discount: 'Знижка на оплату'
+      server_discount: 'Знижка на сервер'
+      show_voucher_usages: 'Показати використані ваучери'
+    voucher_usage:
+      voucher_usage: 'Використаний ваучер'
+      voucher_usages: 'Використані ваучери'
+      voucher_code: 'Код ваучера'
+      user: 'Користувач'
+      used_at: 'Використано'
     menu:
       menu: 'Меню'
       dashboard: 'Панель'
@@ -604,10 +640,22 @@ pteroca:
       overview: 'Огляд'
       server_builds: 'Сервери'
       vouchers: 'Ваучери'
+      voucher_usages: 'Використані ваучери'
 
   api:
     servers:
       not_found: 'Сервер не знайдено.'
+    voucher:
+      not_found: 'Ваучер не знайдено.'
+      expired: 'Ваучер прострочений.'
+      successfully_applied: 'Ваучер успішно застосовано.'
+      max_global_uses_reached: 'Досягнуто максимальної кількості використань.'
+      already_used: 'Ваучер вже використано.'
+      only_for_new_accounts: 'Ваучер доступний лише для нових акаунтів.'
+      minimum_top_up_amount_required: 'Ви повинні поповнити рахунок щонайменше на {{ amount }} {{ currency }}, щоб використати цей ваучер.'
+      minimum_order_amount_required: 'Ви повинні зробити замовлення щонайменше на {{ amount }}, щоб використати цей ваучер.'
+      error_during_redeeming: 'Сталася помилка під час використання ваучера.'
+      only_during_order: 'Ваучер можна використати лише під час оформлення замовлення.'
 
   email:
     general:

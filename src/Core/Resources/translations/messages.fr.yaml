@@ -126,6 +126,8 @@ pteroca:
     billing_period: 'Période de facturation'
     total_price: 'Prix total'
     ports: 'Ports'
+    discount: 'Réduction'
+    discount_hint: 'La réduction ne s\''appliquera qu\''au premier cycle de facturation.'
 
   store:
     title: 'Boutique'
@@ -157,6 +159,9 @@ pteroca:
     payment_method: 'Méthode de paiement'
   cart_renew:
     title: 'Renouveler votre serveur'
+  cart:
+    use_voucher: 'Utiliser un bon'
+    voucher_code: 'Code du bon'
 
   renew:
     title: 'Renouveler le serveur'
@@ -322,6 +327,7 @@ pteroca:
     entity_delete: 'Suppression d’entité'
     user_registered: 'Compte enregistré'
     user_verify_email: 'Adresse e-mail vérifiée'
+    voucher_redeemed: 'Bon utilisé'
 
   server_actions:
     change_details: 'Détails du serveur modifiés'
@@ -335,6 +341,12 @@ pteroca:
     create_database: 'Base de données créée'
     delete_database: 'Base de données supprimée'
     rotate_database_password: 'Mot de passe de la base de données modifié'
+
+  voucher:
+    expired: 'Ce bon a expiré.'
+    discount_value_invalid: 'La valeur de la réduction est invalide. Le maximum est de 100(%).'
+    voucher_type_invalid: 'Ce bon ne peut pas être utilisé pour ce type de paiement.'
+    invalid_voucher_type: 'Type de bon invalide.'
 
   crud:
     category:
@@ -555,6 +567,8 @@ pteroca:
       updated_at: 'Mis à jour le'
       payment: 'Paiement'
       payments: 'Paiements'
+      balance_amount: 'Montant du solde'
+      used_voucher: 'Bon utilisé'
     log:
       log: 'Journal'
       logs: 'Journaux'
@@ -570,15 +584,37 @@ pteroca:
       voucher: 'Bon'
       vouchers: 'Bons'
       code: 'Code'
+      code_help: 'Entrez le code du bon.'
       value: 'Valeur'
+      value_help: 'Entrez la valeur du bon. La valeur doit être un nombre.'
       new_accounts_only: 'Uniquement pour les nouveaux comptes'
+      new_accounts_only_help: 'Le bon ne peut être utilisé que par de nouveaux comptes.'
       minimum_top_up_amount: 'Montant minimum de rechargement'
+      minimum_top_up_amount_help: 'Le bon ne peut être utilisé que si l''utilisateur recharge son compte avec au moins ce montant. Vous pouvez laisser ce champ vide pour autoriser l''utilisation sans recharge.'
       minimum_order_amount: 'Montant minimum de commande'
+      minimum_order_amount_help: 'Le bon ne peut être utilisé que si le montant de la commande est supérieur ou égal à cette valeur. Disponible uniquement pour les remises serveur et paiement.'
       expiration_date: 'Date d''expiration'
+      expiration_date_help: 'Le bon expirera après cette date.'
       max_global_uses: 'Utilisations globales maximales'
+      max_global_uses_help: 'Nombre maximal de fois que ce bon peut être utilisé globalement.'
       used_count: 'Nombre d''utilisations'
+      used_count_help: 'Nombre de fois où ce bon a été utilisé.'
       one_use_per_user: 'Une utilisation par utilisateur'
+      one_use_per_user_help: 'Le bon ne peut être utilisé qu''une seule fois par utilisateur.'
       description: 'Description'
+      description_help: 'Entrez une description pour le bon. C’est uniquement à titre informatif.'
+      type: 'Type'
+      type_help: 'Sélectionnez le type de bon.'
+      balance_topup: 'Recharge de solde'
+      payment_discount: 'Remise sur paiement'
+      server_discount: 'Remise sur serveur'
+      show_voucher_usages: 'Afficher les bons utilisés'
+    voucher_usage:
+      voucher_usage: 'Bon utilisé'
+      voucher_usages: 'Bons utilisés'
+      voucher_code: 'Code du bon'
+      user: 'Utilisateur'
+      used_at: 'Utilisé le'
     menu:
       menu: 'Menu'
       dashboard: 'Tableau de bord'
@@ -604,10 +640,22 @@ pteroca:
       overview: 'Vue d’ensemble'
       server_builds: 'Serveurs'
       vouchers: 'Bons'
+      voucher_usages: 'Bons utilisés'
 
   api:
     servers:
       not_found: 'Serveur non trouvé.'
+    voucher:
+      not_found: 'Bon non trouvé.'
+      expired: 'Le bon a expiré.'
+      successfully_applied: 'Bon appliqué avec succès.'
+      max_global_uses_reached: 'Nombre maximal d''utilisations atteint.'
+      already_used: 'Le bon a déjà été utilisé.'
+      only_for_new_accounts: 'Le bon est réservé aux nouveaux comptes.'
+      minimum_top_up_amount_required: 'Vous devez recharger votre compte avec au moins {{ amount }} {{ currency }} pour utiliser ce bon.'
+      minimum_order_amount_required: 'Vous devez commander pour au moins {{ amount }} pour utiliser ce bon.'
+      error_during_redeeming: 'Une erreur est survenue lors de l''utilisation du bon.'
+      only_during_order: 'Le bon ne peut être utilisé que lors de la commande.'
 
   email:
     general:

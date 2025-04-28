@@ -126,6 +126,8 @@ pteroca:
     billing_period: 'बिलिंग अवधि'
     total_price: 'कुल मूल्य'
     ports: 'पोर्ट्स'
+    discount: 'छूट'
+    discount_hint: 'छूट केवल पहले बिलिंग चक्र पर लागू होगी।'
 
   store:
     title: 'स्टोर'
@@ -157,6 +159,9 @@ pteroca:
     payment_method: 'भुगतान विधि'
   cart_renew:
     title: 'अपने सर्वर का नवीनीकरण करें'
+  cart:
+    use_voucher: 'वाउचर का उपयोग करें'
+    voucher_code: 'वाउचर कोड'
 
   renew:
     title: 'सर्वर नवीनीकरण'
@@ -322,6 +327,7 @@ pteroca:
     entity_delete: 'इकाई हटाई गई'
     user_registered: 'उपयोगकर्ता पंजीकृत हुआ'
     user_verify_email: 'ईमेल सत्यापित किया गया'
+    voucher_redeemed: 'वाउचर भुनाया गया'
 
   server_actions:
     change_details: 'सर्वर विवरण बदला गया'
@@ -335,6 +341,12 @@ pteroca:
     create_database: 'डेटाबेस बनाया गया'
     delete_database: 'डेटाबेस हटाया गया'
     rotate_database_password: 'डेटाबेस का पासवर्ड घुमाया गया'
+
+  voucher:
+    expired: 'यह वाउचर समाप्त हो चुका है.'
+    discount_value_invalid: 'छूट मान अमान्य है. अधिकतम मान 100(%).'
+    voucher_type_invalid: 'इस वाउचर का उपयोग इस भुगतान प्रकार पर नहीं किया जा सकता.'
+    invalid_voucher_type: 'अमान्य वाउचर प्रकार.'
 
   crud:
     category:
@@ -555,6 +567,8 @@ pteroca:
       updated_at: 'अद्यतन किया गया'
       payment: 'भुगतान'
       payments: 'भुगतान'
+      balance_amount: 'बैलेंस राशि'
+      used_voucher: 'उपयोग किया गया वाउचर'
     log:
       log: 'लॉग'
       logs: 'लॉग्स'
@@ -570,15 +584,37 @@ pteroca:
       voucher: 'वाउचर'
       vouchers: 'वाउचर'
       code: 'कोड'
+      code_help: 'वाउचर कोड दर्ज करें।'
       value: 'मान'
+      value_help: 'वाउचर का मूल्य दर्ज करें। मूल्य एक संख्या होना चाहिए।'
       new_accounts_only: 'केवल नए खातों के लिए'
+      new_accounts_only_help: 'यह वाउचर केवल नए खातों द्वारा ही उपयोग किया जा सकता है।'
       minimum_top_up_amount: 'न्यूनतम रिचार्ज राशि'
+      minimum_top_up_amount_help: 'उपयोगकर्ता को खाते में कम से कम इस राशि से टॉप-अप करना होगा तभी वाउचर का उपयोग किया जा सकता है। यदि बिना टॉप-अप के अनुमति देना चाहते हैं तो इसे खाली छोड़ दें।'
       minimum_order_amount: 'न्यूनतम ऑर्डर राशि'
+      minimum_order_amount_help: 'ऑर्डर राशि इस मान से अधिक या बराबर हो तभी वाउचर का उपयोग किया जा सकता है। केवल सर्वर और भुगतान छूट के लिए उपलब्ध।'
       expiration_date: 'समाप्ति तिथि'
+      expiration_date_help: 'यह वाउचर इस तिथि के बाद समाप्त हो जाएगा।'
       max_global_uses: 'अधिकतम वैश्विक उपयोग'
+      max_global_uses_help: 'यह वाउचर वैश्विक स्तर पर अधिकतम कितनी बार उपयोग किया जा सकता है।'
       used_count: 'उपयोग गणना'
+      used_count_help: 'यह वाउचर कितनी बार उपयोग किया गया है।'
       one_use_per_user: 'प्रति उपयोगकर्ता एक उपयोग'
+      one_use_per_user_help: 'प्रत्येक उपयोगकर्ता केवल एक बार वाउचर का उपयोग कर सकता है।'
       description: 'विवरण'
+      description_help: 'वाउचर के लिए विवरण दर्ज करें। केवल आपकी जानकारी के लिए।'
+      type: 'प्रकार'
+      type_help: 'वाउचर का प्रकार चुनें।'
+      balance_topup: 'बैलेंस टॉप-अप'
+      payment_discount: 'भुगतान छूट'
+      server_discount: 'सर्वर छूट'
+      show_voucher_usages: 'भुगतान किए गए वाउचर दिखाएँ'
+    voucher_usage:
+      voucher_usage: 'भुगतान किया गया वाउचर'
+      voucher_usages: 'भुगतान किए गए वाउचर'
+      voucher_code: 'वाउचर कोड'
+      user: 'उपयोगकर्ता'
+      used_at: 'प्रयुक्त तिथि'
     menu:
       menu: 'मेनू'
       dashboard: 'डैशबोर्ड'
@@ -604,10 +640,22 @@ pteroca:
       overview: 'अवलोकन'
       server_builds: 'सर्वर'
       vouchers: 'वाउचर'
+      voucher_usages: 'भुनाए गए वाउचर'
 
   api:
     servers:
       not_found: 'सर्वर नहीं मिला।'
+    voucher:
+      not_found: 'वाउचर नहीं मिला।'
+      expired: 'वाउचर समाप्त हो चुका है।'
+      successfully_applied: 'वाउचर सफलतापूर्वक लागू किया गया।'
+      max_global_uses_reached: 'अधिकतम वैश्विक उपयोग सीमा पहुँच गई है।'
+      already_used: 'वाउचर पहले ही उपयोग किया जा चुका है।'
+      only_for_new_accounts: 'वाउचर केवल नए खातों के लिए है।'
+      minimum_top_up_amount_required: 'इस वाउचर का उपयोग करने के लिए आपको कम से कम {{ amount }} {{ currency }} का टॉप-अप करना होगा।'
+      minimum_order_amount_required: 'इस वाउचर का उपयोग करने के लिए आपको कम से कम {{ amount }} का ऑर्डर करना होगा।'
+      error_during_redeeming: 'वाउचर रिडीम करते समय त्रुटि हुई।'
+      only_during_order: 'वाउचर केवल ऑर्डर करते समय ही उपयोग किया जा सकता है।'
 
   email:
     general:

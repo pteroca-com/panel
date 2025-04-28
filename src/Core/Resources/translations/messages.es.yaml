@@ -126,6 +126,8 @@ pteroca:
     billing_period: 'Período de facturación'
     total_price: 'Precio total'
     ports: 'Puertos'
+    discount: 'Descuento'
+    discount_hint: 'El descuento se aplicará solo al primer ciclo de facturación.'
 
   store:
     title: 'Tienda'
@@ -157,6 +159,9 @@ pteroca:
     payment_method: 'Método de pago'
   cart_renew:
     title: 'Renueva tu servidor'
+  cart:
+    use_voucher: 'Usar cupón'
+    voucher_code: 'Código de cupón'
 
   renew:
     title: 'Renovar servidor'
@@ -322,6 +327,7 @@ pteroca:
     entity_delete: 'Entidad eliminada'
     user_registered: 'Registro de cuenta'
     user_verify_email: 'Verificación de correo electrónico'
+    voucher_redeemed: 'Cupón canjeado'
 
   server_actions:
     change_details: 'Detalles del servidor cambiados'
@@ -335,6 +341,12 @@ pteroca:
     create_database: 'Base de datos creada'
     delete_database: 'Base de datos eliminada'
     rotate_database_password: 'Contraseña de la base de datos rotada'
+
+  voucher:
+    expired: 'Este cupón ha expirado.'
+    discount_value_invalid: 'El valor del descuento no es válido. El máximo es 100(%).'
+    voucher_type_invalid: 'Este cupón no puede usarse con este tipo de pago.'
+    invalid_voucher_type: 'Tipo de cupón inválido.'
 
   crud:
     category:
@@ -555,6 +567,8 @@ pteroca:
       updated_at: 'Actualizado el'
       payment: 'Pago'
       payments: 'Pagos'
+      balance_amount: 'Cantidad de saldo'
+      used_voucher: 'Cupón utilizado'
     log:
       log: 'Registro'
       logs: 'Registros'
@@ -570,15 +584,37 @@ pteroca:
       voucher: 'Vale'
       vouchers: 'Vales'
       code: 'Código'
+      code_help: 'Introduce el código del cupón.'
       value: 'Valor'
+      value_help: 'Introduce el valor del cupón. El valor debe ser un número.'
       new_accounts_only: 'Solo para cuentas nuevas'
+      new_accounts_only_help: 'El cupón solo puede ser utilizado por cuentas nuevas.'
       minimum_top_up_amount: 'Cantidad mínima de recarga'
+      minimum_top_up_amount_help: 'El cupón solo se puede utilizar si el usuario recarga su cuenta con al menos esta cantidad. Puedes dejarlo vacío si no deseas exigir recarga.'
       minimum_order_amount: 'Cantidad mínima de pedido'
+      minimum_order_amount_help: 'El cupón solo se puede usar si el importe del pedido es mayor o igual a este valor. Disponible solo para descuentos de servidor y de pago.'
       expiration_date: 'Fecha de expiración'
+      expiration_date_help: 'El cupón expirará después de esta fecha.'
       max_global_uses: 'Usos máximos totales'
+      max_global_uses_help: 'Número máximo de veces que este cupón puede ser usado globalmente.'
       used_count: 'Cantidad de usos'
+      used_count_help: 'Cantidad de veces que se ha utilizado este cupón.'
       one_use_per_user: 'Un uso por usuario'
+      one_use_per_user_help: 'El cupón solo puede ser utilizado una vez por cada usuario.'
       description: 'Descripción'
+      description_help: 'Introduce una descripción del cupón. Solo para tu información.'
+      type: 'Tipo'
+      type_help: 'Selecciona el tipo de cupón.'
+      balance_topup: 'Recarga de saldo'
+      payment_discount: 'Descuento de pago'
+      server_discount: 'Descuento de servidor'
+      show_voucher_usages: 'Mostrar cupones canjeados'
+    voucher_usage:
+      voucher_usage: 'Cupón canjeado'
+      voucher_usages: 'Cupones canjeados'
+      voucher_code: 'Código del cupón'
+      user: 'Usuario'
+      used_at: 'Usado el'
     menu:
       menu: 'Menú'
       dashboard: 'Panel de control'
@@ -604,10 +640,22 @@ pteroca:
       overview: 'Resumen'
       server_builds: 'Servidores'
       vouchers: 'Vales'
+      voucher_usages: 'Cupones canjeados'
 
   api:
     servers:
       not_found: 'Servidor no encontrado.'
+    voucher:
+      not_found: 'Cupón no encontrado.'
+      expired: 'El cupón ha expirado.'
+      successfully_applied: 'Cupón aplicado con éxito.'
+      max_global_uses_reached: 'Se ha alcanzado el número máximo de usos globales.'
+      already_used: 'El cupón ya ha sido utilizado.'
+      only_for_new_accounts: 'El cupón es solo para cuentas nuevas.'
+      minimum_top_up_amount_required: 'Debes recargar tu cuenta con al menos {{ amount }} {{ currency }} para usar este cupón.'
+      minimum_order_amount_required: 'Debes hacer un pedido de al menos {{ amount }} para usar este cupón.'
+      error_during_redeeming: 'Ocurrió un error al canjear el cupón.'
+      only_during_order: 'El cupón solo puede usarse durante el pedido.'
 
   email:
     general:

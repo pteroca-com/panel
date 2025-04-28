@@ -126,6 +126,8 @@ pteroca:
     billing_period: 'Abrechnungszeitraum'
     total_price: 'Gesamtpreis'
     ports: 'Ports'
+    discount: 'Rabatt'
+    discount_hint: 'Der Rabatt wird nur für den ersten Abrechnungszeitraum angewendet.'
 
   store:
     title: 'Shop'
@@ -157,6 +159,9 @@ pteroca:
     payment_method: 'Zahlungsmethode'
   cart_renew:
     title: 'Server verlängern'
+  cart:
+    use_voucher: 'Gutschein verwenden'
+    voucher_code: 'Gutscheincode'
 
   renew:
     title: 'Server verlängern'
@@ -322,6 +327,7 @@ pteroca:
     entity_delete: 'Entität gelöscht'
     user_registered: 'Benutzer registriert'
     user_verify_email: 'E-Mail-Adresse verifiziert'
+    voucher_redeemed: 'Gutschein eingelöst'
 
   server_actions:
     change_details: 'Serverdetails geändert'
@@ -335,6 +341,12 @@ pteroca:
     create_database: 'Datenbank erstellt'
     delete_database: 'Datenbank gelöscht'
     rotate_database_password: 'Datenbank-Passwort zurückgesetzt'
+
+  voucher:
+    expired: 'Dieser Gutschein ist abgelaufen.'
+    discount_value_invalid: 'Der Rabattwert ist ungültig. Das Maximum beträgt 100(%).'
+    voucher_type_invalid: 'Dieser Gutschein kann für diese Zahlungsart nicht verwendet werden.'
+    invalid_voucher_type: 'Ungültiger Gutschein-Typ.'
 
   crud:
     category:
@@ -401,7 +413,7 @@ pteroca:
       price_static_plan: 'Fixe Preisoption'
       price_static_plan_hint: 'Der Produktpreis für einen festen Zeitraum, den Benutzer als Abrechnungszyklus auswählen können.'
       price_dynamic_plan: 'Dynamischer Preis \- auf Abruf'
-      price_dynamic_plan_hint: 'Der Produktpreis für einen dynamischen Zeitraum. Wenn der Server offline ist, wird die Abrechnung ausgesetzt.'
+      price_dynamic_plan_hint: 'Der Produktpreis für einen dynamischen Zeitraum. Wenn der Server offline ist, wird die Abrechnung pausiert.'
       price_dynamic_only_one_plan: 'Es kann nur ein dynamischer Plan festgelegt werden.'
       period: 'Zeitraum'
       unit: 'Einheit'
@@ -555,6 +567,8 @@ pteroca:
       updated_at: 'Aktualisiert am'
       payment: 'Zahlung'
       payments: 'Zahlungen'
+      balance_amount: 'Guthabenbetrag'
+      used_voucher: 'Verwendeter Gutschein'
     log:
       log: 'Log'
       logs: 'Logs'
@@ -570,15 +584,37 @@ pteroca:
       voucher: 'Gutschein'
       vouchers: 'Gutscheine'
       code: 'Code'
+      code_help: 'Gib den Gutscheincode ein.'
       value: 'Wert'
+      value_help: 'Gib den Gutscheinwert ein. Der Wert muss eine Zahl sein.'
       new_accounts_only: 'Nur für neue Konten'
+      new_accounts_only_help: 'Der Gutschein kann nur von neuen Konten verwendet werden.'
       minimum_top_up_amount: 'Mindestaufladebetrag'
+      minimum_top_up_amount_help: 'Der Gutschein kann nur verwendet werden, wenn der Nutzer mindestens diesen Betrag auflädt. Dieses Feld kann leer gelassen werden, wenn keine Aufladung erforderlich ist.'
       minimum_order_amount: 'Mindestbestellwert'
+      minimum_order_amount_help: 'Der Gutschein kann nur verwendet werden, wenn der Bestellwert mindestens diesen Betrag erreicht. Nur verfügbar für Server- und Zahlungsrabatte.'
       expiration_date: 'Ablaufdatum'
+      expiration_date_help: 'Der Gutschein läuft nach diesem Datum ab.'
       max_global_uses: 'Maximale globale Verwendung'
+      max_global_uses_help: 'Maximale Anzahl, wie oft dieser Gutschein global verwendet werden kann.'
       used_count: 'Verwendungsanzahl'
+      used_count_help: 'Anzahl der bisherigen Verwendungen dieses Gutscheins.'
       one_use_per_user: 'Nur eine Verwendung pro Benutzer'
+      one_use_per_user_help: 'Der Gutschein kann nur einmal pro Benutzer verwendet werden.'
       description: 'Beschreibung'
+      description_help: 'Gib eine Beschreibung für den Gutschein ein. Nur zur internen Information.'
+      type: 'Typ'
+      type_help: 'Wähle den Gutschein-Typ aus.'
+      balance_topup: 'Guthaben aufladen'
+      payment_discount: 'Zahlungsrabatt'
+      server_discount: 'Serverrabatt'
+      show_voucher_usages: 'Eingelöste Gutscheine anzeigen'
+    voucher_usage:
+      voucher_usage: 'Eingelöster Gutschein'
+      voucher_usages: 'Eingelöste Gutscheine'
+      voucher_code: 'Gutscheincode'
+      user: 'Benutzer'
+      used_at: 'Verwendet am'
     menu:
       menu: 'Menü'
       dashboard: 'Dashboard'
@@ -604,10 +640,22 @@ pteroca:
       overview: 'Übersicht'
       server_builds: 'Server'
       vouchers: 'Gutscheine'
+      voucher_usages: 'Eingelöste Gutscheine'
 
   api:
     servers:
       not_found: 'Server nicht gefunden.'
+    voucher:
+      not_found: 'Gutschein nicht gefunden.'
+      expired: 'Gutschein ist abgelaufen.'
+      successfully_applied: 'Gutschein erfolgreich angewendet.'
+      max_global_uses_reached: 'Maximale globale Nutzung erreicht.'
+      already_used: 'Gutschein wurde bereits verwendet.'
+      only_for_new_accounts: 'Gutschein ist nur für neue Konten.'
+      minimum_top_up_amount_required: 'Sie müssen Ihr Konto mit mindestens {{ amount }} {{ currency }} aufladen, um diesen Gutschein zu verwenden.'
+      minimum_order_amount_required: 'Sie müssen mindestens {{ amount }} bestellen, um diesen Gutschein zu verwenden.'
+      error_during_redeeming: 'Fehler beim Einlösen des Gutscheins.'
+      only_during_order: 'Gutschein kann nur während der Bestellung verwendet werden.'
 
   email:
     general:
