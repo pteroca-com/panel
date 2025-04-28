@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Core\Entity;
+
+use App\Core\Trait\ProductPriceEntityTrait;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: "App\Core\Repository\ProductPriceRepository")]
+class ProductPrice
+{
+    use ProductPriceEntityTrait;
+
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'prices')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Product $product = null;
+
+    public function getProduct(): ?string
+    {
+        return $this->product?->getName();
+    }
+
+    public function setProduct(?Product $product): self
+    {
+        $this->product = $product;
+        return $this;
+    }
+}

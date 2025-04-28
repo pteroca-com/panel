@@ -3,6 +3,7 @@
 namespace App\Core\Repository;
 
 use App\Core\Entity\Server;
+use App\Core\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,7 +34,30 @@ class ServerRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->where('s.isSuspended = true')
             ->andWhere('s.expiresAt < :expiresBefore')
+            ->andWhere('s.deletedAt IS NULL')
             ->setParameter('expiresBefore', $expiresBefore)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getServersToSuspend(\DateTime $expiresBefore): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.isSuspended = false')
+            ->andWhere('s.expiresAt < :expiresBefore')
+            ->andWhere('s.deletedAt IS NULL')
+            ->setParameter('expiresBefore', $expiresBefore)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getActiveServersByUser(User $user): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.user = :user')
+            ->andWhere('s.isSuspended = false')
+            ->andWhere('s.deletedAt IS NULL')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
     }
@@ -43,6 +67,27 @@ class ServerRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->select('COUNT(s.id)')
             ->where('s.isSuspended = false')
+            ->andWhere('s.deletedAt IS NULL')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getActiveServer(int $id): ?Server
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.id = :id')
+            ->andWhere('s.deletedAt IS NULL')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    public function getAllServersOwnedCount(int $userId): int
+    {
+        return $this->createQueryBuilder('s')
+            ->select('COUNT(s.id)')
+            ->where('s.user = :userId')
+            ->setParameter('userId', $userId)
             ->getQuery()
             ->getSingleScalarResult();
     }

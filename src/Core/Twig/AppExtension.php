@@ -6,14 +6,18 @@ use App\Core\DTO\TemplateOptionsDTO;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
+use App\Core\Trait\FormatBytesTrait;
 use App\Core\Service\Template\TemplateManager;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Symfony\Component\Asset\Packages;
 
 class AppExtension extends AbstractExtension
 {
+    use FormatBytesTrait;
+
     public function __construct(
         private readonly SystemVersionService $systemVersionService,
         private readonly SettingService $settingService,
@@ -39,6 +43,13 @@ class AppExtension extends AbstractExtension
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
+        ];
+    }
+
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('format_bytes', [$this, 'formatBytes']),
         ];
     }
 

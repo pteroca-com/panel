@@ -1,0 +1,123 @@
+{% block main %}
+    <div class="modal fade" id="useVoucherModal" tabindex="-1" aria-labelledby="useVoucherModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="useVoucherModalLabel">{{ 'pteroca.cart.use_voucher'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="use-voucher-form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text form-group">
+                                    <label for="Voucher_code" class="form-control-label required">
+                                        {{ 'pteroca.cart.voucher_code'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Voucher_code" name="Voucher[code]" required="required" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="use-voucher"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.cart.use_voucher'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#use-voucher-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const form = event.target,
+                    formData = new FormData(form),
+                    endpointUrl = '{{ path('api_voucher_redeem') }}',
+                    submitButton = document.getElementById('use-voucher'),
+                    spinner = submitButton.querySelector('i'),
+                    voucherCode = formData.get('Voucher[code]'),
+                    selectedSummaryElement = document.getElementById('selected-summary')
+
+                let selectedSummary = null
+                if (selectedSummaryElement) {
+                    removeDiscountCode()
+                    selectedSummary = parseFloat(selectedSummaryElement.innerText)
+                }
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+
+                sendRedeemVoucherRequest(endpointUrl, voucherCode, selectedSummary)
+                    .then(response => {
+                        if (response.ok) {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('useVoucherModal'))
+                            if (modal) {
+                                modal.hide()
+                            }
+                        }
+
+                        submitButton.disabled = false
+                        spinner.classList.add('d-none')
+
+                        response.json().then(data => {
+                            if (data.type === 'balance_topup') {
+                                alert(data.message)
+
+                                if (response.ok) {
+                                    window.location.reload()
+                                }
+                            } else {
+                                const appliedDiscountElement = document.querySelector('#applied-discount')
+                                if (!appliedDiscountElement || typeof applyDiscountCode !== 'function') {
+                                    alert('{{ 'pteroca.api.voucher.only_during_order'|trans }}')
+                                    return
+                                }
+
+                                const discountCodeInput = document.querySelector('#voucher-code')
+                                if ((!discountCodeInput || data.type !== discountCodeInput.dataset.voucherType) && data.type !== 'balance_topup') {
+                                    alert('{{ 'pteroca.voucher.voucher_type_invalid'|trans }}')
+                                    return
+                                }
+
+                                alert(data.message)
+                                if (response.ok) {
+                                    applyDiscountCode(voucherCode, data.value)
+                                }
+                            }
+                        })
+                    }).catch(() => {
+                    submitButton.disabled = false
+                    spinner.classList.add('d-none')
+
+                    alert('{{ 'pteroca.api.voucher.error_during_redeeming'|trans }}')
+                })
+            })
+        })
+
+        function sendRedeemVoucherRequest(endpointUrl, voucherCode, orderSummary) {
+            const formData = new FormData()
+            formData.append('code', voucherCode)
+
+            if (orderSummary) {
+                formData.append('amount', orderSummary)
+            }
+
+            let requestObject = {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData,
+            }
+
+            return fetch(endpointUrl, requestObject)
+        }
+    </script>
+{% endblock %}

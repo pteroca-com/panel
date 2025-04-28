@@ -1,0 +1,63 @@
+{% block main %}
+    <div class="modal fade" id="createAllocationModal" tabindex="-1" aria-labelledby="createAllocationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createAllocationModalLabel">{{ 'pteroca.server.create_allocation'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="create-allocation-form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text">
+                                    <p>{{ 'pteroca.server.create_allocation_confirmation'|trans }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="create-allocation"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.create_allocation'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#create-allocation-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const endpointUrl = '{{ path('server_allocation_create', { id: server.id }) }}',
+                    submitButton = document.getElementById('create-allocation'),
+                    spinner = submitButton.querySelector('i')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+
+                sendRequest(endpointUrl, 'POST')
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload()
+                        } else {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+
+                            response.json().then(data => {
+                                alert(data.error || '{{ 'pteroca.server.error_during_creating_allocation'|trans }}')
+                            })
+                        }
+                    }).catch(() => {
+                    submitButton.disabled = false
+                    spinner.classList.add('d-none')
+
+                    alert('{{ 'pteroca.server.error_during_creating_allocation'|trans }}')
+                })
+            })
+        })
+    </script>
+{% endblock %}

@@ -257,7 +257,7 @@ class StoreServiceTest extends TestCase
         $this->expectException(NotFoundHttpException::class);
         $this->expectExceptionMessage('Egg not found');
 
-        $this->storeService->validateBoughtProduct($user, $product, 2);
+        $this->storeService->validateBoughtProduct($product, 2);
     }
 
     public function testValidateBoughtProductThrowsExceptionForInsufficientFunds(): void
@@ -278,7 +278,7 @@ class StoreServiceTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Not enough funds');
 
-        $this->storeService->validateBoughtProduct($user, $product, 1, $server);
+        $this->storeService->validateBoughtProduct($product, 1, $server);
     }
 
     public function testValidateBoughtProductSucceeds(): void
@@ -290,7 +290,7 @@ class StoreServiceTest extends TestCase
         $product->method('getPrice')->willReturn(20000.00);
         $product->method('getEggs')->willReturn([1]);
 
-        $this->storeService->validateBoughtProduct($user, $product, 1);
+        $this->storeService->validateBoughtProduct($product, 1);
 
         $this->assertTrue(true);
     }

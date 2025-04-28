@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block body_javascript %}
+    {% if not server.isSuspended and (serverData.hasConfigurableOptions or serverData.hasConfigurableVariables) %}
     <script>
         function getSettingElement(settingName, isStartupOption = false) {
             let preparedSettingName = settingName;
@@ -153,4 +154,5 @@
             throw new Error(message);
         }
     </script>
+    {% endif %}
 {% endblock %}

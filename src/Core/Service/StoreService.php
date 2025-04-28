@@ -4,7 +4,10 @@ namespace App\Core\Service;
 
 use App\Core\Entity\Category;
 use App\Core\Entity\Product;
+use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
+use App\Core\Entity\ServerProduct;
+use App\Core\Entity\ServerProductPrice;
 use App\Core\Entity\User;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
@@ -50,15 +53,18 @@ class StoreService
         }, $this->productRepository->findBy([
             'category' => $category,
             'isActive' => true,
+            'deletedAt' => null,
         ]));
     }
 
     public function getActiveProduct(int $productId): ?Product
     {
         $product = $this->productRepository->find($productId);
-        if (empty($product) || $product->getIsActive() === false) {
+
+        if (empty($product) || $product->getIsActive() === false || $product->getDeletedAt() !== null) {
             return null;
         }
+
         return $product;
     }
 
@@ -79,18 +85,29 @@ class StoreService
 
     public function getProductEggs(Product $product): array
     {
-        $eggs = $this->pterodactylService->getApi()->nest_eggs->all($product->getNest())->toArray();
+        $eggs = $this->pterodactylService
+            ->getApi()
+            ->nest_eggs
+            ->all($product->getNest())
+            ->toArray();
+
         return array_filter($eggs, fn($egg) => in_array($egg->id, $product->getEggs()));
     }
 
     public function productHasNodeWithResources(Product $product): bool
     {
         foreach ($product->getNodes() as $node) {
-            $node = $this->pterodactylService->getApi()->nodes->get($node)->toArray();
+            $node = $this->pterodactylService
+                ->getApi()
+                ->nodes
+                ->get($node)
+                ->toArray();
+
             if ($this->checkNodeResources($product->getMemory(), $product->getDiskSpace(), $node)) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -116,18 +133,27 @@ class StoreService
         return false;
     }
 
-    public function validateBoughtProduct(User $user, Product $product, int $eggId, ?Server $server = null): void
+    public function validateBoughtProduct(
+        Product|ServerProduct $product,
+        ?int $eggId,
+        int $priceId,
+        ?Server $server = null
+    ): void
     {
-        if (empty($server) && !in_array($eggId, $product->getEggs())) {
+        if (empty($server) && (empty($eggId) || !in_array($eggId, $product->getEggs()))) {
             throw new NotFoundHttpException($this->translator->trans('pteroca.store.egg_not_found'));
         }
 
-        $this->validateUserBalance($user, $product);
+        $productPrices = $product->getPrices()->toArray();
+        $price = array_filter($productPrices, fn($price) => $price->getId() === $priceId);
+        if (empty($price)) {
+            throw new NotFoundHttpException($this->translator->trans('pteroca.store.price_not_found'));
+        }
     }
 
-    public function validateUserBalance(User $user, Product $product): void
+    public function validateUserBalanceByPrice(User $user, ProductPrice|ServerProductPrice $selectedPrice): void
     {
-        if (($product->getPrice() / 100) > $user->getBalance()) {
+        if ($selectedPrice->getPrice() > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
     }

@@ -1,0 +1,66 @@
+{% block main %}
+    <div class="modal fade" id="makePrimaryAllocationModal" tabindex="-1" aria-labelledby="makePrimaryAllocationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="makePrimaryAllocationModalLabel">{{ 'pteroca.server.make_primary'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="make-primary-allocation-form">
+                    <input type="hidden" name="allocationId" id="allocationId">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text">
+                                    <p>{{ 'pteroca.server.make_allocation_primary_confirmation'|trans }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="make-primary-allocation"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.make_primary'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#make-primary-allocation-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const form = event.target,
+                    formData = new FormData(form),
+                    endpointUrl = '{{ path('server_allocation_make_primary', { id: server.id, allocationId: 'ALLOCATION_ID' }) }}'.replace('ALLOCATION_ID', formData.get('allocationId')),
+                    submitButton = document.getElementById('make-primary-allocation'),
+                    spinner = submitButton.querySelector('i')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+
+                sendRequest(endpointUrl, 'POST')
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload()
+                        } else {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+
+                            response.json().then(data => {
+                                alert(data.error || '{{ 'pteroca.server.error_during_editing_allocation'|trans }}')
+                            })
+                        }
+                    }).catch(() => {
+                    submitButton.disabled = false
+                    spinner.classList.add('d-none')
+
+                    alert('{{ 'pteroca.server.error_during_editing_allocation'|trans }}')
+                })
+            })
+        })
+    </script>
+{% endblock %}

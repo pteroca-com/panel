@@ -5,6 +5,11 @@
 {% block content_title %}{{ 'pteroca.recharge.recharge_balance'|trans }}{% endblock %}
 
 {% block page_actions %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#useVoucherModal">
+        <i class="fa fa-plus"></i>
+        {{ 'pteroca.cart.use_voucher'|trans }}
+    </button>
+
     <a class="btn btn-secondary" href="{{ path('panel') }}">
         {{ 'pteroca.system.back'|trans }}
     </a>
@@ -24,4 +29,6 @@
             </div>
         </div>
     </div>
+
+    {% include 'components/use_voucher_modal.html.twig' %}
 {% endblock %}

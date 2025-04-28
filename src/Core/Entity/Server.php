@@ -3,6 +3,7 @@
 namespace App\Core\Entity;
 
 use App\Core\Repository\ServerRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServerRepository::class)]
@@ -20,19 +21,21 @@ class Server
     #[ORM\Column(type: 'string')]
     private string $pterodactylServerIdentifier;
 
-    #[ORM\ManyToOne(targetEntity: Product::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Product $product;
+    #[ORM\OneToOne(targetEntity: ServerProduct::class, mappedBy: 'server', cascade: ['persist', 'remove'])]
+    private ServerProduct $serverProduct;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $createdAt;
+    private DateTime $createdAt;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTime $deletedAt = null;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $expiresAt;
+    private DateTime $expiresAt;
 
     #[ORM\Column(type: 'boolean')]
     private bool $isSuspended = false;
@@ -43,7 +46,7 @@ class Server
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -73,14 +76,14 @@ class Server
         return $this;
     }
 
-    public function getProduct(): Product
+    public function getServerProduct(): ServerProduct
     {
-        return $this->product;
+        return $this->serverProduct;
     }
 
-    public function setProduct(Product $product): self
+    public function setServerProduct(ServerProduct $serverProduct): self
     {
-        $this->product = $product;
+        $this->serverProduct = $serverProduct;
         return $this;
     }
 
@@ -95,17 +98,31 @@ class Server
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    public function getExpiresAt(): \DateTime
+    public function setDeletedAtValue(): void
+    {
+        $this->deletedAt = new DateTime();
+
+        foreach ($this->serverProduct->getPrices() as $price) {
+            $price->setDeletedAt($this->deletedAt);
+        }
+    }
+
+    public function getDeletedAt(): ?DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function getExpiresAt(): DateTime
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(\DateTime $expiresAt): self
+    public function setExpiresAt(DateTime $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
         return $this;

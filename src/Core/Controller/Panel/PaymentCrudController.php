@@ -42,10 +42,12 @@ class PaymentCrudController extends AbstractPanelController
                     $value,
                 )),
             NumberField::new('amount', $this->translator->trans('pteroca.crud.payment.amount'))
-                ->setNumDecimals(2)
-                ->formatValue(fn ($value) => number_format($value / 100, 2)),
+                ->setNumDecimals(2),
             TextField::new('currency', $this->translator->trans('pteroca.crud.payment.currency'))
                 ->formatValue(fn ($value) => strtoupper($value)),
+            NumberField::new('balanceAmount', $this->translator->trans('pteroca.crud.payment.balance_amount'))
+                ->setNumDecimals(2),
+            AssociationField::new('usedVoucher', $this->translator->trans('pteroca.crud.payment.used_voucher')),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.payment.user')),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.payment.created_at')),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.payment.updated_at')),
