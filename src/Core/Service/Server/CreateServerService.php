@@ -10,6 +10,7 @@ use App\Core\Entity\ServerProductPrice;
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
+use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Repository\ServerProductPriceRepository;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
@@ -17,6 +18,7 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Voucher\VoucherPaymentService;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
@@ -31,9 +33,10 @@ class CreateServerService extends AbstractActionServerService
         private readonly ServerBuildService $serverBuildService,
         private readonly ServerProductPriceRepository $serverProductPriceRepository,
         private readonly LogService $logService,
-        UserRepository $userRepository,
+        readonly UserRepository $userRepository,
+        readonly VoucherPaymentService $voucherPaymentService,
     ) {
-        parent::__construct($userRepository, $pterodactylService);
+        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService);
     }
 
     public function createServer(
@@ -42,9 +45,18 @@ class CreateServerService extends AbstractActionServerService
         int $priceId,
         string $serverName,
         bool $autoRenewal,
-        User|UserInterface $user
+        User|UserInterface $user,
+        ?string $voucherCode = null,
     ): Server
     {
+        if (!empty($voucherCode)) {
+            $this->voucherPaymentService->validateVoucherCode(
+                $voucherCode,
+                $user,
+                VoucherTypeEnum::SERVER_DISCOUNT,
+            );
+        }
+
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user);
 
         $createdEntityServer = $this->createEntityServer(
@@ -57,7 +69,7 @@ class CreateServerService extends AbstractActionServerService
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
 
-        $this->updateUserBalance($user, $product, $priceId);
+        $this->updateUserBalance($user, $product, $priceId, $voucherCode);
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
             $createdEntityServer,
@@ -69,7 +81,13 @@ class CreateServerService extends AbstractActionServerService
         $this->logService->logAction(
             $user,
             LogActionEnum::BOUGHT_SERVER,
-            ['product' => $product, 'egg' => $eggId, 'price' => $priceId],
+            [
+                'product' => $product,
+                'egg' => $eggId,
+                'price' => $priceId,
+                'voucher' => $voucherCode,
+                'server' => $createdEntityServer,
+            ],
         );
 
         return $createdEntityServer;
@@ -114,7 +132,7 @@ class CreateServerService extends AbstractActionServerService
         )->first();
 
         if (empty($selectedPrice)) {
-            throw new \Exception('Price not found');
+            throw new \Exception('Price not found'); // TODO translation
         }
 
         $datetimeModifier = sprintf(

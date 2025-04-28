@@ -43,7 +43,7 @@
                                     <h4>{{ 'pteroca.cart_configuration.configuration'|trans }}</h4>
                                 </div>
                                 <input type="hidden" name="product" value="{{ server.id }}">
-                                <div class="col-6">
+                                <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="duration">{{ 'pteroca.cart_configuration.period'|trans }}</label>
                                         <select id="duration" name="duration" class="form-control" disabled>
@@ -61,7 +61,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="auto-renewal">{{ 'pteroca.cart_configuration.auto_renewal'|trans }}</label>
                                         <select id="auto-renewal" name="auto-renewal" class="form-control">
@@ -136,7 +136,10 @@
         document.addEventListener('DOMContentLoaded', function () {
             const durationSelect = document.getElementById('duration');
 
-            durationSelect.addEventListener('change', calculatePrice);
+            durationSelect.addEventListener('change', () => {
+                removeDiscountCode();
+                calculatePrice();
+            });
             durationSelect.dispatchEvent(new Event('change'));
 
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);

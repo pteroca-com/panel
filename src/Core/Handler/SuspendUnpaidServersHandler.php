@@ -63,7 +63,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
         }
 
         try {
-            $this->storeService->validateUserBalance(
+            $this->storeService->validateUserBalanceByPrice(
                 $server->getUser(),
                 $server->getServerProduct()->getSelectedPrice()
             );

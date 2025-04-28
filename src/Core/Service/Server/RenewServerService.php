@@ -6,12 +6,14 @@ use App\Core\Entity\Server;
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
+use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Voucher\VoucherPaymentService;
 use Exception;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -24,12 +26,25 @@ class RenewServerService extends AbstractActionServerService
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
         private readonly LogService $logService,
         readonly UserRepository $userRepository,
+        readonly VoucherPaymentService $voucherPaymentService,
     ) {
-        parent::__construct($userRepository, $pterodactylService);
+        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService);
     }
 
-    public function renewServer(Server $server, User|UserInterface $user): void
+    public function renewServer(
+        Server $server,
+        User|UserInterface $user,
+        ?string $voucherCode = null
+    ): void
     {
+        if (!empty($voucherCode)) {
+            $this->voucherPaymentService->validateVoucherCode(
+                $voucherCode,
+                $user,
+                VoucherTypeEnum::SERVER_DISCOUNT,
+            );
+        }
+
         $currentTime = new \DateTime();
         $currentExpirationDate = $server->getExpiresAt();
         if ($currentExpirationDate < new \DateTime()) {
@@ -64,10 +79,10 @@ class RenewServerService extends AbstractActionServerService
 
         $this->serverRepository->save($server);
         if ($chargeBalance) {
-            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId());
+            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode);
         }
 
-        if ($currentTime->diff($server->getExpiresAt())->days >= 7) { // TODO przetestowac
+        if ($currentTime->diff($server->getExpiresAt())->days >= 7) {
             $this->boughtConfirmationEmailService->sendRenewConfirmationEmail(
                 $user,
                 $server,

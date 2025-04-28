@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Service;
+namespace App\Core\Service\Voucher;
 
 use App\Core\DTO\Action\Result\RedeemVoucherActionResult;
 use App\Core\Entity\Payment;
@@ -16,6 +16,7 @@ use App\Core\Repository\UserRepository;
 use App\Core\Repository\VoucherRepository;
 use App\Core\Repository\VoucherUsageRepository;
 use App\Core\Service\Logs\LogService;
+use App\Core\Service\SettingService;
 use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -32,13 +33,20 @@ class VoucherService
         private readonly TranslatorInterface $translator,
     ) {}
 
-    public function redeemVoucher(string $code, User $user): RedeemVoucherActionResult
+    public function redeemVoucher(string $code, ?float $orderAmount, User $user): RedeemVoucherActionResult
     {
+        try {
+            $voucher = $this->getValidVoucher($code);
+        } catch (Exception $exception) {
+            return RedeemVoucherActionResult::failure($exception->getMessage());
+        }
+
         try {
             $voucher = $this->getValidVoucher($code);
             $this->validateNewAccountRequirementIfNeeded($voucher, $user);
             $this->validateOneUsePerUserRequirementIfNeeded($voucher, $user);
             $this->validateMinimumTopupAmountRequirementIfNeeded($voucher, $user);
+            $this->validateMinimumOrderAmountRequirementIfNeeded($orderAmount, $voucher);
 
             if ($voucher->getType() === VoucherTypeEnum::BALANCE_TOPUP) {
                 $this->redeemVoucherForUser($voucher, $user);
@@ -52,11 +60,15 @@ class VoucherService
                 $voucher->getValue(),
             );
         } catch (Exception $exception) {
-            return RedeemVoucherActionResult::failure($exception->getMessage());
+            return RedeemVoucherActionResult::failure(
+                $exception->getMessage(),
+                $voucher->getType()->value,
+                $voucher->getValue(),
+            );
         }
     }
 
-    private function getValidVoucher(string $code): Voucher
+    public function getValidVoucher(string $code): Voucher
     {
         $voucher = $this->voucherRepository->getVoucherByCode($code);
 
@@ -107,7 +119,7 @@ class VoucherService
             return;
         }
 
-        $userPayments = $this->paymentRepository->getUserSuccessfulPayments($user);
+        $userPayments = $this->paymentRepository->getUserSuccessfulPayments($user->getId());
         $userPaymentsSum = array_reduce($userPayments, function ($carry, Payment $payment) {
             return $carry + $payment->getAmount();
         }, 0);
@@ -122,16 +134,26 @@ class VoucherService
         }
     }
 
-    private function validateMinimumOrderAmountRequirementIfNeeded(Voucher $voucher, User $user): void // TODO sprawdzac przy tworzeniu encji payment podczas platnosci
+    private function validateMinimumOrderAmountRequirementIfNeeded(?float $orderAmount, Voucher $voucher): void
     {
-        if ($voucher->getType() !== VoucherTypeEnum::SERVER_DISCOUNT || empty($voucher->getMinimumOrderAmount())) {
+        if (
+            empty($orderAmount)
+            || $voucher->getType() === VoucherTypeEnum::BALANCE_TOPUP
+            || empty($voucher->getMinimumOrderAmount())
+        ) {
             return;
         }
 
+        if ($voucher->getMinimumOrderAmount() > $orderAmount) {
+            $exceptionMessage = $this->translator->trans('pteroca.api.voucher.minimum_order_amount_required', [
+               '{{ amount }}' => $voucher->getMinimumOrderAmount(),
+            ]);
 
+            throw new Exception($exceptionMessage);
+        }
     }
 
-    private function redeemVoucherForUser(Voucher $voucher, User $user): void
+    public function redeemVoucherForUser(Voucher $voucher, User $user): void
     {
         $voucherUsage = (new VoucherUsage())
             ->setUser($user)
@@ -142,7 +164,10 @@ class VoucherService
             'voucher_code' => $voucher->getCode(),
             'amount' => $voucher->getValue(),
         ]);
-        $this->addVoucherBalanceTopup($voucher, $user);
+
+        if ($voucher->getType() === VoucherTypeEnum::BALANCE_TOPUP) {
+            $this->addVoucherBalanceTopup($voucher, $user);
+        }
 
         $voucher->setUsedCount($voucher->getUsedCount() + 1);
         $this->voucherRepository->save($voucher);

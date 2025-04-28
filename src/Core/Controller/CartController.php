@@ -54,6 +54,7 @@ class CartController extends AbstractController
                     $this->getUser(),
                     $requestPayload['amount'],
                     $currency,
+                    $requestPayload['voucher'] ?? '',
                     $this->generateUrl('stripe_success', [], 0) . '?session_id={CHECKOUT_SESSION_ID}',
                     $this->generateUrl('stripe_cancel', [], 0)
                 );
@@ -106,8 +107,23 @@ class CartController extends AbstractController
         $autoRenewal = $request->request->getBoolean('auto-renewal');
 
         try {
-            $this->storeService->validateBoughtProduct($this->getUser(), $product, $eggId, $priceId);
-            $createServerService->createServer($product, $eggId, $priceId, $serverName, $autoRenewal, $this->getUser());
+            $this->storeService->validateBoughtProduct(
+                $product,
+                $eggId,
+                $priceId
+            );
+
+            $createServerService->createServer(
+                $product,
+                $eggId,
+                $priceId,
+                $serverName,
+                $autoRenewal,
+                $this->getUser(),
+                $request->request->getString('voucher'),
+            );
+
+            $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
         } catch (Exception $exception) {
             $flashMessage = sprintf(
                 '%s: %s',
@@ -149,7 +165,19 @@ class CartController extends AbstractController
         }
 
         try {
-            $renewServerService->renewServer($server, $this->getUser());
+            $this->storeService->validateBoughtProduct(
+                $server->getServerProduct(),
+                null,
+                $server->getServerProduct()->getSelectedPrice()->getId(),
+                $server,
+            );
+
+            $renewServerService->renewServer(
+                $server,
+                $this->getUser(),
+                $request->request->getString('voucher'),
+            );
+
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
         } catch (\Exception $exception) {
             $flashMessage = sprintf(

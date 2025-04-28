@@ -2,7 +2,7 @@
 
 namespace App\Core\Controller\API;
 
-use App\Core\Service\VoucherService;
+use App\Core\Service\Voucher\VoucherService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,7 +16,8 @@ class VoucherController extends APIAbstractController
     ): JsonResponse
     {
         $voucherCode = $request->request->getString('code');
-        $voucherRedeemResult = $voucherService->redeemVoucher($voucherCode, $this->getUser());
+        $orderAmount = (float)$request->request->getString('amount');
+        $voucherRedeemResult = $voucherService->redeemVoucher($voucherCode, $orderAmount, $this->getUser());
 
         return new JsonResponse(
             $voucherRedeemResult->toArray(),

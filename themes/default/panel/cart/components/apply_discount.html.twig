@@ -2,6 +2,11 @@
     <script>
         function applyDiscountCode(discountCode, discountValue)
         {
+            const voucherCodeElement = document.querySelector('#voucher-code')
+            if (voucherCodeElement) {
+                voucherCodeElement.value = discountCode
+            }
+
             const appliedDiscountElement = document.querySelector('#applied-discount'),
                 appliedDiscountCode = appliedDiscountElement.querySelector('#applied-discount-code'),
                 appliedDiscountValue = appliedDiscountElement.querySelector('#applied-discount-value')

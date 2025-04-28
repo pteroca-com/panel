@@ -42,12 +42,19 @@
                     endpointUrl = '{{ path('api_voucher_redeem') }}',
                     submitButton = document.getElementById('use-voucher'),
                     spinner = submitButton.querySelector('i'),
-                    voucherCode = formData.get('Voucher[code]')
+                    voucherCode = formData.get('Voucher[code]'),
+                    selectedSummaryElement = document.getElementById('selected-summary')
+
+                let selectedSummary = null
+                if (selectedSummaryElement) {
+                    removeDiscountCode()
+                    selectedSummary = parseFloat(selectedSummaryElement.innerText)
+                }
 
                 submitButton.disabled = true
                 spinner.classList.remove('d-none')
 
-                sendRedeemVoucherRequest(endpointUrl, voucherCode)
+                sendRedeemVoucherRequest(endpointUrl, voucherCode, selectedSummary)
                     .then(response => {
                         if (response.ok) {
                             const modal = bootstrap.Modal.getInstance(document.getElementById('useVoucherModal'))
@@ -62,7 +69,10 @@
                         response.json().then(data => {
                             if (data.type === 'balance_topup') {
                                 alert(data.message)
-                                window.location.reload()
+
+                                if (response.ok) {
+                                    window.location.reload()
+                                }
                             } else {
                                 const appliedDiscountElement = document.querySelector('#applied-discount')
                                 if (!appliedDiscountElement || typeof applyDiscountCode !== 'function') {
@@ -91,9 +101,13 @@
             })
         })
 
-        function sendRedeemVoucherRequest(endpointUrl, voucherCode) {
+        function sendRedeemVoucherRequest(endpointUrl, voucherCode, orderSummary) {
             const formData = new FormData()
             formData.append('code', voucherCode)
+
+            if (orderSummary) {
+                formData.append('amount', orderSummary)
+            }
 
             let requestObject = {
                 method: 'POST',

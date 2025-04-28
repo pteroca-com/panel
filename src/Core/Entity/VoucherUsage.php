@@ -26,7 +26,7 @@ class VoucherUsage
 
     public function __construct()
     {
-        $this->usedAt = new \DateTimeImmutable();
+        $this->usedAt = new \DateTime();
     }
 
     public function getId(): ?int

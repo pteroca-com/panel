@@ -19,7 +19,7 @@ class Voucher
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    private ?string $code = null;
+    private string $code;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private string $value;
@@ -71,7 +71,7 @@ class Voucher
         return $this->id;
     }
 
-    public function getCode(): ?string
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -250,5 +250,10 @@ class Voucher
                 ->atPath('value')
                 ->addViolation();
         }
+    }
+
+    public function __toString(): string
+    {
+        return $this->getCode();
     }
 }
