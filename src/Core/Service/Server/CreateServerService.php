@@ -20,6 +20,7 @@ use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
@@ -33,10 +34,11 @@ class CreateServerService extends AbstractActionServerService
         private readonly ServerBuildService $serverBuildService,
         private readonly ServerProductPriceRepository $serverProductPriceRepository,
         private readonly LogService $logService,
-        readonly UserRepository $userRepository,
-        readonly VoucherPaymentService $voucherPaymentService,
+        private readonly VoucherPaymentService $voucherPaymentService,
+        private readonly TranslatorInterface $translator,
+        UserRepository $userRepository,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService);
+        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator);
     }
 
     public function createServer(
@@ -132,7 +134,7 @@ class CreateServerService extends AbstractActionServerService
         )->first();
 
         if (empty($selectedPrice)) {
-            throw new \Exception('Price not found'); // TODO translation
+            throw new \Exception($this->translator->trans('pteroca.store.price_not_found'));
         }
 
         $datetimeModifier = sprintf(

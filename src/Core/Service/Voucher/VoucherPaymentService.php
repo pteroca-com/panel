@@ -5,11 +5,13 @@ namespace App\Core\Service\Voucher;
 use App\Core\Entity\User;
 use App\Core\Entity\Voucher;
 use App\Core\Enum\VoucherTypeEnum;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VoucherPaymentService
 {
     public function __construct(
         private readonly VoucherService $voucherService,
+        private readonly TranslatorInterface $translator,
     )
     {
     }
@@ -31,7 +33,7 @@ class VoucherPaymentService
         }
 
         if ($redeemResult->getType() !== $voucherType->value) {
-            throw new \Exception('Invalid voucher type'); // TODO translation
+            throw new \Exception($this->translator->trans('pteroca.voucher.invalid_voucher_type'));
         }
     }
 

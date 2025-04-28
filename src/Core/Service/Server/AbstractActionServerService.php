@@ -10,6 +10,8 @@ use App\Core\Entity\User;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractActionServerService
 {
@@ -17,6 +19,8 @@ abstract class AbstractActionServerService
         private readonly UserRepository $userRepository,
         private readonly PterodactylService $pterodactylService,
         private readonly VoucherPaymentService $voucherPaymentService,
+        private readonly TranslatorInterface $translator,
+        private readonly LoggerInterface $logger,
     ) {}
 
     protected function updateUserBalance(
@@ -32,7 +36,7 @@ abstract class AbstractActionServerService
         )->first();
 
         if (empty($price)) {
-            throw new \InvalidArgumentException('Price not found'); // TODO translation
+            throw new \InvalidArgumentException($this->translator->trans('pteroca.store.price_not_found'));
         }
 
         $balancePaymentAmount = $price->getPrice();
@@ -44,12 +48,16 @@ abstract class AbstractActionServerService
                     $user,
                 );
             } catch (\Exception $exception) {
-                // TODO add log
+                $this->logger->error('Failed to redeem payment voucher', [
+                    'user' => $user->getId(),
+                    'voucherCode' => $voucherCode,
+                    'exception' => $exception->getMessage(),
+                ]);
             }
         }
 
         if ($balancePaymentAmount > $user->getBalance()) {
-            throw new \InvalidArgumentException('Not enough balance'); // TODO translation
+            throw new \InvalidArgumentException($this->translator->trans('pteroca.store.not_enough_funds'));
         }
 
         $user->setBalance($user->getBalance() - $balancePaymentAmount);
