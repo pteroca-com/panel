@@ -4,6 +4,7 @@ pteroca:
     email_not_verified: 'Twój adres e-mail nie został jeszcze zweryfikowany. Sprawdź swoją skrzynkę odbiorczą.'
     pterodactyl_error: 'Wystąpił błąd podczas komunikacji z panelem Pterodactyl.'
     dont_have_permission: 'Nie masz uprawnień do wykonania tej akcji.'
+    experimental_feature: 'Ta funkcja jest eksperymentalna i może nie działać poprawnie.'
 
   login:
     title: 'Zaloguj się'

@@ -4,6 +4,7 @@ pteroca:
     email_not_verified: '您的电子邮件地址尚未验证。请检查您的收件箱。'
     pterodactyl_error: '与 Pterodactyl 面板通信时发生错误。'
     dont_have_permission: '您没有权限执行此操作。'
+    experimental_feature: '此功能为实验性功能，可能无法正常工作。'
 
   login:
     title: '登录'

@@ -4,6 +4,7 @@ pteroca:
     email_not_verified: 'आपका ईमेल पता अभी सत्यापित नहीं किया गया है। कृपया अपने इनबॉक्स की जाँच करें।'
     pterodactyl_error: 'Pterodactyl API से कनेक्ट करने में त्रुटि हुई।'
     dont_have_permission: 'आपको इस क्रिया को करने की अनुमति नहीं है।'
+    experimental_feature: 'यह फीचर परीक्षणाधीन है और सही से काम नहीं कर सकता है।'
 
   login:
     title: 'लॉगिन'

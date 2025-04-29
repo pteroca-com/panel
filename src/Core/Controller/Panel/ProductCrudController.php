@@ -11,6 +11,7 @@ use App\Core\Form\ProductPriceFixedFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\ExperimentalFeatureMessageTrait;
 use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -34,6 +35,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ProductCrudController extends AbstractPanelController
 {
     use ProductCrudControllerTrait;
+    use ExperimentalFeatureMessageTrait;
 
     private array $flashMessages = [];
 
@@ -166,7 +168,7 @@ class ProductCrudController extends AbstractPanelController
                 ->setSortable(true)
                 ->onlyOnForms()
                 ->setColumns(6)
-                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint') . $this->getExperimentalFeatureMessage())
                 ->setRequired(true)
                 ->setEntryIsComplex(),
 

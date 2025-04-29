@@ -4,6 +4,7 @@ pteroca:
     email_not_verified: 'Seu endereço de e-mail ainda não foi verificado. Verifique sua caixa de entrada.'
     pterodactyl_error: 'Ocorreu um erro ao se comunicar com o painel Pterodactyl.'
     dont_have_permission: 'Você não tem permissão para acessar esta página.'
+    experimental_feature: 'Este recurso é experimental e pode não funcionar corretamente.'
 
   login:
     title: 'Entrar'

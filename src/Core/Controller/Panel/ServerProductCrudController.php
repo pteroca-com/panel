@@ -16,6 +16,7 @@ use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\CrudFlashMessagesTrait;
+use App\Core\Trait\ExperimentalFeatureMessageTrait;
 use App\Core\Trait\ManageServerActionTrait;
 use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,6 +44,7 @@ class ServerProductCrudController extends AbstractPanelController
     use ProductCrudControllerTrait;
     use ManageServerActionTrait;
     use CrudFlashMessagesTrait;
+    use ExperimentalFeatureMessageTrait;
 
     private bool $isServerOffline = false;
 
@@ -158,7 +160,7 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setSortable(true)
                 ->onlyOnForms()
                 ->setColumns(6)
-                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint') . $this->getExperimentalFeatureMessage())
                 ->setRequired(true)
                 ->setEntryIsComplex(),
         ];

@@ -4,6 +4,8 @@ pteroca:
     email_not_verified: 'Ваш адрес электронной почты еще не подтвержден. Пожалуйста, проверьте свою электронную почту.'
     pterodactyl_error: 'Ошибка при подключении к Pterodactyl API.'
     dont_have_permission: 'У вас нет прав для выполнения этого действия.'
+    experimental_feature: 'Эта функция является экспериментальной и может работать некорректно.'
+
   login:
     title: 'Войти'
     email_address: 'Email адрес'
