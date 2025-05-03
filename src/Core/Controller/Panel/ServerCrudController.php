@@ -19,7 +19,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
@@ -134,9 +133,11 @@ class ServerCrudController extends AbstractPanelController
     {
         $filters
             ->add('pterodactylServerId')
+            ->add('pterodactylServerIdentifier')
             ->add('user')
             ->add('expiresAt')
             ->add('isSuspended')
+            ->add('autoRenewal')
             ->add('createdAt')
             ->add('deletedAt')
         ;

@@ -110,7 +110,21 @@ class VoucherCrudController extends AbstractPanelController
     {
         $filters
             ->add('id')
+            ->add('type')
+            ->add('code')
+            ->add('value')
+            ->add('minimumTopupAmount')
+            ->add('minimumOrderAmount')
+            ->add('maxGlobalUses')
+            ->add('expirationDate')
+            ->add('newAccountsOnly')
+            ->add('oneUsePerUser')
+            ->add('usedCount')
+            ->add('createdAt')
+            ->add('updatedAt')
+            ->add('deletedAt')
         ;
+
         return parent::configureFilters($filters);
     }
 

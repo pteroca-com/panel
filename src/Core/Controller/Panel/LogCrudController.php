@@ -53,15 +53,8 @@ class LogCrudController extends AbstractPanelController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->remove(Crud::PAGE_INDEX, Action::NEW)
-            ->remove(Crud::PAGE_INDEX, Action::DELETE)
-            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->disable(Action::EDIT, Action::DELETE, Action::NEW)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_RETURN)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_DETAIL, Action::EDIT)
             ;
     }
 
@@ -87,6 +80,7 @@ class LogCrudController extends AbstractPanelController
             ->add('ipAddress')
             ->add('createdAt')
             ->add('user');
+
         return parent::configureFilters($filters);
     }
 }

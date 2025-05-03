@@ -227,6 +227,7 @@ class ProductCrudController extends AbstractPanelController
             ->add('swap')
             ->add('backups')
             ->add('ports')
+            ->add('allowChangeEgg')
             ->add('createdAt')
             ->add('updatedAt')
             ->add('deletedAt')
