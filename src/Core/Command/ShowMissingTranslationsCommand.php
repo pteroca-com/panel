@@ -57,26 +57,34 @@ class ShowMissingTranslationsCommand extends Command
         if (empty($missingKeys)) {
             $io->success('No missing translations found.');
         } else {
-            $io->warning(sprintf('Missing translations found in "%s":', $compareFile));
-            $io->block(implode(PHP_EOL, $missingKeys));
+            $io->warning(sprintf('Found %d missing translations in "%s":', count($missingKeys), $compareFile));
+
+            $missingKeys = array_filter($missingKeys, function($key) {
+                return !empty(trim($key));
+            });
+
+            $io->writeln(implode(', ', $missingKeys));
         }
 
         return Command::SUCCESS;
     }
 
-    private function findMissingKeys(array $mainData, array $compareData): array
+    private function findMissingKeys(array $mainData, array $compareData, string $prefix = ''): array
     {
         $missingKeys = [];
 
         foreach ($mainData as $key => $value) {
+            $currentKey = $prefix ? $prefix . '.' . $key : $key;
+
             if (is_array($value)) {
-                $subKeys = $this->findMissingKeys($value, $compareData[$key] ?? []);
-                if (!empty($subKeys)) {
-                    $missingKeys[] = implode(', ', array_map(fn($subKey) => $key . '.' . $subKey, $subKeys));
+                if (!isset($compareData[$key]) || !is_array($compareData[$key])) {
+                    $missingKeys[] = $currentKey;
+                } else {
+                    $subKeys = $this->findMissingKeys($value, $compareData[$key], $currentKey);
+                    $missingKeys = array_merge($missingKeys, $subKeys);
                 }
-            }
-            if (!array_key_exists($key, $compareData)) {
-                $missingKeys[] = $key;
+            } elseif (!array_key_exists($key, $compareData)) {
+                $missingKeys[] = $currentKey;
             }
         }
 
