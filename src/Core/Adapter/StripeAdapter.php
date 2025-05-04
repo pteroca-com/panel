@@ -35,7 +35,7 @@ class StripeAdapter
     {
         return new PaymentSessionDTO(
             $session->id,
-            $session->amount_total,
+            $session->amount_total / 100,
             $session->currency,
             $session->payment_status,
             $session->url

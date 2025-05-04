@@ -6,9 +6,13 @@ use App\Core\Entity\Product;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Form\ProductPriceDynamicFormType;
+use App\Core\Form\ProductPriceFixedFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\ExperimentalFeatureMessageTrait;
+use App\Core\Trait\ProductCrudControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -17,6 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\HiddenField;
@@ -29,6 +34,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProductCrudController extends AbstractPanelController
 {
+    use ProductCrudControllerTrait;
+    use ExperimentalFeatureMessageTrait;
+
     private array $flashMessages = [];
 
     public function __construct(
@@ -61,7 +69,6 @@ class ProductCrudController extends AbstractPanelController
                 ->setIcon('fa fa-info-circle'),
             TextField::new('name', $this->translator->trans('pteroca.crud.product.name'))
                 ->setColumns(7),
-            NumberField::new('price', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price'), $internalCurrency)),
             TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description'))
                 ->setColumns(10),
             BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active'))
@@ -143,9 +150,31 @@ class ProductCrudController extends AbstractPanelController
                 ->setFormTypeOption('attr', ['class' => 'egg-selector'])
                 ->setColumns(12),
 
+            FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
+                ->setIcon('fa fa-money'),
+            CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
+                ->setEntryType(ProductPriceFixedFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_static_plan_hint'))
+                ->setRequired(true)
+                ->setEntryIsComplex(),
+            CollectionField::new('dynamicPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_dynamic_plan'), $internalCurrency))
+                ->setEntryType(ProductPriceDynamicFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->setSortable(true)
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint') . $this->getExperimentalFeatureMessage())
+                ->setRequired(true)
+                ->setEntryIsComplex(),
+
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
-
+            DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.product.deleted_at'))->onlyOnDetail(),
         ];
 
         if (!empty($this->flashMessages)) {
@@ -162,6 +191,9 @@ class ProductCrudController extends AbstractPanelController
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.save')))
+            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => $action->displayIf(fn (Product $entity) => empty($entity->getDeletedAt())))
+            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => $action->displayIf(fn (Product $entity) => empty($entity->getDeletedAt())))
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
     }
@@ -185,7 +217,6 @@ class ProductCrudController extends AbstractPanelController
         $filters
             ->add('name')
             ->add('description')
-            ->add('price')
             ->add('isActive')
             ->add('category')
             ->add('diskSpace')
@@ -196,6 +227,10 @@ class ProductCrudController extends AbstractPanelController
             ->add('swap')
             ->add('backups')
             ->add('ports')
+            ->add('allowChangeEgg')
+            ->add('createdAt')
+            ->add('updatedAt')
+            ->add('deletedAt')
         ;
         return parent::configureFilters($filters);
     }
@@ -223,68 +258,12 @@ class ProductCrudController extends AbstractPanelController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
-    private function getEggsConfigurationFromRequest(): array
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        $requestData = $this->requestStack->getCurrentRequest()->request->all();
-        return $requestData['eggs_configuration'] ?? [];
-    }
-
-    private function getNodesChoices(): array
-    {
-        try {
-            $nodes = $this->pterodactylService->getApi()->nodes->all()->toArray();
-            $locations = [];
-            $choices = [];
-
-            foreach ($nodes as $node) {
-                if (empty($locations[$node->location_id])) {
-                    $locations[$node->location_id] = $this->pterodactylService
-                        ->getApi()
-                        ->locations
-                        ->get($node->location_id);
-                }
-                $choices[$locations[$node->location_id]->short][$node->name] = $node->id;
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
+        if ($entityInstance instanceof Product) {
+            $entityInstance->setDeletedAtValue();
         }
-    }
 
-    private function getNestsChoices(): array
-    {
-        try {
-            $nests = $this->pterodactylService->getApi()->nests->all()->toArray();
-            $choices = [];
-
-            foreach ($nests as $nest) {
-                $choices[$nest->name] = $nest->id;
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
-    }
-
-    private function getEggsChoices(array $nests): array
-    {
-        try {
-            $choices = [];
-            foreach ($nests as $nestId) {
-                $eggs = $this->pterodactylService->getApi()->nest_eggs->all($nestId)->toArray();
-                foreach ($eggs as $egg) {
-                    $choices[$egg->name] = $egg->id;
-                }
-            }
-
-            return $choices;
-        } catch (\Exception $exception) {
-            $this->flashMessages[] = $exception->getMessage();
-            return [];
-        }
+        parent::updateEntity($entityManager, $entityInstance);
     }
 }

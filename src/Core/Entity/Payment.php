@@ -25,6 +25,13 @@ class Payment
     #[ORM\Column(type: 'string', length: 3)]
     private string $currency;
 
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private float $balanceAmount;
+
+    #[ORM\ManyToOne(targetEntity: Voucher::class)]
+    #[ORM\JoinColumn(name: 'used_voucher', nullable: true)]
+    private ?int $usedVoucher = null;
+
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
@@ -93,6 +100,28 @@ class Payment
     public function setCurrency(string $currency): self
     {
         $this->currency = $currency;
+        return $this;
+    }
+
+    public function getBalanceAmount(): float
+    {
+        return $this->balanceAmount;
+    }
+
+    public function setBalanceAmount(float $balanceAmount): self
+    {
+        $this->balanceAmount = $balanceAmount;
+        return $this;
+    }
+
+    public function getUsedVoucher(): ?int
+    {
+        return $this->usedVoucher;
+    }
+
+    public function setUsedVoucher(?int $usedVoucher): self
+    {
+        $this->usedVoucher = $usedVoucher;
         return $this;
     }
 

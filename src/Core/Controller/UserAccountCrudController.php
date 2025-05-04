@@ -101,9 +101,11 @@ class UserAccountCrudController extends AbstractCrudController
     public function index(AdminContext $context)
     {
         $user = $this->getUser();
+
         if (empty($user)) {
             return $this->redirectToRoute('app_login');
         }
+
         return $this->redirectToRoute('panel', [
             'crudAction' => 'edit',
             'crudControllerFqcn' => UserAccountCrudController::class,

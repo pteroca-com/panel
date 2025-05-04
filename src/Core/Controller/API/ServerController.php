@@ -6,11 +6,14 @@ use App\Core\Entity\Server;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
+use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ServerController extends APIAbstractController
 {
+    use InternalServerApiTrait;
+
     public function __construct(
         private readonly ServerService $serverService,
         private readonly ServerRepository $serverRepository,

@@ -84,7 +84,7 @@
                                             <tr>
                                                 <th scope="row">{{ payment.id }}</th>
                                                 <td>{{ payment.user.email }}</td>
-                                                <td>{{ (payment.amount / 100)|number_format(2, ',', ' ') }}</td>
+                                                <td>{{ payment.amount|number_format(2, ',', ' ') }}</td>
                                                 <td>{{ payment.currency }}</td>
                                                 <td>{{ payment.status }}</td>
                                                 <td>{{ payment.createdAt|date('Y-m-d H:i') }}</td>

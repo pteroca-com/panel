@@ -164,7 +164,11 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         $filters
             ->add('name')
             ->add('value')
+            ->add('type')
+            ->add('context')
+            ->add('hierarchy')
         ;
+
         return parent::configureFilters($filters);
     }
 

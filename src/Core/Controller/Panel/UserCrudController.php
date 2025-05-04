@@ -122,6 +122,11 @@ class UserCrudController extends AbstractPanelController
             ->add('balance')
             ->add('name')
             ->add('surname')
+            ->add('pterodactylUserId')
+            ->add('isVerified')
+            ->add('isBlocked')
+            ->add('createdAt')
+            ->add('updatedAt')
         ;
         return parent::configureFilters($filters);
     }

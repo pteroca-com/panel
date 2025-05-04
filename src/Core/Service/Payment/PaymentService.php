@@ -7,6 +7,7 @@ use App\Core\Entity\Payment;
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
+use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Provider\Payment\PaymentProviderInterface;
 use App\Core\Repository\PaymentRepository;
@@ -14,6 +15,7 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
+use App\Core\Service\Voucher\VoucherPaymentService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -28,27 +30,47 @@ class PaymentService
         private readonly SettingService $settingService,
         private readonly LogService $logService,
         private readonly UserVerificationService $userVerificationService,
+        private readonly VoucherPaymentService $voucherPaymentService,
     ) {}
 
     public function createPayment(
         User $user,
         float $amount,
         string $currency,
+        string $voucherCode,
         string $successUrl,
         string $cancelUrl,
     ): string
     {
         $this->userVerificationService->validateUserVerification($user);
+        $balanceAmount = $amount;
+        if (!empty($voucherCode)) {
+            $this->voucherPaymentService->validateVoucherCode(
+                $voucherCode,
+                $user,
+                VoucherTypeEnum::PAYMENT_DISCOUNT,
+            );
+            $amount = $this->voucherPaymentService->redeemPaymentVoucher($amount, $voucherCode, $user);
+        }
+
         $session = $this->paymentProvider->createSession($amount, $currency, $successUrl, $cancelUrl);
         if (empty($session)) {
             throw new \Exception($this->translator->trans('pteroca.recharge.failed_to_create_payment'));
         }
+
         $this->logService->logAction(
             $user,
             LogActionEnum::CREATE_PAYMENT,
-            ['amount' => $amount, 'currency' => $currency, 'sessionId' => $session->getId()]
+            [
+                'amount' => $amount,
+                'currency' => $currency,
+                'sessionId' => $session->getId(),
+                'balanceAmount' => $balanceAmount,
+                'voucherCode' => $voucherCode,
+            ]
         );
-        $this->savePaymentSession($user, $session);
+        $this->savePaymentSession($user, $session, $balanceAmount, $voucherCode);
+
         return $session->getUrl();
     }
 
@@ -56,7 +78,7 @@ class PaymentService
     {
         $session = $this->paymentProvider->retrieveSession($sessionId);
         if (empty($session)) {
-            return 'Session not found';
+            return $this->translator->trans('pteroca.recharge.payment_not_found');
         }
 
         /** @var Payment|null $payment */
@@ -70,7 +92,7 @@ class PaymentService
         }
 
         if ($session->getPaymentStatus() === $this->paymentProvider::PAID_STATUS) {
-            $amount = $session->getAmountTotal() / 100;
+            $amount = $payment->getBalanceAmount();
             $newBalance = $user->getBalance() + $amount;
             $user->setBalance($newBalance);
             $this->userRepository->save($user);
@@ -98,6 +120,7 @@ class PaymentService
 
         $payment->setStatus($session->getPaymentStatus());
         $this->paymentRepository->save($payment);
+
         return null;
     }
 
@@ -112,14 +135,24 @@ class PaymentService
             ->getResult();
     }
 
-    private function savePaymentSession(User $user, PaymentSessionDTO $session): void
+    private function savePaymentSession(User $user, PaymentSessionDTO $session, float $balanceAmount, string $voucherCode): void
     {
+        if (!empty($voucherCode)) {
+            $voucher = $this->voucherPaymentService->getVoucher($voucherCode);
+        }
+
         $payment = (new Payment())
             ->setAmount($session->getAmountTotal())
             ->setCurrency($session->getCurrency())
+            ->setBalanceAmount($balanceAmount)
             ->setSessionId($session->getId())
             ->setUser($user)
             ->setStatus($session->getPaymentStatus());
+
+        if (!empty($voucher)) {
+            $payment->setUsedVoucher($voucher->getId());
+        }
+
         $this->paymentRepository->save($payment);
     }
 }

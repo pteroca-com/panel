@@ -5,8 +5,13 @@ namespace App\Core\Controller\Panel;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 
 abstract class AbstractPanelController extends AbstractCrudController
 {
@@ -27,6 +32,21 @@ abstract class AbstractPanelController extends AbstractCrudController
         $crud->overrideTemplates($this->panelCrudService->getTemplatesToOverride($this->crudTemplateContext));
 
         return parent::configureCrud($crud);
+    }
+
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        $appliedFilters = $searchDto->getAppliedFilters();
+
+        if ($entityDto->hasProperty('deletedAt')) {
+            if (!array_key_exists('deletedAt', $appliedFilters)) {
+                $qb->andWhere('entity.deletedAt IS NULL');
+            }
+        }
+
+        return $qb;
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void

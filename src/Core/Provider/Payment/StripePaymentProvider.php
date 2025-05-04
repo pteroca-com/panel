@@ -79,11 +79,13 @@ class StripePaymentProvider implements PaymentProviderInterface
         if (!$this->isConfigured) {
             $this->setStripeApiKey();
         }
+
         try {
             $stripeSession = $this->stripeAdapter->retrieveSession($sessionId);
         } catch (\Exception) {
             return null;
         }
+
         return $stripeSession;
     }
 }

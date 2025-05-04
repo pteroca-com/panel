@@ -49,8 +49,35 @@
             {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
                 {% include 'panel/server/tabs/startup/startup.html.twig' %}
             {% endif %}
+            {% include 'panel/server/tabs/network/network.html.twig' %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}
             {% include 'panel/server/tabs/activity/activity.html.twig' %}
+            {% if server.serverProduct.dbCount %}
+                {% include 'panel/server/tabs/databases/databases.html.twig' %}
+            {% endif %}
+            {% if server.serverProduct.backups %}
+                {% include 'panel/server/tabs/backups/backups.html.twig' %}
+            {% endif %}
         </div>
     </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        function sendRequest(endpointUrl, method = 'GET', data = null) {
+            let requestObject = {
+                method: method,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+
+            if (data) {
+                requestObject.headers['Content-Type'] = 'application/json'
+                requestObject.body = JSON.stringify(data)
+            }
+
+            return fetch(endpointUrl, requestObject)
+        }
+    </script>
 {% endblock %}

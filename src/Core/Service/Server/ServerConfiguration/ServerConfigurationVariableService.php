@@ -57,7 +57,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
             return false;
         }
 
-        $productEggConfiguration = json_decode($server->getProduct()->getEggsConfiguration() ?? '');
+        $productEggConfiguration = json_decode($server->getServerProduct()->getEggsConfiguration() ?? '');
         if (empty($productEggConfiguration)) {
             return false;
         }

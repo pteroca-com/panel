@@ -14,8 +14,6 @@ class MailerService implements MailerServiceInterface
 {
     private MailerInterface $mailer;
 
-    private const DEFAULT_LOGO_PATH = 'assets/img/logo/logo.png';
-
     private string $from = '';
 
     private string $logo = '';
@@ -23,6 +21,7 @@ class MailerService implements MailerServiceInterface
     public function __construct(
         private readonly Environment $twig,
         private readonly SettingService $settingsService,
+        private readonly string $defaultLogoPath,
     ) {}
 
     public function sendEmail(string $to, string $subject, string $template, array $context): void
@@ -61,7 +60,7 @@ class MailerService implements MailerServiceInterface
         if (is_file($customLogoPath)) {
             $this->logo = $customLogoPath;
         } else {
-            $this->logo = sprintf('%s/%s', $_SERVER['DOCUMENT_ROOT'], self::DEFAULT_LOGO_PATH);
+            $this->logo = $this->defaultLogoPath;
         }
 
         $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUsername, $smtpPassword, $smtpServer, $smtpPort);

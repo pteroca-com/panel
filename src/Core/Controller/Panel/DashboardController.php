@@ -16,6 +16,8 @@ use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
+use App\Core\Entity\Voucher;
+use App\Core\Entity\VoucherUsage;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -51,8 +53,9 @@ class DashboardController extends AbstractDashboardController
     {
         $user = $this->getUser();
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+
         return $this->render('panel/dashboard/dashboard.html.twig', [
-            'servers' => $this->serverRepository->findBy(['user' => $user]),
+            'servers' => $this->serverRepository->getActiveServersByUser($user),
             'user' => $user,
             'logs' => $this->logService->getLogsByUser($user, 10),
             'motdEnabled' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value),
@@ -102,8 +105,10 @@ class DashboardController extends AbstractDashboardController
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.products'), 'fa fa-sliders-h', Product::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', Payment::class);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars-progress', ServerLog::class);
+            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server')->setSubItems([
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars', ServerLog::class),
+            ]);
             yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.general'), 'fa fa-cog', $this->generateSettingsUrl(SettingContextEnum::GENERAL)),
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.pterodactyl'), 'fa fa-network-wired', $this->generateSettingsUrl(SettingContextEnum::PTERODACTYL)),
@@ -113,6 +118,10 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.appearance'), 'fa fa-brush', $this->generateSettingsUrl(SettingContextEnum::THEME)),
             ]);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class);
+            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gifts')->setSubItems([
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gift', Voucher::class),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.voucher_usages'), 'fa fa-list', VoucherUsage::class),
+            ]);
         }
 
         yield MenuItem::section();

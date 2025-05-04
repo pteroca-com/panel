@@ -1,5 +1,5 @@
-# PteroCA.com
-### Pterodactyl Client Area & Management Panel
+# <p align="center">PteroCA.com</p>
+### <p align="center">Client & Billing Panel for Pterodactyl Hosting Providers</p>
 
 ---
 
@@ -13,65 +13,70 @@
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/pteroca-com/panel)
 ![GitHub License](https://img.shields.io/github/license/pteroca-com/panel) ![GitHub Repo stars](https://img.shields.io/github/stars/pteroca-com/panel)
 
-PteroCA.com is a free, open-source client area and management panel designed specifically for Pterodactyl server users and hosting providers. Our platform simplifies and automates server management with a user-friendly interface and robust billing features.
+**PteroCA** is a modern, open-source client area and management panel built for **hosting providers** using the Pterodactyl platform.
+It offers advanced billing, live server controls, and deep customization — all through a fast, multilingual, and user-friendly interface.
 
-### Key Features
-- **Credit-Based Billing System:** Users purchase servers for a specific duration using wallet funds. At the end of the period, they can renew or let the server expire automatically for hassle-free management.
-- **User-Friendly Interface:** Manage Pterodactyl servers effortlessly with an intuitive dashboard. Multilingual support includes English, German, Spanish, French, Italian, Polish, Portuguese, Ukrainian, and Chinese.
-- **Comprehensive Server Management:** Access the console, view statistics, manage configurations, reinstall servers, and extend usage directly from the panel.
-- **Extensive Customizability:** Tailor the panel to your needs with flexible customization options for hosting providers.
+---
 
-### Getting Started
+### ✨ Key Features
+- **Flexible Billing System:** Choose between static (time-based) or dynamic (usage-based) pricing. Set custom durations and prices per server — users pay only for what they need.
+- **User-Friendly Interface:** Intuitive dashboard with multilingual support — ready for users around the world.
+- **Live Server Management:** Manage your servers in real time — console, stats, databases, backups, ports, and more.
+- **Built for Flexibility:** PteroCA is designed to adapt — with extensive configuration options and a growing ecosystem of features.
 
-#### Prerequisites
-Before you begin, ensure your environment meets the following requirements:
+---
 
-- **PHP and Extensions**:
-    - PHP 8.2 or higher
-    - Required extensions: `cli`, `ctype`, `iconv`, `mysql`, `pdo`, `mbstring`, `tokenizer`, `bcmath`, `xml`, `curl`, `zip`, `intl`, `fpm` (if using NGINX)
+### 🚀 Getting Started
 
-- **Database**:
-    - MySQL 5.7.22 or higher (MySQL 8 recommended) OR
-    - MariaDB 10.2 or higher
+#### Installation
+You can install PteroCA in minutes using our [Automatic Installer](https://docs.pteroca.com/getting-started/installation/automatic-installation), or follow the [manual installation guide](https://docs.pteroca.com/getting-started/installation/manual-installation) for detailed setup instructions.
 
-- **Additional Tools**:
-    - Git
-    - Composer v2 (Dependency Manager for PHP)
-    - Curl
-    - Tar
-    - Unzip
+#### Requirements
+To run PteroCA, make sure your server meets the following requirements:
+
+- **PHP 8.2 or higher** (with extensions: `cli`, `ctype`, `iconv`, `mysql`, `pdo`, `mbstring`, `tokenizer`, `bcmath`, `xml`, `curl`, `zip`, `intl`, `fpm` for NGINX)
+
+- **Database:** MySQL 5.7.22+ (MySQL 8 recommended) or MariaDB 10.2+
+
+- **Tools:** Git, Composer v2, cURL, tar, unzip
 
 For detailed installation instructions, visit our [Installation Guide](https://docs.pteroca.com/getting-started/installation "Installation").
 
-### Documentation
+---
+
+### 📚 Documentation
 Explore the full documentation at [PteroCA Documentation](https://docs.pteroca.com "Documentation").
 
-### Demo
+---
+
+### 🧪 Live Demo
 - **Access the Demo**: [https://demo.pteroca.com](https://demo.pteroca.com)
 - **Login**: `demo@pteroca.com`
 - **Password**: `PterocaDemo`
 - **Note**: Editing features are restricted in the demo version.
 
-### Panel Overview
-Take a look at some screenshots of our intuitive panel interface below:
+---
 
-|                ![Dashboard Screenshot](https://docs.pteroca.com/~gitbook/image?url=https%3A%2F%2F2313594578-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F134rFblgKKOucO0ArkzV%252Fuploads%252FLRQfFKKjZLTTWBOddA0q%252Fdashboard.PNG%3Falt%3Dmedia%26token%3D6e79b255-b26c-4acc-b150-4cbc8ea1dfee&width=768&dpr=4&quality=100&sign=d567ddea&sv=1)                 |     ![Product Screenshot](https://docs.pteroca.com/~gitbook/image?url=https%3A%2F%2F2313594578-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F134rFblgKKOucO0ArkzV%252Fuploads%252FnFSDO7epMwCaogKGJo1k%252Fproduct.PNG%3Falt%3Dmedia%26token%3Dd2e09108-c1c7-4eaf-b91e-25fd2baa58b5&width=768&dpr=4&quality=100&sign=31989b78&sv=1)      |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|                                                                                                                                                                 *The main dashboard provides a clear overview of server status and usage.*                                                                                                                                                                 |                                                                                                                                           *The product management section allows detailed configuration of server plans and pricing.*                                                                                                                                            |
-| ![Admin Overview](https://docs.pteroca.com/~gitbook/image?url=https%3A%2F%2F2313594578-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F134rFblgKKOucO0ArkzV%252Fuploads%252Ffk5kxdLQpCfIYvHsP4s5%252F%257BB3288FE7-1663-4997-9D18-AD722281BF9D%257D.png%3Falt%3Dmedia%26token%3D741dfa41-e3ac-4af5-b606-96d59fdd67d9&width=768&dpr=4&quality=100&sign=ae693bec&sv=2) |         ![Logs CRUD](https://docs.pteroca.com/~gitbook/image?url=https%3A%2F%2F2313594578-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252F134rFblgKKOucO0ArkzV%252Fuploads%252FPqOkZTwtqI3XEt1vqanM%252Flogs_crud.PNG%3Falt%3Dmedia%26token%3Da6329728-c826-41d7-b3f9-fa7cf708f3d0&width=768&dpr=4&quality=100&sign=ad3fe113&sv=1)         |
-|                                                                                                                                                                                            *Server management*                                                                                                                                                                                             |                                                                                                                                           *The logs section provides a comprehensive view of all activities and events for auditing.*                                                                                                                                            |
-
-### Community & Support
+### 🤝 Community & Support
 Join our [Discord Server](https://discord.gg/Gz5phhuZym) for community support, or visit our [GitHub Issues](https://github.com/pteroca-com/panel/issues) page to report bugs or request features.
 
-### Roadmap
+⭐ **If you find PteroCA helpful, the best way to support us is by giving the project a star on GitHub!** 
+It helps the project grow and motivates continued development.
+
+---
+
+### 🗺️ Roadmap
 We are continuously working to improve PteroCA.com! Check out the [Roadmap Page](https://pteroca.com/roadmap) for more details.
 
-### Contributing
+---
+
+### 🛠️ Contributing
 We welcome contributions! Check out our [Contributing Guide](https://github.com/pteroca-com/panel/blob/main/CONTRIBUTING.md) to get started.
 
 Also, if you're interested in helping translate PteroCA.com into more languages, visit our [Crowdin page](https://crowdin.com/project/pteroca) to contribute.
 
+Want to create your own custom themes for PteroCA?
+You can! Learn how to build and register your own themes in the [Theme Development Guide](https://docs.pteroca.com/guidebook/themes).
 ---
-
-PteroCA.com is an open-source project licensed under the [MIT License](https://github.com/pteroca-com/panel/blob/main/LICENSE).
+### 🔑 License
+PteroCA is an open-source project licensed under the [MIT License](https://github.com/pteroca-com/panel/blob/main/LICENSE).

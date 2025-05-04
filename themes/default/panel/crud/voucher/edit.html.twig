@@ -1,0 +1,6 @@
+{% extends '@EasyAdmin/crud/edit.html.twig' %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    {% include 'panel/crud/voucher/components/voucher_behavior.html.twig' %}
+{% endblock %}

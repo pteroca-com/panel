@@ -15,4 +15,6 @@ enum LanguageEnum: string
     case 中文 = 'cn';
     case Українська = 'ua';
     case हिन्दी = 'hi';
+    case Dutch = 'nl';
+    case Deutsch_Switzerland = 'de_CH';
 }

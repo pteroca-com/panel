@@ -34,7 +34,7 @@ class ServerReinstallationService extends AbstractServerConfiguration
 
     private function validateEgg(Server $server, int $selectedEgg): void
     {
-        if (!in_array($selectedEgg, $server->getProduct()->getEggs())) {
+        if (!in_array($selectedEgg, $server->getServerProduct()->getEggs())) {
             throw new \Exception('Invalid egg');
         }
     }

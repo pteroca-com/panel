@@ -9,6 +9,7 @@ use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use Exception;
 
 class ServerDataService
 {
@@ -28,7 +29,7 @@ class ServerDataService
             ->getApi()
             ->servers
             ->get($server->getPterodactylServerId(), [
-                'include' => ['variables', 'egg'],
+                'include' => ['variables', 'egg', 'databases'],
             ]);
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
 
@@ -39,13 +40,25 @@ class ServerDataService
             $pterodactylClientApi = null;
         }
 
+        try {
+            $allocatedPorts = $pterodactylClientApi->servers
+                ->http
+                ->get(sprintf('servers/%s/network/allocations', $server->getPterodactylServerIdentifier()))
+                ->toArray();
+            $allocatedPorts = array_map(function ($allocation) {
+                return $allocation->toArray();
+            }, $allocatedPorts);
+        } catch (Exception $exception) {
+            $allocatedPorts = [];
+        }
+
         $pterodactylClientServer = $pterodactylClientApi
             ?->servers
             ->get($server->getPterodactylServerIdentifier());
         $pterodactylClientAccount = $pterodactylClientApi
             ?->account
             ->details();
-        $productEggsConfiguration = $server->getProduct()->getEggsConfiguration();
+        $productEggsConfiguration = $server->getServerProduct()->getEggsConfiguration();
 
         try {
             $productEggsConfiguration = json_decode(
@@ -55,11 +68,11 @@ class ServerDataService
                 JSON_THROW_ON_ERROR,
             );
             $productEggConfiguration = $productEggsConfiguration[$pterodactylServer->get('egg')] ?? [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $productEggConfiguration = [];
         }
 
-        if ($server->getProduct()->getAllowChangeEgg()) {
+        if ($server->getServerProduct()->getAllowChangeEgg()) {
             $availableNestEggs = $this->serverNestService->getServerAvailableEggs($server);
         }
 
@@ -70,6 +83,18 @@ class ServerDataService
 
         $serverVariables = $this->serverVariableFactory
             ->createFromCollection($pterodactylServer->get('relationships')['variables']->all());
+
+        if ($server->getServerProduct()->getBackups()) {
+            try {
+                $serverBackups = $pterodactylClientApi
+                    ->server_backups
+                    ->http
+                    ->get(sprintf('servers/%s/backups', $server->getPterodactylServerIdentifier()))
+                    ->toArray();
+            } catch (Exception) {
+                $serverBackups = [];
+            }
+        }
 
         return new ServerDataDTO(
             $this->serverService->getServerDetails($server),
@@ -82,19 +107,21 @@ class ServerDataService
             $hasConfigurableOptions,
             $hasConfigurableVariables,
             new ServerVariableCollection($serverVariables),
+            $serverBackups ?? [],
+            $allocatedPorts,
         );
     }
 
     private function getServerConfigurableOptionsAndVariables(Server $server, int $currentEgg): array
     {
-        $productEggConfiguration = $server->getProduct()->getEggsConfiguration();
+        $productEggConfiguration = $server->getServerProduct()->getEggsConfiguration();
         if (empty($productEggConfiguration)) {
             return [false, false];
         }
 
         try {
             $productEggConfiguration = json_decode($productEggConfiguration, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [false, false];
         }
 
