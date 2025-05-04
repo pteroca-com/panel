@@ -75,8 +75,8 @@ We welcome contributions! Check out our [Contributing Guide](https://github.com/
 
 Also, if you're interested in helping translate PteroCA.com into more languages, visit our [Crowdin page](https://crowdin.com/project/pteroca) to contribute.
 
-🎨 Want to create your own custom themes for PteroCA?
-You can! Learn how to build and register your own themes in the Theme Development Guide.
+Want to create your own custom themes for PteroCA?
+You can! Learn how to build and register your own themes in the [Theme Development Guide](https://docs.pteroca.com/guidebook/themes).
 ---
 ### 🔑 License
 PteroCA is an open-source project licensed under the [MIT License](https://github.com/pteroca-com/panel/blob/main/LICENSE).
