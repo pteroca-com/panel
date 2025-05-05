@@ -15,7 +15,7 @@ $bundles = [
     App\Core\CoreBundle::class => ['all' => true],
 ];
 
-if ($_ENV['APP_ENV'] === 'dev') {
+if ($_ENV['APP_ENV'] === 'dev' && isset($_ENV['DEMO_MODE']) && $_ENV['DEMO_MODE'] === 'false') {
     $bundles[Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class] = ['dev' => true, 'test' => true];
 }
 
