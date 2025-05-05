@@ -27,7 +27,7 @@ jobs:
 
           # Uruchom z expectem
           OUTPUT=$(expect -c '
-          spawn sudo ./installer.sh
+          spawn ./installer.sh
           expect "Select PHP version"
           send "2\r"
           expect "Enter your domain"
