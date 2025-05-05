@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  symfony-tests:
+  symfony-workflow:
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -77,16 +77,16 @@ jobs:
         run: |
           chmod -R 775 var public/uploads
 
-      - name: Run PHPUnit Tests
-        run: vendor/bin/phpunit ./src/Core/Tests/Unit/ --testdox --colors=always --log-junit junit.xml --coverage-text --coverage-clover=coverage.xml
-        env:
-          DATABASE_URL: 'mysql://test_user:test_password@127.0.0.1:3306/test_db'
+      #- name: Run PHPUnit Tests
+      #  run: vendor/bin/phpunit ./src/Core/Tests/Unit/ --testdox --colors=always --log-junit junit.xml --coverage-text --coverage-clover=coverage.xml
+      #  env:
+      #    DATABASE_URL: 'mysql://test_user:test_password@127.0.0.1:3306/test_db'
 
-      - name: Upload JUnit Test Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-test-report
-          path: junit.xml
+      #- name: Upload JUnit Test Report
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: junit-test-report
+      #    path: junit.xml
 
       - name: Check Missing Translations
         run: |

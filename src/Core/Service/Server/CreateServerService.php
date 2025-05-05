@@ -19,6 +19,7 @@ use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
@@ -37,8 +38,9 @@ class CreateServerService extends AbstractActionServerService
         private readonly VoucherPaymentService $voucherPaymentService,
         private readonly TranslatorInterface $translator,
         UserRepository $userRepository,
+        LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator);
+        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
     }
 
     public function createServer(
@@ -128,10 +130,10 @@ class CreateServerService extends AbstractActionServerService
         bool $autoRenewal
     ): Server
     {
-        /** @var ProductPrice $selectedPrice */
+        /** @var ?ProductPrice $selectedPrice */
         $selectedPrice = $product->getPrices()->filter(
             fn(ProductPrice $price) => $price->getId() === $priceId
-        )->first();
+        )->first() ?: null;
 
         if (empty($selectedPrice)) {
             throw new \Exception($this->translator->trans('pteroca.store.price_not_found'));

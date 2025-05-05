@@ -30,10 +30,10 @@ abstract class AbstractActionServerService
         ?string $voucherCode = null,
     ): void
     {
-        /** @var ProductPrice $price */
+        /** @var ?ProductPrice $price */
         $price = $product->getPrices()->filter(
             fn(ProductPrice|ServerProductPrice $price) => $price->getId() === $priceId
-        )->first();
+        )->first() ?: null;
 
         if (empty($price)) {
             throw new \InvalidArgumentException($this->translator->trans('pteroca.store.price_not_found'));

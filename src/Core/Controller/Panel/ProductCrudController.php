@@ -37,8 +37,6 @@ class ProductCrudController extends AbstractPanelController
     use ProductCrudControllerTrait;
     use ExperimentalFeatureMessageTrait;
 
-    private array $flashMessages = [];
-
     public function __construct(
         PanelCrudService $panelCrudService,
         private readonly PterodactylService $pterodactylService,

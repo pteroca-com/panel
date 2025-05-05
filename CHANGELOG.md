@@ -2,7 +2,7 @@
 
 ---
 
-## [0.5.0] - 2025-05-04
+## [0.5.0] - 2025-05-05
 
 ### Added
 - Added server port (allocation) management interface.
