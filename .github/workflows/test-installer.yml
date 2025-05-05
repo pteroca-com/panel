@@ -26,14 +26,7 @@ jobs:
 
       - name: Run installer with automated input
         run: |
-          sudo expect -c '
-          spawn ./installer.sh
-          expect "Select PHP version"
-          send "2\r"
-          expect "Enter your domain"
-          send "test.pteroca.local\r"
-          expect eof
-          ' > installer.log || true
+          echo -e "2\ntest.pteroca.local\n" | sudo ./installer.sh > installer.log 2>&1 || true
 
       - name: Show installer log
         run: cat installer.log
