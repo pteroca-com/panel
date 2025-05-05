@@ -1,0 +1,55 @@
+name: Test Installer on Ubuntu 22.04
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # codziennie o 2:00 w nocy
+  workflow_dispatch:     # umożliwia ręczne odpalenie z GUI
+
+jobs:
+  test-installer:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget expect jq
+
+      - name: Run installer script with automated input
+        run: |
+          set -e
+
+          # Automatyczne odpowiedzi: wybór PHP 8.3 i domena testowa
+          OUTPUT=$(expect -c '
+          spawn bash -c "wget -qO- https://pteroca.com/installer.sh | sudo bash"
+          expect "Select PHP version"
+          send "2\r"
+          expect "Enter your domain"
+          send "test.pteroca.local\r"
+          expect eof
+          ')
+
+          echo "$OUTPUT" > installer.log
+
+          # Sprawdzenie, czy instalacja przeszła
+          if grep -q "PteroCA installation completed successfully" installer.log; then
+            echo "✅ Installer passed"
+          else
+            echo "❌ Installer failed"
+            exit 1
+          fi
+
+      - name: Send result to Discord (optional)
+        if: always()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          LOG=$(tail -c 1900 installer.log | sed 's/`/\\`/g')
+          STATUS="✅ Installer passed"
+          if ! grep -q "PteroCA installation completed successfully" installer.log; then
+            STATUS="❌ Installer failed"
+          fi
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{\"content\": \"$STATUS\", \"embeds\": [{\"description\": \"\`\`\`\n$LOG\n\`\`\`\"}]}" \
+               "$DISCORD_WEBHOOK"
