@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  symfony-tests:
+  symfony-workflow:
     runs-on: ubuntu-latest
     services:
       mysql:
