@@ -4,61 +4,62 @@ on:
   push:
     branches:
       - test-installer-workflow
+  workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'  # codziennie o 2:00 w nocy
-  workflow_dispatch:     # umożliwia ręczne odpalenie z GUI
+    - cron: '0 2 * * *' # Every day at 2:00 AM UTC
 
 jobs:
-  test-installer:
+  installer-test:
+    name: Run PteroCA Installer on Ubuntu 22.04
     runs-on: ubuntu-22.04
+
     steps:
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y wget expect jq
 
-      - name: Run installer script with automated input
+      - name: Download installer script
         run: |
-          set -e
-
-          # Pobierz skrypt osobno, żeby łatwiej go debugować
           wget -q https://pteroca.com/installer.sh -O installer.sh
           chmod +x installer.sh
 
-          # Uruchom z expectem
-          OUTPUT=$(expect -c '
+      - name: Run installer with automated input
+        run: |
+          sudo expect -c '
           spawn ./installer.sh
           expect "Select PHP version"
           send "2\r"
           expect "Enter your domain"
           send "test.pteroca.local\r"
           expect eof
-          ')
+          ' > installer.log || true
 
-          echo "$OUTPUT" > installer.log
+      - name: Show installer log
+        run: cat installer.log
 
-          # Sprawdzenie sukcesu
+      - name: Check for success
+        id: result
+        run: |
           if grep -q "PteroCA installation completed successfully" installer.log; then
-            echo "✅ Installer passed"
+            echo "result=success" >> $GITHUB_OUTPUT
           else
-            echo "❌ Installer failed"
+            echo "result=failure" >> $GITHUB_OUTPUT
             exit 1
           fi
 
-      - name: Send result to Discord (optional)
+      - name: Send result to Discord
         if: always()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           STATUS="✅ Installer passed"
-          if ! grep -q "PteroCA installation completed successfully" installer.log; then
-            STATUS="❌ Installer failed"W
+          if [ "${{ steps.result.outputs.result }}" = "failure" ]; then
+            STATUS="❌ Installer failed"
           fi
-          
-          # Ogranicz log do 1900 znaków, bez zawieszania JSON-a
+
           LOG=$(tail -c 1900 installer.log | head -c 1900)
-          
-          # Zbuduj bezpieczny JSON payload przez jq
+
           jq -n \
             --arg content "$STATUS" \
             --arg desc "$LOG" \
@@ -71,9 +72,7 @@ jobs:
               ]
             }' > payload.json
 
-          # Wyślij do Discorda
-          curl -H "Content-Type: application/json" \
-              -X POST \
-              -d @payload.json \
-              "$DISCORD_WEBHOOK"
-
+          curl -s -H "Content-Type: application/json" \
+               -X POST \
+               -d @payload.json \
+               "$DISCORD_WEBHOOK"
