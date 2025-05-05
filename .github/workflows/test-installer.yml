@@ -58,7 +58,7 @@ jobs:
             STATUS="❌ Installer failed"
           fi
 
-          LOG=$(tail -c 1900 installer.log | head -c 1900)
+          LOG=$(cat installer.log | head -c 1900)
 
           jq -n \
             --arg content "$STATUS" \
