@@ -1,6 +1,9 @@
 name: Test Installer on Ubuntu 22.04
 
 on:
+  push:
+    branches:
+      - test-installer-workflow
   schedule:
     - cron: '0 2 * * *'  # codziennie o 2:00 w nocy
   workflow_dispatch:     # umożliwia ręczne odpalenie z GUI
