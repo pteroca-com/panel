@@ -26,10 +26,24 @@ class LocaleService
             $locale = end($locale);
             if (!in_array($locale, $locales)) {
                 $localeIndex = $uppercase ? strtoupper($locale) : $locale;
-                $locales[$localeIndex] = LanguageEnum::tryFrom($locale)?->name ?? $locale;
+                $locales[$localeIndex] = $this->prepareLocaleTranslation($locale);
             }
         }
 
         return $locales;
+    }
+
+    private function prepareLocaleTranslation(string $locale): string
+    {
+        $localeTranslation = LanguageEnum::tryFrom($locale)?->name ?? $locale;
+
+        if (str_contains($localeTranslation, '_')) {
+            $parts = explode('_', $localeTranslation);
+            $mainPart = $parts[0];
+            $regionPart = $parts[1];
+            $localeTranslation = $mainPart . ' (' . $regionPart . ')';
+        }
+
+        return $localeTranslation;
     }
 }

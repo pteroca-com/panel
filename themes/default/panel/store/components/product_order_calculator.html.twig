@@ -1,0 +1,106 @@
+{% block body_javascripts %}
+    <script>
+        const unitTranslations = {
+            per_minute: '{{ 'pteroca.product.per_minute'|trans }}',
+            minutes: '{{ 'pteroca.product.minutes'|trans }}',
+            per_hour: '{{ 'pteroca.product.per_hour'|trans }}',
+            hours: '{{ 'pteroca.product.hours'|trans }}',
+            per_day: '{{ 'pteroca.product.per_day'|trans }}',
+            days: '{{ 'pteroca.product.days'|trans }}',
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const durationSelect = document.querySelector('#duration')
+
+            durationSelect.addEventListener('change', calculateOrder)
+            durationSelect.dispatchEvent(new Event('change'))
+        })
+
+        function calculateOrder(event) {
+            const selectedOption = event.target.selectedOptions[0];
+            const value = parseFloat(selectedOption.dataset.value);
+            const unit = selectedOption.dataset.unit;
+            const price = parseFloat(selectedOption.dataset.price);
+
+            let totalMinutes;
+
+            switch (unit) {
+                case 'minutes':
+                    totalMinutes = value;
+                    if (value === 1) {
+                        document.querySelector('div[data-type="billingPeriod"] span').textContent = unitTranslations.per_minute;
+                    } else {
+                        document.querySelector('div[data-type="billingPeriod"] span').textContent = value + ' ' + unitTranslations[unit];
+                    }
+                    break;
+                case 'hours':
+                    totalMinutes = value * 60;
+                    if (value === 1) {
+                        document.querySelector('div[data-type="billingPeriod"] span').textContent = unitTranslations.per_hour;
+                    } else {
+                        document.querySelector('div[data-type="billingPeriod"] span').textContent = value + ' ' + unitTranslations[unit];
+                    }
+                    break;
+                case 'days':
+                    totalMinutes = value * 60 * 24;
+                    if (value === 1) {
+                        document.querySelector('div[data-type="billingPeriod"] span').textContent = unitTranslations.per_day;
+                    } else {
+                        document.querySelector('div[data-type="billingPeriod"] span').textContent = value + ' ' + unitTranslations[unit];
+                    }
+                    break;
+                default:
+                    console.error('Unsupported unit:', unit);
+                    return;
+            }
+
+            const type = selectedOption.dataset.type,
+                isOnDemand = type === 'on_demand';
+
+            const showPerDay = !isOnDemand && totalMinutes >= 60 * 24,
+                showPerWeek = !isOnDemand && totalMinutes >= 60 * 24 * 7,
+                showPerMonth = !isOnDemand && totalMinutes >= 60 * 24 * 30;
+
+            document.querySelector('div[data-type="perDay"]').classList.toggle('d-none', !showPerDay);
+            document.querySelector('div[data-type="perWeek"]').classList.toggle('d-none', !showPerWeek);
+            document.querySelector('div[data-type="perMonth"]').classList.toggle('d-none', !showPerMonth);
+
+            const perMinute = price / totalMinutes;
+            const perHour = perMinute * 60;
+            const perDay = perHour * 24;
+            const perWeek = perDay * 7;
+            const perMonth = perDay * 30;
+
+            const result = {
+                perMinute: perMinute,
+                perHour: perHour,
+                perDay: perDay,
+                perWeek: perWeek,
+                perMonth: perMonth
+            };
+
+            document.querySelector('div[data-type="perMinute"] span').textContent = formatPrice(result.perMinute);
+            document.querySelector('div[data-type="perHour"] span').textContent = formatPrice(result.perHour);
+            document.querySelector('div[data-type="perDay"] span').textContent = formatPrice(result.perDay);
+            document.querySelector('div[data-type="perWeek"] span').textContent = formatPrice(result.perWeek);
+            document.querySelector('div[data-type="perMonth"] span').textContent = formatPrice(result.perMonth);
+            document.querySelector('div[data-type="totalPrice"] span').textContent = formatPrice(price);
+        }
+
+        function formatPrice(price) {
+            let str = price.toFixed(4);
+            str = str.replace(/\.?0+$/, '');
+
+            if (!str.includes('.')) {
+                return str + '.00';
+            }
+
+            const [intPart, decPart] = str.split('.');
+            if (decPart.length === 1) {
+                return intPart + '.' + decPart + '0';
+            }
+
+            return str;
+        }
+    </script>
+{% endblock %}

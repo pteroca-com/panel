@@ -21,12 +21,12 @@ class ServerController extends AbstractController
         $this->checkPermission();
         $imagePath = $this->getParameter('products_base_path') . '/';
 
-        $servers = array_map(function ($server) use ($imagePath) {
-            if (!empty($server->getProduct()->getImagePath())) {
-                $server->imagePath = $imagePath . $server->getProduct()->getImagePath();
+        $servers = array_map(function (Server $server) use ($imagePath) {
+            if (!empty($server->getServerProduct()->getOriginalProduct()?->getImagePath())) {
+                $server->imagePath = $imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath();
             }
             return $server;
-        }, $serverRepository->findBy(['user' => $this->getUser()]));
+        }, $serverRepository->getActiveServersByUser($this->getUser()));
 
         return $this->render('panel/servers/servers.html.twig', [
             'servers' => $servers,
@@ -51,7 +51,7 @@ class ServerController extends AbstractController
 
         /** @var ?Server $server */
         $server = current($serverRepository->findBy(['pterodactylServerIdentifier' => $serverId]));
-        if (empty($server)) {
+        if (empty($server) || !empty($server->getDeletedAt())) {
             throw $this->createNotFoundException();
         }
 

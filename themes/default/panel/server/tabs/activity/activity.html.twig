@@ -41,41 +41,13 @@
                 {% endif %}
             </div>
 
-            {% if serverLogs.items|length > 0 %}
-                <div class="list-pagination d-flex justify-content-end">
-                    <nav class="pager list-pagination-paginator first-page">
-                        <ul class="pagination">
-                            <li class="page-item {% if serverLogs.currentPage <= 1 %}disabled{% endif %}">
-                                <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page=1#activity">«</a>
-                            </li>
-                            <li class="page-item {% if serverLogs.currentPage <= 1 %}disabled{% endif %}">
-                                <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage - 1 }}#activity" rel="back">‹</a>
-                            </li>
-
-                            {% if serverLogs.currentPage > 1 %}
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage - 1 }}#activity">{{ serverLogs.currentPage - 1 }}</a>
-                                </li>
-                            {% endif %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ serverLogs.currentPage }}</span>
-                            </li>
-                            {% if serverLogs.totalPages > serverLogs.currentPage %}
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage + 1 }}#activity">{{ serverLogs.currentPage + 1 }}</a>
-                                </li>
-                            {% endif %}
-
-                            <li class="page-item {% if serverLogs.currentPage >= serverLogs.totalPages %}disabled{% endif %}">
-                                <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.currentPage + 1 }}#activity" rel="next">›</a>
-                            </li>
-                            <li class="page-item {% if serverLogs.currentPage >= serverLogs.totalPages %}disabled{% endif %}">
-                                <a class="page-link" href="{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}&page={{ serverLogs.totalPages }}#activity">»</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            {% endif %}
+            {% include 'panel/server/components/pagination.html.twig' with {
+                totalItems: serverLogs.items,
+                currentPage: serverLogs.currentPage,
+                totalPages: serverLogs.totalPages,
+                url: path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }),
+                anchor: '#activity'
+            } %}
         </div>
     </div>
 {% endblock %}

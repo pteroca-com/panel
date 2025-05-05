@@ -42,10 +42,12 @@ class PaymentCrudController extends AbstractPanelController
                     $value,
                 )),
             NumberField::new('amount', $this->translator->trans('pteroca.crud.payment.amount'))
-                ->setNumDecimals(2)
-                ->formatValue(fn ($value) => number_format($value / 100, 2)),
+                ->setNumDecimals(2),
             TextField::new('currency', $this->translator->trans('pteroca.crud.payment.currency'))
                 ->formatValue(fn ($value) => strtoupper($value)),
+            NumberField::new('balanceAmount', $this->translator->trans('pteroca.crud.payment.balance_amount'))
+                ->setNumDecimals(2),
+            AssociationField::new('usedVoucher', $this->translator->trans('pteroca.crud.payment.used_voucher')),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.payment.user')),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.payment.created_at')),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.payment.updated_at')),
@@ -55,16 +57,9 @@ class PaymentCrudController extends AbstractPanelController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->remove(Crud::PAGE_INDEX, Action::NEW)
-            ->remove(Crud::PAGE_INDEX, Action::DELETE)
-            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->disable(Action::NEW, Action::EDIT, Action::DELETE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->remove(Crud::PAGE_DETAIL, Action::DELETE)
-            ->remove(Crud::PAGE_DETAIL, Action::EDIT)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_RETURN)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN);
+            ;
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -86,9 +81,11 @@ class PaymentCrudController extends AbstractPanelController
         $filters
             ->add('sessionId')
             ->add('status')
+            ->add('user')
             ->add('amount')
             ->add('currency')
-            ->add('user')
+            ->add('balanceAmount')
+            ->add('usedVoucher')
             ->add('createdAt')
             ->add('updatedAt')
         ;

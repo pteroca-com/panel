@@ -4,12 +4,13 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Entity\Server;
 use App\Core\Enum\CrudTemplateContextEnum;
-use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\CrudFlashMessagesTrait;
+use App\Core\Trait\ManageServerActionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -20,11 +21,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerCrudController extends AbstractPanelController
 {
+    use ManageServerActionTrait;
+    use CrudFlashMessagesTrait;
+
     public function __construct(
         PanelCrudService $panelCrudService,
         private readonly UpdateServerService $updateServerService,
@@ -46,18 +51,38 @@ class ServerCrudController extends AbstractPanelController
             IdField::new('id')
                 ->hideOnForm(),
             IntegerField::new('pterodactylServerId', $this->translator->trans('pteroca.crud.server.pterodactyl_server_id'))
-                ->setDisabled(),
+                ->setDisabled()
+                ->onlyOnForms(),
             TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
                 ->setDisabled(),
-            AssociationField::new('product', $this->translator->trans('pteroca.crud.server.product'))
+            AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product_server_build'))
                 ->setDisabled(),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user')),
-            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
-                ->hideOnForm(),
-            DateTimeField::new('expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
-            BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
             BooleanField::new('autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
                 ->hideOnIndex(),
+
+            NumberField::new('serverProduct.diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.io', $this->translator->trans('pteroca.crud.product.io'))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.backups', $this->translator->trans('pteroca.crud.product.backups'))
+                ->onlyOnIndex(),
+            NumberField::new('serverProduct.ports', $this->translator->trans('pteroca.crud.product.ports'))
+                ->onlyOnIndex(),
+
+            DateTimeField::new('expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
+            BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
+
+            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))->onlyOnDetail(),
+            DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))->onlyOnDetail(),
         ];
     }
 
@@ -66,14 +91,28 @@ class ServerCrudController extends AbstractPanelController
         return $actions
             ->remove(Crud::PAGE_INDEX, Action::NEW)
             ->update(
+                Crud::PAGE_INDEX,
+                Action::DELETE,
+                fn (Action $action) => $action->displayIf(
+                    fn (Server $entity) => empty($entity->getDeletedAt())
+                )
+            )->update(
                 Crud::PAGE_EDIT,
                 Action::SAVE_AND_RETURN,
                 fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.server.save')),
-            )
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
+            )->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_EDIT, $this->getServerProductAction(Crud::PAGE_EDIT))
+            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_EDIT))
             ->add(Crud::PAGE_INDEX, $this->getManageServerAction())
+            ->remove(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $this->getServerProductAction(Crud::PAGE_DETAIL))
+            ->add(Crud::PAGE_INDEX, $this->getShowServerLogsAction())
+            ->add(Crud::PAGE_EDIT, $this->getShowServerLogsAction())
+            ->add(Crud::PAGE_DETAIL, $this->getManageServerAction())
+            ->add(Crud::PAGE_EDIT, $this->getManageServerAction())
             ;
     }
 
@@ -94,55 +133,60 @@ class ServerCrudController extends AbstractPanelController
     {
         $filters
             ->add('pterodactylServerId')
-            ->add('product')
+            ->add('pterodactylServerIdentifier')
             ->add('user')
-            ->add('createdAt')
             ->add('expiresAt')
             ->add('isSuspended')
+            ->add('autoRenewal')
+            ->add('createdAt')
+            ->add('deletedAt')
         ;
+
         return parent::configureFilters($filters);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        $this->updateServerService->updateServer($entityInstance);
+        $this->setFlashMessages(
+            $this->updateServerService
+            ->updateServer($entityInstance)
+            ->getMessages()
+        );
+
         parent::updateEntity($entityManager, $entityInstance);
     }
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->deleteServerService->deleteServer($entityInstance);
-        parent::deleteEntity($entityManager, $entityInstance);
-    }
 
-    private function getManageServerAction(): Action
-    {
-        $manageServerAction = Action::new(
-            'manageServer',
-            $this->translator->trans('pteroca.crud.server.manage_server'),
-        );
-
-        $usePterodactyl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value);
-        if (empty($usePterodactyl)) {
-            $manageServerAction->linkToRoute(
-                'server',
-                fn (Server $entity) => ['id' => $entity->getPterodactylServerIdentifier()]
-            );
-        } else {
-            if ($this->settingService->getSetting(SettingEnum::PTERODACTYL_SSO_ENABLED->value)) {
-                $manageServerAction->linkToRoute(
-                    'sso_redirect',
-                    fn (Server $entity) => [
-                        'redirect_path' => sprintf('/server/%s', $entity->getPterodactylServerIdentifier()),
-                    ]
-                );
-            } else {
-                $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
-                $manageServerAction->linkToUrl($pterodactylUrl);
-            }
-            $manageServerAction->setHtmlAttributes(['target' => '_blank']);
+        if ($entityInstance instanceof Server) {
+            $entityInstance->setDeletedAtValue();
         }
 
-        return $manageServerAction;
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function getServerProductAction(string $action): Action
+    {
+        return Action::new(
+            sprintf('serverProduct_%s', $action),
+            $this->translator->trans(sprintf('pteroca.crud.server.server_product_%s', $action)),
+        )->linkToUrl(
+            fn (Server $entity) => $this->generateUrl(
+                'panel',
+                [
+                    'crudAction' => $action,
+                    'crudControllerFqcn' => ServerProductCrudController::class,
+                    'entityId' => $entity->getServerProduct()->getId(),
+                ]
+            )
+        )->displayIf(function (Server $entity) use ($action) {
+            if ($action !== Action::DETAIL) {
+                return empty($entity->getDeletedAt());
+            }
+
+            return true;
+        });
     }
 }

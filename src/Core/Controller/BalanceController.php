@@ -26,8 +26,10 @@ class BalanceController extends AbstractController
         Request $request,
     ): Response {
         $this->checkPermission();
+
         $currency = $this->settingService
             ->getSetting(SettingEnum::CURRENCY_NAME->value);
+
         $form = $this->createFormBuilder()
             ->add('amount', MoneyType::class, [
                 'currency' => $currency,
@@ -43,26 +45,6 @@ class BalanceController extends AbstractController
             ->getForm();
 
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $amount = $data['amount'];
-            $currency = $data['currency'];
-            try {
-                $paymentUrl = $this->paymentService->createPayment(
-                    $this->getUser(),
-                    $amount,
-                    $currency,
-                    $this->generateUrl('stripe_success', [], 0) . '?session_id={CHECKOUT_SESSION_ID}',
-                    $this->generateUrl('stripe_cancel', [], 0)
-                );
-            } catch (\Exception $exception) {
-                $this->addFlash('danger', $exception->getMessage());
-                return $this->redirectToRoute('panel', ['routeName' => 'recharge_balance']);
-            }
-
-            return $this->redirect($paymentUrl);
-        }
 
         return $this->render('panel/wallet/recharge.html.twig', [
             'form' => $form->createView(),
@@ -88,6 +70,7 @@ class BalanceController extends AbstractController
         }
 
         $this->addFlash('success', $this->translator->trans('pteroca.recharge.payment_success'));
+
         return $this->redirectToRechargeBalance();
     }
 
@@ -96,6 +79,7 @@ class BalanceController extends AbstractController
     {
         $this->checkPermission();
         $this->addFlash('danger', $this->translator->trans('pteroca.recharge.payment_canceled'));
+
         return $this->redirectToRechargeBalance();
     }
 

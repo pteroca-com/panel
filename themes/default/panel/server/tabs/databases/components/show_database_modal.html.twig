@@ -1,0 +1,137 @@
+{% block main %}
+    <div class="modal fade" id="showDatabaseModal" tabindex="-1" aria-labelledby="showDatabaseModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="showDatabaseModalLabel">{{ 'pteroca.server.show_database'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="show-database-form">
+                    <input type="hidden" name="database_id" id="database_id">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text form-group">
+                                    <label for="Database_name" class="form-control-label required">
+                                        {{ 'pteroca.server.database_name'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_name" name="Database[name]" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="field-text form-group">
+                                    <label for="Database_endpoint" class="form-control-label required">
+                                        {{ 'pteroca.server.database_endpoint'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_endpoint" name="Database[endpoint]" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="field-text form-group">
+                                    <label for="Database_connections_from" class="form-control-label">
+                                        {{ 'pteroca.server.connections_from'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_connections_from" name="Database[connections_from]" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="field-text form-group">
+                                    <label for="Database_username" class="form-control-label">
+                                        {{ 'pteroca.server.username'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_username" name="Database[username]" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="field-text form-group">
+                                    <label for="Database_password" class="form-control-label">
+                                        {{ 'pteroca.server.password'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_password" name="Database[password]" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="field-text form-group">
+                                    <label for="Database_jdbc_connection_string" class="form-control-label">
+                                        {{ 'pteroca.server.jdbc_connection_string'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_jdbc_connection_string" name="Database[jdbc_connection_string]" class="form-control" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="rotate-database-password"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.rotate_password'|trans }}</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#showDatabaseModal').addEventListener('hidden.bs.modal', function () {
+                clearDatabaseInfo()
+            })
+
+            document.querySelector('#rotate-database-password').addEventListener('click', function (event) {
+                event.preventDefault()
+
+                rotateDatabasePassword()
+            })
+        })
+
+        function loadCurrentDatabaseInfo(databaseName) {
+            const databaseInfo = loadedDatabases.find(database => database.name === databaseName)
+
+            document.querySelector('#database_id').value = databaseInfo.id
+            document.querySelector('#Database_name').value = databaseInfo.name
+            document.querySelector('#Database_endpoint').value = databaseInfo.host.address + ':' + databaseInfo.host.port
+            document.querySelector('#Database_connections_from').value = databaseInfo.connections_from
+            document.querySelector('#Database_username').value = databaseInfo.username
+            document.querySelector('#Database_password').value = databaseInfo.relationships.password.password
+            document.querySelector('#Database_jdbc_connection_string').value = 'jdbc:mysql://' + databaseInfo.username + ':' + databaseInfo.relationships.password.password + '@' + databaseInfo.host.address + ':' + databaseInfo.host.port + '/' + databaseInfo.name
+        }
+
+        function clearDatabaseInfo() {
+            document.querySelector('#database_id').value = ''
+            document.querySelector('#Database_name').value = ''
+            document.querySelector('#Database_endpoint').value = ''
+            document.querySelector('#Database_connections_from').value = ''
+            document.querySelector('#Database_username').value = ''
+            document.querySelector('#Database_password').value = ''
+            document.querySelector('#Database_jdbc_connection_string').value = ''
+        }
+
+        function rotateDatabasePassword() {
+            document.querySelector('#rotate-database-password i').classList.remove('d-none')
+
+            const databaseId = document.querySelector('#database_id').value,
+                endpointUrl = '{{ path('server_database_rotate_password', { id: server.id, databaseId: 'DATABASE_ID' }) }}'.replace('DATABASE_ID', databaseId)
+
+            fetch(endpointUrl, {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    loadedDatabases = loadedDatabases.map(database => {
+                        if (database.id === databaseId) {
+                            database.relationships.password.password = data.relationships.password.password
+                        }
+
+                        return database
+                    })
+
+                    loadCurrentDatabaseInfo(data.name)
+                })
+                .finally(() => {
+                    document.querySelector('#rotate-database-password i').classList.add('d-none')
+            })
+        }
+    </script>
+{% endblock %}

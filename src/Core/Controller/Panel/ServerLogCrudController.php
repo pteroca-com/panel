@@ -54,15 +54,8 @@ class ServerLogCrudController extends AbstractPanelController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->remove(Crud::PAGE_INDEX, Action::NEW)
-            ->remove(Crud::PAGE_INDEX, Action::DELETE)
-            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->disable(Action::NEW, Action::EDIT, Action::DELETE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
-            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_RETURN)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN)
-            ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_DETAIL, Action::EDIT)
             ;
     }
 
@@ -87,7 +80,9 @@ class ServerLogCrudController extends AbstractPanelController
             ->add('details')
             ->add('createdAt')
             ->add('user')
-            ->add('server');
+            ->add('server')
+        ;
+
         return parent::configureFilters($filters);
     }
 }

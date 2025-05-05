@@ -1,0 +1,36 @@
+{% block body_javascript %}
+    <script>
+        function applyDiscountCode(discountCode, discountValue)
+        {
+            const voucherCodeElement = document.querySelector('#voucher-code')
+            if (voucherCodeElement) {
+                voucherCodeElement.value = discountCode
+            }
+
+            const appliedDiscountElement = document.querySelector('#applied-discount'),
+                appliedDiscountCode = appliedDiscountElement.querySelector('#applied-discount-code'),
+                appliedDiscountValue = appliedDiscountElement.querySelector('#applied-discount-value')
+
+            appliedDiscountCode.innerText = discountCode
+            appliedDiscountValue.innerText = discountValue
+
+            appliedDiscountElement.classList.remove('d-none');
+
+            calculatePrice()
+        }
+
+        function removeDiscountCode()
+        {
+            const appliedDiscountElement = document.querySelector('#applied-discount'),
+                appliedDiscountCode = appliedDiscountElement.querySelector('#applied-discount-code'),
+                appliedDiscountValue = appliedDiscountElement.querySelector('#applied-discount-value')
+
+            appliedDiscountCode.innerText = ''
+            appliedDiscountValue.innerText = ''
+
+            appliedDiscountElement.classList.add('d-none');
+
+            calculatePrice()
+        }
+    </script>
+{% endblock %}

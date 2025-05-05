@@ -1,0 +1,175 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block title %}| {{ 'pteroca.cart_renew.title'|trans }} - {{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}{% endblock %}
+
+{% block content_title %}{{ 'pteroca.cart_renew.title'|trans }} - {{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}{% endblock %}
+
+{% block page_actions %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#useVoucherModal">
+        <i class="fa fa-plus"></i>
+        {{ 'pteroca.cart.use_voucher'|trans }}
+    </button>
+
+    <a class="btn btn-secondary" href="{{ path('panel') }}">
+        {{ 'pteroca.system.back'|trans }}
+    </a>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-4">
+        <form action="{{ path('panel', { routeName: 'cart_renew_buy' }) }}" method="post">
+            <input type="hidden" name="id" value="{{ server.id }}">
+            <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="server_discount">
+            <div class="row">
+                <div class="col-8 pe-5">
+                    <div class="row">
+                        <div class="col-12 p-3 background-secondary">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <h4>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</h4>
+                                </div>
+                                <div class="col-6 small">{{ server.serverProduct.memory }} MB {{ 'pteroca.product.ram'|trans }}</div>
+                                <div class="col-6 small">{{ server.serverProduct.cpu }}% {{ 'pteroca.product.cpu'|trans }}</div>
+                                <div class="col-6 small">{{ server.serverProduct.diskSpace }} MB {{ 'pteroca.product.disk'|trans }}</div>
+                                <div class="col-6 small">{{ server.serverProduct.swap }} MB {{ 'pteroca.product.swap'|trans }}</div>
+                                <div class="col-6 small">{{ server.serverProduct.ports }} {{ 'pteroca.product.ports'|trans }}</div>
+                                <div class="col-6 small">{{ server.serverProduct.backups }} {{ 'pteroca.product.backups'|trans }}</div>
+                                <div class="col-6 small">{{ server.serverProduct.dbCount }} {{ 'pteroca.product.databases'|trans }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-5">
+                            <div class="row">
+                                <div class="col-12 mb-4">
+                                    <h4>{{ 'pteroca.cart_configuration.configuration'|trans }}</h4>
+                                </div>
+                                <input type="hidden" name="product" value="{{ server.id }}">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="duration">{{ 'pteroca.cart_configuration.period'|trans }}</label>
+                                        <select id="duration" name="duration" class="form-control" disabled>
+                                            {% for price in server.serverProduct.prices %}
+                                                {% if price.type.value == 'static' %}
+                                                    <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if server.serverProduct.selectedPrice.id == price.id %}selected{% endif %}>
+                                                        {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}
+                                                    </option>
+                                                {% elseif price.type.value == 'on_demand' %}
+                                                    <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if server.serverProduct.selectedPrice.id == price.id %}selected{% endif %}>
+                                                        {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="auto-renewal">{{ 'pteroca.cart_configuration.auto_renewal'|trans }}</label>
+                                        <select id="auto-renewal" name="auto-renewal" class="form-control">
+                                            <option value="1">
+                                                {{ 'pteroca.cart_configuration.enable'|trans }}
+                                            </option>
+                                            <option value="0">
+                                                {{ 'pteroca.cart_configuration.disable'|trans }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 h-100">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <h4>{{ 'pteroca.cart_configuration.order_summary'|trans }}</h4>
+                        </div>
+                        <div class="col-12">
+                            <b>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</b>
+                            <hr>
+                        </div>
+                        <div class="col-12">
+                            <span id="selected-duration"></span> <span id="selected-price" class="float-end"></span>
+                            <hr>
+                        </div>
+                        <div class="col-12 d-none" id="applied-discount">
+                            {{ 'pteroca.product.discount'|trans }} <small>(<span id="applied-discount-code"></span>, -<span id="applied-discount-value"></span>%)</small>
+                            <i class="fa fa-question-circle-o ps-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.product.discount_hint'|trans }}"></i>
+                            <i class="fa fa-close ps-1 hover-pointer" id="applied-discount-remove"></i>
+                            <span class="float-end">-<span id="applied-discount-amount"></span> {{ get_currency() }}</span>
+                            <hr>
+                        </div>
+                        <div class="col-12">
+                            <span id="selected-summary" class="fs-3 float-end"></span>
+                        </div>
+
+                        <div class="col-12 d-none" data-alert="not_enough_balance">
+                            <div class="alert alert-warning mt-1" role="alert">
+                                <i class="fa fa-exclamation-triangle me-1"></i>
+                                {{ 'pteroca.product.not_enough_balance'|trans }}
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" id="order-submit" class="btn btn-primary mt-3 w-100" disabled>
+                                <i class="fa fa-shopping-basket"></i> {{ 'pteroca.product.order_now'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% include 'components/use_voucher_modal.html.twig' %}
+    {% include 'panel/cart/components/apply_discount.html.twig' %}
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        const unitTranslations = {
+            minutes: '{{ 'pteroca.product.minutes'|trans }}',
+            hours: '{{ 'pteroca.product.hours'|trans }}',
+            days: '{{ 'pteroca.product.days'|trans }}',
+        },
+            currentUserBalance = parseFloat('{{ app.user.balance }}');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const durationSelect = document.getElementById('duration');
+
+            durationSelect.addEventListener('change', () => {
+                removeDiscountCode();
+                calculatePrice();
+            });
+            durationSelect.dispatchEvent(new Event('change'));
+
+            document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
+        })
+
+        function calculatePrice() {
+            const durationSelect = document.getElementById('duration'),
+                selectedOption = durationSelect.options[durationSelect.selectedIndex],
+                appliedDiscountValue = document.querySelector('#applied-discount-value'),
+                productPrice = parseFloat(selectedOption.dataset.price)
+
+            let summaryPrice = productPrice;
+
+            if (appliedDiscountValue && appliedDiscountValue.innerText) {
+                const discountValue = parseFloat(appliedDiscountValue.innerText);
+                if (!isNaN(discountValue)) {
+                    let discountPrice = summaryPrice * (discountValue / 100);
+                    document.querySelector('#applied-discount-amount').textContent = discountPrice.toFixed(2);
+                    summaryPrice -= discountPrice
+                }
+            }
+
+            document.querySelector('#selected-duration').textContent = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`
+            document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`
+
+            document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ get_currency() }}`
+
+            const insufficientBalance = currentUserBalance < summaryPrice;
+            document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
+            document.querySelector('button#order-submit').disabled = insufficientBalance;
+        }
+    </script>
+{% endblock %}

@@ -18,6 +18,7 @@ class UserVerificationService
     {
         $isVerificationRequired = $this->settingService
             ->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
+
         if ($isVerificationRequired && !$user->isVerified()) {
             throw new \Exception($this->translator->trans('pteroca.system.email_not_verified'));
         }

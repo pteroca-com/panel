@@ -31,13 +31,13 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
 
     private function handleServersToSuspend(): void
     {
-        $serversToSuspend = $this->serverRepository->getServersExpiredBefore(new \DateTime());
+        $serversToSuspend = $this->serverRepository->getServersToSuspend(new \DateTime());
         foreach ($serversToSuspend as $server) {
-            if ($server->isAutoRenewal() && $this->tryToRenewServer($server)) {
+            if ($this->tryToRenewServer($server)) {
                 continue;
             }
 
-            $server->setAutoRenewal(false);
+//            $server->setAutoRenewal(false);
             $server->setIsSuspended(true);
             $this->serverRepository->save($server);
 
@@ -45,6 +45,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
                 ->servers
                 ->suspend($server->getPterodactylServerId());
 
+            // TODO dopicowac tego emaila
             $emailMessage = new SendEmailMessage(
                 $server->getUser()->getEmail(),
                 $this->translator->trans('pteroca.email.suspended.subject'),
@@ -57,8 +58,15 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
 
     private function tryToRenewServer(Server $server): bool
     {
+        if (!$server->isAutoRenewal()) {
+            return false;
+        }
+
         try {
-            $this->storeService->validateUserBalance($server->getUser(), $server->getProduct());
+            $this->storeService->validateUserBalanceByPrice(
+                $server->getUser(),
+                $server->getServerProduct()->getSelectedPrice()
+            );
             $this->renewServerService->renewServer($server, $server->getUser());
         } catch (Exception) {
             return false;

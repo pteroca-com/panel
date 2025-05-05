@@ -2,6 +2,31 @@
 
 ---
 
+## [0.5.0] - 2025-05-05
+
+### Added
+- Added server port (allocation) management interface.
+- Added server backup management functionality.
+- Added server database management functionality.
+- Added support for assigning different prices to different billing periods.
+- Added order finalization page with product configurator.
+- Added voucher system (balance top-up and discount codes).
+- Added the ability to edit the build configuration of existing servers.
+- Added support for Dutch (`nl`) and Swiss German (`de_CH`) languages.  
+  Thanks to @ninin06 and @brainshead from Crowdin.
+- Added new filters to CRUD listings.
+- Added deprecation notices limited to `dev` environment only.
+
+### Changed
+- Updated color scheme with minor visual improvements.
+- Updated `README.md` with latest project information.
+
+### Fixed
+- Fixed a JavaScript error on the server variable edit page that occurred in certain language versions.
+- Fixed an issue where incorrect allocation count was set during server creation.
+
+---
+
 ## [0.4.4] - 2025-03-26
 
 ### Added

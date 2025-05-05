@@ -1,0 +1,76 @@
+{% block main %}
+    <div class="modal fade" id="createDatabaseModal" tabindex="-1" aria-labelledby="createDatabaseModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createDatabaseModalLabel">{{ 'pteroca.server.create_database'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="create-database-form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text form-group">
+                                    <label for="Database_name" class="form-control-label required">
+                                        {{ 'pteroca.server.database_name'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_name" name="Database[name]" required="required" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="field-text form-group">
+                                    <label for="Database_connections_from" class="form-control-label">
+                                        {{ 'pteroca.server.connections_from'|trans }}
+                                    </label>
+                                    <div class="form-widget">
+                                        <input type="text" id="Database_connections_from" name="Database[connections_from]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.close'|trans }}</button>
+                        <button type="submit" class="btn btn-primary" id="create-database"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.create_database'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('create-database-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const form = event.target,
+                    formData = new FormData(form),
+                    submitButton = document.getElementById('create-database'),
+                    spinner = submitButton.querySelector('i')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+                fetch('{{ path('server_database_create', { id: server.id }) }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(function (response) {
+                        if (response.ok) {
+                            window.location.reload()
+                        } else {
+                            alert('{{ 'pteroca.server.error_during_creating_database'|trans }}')
+                        }
+                    })
+                    .catch(function (error) {
+                        alert('{{ 'pteroca.server.error_during_creating_database'|trans }}')
+                    })
+                    .finally(function () {
+                        submitButton.disabled = false
+                        spinner.classList.add('d-none')
+                    })
+            })
+        })
+    </script>
+{% endblock %}
