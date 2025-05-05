@@ -15,6 +15,7 @@ use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -29,8 +30,9 @@ class RenewServerService extends AbstractActionServerService
         private readonly VoucherPaymentService $voucherPaymentService,
         UserRepository $userRepository,
         TranslatorInterface $translator,
+        LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator);
+        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
     }
 
     public function renewServer(

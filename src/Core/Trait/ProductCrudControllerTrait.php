@@ -4,6 +4,8 @@ namespace App\Core\Trait;
 
 trait ProductCrudControllerTrait
 {
+    private array $flashMessages = [];
+
     private function getNodesChoices(): array
     {
         try {
