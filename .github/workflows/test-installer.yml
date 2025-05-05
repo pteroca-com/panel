@@ -26,7 +26,7 @@ jobs:
 
       - name: Run installer with automated input
         run: |
-          echo -e "2\ntest.pteroca.local\n" | sudo ./installer.sh > installer.log 2>&1 || true
+          sudo bash -c './installer.sh' <<< $'2\ntest.pteroca.local\n' | tee installer.log
 
       - name: Show installer log
         run: cat installer.log
