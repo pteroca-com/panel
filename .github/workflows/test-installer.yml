@@ -21,9 +21,13 @@ jobs:
         run: |
           set -e
 
-          # Automatyczne odpowiedzi: wybór PHP 8.3 i domena testowa
+          # Pobierz skrypt osobno, żeby łatwiej go debugować
+          wget -q https://pteroca.com/installer.sh -O installer.sh
+          chmod +x installer.sh
+
+          # Uruchom z expectem
           OUTPUT=$(expect -c '
-          spawn bash -c "wget -qO- https://pteroca.com/installer.sh | sudo bash"
+          spawn sudo ./installer.sh
           expect "Select PHP version"
           send "2\r"
           expect "Enter your domain"
@@ -33,7 +37,7 @@ jobs:
 
           echo "$OUTPUT" > installer.log
 
-          # Sprawdzenie, czy instalacja przeszła
+          # Sprawdzenie sukcesu
           if grep -q "PteroCA installation completed successfully" installer.log; then
             echo "✅ Installer passed"
           else
@@ -46,13 +50,30 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          LOG=$(tail -c 1900 installer.log | sed 's/`/\\`/g')
           STATUS="✅ Installer passed"
           if ! grep -q "PteroCA installation completed successfully" installer.log; then
-            STATUS="❌ Installer failed"
+            STATUS="❌ Installer failed"W
           fi
+          
+          # Ogranicz log do 1900 znaków, bez zawieszania JSON-a
+          LOG=$(tail -c 1900 installer.log | head -c 1900)
+          
+          # Zbuduj bezpieczny JSON payload przez jq
+          jq -n \
+            --arg content "$STATUS" \
+            --arg desc "$LOG" \
+            '{
+              content: $content,
+              embeds: [
+                {
+                  description: ("```log\n" + $desc + "\n```")
+                }
+              ]
+            }' > payload.json
 
-          curl -H "Content-Type: application/json" \
-               -X POST \
-               -d "{\"content\": \"$STATUS\", \"embeds\": [{\"description\": \"\`\`\`\n$LOG\n\`\`\`\"}]}" \
-               "$DISCORD_WEBHOOK"
+        # Wyślij do Discorda
+        curl -H "Content-Type: application/json" \
+            -X POST \
+            -d @payload.json \
+            "$DISCORD_WEBHOOK"
+
