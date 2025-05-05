@@ -4,6 +4,7 @@ namespace App\Core\Controller\API;
 
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerNetworkService;
+use App\Core\Trait\DisallowForDemoModeTrait;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ServerNetworkController extends APIAbstractController
 {
     use InternalServerApiTrait;
+    use DisallowForDemoModeTrait;
 
     public function __construct(
         private readonly ServerRepository $serverRepository,
@@ -21,6 +23,8 @@ class ServerNetworkController extends APIAbstractController
     #[Route('/panel/api/server/{id}/allocation/create', name: 'server_allocation_create', methods: ['POST'])]
     public function createAllocation(int $id): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
@@ -45,6 +49,8 @@ class ServerNetworkController extends APIAbstractController
         int $allocationId,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
@@ -71,6 +77,8 @@ class ServerNetworkController extends APIAbstractController
         Request $request,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
@@ -97,6 +105,8 @@ class ServerNetworkController extends APIAbstractController
         int $allocationId,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 

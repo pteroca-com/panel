@@ -4,6 +4,7 @@ namespace App\Core\Controller\Panel;
 
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Crud\PanelCrudService;
+use App\Core\Trait\DisallowForDemoModeTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -15,6 +16,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 
 abstract class AbstractPanelController extends AbstractCrudController
 {
+    use DisallowForDemoModeTrait;
+
     private array $crudTemplateContext = [];
 
     public function __construct(
@@ -52,6 +55,7 @@ abstract class AbstractPanelController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         parent::persistEntity($entityManager, $entityInstance);
         $this->logEntityAction(LogActionEnum::ENTITY_ADD, $entityInstance);
     }
@@ -59,6 +63,7 @@ abstract class AbstractPanelController extends AbstractCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         parent::updateEntity($entityManager, $entityInstance);
         $this->logEntityAction(LogActionEnum::ENTITY_EDIT, $entityInstance);
     }
@@ -66,6 +71,7 @@ abstract class AbstractPanelController extends AbstractCrudController
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         parent::deleteEntity($entityManager, $entityInstance);
         $this->logEntityAction(LogActionEnum::ENTITY_DELETE, $entityInstance);
     }
@@ -74,17 +80,5 @@ abstract class AbstractPanelController extends AbstractCrudController
     {
         $this->panelCrudService
             ->logEntityAction($action, $entityInstance, $this->getUser(), $this->getEntityFqcn());
-    }
-
-    protected function disallowForDemoMode(): void
-    {
-        if ($this->isDemoMode()) {
-            throw $this->createAccessDeniedException('Changes are not allowed in demo mode.');
-        }
-    }
-
-    protected function isDemoMode(): bool
-    {
-        return isset($_ENV['DEMO_MODE']) && $_ENV['DEMO_MODE'] === 'true';
     }
 }

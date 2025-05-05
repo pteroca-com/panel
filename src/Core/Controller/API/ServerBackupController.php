@@ -4,6 +4,7 @@ namespace App\Core\Controller\API;
 
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerBackupService;
+use App\Core\Trait\DisallowForDemoModeTrait;
 use App\Core\Trait\InternalServerApiTrait;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ServerBackupController extends APIAbstractController
 {
     use InternalServerApiTrait;
+    use DisallowForDemoModeTrait;
 
     public function __construct(
         private readonly ServerRepository $serverRepository,
@@ -27,6 +29,8 @@ class ServerBackupController extends APIAbstractController
         Request $request,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
@@ -55,6 +59,8 @@ class ServerBackupController extends APIAbstractController
         string $backupId,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
@@ -78,6 +84,8 @@ class ServerBackupController extends APIAbstractController
         string $backupId,
     ): Response
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new Response();
 

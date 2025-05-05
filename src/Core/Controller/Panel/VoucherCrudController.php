@@ -130,6 +130,8 @@ class VoucherCrudController extends AbstractPanelController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if (false === $entityInstance instanceof Voucher) {
             return;
         }
@@ -143,6 +145,8 @@ class VoucherCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if (false === $entityInstance instanceof Voucher) {
             return;
         }

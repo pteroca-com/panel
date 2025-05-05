@@ -148,6 +148,7 @@ class ServerCrudController extends AbstractPanelController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         $this->setFlashMessages(
             $this->updateServerService
             ->updateServer($entityInstance)
@@ -160,6 +161,7 @@ class ServerCrudController extends AbstractPanelController
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         $this->deleteServerService->deleteServer($entityInstance);
 
         if ($entityInstance instanceof Server) {

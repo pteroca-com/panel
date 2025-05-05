@@ -230,6 +230,8 @@ class ServerProductCrudController extends AbstractPanelController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof ServerProduct) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
         }
@@ -245,6 +247,8 @@ class ServerProductCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof ServerProduct) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
         }
@@ -260,6 +264,8 @@ class ServerProductCrudController extends AbstractPanelController
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         $this->deleteServerService->deleteServer($entityInstance);
 
         if ($entityInstance instanceof ServerProduct) {

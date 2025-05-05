@@ -89,6 +89,7 @@ class CategoryCrudController extends AbstractPanelController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         $this->handleFileUpload($entityInstance);
         parent::persistEntity($entityManager, $entityInstance);
     }
@@ -96,6 +97,7 @@ class CategoryCrudController extends AbstractPanelController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         $this->handleFileUpload($entityInstance);
         parent::updateEntity($entityManager, $entityInstance);
     }
@@ -103,6 +105,7 @@ class CategoryCrudController extends AbstractPanelController
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->disallowForDemoMode();
+
         $this->removeFile($entityInstance);
         parent::deleteEntity($entityManager, $entityInstance);
     }

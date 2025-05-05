@@ -250,6 +250,8 @@ class ProductCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof Product) {
             $entityInstance->setEggsConfiguration(json_encode($this->getEggsConfigurationFromRequest()));
             $entityInstance->setUpdatedAtValue();
@@ -260,6 +262,8 @@ class ProductCrudController extends AbstractPanelController
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->disallowForDemoMode();
+
         if ($entityInstance instanceof Product) {
             $entityInstance->setDeletedAtValue();
         }

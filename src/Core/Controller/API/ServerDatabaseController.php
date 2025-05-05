@@ -4,6 +4,7 @@ namespace App\Core\Controller\API;
 
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerDatabaseService;
+use App\Core\Trait\DisallowForDemoModeTrait;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ServerDatabaseController extends APIAbstractController
 {
     use InternalServerApiTrait;
+    use DisallowForDemoModeTrait;
 
     public function __construct(
         private readonly ServerRepository $serverRepository,
@@ -23,6 +25,8 @@ class ServerDatabaseController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
@@ -45,6 +49,8 @@ class ServerDatabaseController extends APIAbstractController
         Request $request,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
         $payload = $request->request->all('Database');
@@ -69,6 +75,8 @@ class ServerDatabaseController extends APIAbstractController
         int $databaseId,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
@@ -91,6 +99,8 @@ class ServerDatabaseController extends APIAbstractController
         string $databaseId,
     ): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id);
         $response = new JsonResponse();
 
