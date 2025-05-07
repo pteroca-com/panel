@@ -2,6 +2,13 @@
 
 ---
 
+## [0.5.1] - 2025-05-07
+
+### Fixed
+- Fixed a bug on the balance top‑up page that threw an error whenever the entered amount exceeded the available balance.
+
+---
+
 ## [0.5.0] - 2025-05-05
 
 ### Added
