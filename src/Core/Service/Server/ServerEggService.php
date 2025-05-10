@@ -14,6 +14,41 @@ class ServerEggService
     {
     }
 
+    public function prepareEggsConfiguration(int $pterodactylServerId): string
+    {
+        $pterodactylServer = $this->pterodactylService
+            ->getApi()
+            ->servers
+            ->get($pterodactylServerId, ['include' => 'variables'])
+            ->toArray();
+
+        $pterodactylServerVariables = $pterodactylServer['relationships']['variables']->toArray();
+        $preparedVariables = [];
+        foreach ($pterodactylServerVariables as $variable) {
+            $preparedVariables[$variable['attributes']['id']] = [
+                'value' => $variable['attributes']['default_value'],
+                'user_viewable' => $variable['attributes']['user_viewable'],
+                'user_editable' => $variable['attributes']['user_editable'],
+            ];
+        }
+
+        $serverEggsConfiguration = [
+            $pterodactylServer['egg'] => [
+                'options' => [
+                    'startup' => [
+                        'value' => $pterodactylServer['container']['startup_command'],
+                    ],
+                    'docker_image' => [
+                        'value' => $pterodactylServer['container']['image'],
+                    ],
+                ],
+                'variables' => $preparedVariables,
+            ]
+        ];
+
+        return json_encode($serverEggsConfiguration);
+    }
+
     public function prepareEggsDataByNest(int $nestId): array
     {
         $eggs = $this->pterodactylService

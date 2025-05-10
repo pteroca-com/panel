@@ -6,6 +6,7 @@ use App\Core\Handler\MigrateServersHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -22,10 +23,21 @@ class PterodactylMigrateServersCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this->addOption(
+            'limit',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Limit the number of servers to migrate',
+        );
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $this->migrateServersHandler
+            ->setLimit($input->getOption('limit') ?: 100)
             ->setIo($io)
             ->handle();
 

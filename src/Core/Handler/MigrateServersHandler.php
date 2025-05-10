@@ -14,6 +14,7 @@ use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\ServerEggService;
 use App\Core\Service\SettingService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Timdesm\PterodactylPhpApi\PterodactylApi;
@@ -21,6 +22,8 @@ use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class MigrateServersHandler implements HandlerInterface
 {
+    private int $limit = 100;
+
     private SymfonyStyle $io;
 
     private PterodactylApi $pterodactylApi;
@@ -32,8 +35,16 @@ class MigrateServersHandler implements HandlerInterface
         private readonly ServerProductPriceRepository $serverProductPriceRepository,
         private readonly UserRepository $userRepository,
         private readonly SettingService $settingService,
+        private readonly ServerEggService $serverEggService,
     )
     {
+    }
+
+    public function setLimit(int $limit): self
+    {
+        $this->limit = $limit;
+
+        return $this;
     }
 
     public function setIo(SymfonyStyle $io): self
@@ -54,16 +65,15 @@ class MigrateServersHandler implements HandlerInterface
         $pterocaUsers = $this->getPterocaUsers();
 
         foreach ($pterodactylServers as $pterodactylServer) {
-            // TODO uncomment this when ready
-//            if (in_array($pterodactylServer['identifier'], array_column($pterocaServers, 'pterodactylServerIdentifier'))) {
-//                $infoMessage = sprintf(
-//                    'Server %s #%s already exists in Pteroca, skipping...',
-//                    $pterodactylServer['name'],
-//                    $pterodactylServer['identifier'],
-//                );
-//                $this->io->info($infoMessage);
-//                continue;
-//            }
+            if ($this->isServerAlreadyExists($pterodactylServer->toArray(), $pterocaServers)) {
+                $infoMessage = sprintf(
+                    'Server %s #%s already exists in PteroCA, skipping...',
+                    $pterodactylServer['name'],
+                    $pterodactylServer['identifier'],
+                );
+                $this->io->info($infoMessage);
+                continue;
+            }
 
             $pterodactylServerOwner = current(array_filter(
                 $pterodactylUsers,
@@ -89,7 +99,6 @@ class MigrateServersHandler implements HandlerInterface
                 continue;
             }
 
-            // TODO ask for price and duration
             $this->io->section(sprintf(
                 'Migrating server %s #%s...',
                 $pterodactylServer['name'],
@@ -115,7 +124,6 @@ class MigrateServersHandler implements HandlerInterface
         float $price,
     ): void
     {
-        dd($pterodactylServer);
         $pterocaUser = $this->userRepository->findOneBy(['email' => $pterodactylServerOwnerEmail]);
         if (empty($pterocaUser)) {
             $this->io->error(sprintf(
@@ -152,6 +160,9 @@ class MigrateServersHandler implements HandlerInterface
 
     private function migrateServerProductEntity(Server $serverEntity, array $pterodactylServer): ServerProduct
     {
+        $serverEggsConfiguration = $this->serverEggService
+            ->prepareEggsConfiguration($pterodactylServer['id']);
+
         $serverProductEntity = (new ServerProduct())
             ->setServer($serverEntity)
             ->setOriginalProduct(null)
@@ -163,10 +174,11 @@ class MigrateServersHandler implements HandlerInterface
             ->setSwap($pterodactylServer['limits']['swap'])
             ->setBackups($pterodactylServer['feature_limits']['backups'])
             ->setPorts($pterodactylServer['feature_limits']['allocations'])
+            ->setDbCount($pterodactylServer['feature_limits']['databases'])
             ->setNodes([$pterodactylServer['node']])
             ->setNest($pterodactylServer['nest'])
             ->setEggs([$pterodactylServer['egg']])
-            ->setEggsConfiguration()
+            ->setEggsConfiguration($serverEggsConfiguration)
             ->setAllowChangeEgg(false);
         $this->serverProductRepository->save($serverProductEntity);
 
@@ -227,11 +239,19 @@ class MigrateServersHandler implements HandlerInterface
         return strtolower($this->io->ask($questionMessage, 'yes')) === 'yes';
     }
 
+    private function isServerAlreadyExists(array $pterodactylServer, array $pterocaServers): bool
+    {
+        return in_array(
+            $pterodactylServer['identifier'],
+            array_column($pterocaServers, 'pterodactylServerIdentifier'),
+        );
+    }
+
     private function getPterodactylServers(): array
     {
         $this->io->section('Fetching servers from Pterodactyl...');
         $servers = $this->pterodactylApi->servers->all([
-            'per_page' => 100, // TODO set as a parameter
+            'per_page' => $this->limit,
         ]);
         $this->io->info(sprintf('Fetched %d servers from Pterodactyl', count($servers->toArray())));
 
@@ -242,7 +262,7 @@ class MigrateServersHandler implements HandlerInterface
     {
         $this->io->section('Fetching users from Pterodactyl...');
         $users = $this->pterodactylApi->users->all([
-            'per_page' => 100, // TODO set as a parameter
+            'per_page' => $this->limit,
         ]);
         $this->io->info(sprintf('Fetched %d users from Pterodactyl', count($users->toArray())));
 

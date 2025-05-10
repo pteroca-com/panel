@@ -260,9 +260,8 @@ class ServerProductCrudController extends AbstractPanelController
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        $this->deleteServerService->deleteServer($entityInstance);
-
         if ($entityInstance instanceof ServerProduct) {
+            $this->deleteServerService->deleteServer($entityInstance->getServer());
             $entityInstance->getServer()->setDeletedAtValue();
         }
 
