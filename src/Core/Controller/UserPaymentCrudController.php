@@ -2,10 +2,13 @@
 namespace App\Core\Controller;
 
 use App\Core\Controller\Panel\AbstractPanelController;
-use App\Core\Entity\UserPayment;
+use App\Core\Entity\Panel\UserPayment;
 use App\Core\Enum\CrudTemplateContextEnum;
+use App\Core\Enum\PaymentStatusEnum;
+use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
+use App\Core\Service\SettingService;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
@@ -26,6 +29,7 @@ class UserPaymentCrudController extends AbstractPanelController
     public function __construct(
         PanelCrudService $panelCrudService,
         private readonly TranslatorInterface $translator,
+        private readonly SettingService $settingService,
     ) {
         parent::__construct($panelCrudService);
     }
@@ -45,12 +49,13 @@ class UserPaymentCrudController extends AbstractPanelController
                     $value === 'paid' ? 'badge-success' : 'badge-danger',
                     $value,
                 )),
-            NumberField::new('amount', $this->translator->trans('pteroca.crud.payment.amount'))
-                ->setNumDecimals(2),
-            TextField::new('currency', $this->translator->trans('pteroca.crud.payment.currency'))
-                ->formatValue(fn ($value) => strtoupper($value)),
+            TextField::new('amountWithCurrency', $this->translator->trans('pteroca.crud.payment.amount')),
             NumberField::new('balanceAmount', $this->translator->trans('pteroca.crud.payment.balance_amount'))
-                ->setNumDecimals(2),
+                ->formatValue(fn ($value) => sprintf(
+                    '%0.2f %s',
+                    $value,
+                    $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
+                )),
             AssociationField::new('usedVoucher', $this->translator->trans('pteroca.crud.payment.used_voucher')),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.payment.created_at')),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.payment.updated_at')),
@@ -59,15 +64,28 @@ class UserPaymentCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
+        $continuePayment = Action::new('continuePayment', 'Continue payment', 'fa fa-credit-card')
+            ->linkToCrudAction('continuePayment')
+            ->displayIf(static function (UserPayment $payment) {
+                return $payment->getStatus() !== PaymentStatusEnum::PAID->value;
+            });
+        $showOnlyPaid = Action::new(name: Action::DETAIL, icon: 'fa fa-eye')
+            ->linkToCrudAction('detail')
+            ->displayIf(static function (UserPayment $payment) {
+                return $payment->getStatus() === PaymentStatusEnum::PAID->value;
+            });
+
         return $actions
             ->disable(Action::NEW, Action::EDIT, Action::DELETE)
+            ->add(Crud::PAGE_INDEX, $continuePayment)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, fn(Action $action) => $showOnlyPaid)
             ;
     }
 
     public function configureCrud(Crud $crud): Crud
     {
-        $this->appendCrudTemplateContext(CrudTemplateContextEnum::PAYMENT->value);
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::USER_PAYMENT->value);
 
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.crud.payment.payment'))
