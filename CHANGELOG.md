@@ -7,10 +7,12 @@
 ### Added
 - Added command to migrate servers from Pterodactyl to PteroCA.
 - Added user account verification check before allowing voucher usage.
+- Added server IP address and current expiration date to the server renewal view.
 
 ### Changed
 - Renamed the Servers menu item to My servers for improved clarity.
 - Refactored some code to improve readability and maintainability.
+- Improved styling of input placeholders.
 
 ### Fixed
 - Fixed an issue where activating a voucher to top up balance did not work correctly.
