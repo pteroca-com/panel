@@ -2,6 +2,7 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\PaymentRepository")]
@@ -34,7 +35,7 @@ class Payment
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    private UserInterface $user;
 
     #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
@@ -125,12 +126,12 @@ class Payment
         return $this;
     }
 
-    public function getUser(): User
+    public function getUser(): UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(UserInterface $user): self
     {
         $this->user = $user;
         return $this;

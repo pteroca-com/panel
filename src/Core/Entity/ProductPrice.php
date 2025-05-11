@@ -2,11 +2,12 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\ProductPriceInterface;
 use App\Core\Trait\ProductPriceEntityTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\ProductPriceRepository")]
-class ProductPrice
+class ProductPrice implements ProductPriceInterface
 {
     use ProductPriceEntityTrait;
 

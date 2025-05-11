@@ -2,7 +2,7 @@
 
 namespace App\Core\Controller;
 
-use App\Core\Entity\User;
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\UserAccount;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -120,7 +120,7 @@ class UserAccountCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof User) {
+        if ($entityInstance instanceof UserInterface) {
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);

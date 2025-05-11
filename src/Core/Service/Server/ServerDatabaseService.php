@@ -2,8 +2,8 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
-use App\Core\Entity\User;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
@@ -17,7 +17,7 @@ class ServerDatabaseService
 
     public function getAllDatabases(
         Server $server,
-        User $user,
+        UserInterface $user,
     ): array
     {
         return $this->pterodactylClientService
@@ -32,7 +32,7 @@ class ServerDatabaseService
 
     public function createDatabase(
         Server $server,
-        User $user,
+        UserInterface $user,
         string $databaseName,
         string $connectionsFrom,
     ): void
@@ -61,7 +61,7 @@ class ServerDatabaseService
 
     public function deleteDatabase(
         Server $server,
-        User $user,
+        UserInterface $user,
         int $databaseId,
     ): void
     {
@@ -82,7 +82,7 @@ class ServerDatabaseService
 
     public function rotatePassword(
         Server $server,
-        User $user,
+        UserInterface $user,
         string $databaseId,
     ): array
     {

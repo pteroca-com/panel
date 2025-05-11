@@ -2,6 +2,7 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -16,7 +17,7 @@ class PasswordResetRequest
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     #[Assert\NotBlank]
-    private User $user;
+    private UserInterface $user;
 
     #[ORM\Column(type: "string", length: 64)]
     #[Assert\NotBlank]
@@ -33,12 +34,12 @@ class PasswordResetRequest
         return $this->id;
     }
 
-    public function getUser(): User
+    public function getUser(): UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(UserInterface $user): self
     {
         $this->user = $user;
         return $this;

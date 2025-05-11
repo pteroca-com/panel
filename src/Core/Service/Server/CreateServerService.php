@@ -2,12 +2,12 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Product;
 use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Entity\ServerProductPrice;
-use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\VoucherTypeEnum;
@@ -20,7 +20,6 @@ use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
@@ -49,7 +48,7 @@ class CreateServerService extends AbstractActionServerService
         int $priceId,
         string $serverName,
         bool $autoRenewal,
-        User|UserInterface $user,
+        UserInterface $user,
         ?string $voucherCode = null,
     ): Server
     {
@@ -101,7 +100,7 @@ class CreateServerService extends AbstractActionServerService
         Product $product,
         int $eggId,
         string $serverName,
-        User $user
+        UserInterface $user
     ): PterodactylServer
     {
         try {
@@ -124,7 +123,7 @@ class CreateServerService extends AbstractActionServerService
 
     private function createEntityServer(
         PterodactylServer $server,
-        User $user,
+        UserInterface $user,
         Product $product,
         int $priceId,
         bool $autoRenewal

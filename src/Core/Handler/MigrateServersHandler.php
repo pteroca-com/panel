@@ -2,10 +2,10 @@
 
 namespace App\Core\Handler;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Entity\ServerProductPrice;
-use App\Core\Entity\User;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use App\Core\Enum\SettingEnum;
@@ -185,7 +185,7 @@ class MigrateServersHandler implements HandlerInterface
         return $serverProductEntity;
     }
 
-    private function migrateServerEntity(User $serverOwner, array $pterodactylServer, int $duration): Server
+    private function migrateServerEntity(UserInterface $serverOwner, array $pterodactylServer, int $duration): Server
     {
         $expireAt = (new \DateTime())
             ->modify(sprintf('+%d days', $duration));
@@ -282,7 +282,7 @@ class MigrateServersHandler implements HandlerInterface
     private function getPterocaUsers(): array
     {
         return array_map(
-            fn(User $user) => [
+            fn(UserInterface $user) => [
                 'email' => $user->getEmail(),
             ],
             $this->userRepository->findAll(),

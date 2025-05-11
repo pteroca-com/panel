@@ -2,8 +2,8 @@
 
 namespace App\Core\Service\Authorization;
 
+use App\Core\Contract\UserInterface;
 use App\Core\DTO\Action\Result\RegisterUserActionResult;
-use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -49,7 +49,7 @@ class RegistrationService
     }
 
     public function registerUser(
-        User $user,
+        UserInterface $user,
         string $plainPassword,
         array $roles = [UserRoleEnum::ROLE_USER->name],
         bool $isVerified = false,
@@ -130,7 +130,7 @@ class RegistrationService
         $this->logService->logAction($user, LogActionEnum::USER_VERIFY_EMAIL);
     }
 
-    private function sendRegistrationEmail(User $user): void
+    private function sendRegistrationEmail(UserInterface $user): void
     {
         $verificationToken = $this->createVerificationToken($user);
         $baseUrl = $this->settingService->getSetting(SettingEnum::SITE_URL->value);
@@ -155,7 +155,7 @@ class RegistrationService
         }
     }
 
-    private function createVerificationToken(User $user): string
+    private function createVerificationToken(UserInterface $user): string
     {
         $now = new DateTimeImmutable();
         $token = $this->jwtConfiguration->builder()

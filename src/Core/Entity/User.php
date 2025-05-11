@@ -2,21 +2,20 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'pteroca.register.email_already_exists')]
 #[ORM\HasLifecycleCallbacks]
 #[Vich\Uploadable]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

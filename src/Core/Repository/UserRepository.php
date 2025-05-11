@@ -2,6 +2,7 @@
 
 namespace App\Core\Repository;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,7 +31,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        if (!$user instanceof User) {
+        if (!$user instanceof UserInterface) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
@@ -38,7 +39,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user);
     }
 
-    public function save(User $user): void
+    public function save(UserInterface $user): void
     {
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();

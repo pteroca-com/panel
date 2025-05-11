@@ -2,8 +2,7 @@
 
 namespace App\Core\Trait;
 
-use App\Core\Entity\ProductPrice;
-use App\Core\Entity\ServerProductPrice;
+use App\Core\Contract\ProductPriceInterface;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -12,7 +11,7 @@ trait ProductPricesManagerTrait
 {
     public function getPrices(): Collection
     {
-        return $this->prices->filter(function (ProductPrice|ServerProductPrice $price) {
+        return $this->prices->filter(function (ProductPriceInterface $price) {
             return $price->getDeletedAt() === null;
         });
     }

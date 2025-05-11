@@ -26,6 +26,7 @@ use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
 use App\Core\Service\Template\TemplateManager;
+use App\Core\Trait\GetUserTrait;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -39,6 +40,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DashboardController extends AbstractDashboardController
 {
+    use GetUserTrait;
+
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly SettingService $settingService,

@@ -2,11 +2,9 @@
 
 namespace App\Core\Service\Server;
 
-use App\Core\Entity\Product;
-use App\Core\Entity\ProductPrice;
-use App\Core\Entity\ServerProduct;
-use App\Core\Entity\ServerProductPrice;
-use App\Core\Entity\User;
+use App\Core\Contract\ProductInterface;
+use App\Core\Contract\ProductPriceInterface;
+use App\Core\Contract\UserInterface;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
@@ -24,15 +22,14 @@ abstract class AbstractActionServerService
     ) {}
 
     protected function updateUserBalance(
-        User $user,
-        Product|ServerProduct $product,
+        UserInterface $user,
+        ProductInterface $product,
         int $priceId,
         ?string $voucherCode = null,
     ): void
     {
-        /** @var ?ProductPrice $price */
         $price = $product->getPrices()->filter(
-            fn(ProductPrice|ServerProductPrice $price) => $price->getId() === $priceId
+            fn(ProductPriceInterface $price) => $price->getId() === $priceId
         )->first() ?: null;
 
         if (empty($price)) {
@@ -64,7 +61,7 @@ abstract class AbstractActionServerService
         $this->userRepository->save($user);
     }
 
-    protected function getPterodactylAccountLogin(User $user): ?string
+    protected function getPterodactylAccountLogin(UserInterface $user): ?string
     {
         return $this->pterodactylService->getApi()->users->get($user->getPterodactylUserId())?->username;
     }

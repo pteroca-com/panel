@@ -2,8 +2,10 @@
 
 namespace App\Core\Controller\Panel;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Crud\PanelCrudService;
+use App\Core\Trait\GetUserTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -15,6 +17,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 
 abstract class AbstractPanelController extends AbstractCrudController
 {
+    use GetuserTrait;
+
     private array $crudTemplateContext = [];
 
     public function __construct(

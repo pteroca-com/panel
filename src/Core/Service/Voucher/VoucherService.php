@@ -2,9 +2,9 @@
 
 namespace App\Core\Service\Voucher;
 
+use App\Core\Contract\UserInterface;
 use App\Core\DTO\Action\Result\RedeemVoucherActionResult;
 use App\Core\Entity\Payment;
-use App\Core\Entity\User;
 use App\Core\Entity\Voucher;
 use App\Core\Entity\VoucherUsage;
 use App\Core\Enum\LogActionEnum;
@@ -33,7 +33,7 @@ class VoucherService
         private readonly TranslatorInterface $translator,
     ) {}
 
-    public function redeemVoucher(string $code, ?float $orderAmount, User $user): RedeemVoucherActionResult
+    public function redeemVoucher(string $code, ?float $orderAmount, UserInterface $user): RedeemVoucherActionResult
     {
         try {
             $voucher = $this->getValidVoucher($code);
@@ -87,7 +87,7 @@ class VoucherService
         return $voucher;
     }
 
-    private function validateNewAccountRequirementIfNeeded(Voucher $voucher, User $user): void
+    private function validateNewAccountRequirementIfNeeded(Voucher $voucher, UserInterface $user): void
     {
         if (false === $voucher->isNewAccountsOnly()) {
             return;
@@ -102,7 +102,7 @@ class VoucherService
         }
     }
 
-    private function validateOneUsePerUserRequirementIfNeeded(Voucher $voucher, User $user): void
+    private function validateOneUsePerUserRequirementIfNeeded(Voucher $voucher, UserInterface $user): void
     {
         if (false === $voucher->isOneUsePerUser()) {
             return;
@@ -113,7 +113,7 @@ class VoucherService
         }
     }
 
-    private function validateMinimumTopupAmountRequirementIfNeeded(Voucher $voucher, User $user): void
+    private function validateMinimumTopupAmountRequirementIfNeeded(Voucher $voucher, UserInterface $user): void
     {
         if (empty($voucher->getMinimumTopupAmount())) {
             return;
@@ -153,7 +153,7 @@ class VoucherService
         }
     }
 
-    public function redeemVoucherForUser(Voucher $voucher, User $user): void
+    public function redeemVoucherForUser(Voucher $voucher, UserInterface $user): void
     {
         $voucherUsage = (new VoucherUsage())
             ->setUser($user)
@@ -173,7 +173,7 @@ class VoucherService
         $this->voucherRepository->save($voucher);
     }
 
-    private function addVoucherBalanceTopup(Voucher $voucher, User $user): void
+    private function addVoucherBalanceTopup(Voucher $voucher, UserInterface $user): void
     {
         $updatedUserBalance = (float)$voucher->getValue() + $user->getBalance();
         $user->setBalance($updatedUserBalance);

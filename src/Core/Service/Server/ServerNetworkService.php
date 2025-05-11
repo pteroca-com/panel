@@ -2,9 +2,9 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
 use App\Core\DTO\Action\Result\ServerAllocationActionResult;
 use App\Core\Entity\Server;
-use App\Core\Entity\User;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
@@ -25,7 +25,7 @@ class ServerNetworkService
 
     public function createAllocation(
         Server $server,
-        User $user,
+        UserInterface $user,
     ): ServerAllocationActionResult
     {
         $endpointUrl = $this->getEndpointUrl($server, null);
@@ -74,7 +74,7 @@ class ServerNetworkService
 
     public function makePrimaryAllocation(
         Server $server,
-        User $user,
+        UserInterface $user,
         int $allocationId,
     ): ServerAllocationActionResult
     {
@@ -119,7 +119,7 @@ class ServerNetworkService
 
     public function editAllocation(
         Server $server,
-        User $user,
+        UserInterface $user,
         int $allocationId,
         string $notes,
     ): ServerAllocationActionResult
@@ -168,7 +168,7 @@ class ServerNetworkService
 
     public function deleteAllocation(
         Server $server,
-        User $user,
+        UserInterface $user,
         int $allocationId,
     ): ServerAllocationActionResult
     {
