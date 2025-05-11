@@ -641,7 +641,9 @@ pteroca:
       server_builds: 'Серверы'
       vouchers: 'Ваучеры'
       voucher_usages: 'Использованные купоны'
-
+      my_account: 'Мой аккаунт'
+      account_settings: 'Настройки аккаунта'
+      last_update: 'Последнее обновление'
   api:
     servers:
       not_found: 'Сервер не найден.'

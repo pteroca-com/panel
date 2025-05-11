@@ -574,6 +574,7 @@ pteroca:
       payments: 'Pagamenti'
       balance_amount: 'Importo saldo'
       used_voucher: 'Voucher utilizzato'
+      last_update: 'Ultimo aggiornamento'
     log:
       log: 'Registro'
       logs: 'Registri'
@@ -647,6 +648,8 @@ pteroca:
       server_builds: 'Server'
       vouchers: 'Buoni'
       voucher_usages: 'Voucher riscattati'
+      my_account: 'Il mio account'
+      account_settings: 'Impostazioni account'
 
   api:
     servers:

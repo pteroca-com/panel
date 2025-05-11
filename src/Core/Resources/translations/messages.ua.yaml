@@ -574,6 +574,7 @@ pteroca:
       payments: 'Платежі'
       balance_amount: 'Сума балансу'
       used_voucher: 'Використаний ваучер'
+      last_update: 'Останнє оновлення'
     log:
       log: 'Журнал'
       logs: 'Журнали'
@@ -647,6 +648,8 @@ pteroca:
       server_builds: 'Сервери'
       vouchers: 'Ваучери'
       voucher_usages: 'Використані ваучери'
+      my_account: 'Мій акаунт'
+      account_settings: 'Налаштування акаунта'
 
   api:
     servers:

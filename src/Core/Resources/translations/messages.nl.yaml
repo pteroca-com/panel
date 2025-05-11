@@ -561,6 +561,7 @@ pteroca:
       payments: 'Betalingen'
       balance_amount: 'Saldo bedrag'
       used_voucher: 'Gebruikte voucher'
+      last_update: 'Laatste update'
     voucher:
       voucher: 'Voucher'
       vouchers: 'Vouchers'
@@ -634,6 +635,9 @@ pteroca:
       server_builds: 'Servers'
       vouchers: 'Vouchers'
       voucher_usages: 'Ingewisselde vouchers'
+      my_account: 'Mijn account'
+      account_settings: 'Accountinstellingen'
+
   api:
     servers:
       not_found: 'Server niet gevonden.'

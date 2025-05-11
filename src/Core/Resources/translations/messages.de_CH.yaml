@@ -568,6 +568,7 @@ pteroca:
       payments: 'Zahlungen'
       balance_amount: 'Kontostand'
       used_voucher: 'Verwendeter Gutschein'
+      last_update: 'Letzte Aktualisierung'
     log:
       log: 'Log'
       logs: 'Logs'
@@ -641,6 +642,9 @@ pteroca:
       server_builds: 'Server'
       vouchers: 'Gutscheine'
       voucher_usages: 'Eingelöste Gutscheine'
+      my_account: 'Mein Konto'
+      account_settings: 'Kontoeinstellungen'
+
   api:
     servers:
       not_found: 'Server nicht gefunden.'

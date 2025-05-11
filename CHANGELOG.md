@@ -2,12 +2,13 @@
 
 ---
 
-## [0.5.2] - 2025-05-11
+## [0.5.2] - 2025-05-12
 
 ### Added
 - Added command to migrate servers from Pterodactyl to PteroCA.
 - Added user account verification check before allowing voucher usage.
 - Added server IP address and current expiration date to the server renewal view.
+- Added my account tab with payment history and account settings.
 
 ### Changed
 - Renamed the Servers menu item to My servers for improved clarity.
