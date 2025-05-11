@@ -31,7 +31,7 @@ trait PaymentEntityTrait
 
     #[ORM\ManyToOne(targetEntity: Voucher::class)]
     #[ORM\JoinColumn(name: 'used_voucher', nullable: true)]
-    private ?int $usedVoucher = null;
+    private ?Voucher $usedVoucher = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -115,12 +115,12 @@ trait PaymentEntityTrait
         return $this;
     }
 
-    public function getUsedVoucher(): ?int
+    public function getUsedVoucher(): ?Voucher
     {
         return $this->usedVoucher;
     }
 
-    public function setUsedVoucher(?int $usedVoucher): self
+    public function setUsedVoucher(?Voucher $usedVoucher): self
     {
         $this->usedVoucher = $usedVoucher;
         return $this;

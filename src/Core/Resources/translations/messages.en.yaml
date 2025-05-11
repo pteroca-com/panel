@@ -575,6 +575,7 @@ pteroca:
       payments: 'Payments'
       balance_amount: 'Balance amount'
       used_voucher: 'Used voucher'
+      last_update: 'Last update'
     log:
       log: 'Log'
       logs: 'Logs'

@@ -6,6 +6,7 @@ use App\Core\Contract\UserInterface;
 use App\Core\DTO\PaymentSessionDTO;
 use App\Core\Entity\Payment;
 use App\Core\Enum\LogActionEnum;
+use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Message\SendEmailMessage;
@@ -72,6 +73,18 @@ class PaymentService
         $this->savePaymentSession($user, $session, $balanceAmount, $voucherCode);
 
         return $session->getUrl();
+    }
+
+    public function continuePayment(
+        string $sessionId,
+    ): string
+    {
+        $retrievedSession = $this->paymentProvider->retrieveSession($sessionId);
+        if ($retrievedSession->getPaymentStatus() === PaymentStatusEnum::PAID->value) {
+            throw new \Exception($this->translator->trans('pteroca.recharge.payment_already_processed'));
+        }
+
+        return $retrievedSession->getUrl();
     }
 
     public function finalizePayment(UserInterface $user, string $sessionId): ?string
@@ -154,7 +167,7 @@ class PaymentService
             ->setStatus($session->getPaymentStatus());
 
         if (!empty($voucher)) {
-            $payment->setUsedVoucher($voucher->getId());
+            $payment->setUsedVoucher($voucher);
         }
 
         $this->paymentRepository->save($payment);

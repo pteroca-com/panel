@@ -16,4 +16,9 @@ class UserPayment
     {
         return sprintf('%0.2f %s', $this->getAmount(), strtoupper($this->getCurrency()));
     }
+
+    public function getLastUpdate(): \DateTimeInterface
+    {
+        return $this->getUpdatedAt() ?? $this->getCreatedAt();
+    }
 }
