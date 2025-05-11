@@ -16,6 +16,7 @@ use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
 use App\Core\Entity\User;
 use App\Core\Entity\UserAccount;
+use App\Core\Entity\UserPayment;
 use App\Core\Entity\Voucher;
 use App\Core\Entity\VoucherUsage;
 use App\Core\Enum\SettingContextEnum;
@@ -100,6 +101,10 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.my_servers'), 'fa fa-server', 'servers');
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart', 'store');
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.wallet'), 'fa fa-wallet', 'recharge_balance');
+        yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.my_account'), 'fa fa-user')->setSubItems([
+            MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', UserPayment::class),
+            MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.account_settings'), 'fa fa-user-cog', UserAccount::class),
+        ]);
 
         if ($this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
             yield MenuItem::section($this->translator->trans('pteroca.crud.menu.administration'));

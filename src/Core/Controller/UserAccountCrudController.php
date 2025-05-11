@@ -41,10 +41,9 @@ class UserAccountCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $actions->disable(Action::NEW);
-        $actions->disable(Action::DELETE);
-        $actions->disable(Action::DETAIL);
+        $actions->disable(Action::NEW, Action::DELETE, Action::DETAIL);
         $actions->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+
         return parent::configureActions($actions);
     }
 
@@ -95,6 +94,7 @@ class UserAccountCrudController extends AbstractCrudController
         $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
         $queryBuilder->where('entity.email = :email');
         $queryBuilder->setParameter('email', $this->getUser()->getEmail());
+
         return $queryBuilder;
     }
 

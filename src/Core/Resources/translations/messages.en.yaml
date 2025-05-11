@@ -648,6 +648,8 @@ pteroca:
       server_builds: 'Servers'
       vouchers: 'Vouchers'
       voucher_usages: 'Redeemed vouchers'
+      my_account: 'My account'
+      account_settings: 'Account settings'
 
   api:
     servers:
