@@ -25,8 +25,12 @@
                     <div class="row">
                         <div class="col-12 p-3 background-secondary">
                             <div class="row">
-                                <div class="col-12 mb-3">
+                                <div class="col-12">
                                     <h4>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</h4>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    {{ 'pteroca.email.store.ip_address'|trans }}:
+                                    <div id="cart-ip-address" class="placeholder placeholder-glow placeholder-wave"></div>
                                 </div>
                                 <div class="col-6 small">{{ server.serverProduct.memory }} MB {{ 'pteroca.product.ram'|trans }}</div>
                                 <div class="col-6 small">{{ server.serverProduct.cpu }}% {{ 'pteroca.product.cpu'|trans }}</div>
@@ -131,9 +135,12 @@
             hours: '{{ 'pteroca.product.hours'|trans }}',
             days: '{{ 'pteroca.product.days'|trans }}',
         },
-            currentUserBalance = parseFloat('{{ app.user.balance }}');
+            currentUserBalance = parseFloat('{{ app.user.balance }}'),
+            serverId = '{{ server.id }}'
 
         document.addEventListener('DOMContentLoaded', function () {
+            loadServerData();
+
             const durationSelect = document.getElementById('duration');
 
             durationSelect.addEventListener('change', () => {
@@ -170,6 +177,18 @@
             const insufficientBalance = currentUserBalance < summaryPrice;
             document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
             document.querySelector('button#order-submit').disabled = insufficientBalance;
+        }
+
+        function loadServerData() {
+            const endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details',
+                ipAddressElement = document.querySelector('#cart-ip-address');
+
+            fetch(endpointUrl)
+                .then(response => response.json())
+                .then(data => {
+                    ipAddressElement.textContent = data.ip;
+                    ipAddressElement.classList.remove('placeholder', 'placeholder-glow', 'placeholder-wave');
+                })
         }
     </script>
 {% endblock %}
