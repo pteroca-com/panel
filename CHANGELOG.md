@@ -6,10 +6,11 @@
 
 ### Added
 - Added command to migrate servers from Pterodactyl to PteroCA.
+- Added user account verification check before allowing voucher usage.
 
 ### Changed
 - Renamed the Servers menu item to My servers for improved clarity.
-- Refactored the `EggController` used by the internal API.
+- Refactored some code to improve readability and maintainability.
 
 ### Fixed
 - Fixed an issue where activating a voucher to top up balance did not work correctly.
