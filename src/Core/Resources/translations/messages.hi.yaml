@@ -178,7 +178,7 @@ pteroca:
     server_current_software: 'वर्तमान सॉफ़्टवेयर'
 
   servers:
-    title: 'सर्वर'
+    title: 'मेरे सर्वर'
     active: 'सक्रिय'
     suspended: 'निलंबित'
     ip_address: 'आईपी पता'
@@ -624,6 +624,7 @@ pteroca:
       menu: 'मेनू'
       dashboard: 'डैशबोर्ड'
       servers: 'सर्वर'
+      my_servers: 'मेरे सर्वर'
       shop: 'दुकान'
       wallet: 'वॉलेट'
       administration: 'प्रशासन'

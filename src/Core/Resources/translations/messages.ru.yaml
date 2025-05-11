@@ -173,7 +173,7 @@ pteroca:
     server_description: 'Описание сервера'
     server_current_software: 'Текущее серверное ПО'
   servers:
-    title: 'Сервера'
+    title: 'Мои серверы'
     active: 'Активный'
     suspended: 'Приостановлен'
     ip_address: 'IP-адрес'
@@ -618,6 +618,7 @@ pteroca:
       menu: 'Меню'
       dashboard: 'Панель'
       servers: 'Сервера'
+      my_servers: 'Мои серверы'
       shop: 'Магазин'
       wallet: 'Кошелек'
       administration: 'Администрирование'

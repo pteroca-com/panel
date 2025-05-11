@@ -178,7 +178,7 @@ pteroca:
     server_current_software: '当前软件'
 
   servers:
-    title: '服务器'
+    title: '我的服务器'
     active: '活跃'
     suspended: '已暂停'
     ip_address: 'IP 地址'
@@ -624,6 +624,7 @@ pteroca:
       menu: '菜单'
       dashboard: '仪表盘'
       servers: '服务器'
+      my_servers: '我的服务器'
       shop: '商店'
       wallet: '钱包'
       administration: '管理'
