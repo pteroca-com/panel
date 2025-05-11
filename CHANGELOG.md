@@ -2,6 +2,22 @@
 
 ---
 
+## [0.5.2] - 2025-05-11
+
+### Added
+- Added command to migrate servers from Pterodactyl to PteroCA.
+
+### Changed
+- Renamed the Servers menu item to My servers for improved clarity.
+- Refactored the `EggController` used by the internal API.
+
+### Fixed
+- Fixed an issue where activating a voucher to top up balance did not work correctly.
+- Fixed an error that occurred when deleting a server from the PteroCA panel.
+- Fixed missing translations in the Server Logs section.
+
+---
+
 ## [0.5.1] - 2025-05-07
 
 ### Fixed
