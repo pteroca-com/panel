@@ -15,6 +15,7 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Repository\VoucherRepository;
 use App\Core\Repository\VoucherUsageRepository;
+use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use Exception;
@@ -30,12 +31,14 @@ class VoucherService
         private readonly SettingService $settingService,
         private readonly UserRepository $userRepository,
         private readonly LogService $logService,
+        private readonly UserVerificationService $userVerificationService,
         private readonly TranslatorInterface $translator,
     ) {}
 
     public function redeemVoucher(string $code, ?float $orderAmount, UserInterface $user): RedeemVoucherActionResult
     {
         try {
+            $this->userVerificationService->validateUserVerification($user);
             $voucher = $this->getValidVoucher($code);
         } catch (Exception $exception) {
             return RedeemVoucherActionResult::failure($exception->getMessage());
