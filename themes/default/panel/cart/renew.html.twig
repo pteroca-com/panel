@@ -28,6 +28,14 @@
                                 <div class="col-12">
                                     <h4>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</h4>
                                 </div>
+                                <div class="col-12">
+                                    {% if server.getServerProduct().getSelectedPrice().getType().value != 'on_demand' %}
+                                        {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.serverProduct.name, '{{ expiresAt }}': server.expiresAt|date('Y-m-d H:i') })|raw }}
+                                    {% else %}
+                                        {{ 'pteroca.server.extend_server_expires_on_demand'|trans({ '{{ productName }}': server.serverProduct.name })|raw }}<br>
+                                        {{ 'pteroca.server.on_demand_billing_cycle'|trans({ '{{ productPrice }}': server.getServerProduct().getSelectedPrice().getPrice(), '{{ internalCurrency }}': get_currency() }) }}
+                                    {% endif %}
+                                </div>
                                 <div class="col-12 mb-3">
                                     {{ 'pteroca.email.store.ip_address'|trans }}:
                                     <div id="cart-ip-address" class="placeholder placeholder-glow placeholder-wave"></div>
