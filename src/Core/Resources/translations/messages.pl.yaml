@@ -342,6 +342,10 @@ pteroca:
     create_database: 'Utworzono bazę danych'
     delete_database: 'Usunięto bazę danych'
     rotate_database_password: 'Zmieniono hasło bazy danych'
+    create_allocation: 'Utworzono alokację'
+    edit_allocation: 'Edytowano alokację'
+    delete_allocation: 'Usunięto alokację'
+    make_primary_allocation: 'Ustawiono alokację jako główną'
 
   voucher:
     expired: 'Voucher wygasł.'

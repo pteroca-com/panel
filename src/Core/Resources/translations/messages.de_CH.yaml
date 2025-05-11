@@ -336,6 +336,10 @@ pteroca:
     create_database: 'Datenbank erstellt'
     delete_database: 'Datenbank gelöscht'
     rotate_database_password: 'Datenbankpasswort geändert'
+    create_allocation: 'Zuweisung erstellt'
+    edit_allocation: 'Zuweisung bearbeitet'
+    delete_allocation: 'Zuweisung gelöscht'
+    make_primary_allocation: 'Als primäre Zuweisung festgelegt'
 
   voucher:
     expired: 'Der Gutschein ist abgelaufen.'

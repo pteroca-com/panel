@@ -312,6 +312,10 @@ pteroca:
     create_database: 'Database aangemaakt'
     delete_database: 'Database verwijderd'
     rotate_database_password: 'Database wachtwoord gewijzigd'
+    create_allocation: 'Toewijzing aangemaakt'
+    edit_allocation: 'Toewijzing bewerkt'
+    delete_allocation: 'Toewijzing verwijderd'
+    make_primary_allocation: 'Ingesteld als primaire toewijzing'
   cart_configuration:
     title: 'Configureer je server'
     configuration: 'Configuratie'
