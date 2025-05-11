@@ -178,7 +178,7 @@ pteroca:
     server_current_software: 'Aktualne oprogramowanie'
 
   servers:
-    title: 'Serwery'
+    title: 'Moje serwery'
     active: 'Aktywny'
     suspended: 'Zawieszony'
     ip_address: 'Adres IP'
@@ -620,6 +620,7 @@ pteroca:
       menu: 'Menu'
       dashboard: 'Dashboard'
       servers: 'Serwery'
+      my_servers: 'Moje serwery'
       shop: 'Sklep'
       wallet: 'Portfel'
       administration: 'Administracja'

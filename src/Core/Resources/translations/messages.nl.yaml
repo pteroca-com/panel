@@ -151,7 +151,7 @@ pteroca:
     server_description: 'Server omschrijving'
     server_current_software: 'Huidige software'
   servers:
-    title: 'Servers'
+    title: 'Mijn servers'
     active: 'Actief'
     suspended: 'Opgeschort'
     ip_address: 'IP-adres'
@@ -607,6 +607,7 @@ pteroca:
       menu: 'Menu'
       dashboard: 'Dashboard'
       servers: 'Servers'
+      my_servers: 'Mijn servers'
       shop: 'Winkel'
       wallet: 'Saldo'
       administration: 'Beheer'
