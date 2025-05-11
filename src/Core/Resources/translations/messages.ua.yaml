@@ -342,6 +342,10 @@ pteroca:
     create_database: 'Створено базу даних'
     delete_database: 'Видалено базу даних'
     rotate_database_password: 'Змінено пароль бази даних'
+    create_allocation: 'Створено розподілення'
+    edit_allocation: 'Відредаговано розподілення'
+    delete_allocation: 'Видалено розподілення'
+    make_primary_allocation: 'Встановлено основне розподілення'
 
   voucher:
     expired: 'Термін дії ваучера минув.'

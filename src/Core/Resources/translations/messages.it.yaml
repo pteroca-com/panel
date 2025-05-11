@@ -342,6 +342,10 @@ pteroca:
     create_database: 'Database creato'
     delete_database: 'Database eliminato'
     rotate_database_password: 'Password del database ruotata'
+    create_allocation: 'Allocazione creata'
+    edit_allocation: 'Allocazione modificata'
+    delete_allocation: 'Allocazione eliminata'
+    make_primary_allocation: 'Impostata come allocazione primaria'
 
   voucher:
     expired: 'Questo buono è scaduto.'

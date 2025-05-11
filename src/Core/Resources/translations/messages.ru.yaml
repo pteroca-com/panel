@@ -336,6 +336,10 @@ pteroca:
     create_database: 'Создана база данных'
     delete_database: 'Удалена база данных'
     rotate_database_password: 'Смена пароля базы данных'
+    create_allocation: 'Создано распределение'
+    edit_allocation: 'Изменено распределение'
+    delete_allocation: 'Удалено распределение'
+    make_primary_allocation: 'Установлено основное распределение'
 
   voucher:
     expired: 'Срок действия ваучера истек.'

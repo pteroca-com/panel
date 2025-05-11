@@ -342,6 +342,10 @@ pteroca:
     create_database: '创建了数据库'
     delete_database: '删除了数据库'
     rotate_database_password: '旋转了数据库密码'
+    create_allocation: '创建分配'
+    edit_allocation: '编辑分配'
+    delete_allocation: '删除分配'
+    make_primary_allocation: '设为主要分配'
 
   voucher:
     expired: '此优惠券已过期。'
