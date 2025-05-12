@@ -176,17 +176,4 @@ class UserAccountCrudController extends AbstractPanelController
 
         return parent::edit($context);
     }
-
-    private function disallowForDemoMode(): void
-    {
-        if ($this->isDemoMode()) {
-            $this->addFlash('warning', 'pteroca.demo.action_disabled');
-            throw $this->createAccessDeniedException();
-        }
-    }
-
-    private function isDemoMode(): bool
-    {
-        return isset($_ENV['DEMO_MODE']) && $_ENV['DEMO_MODE'] === 'true';
-    }
 }
