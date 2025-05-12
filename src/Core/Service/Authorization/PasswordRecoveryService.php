@@ -2,8 +2,8 @@
 
 namespace App\Core\Service\Authorization;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\PasswordResetRequest;
-use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\PasswordResetRequestRepository;
@@ -73,7 +73,7 @@ class PasswordRecoveryService
         return true;
     }
 
-    private function saveRecoveryRequest(User $user, string $token): void
+    private function saveRecoveryRequest(UserInterface $user, string $token): void
     {
         $passwordResetRequest = new PasswordResetRequest();
         $passwordResetRequest->setUser($user);
@@ -82,7 +82,7 @@ class PasswordRecoveryService
         $this->passwordResetRequestRepository->save($passwordResetRequest);
     }
 
-    private function sendRecoveryEmail(User $user, string $token): void
+    private function sendRecoveryEmail(UserInterface $user, string $token): void
     {
         $emailMessage = new SendEmailMessage(
             $user->getEmail(),

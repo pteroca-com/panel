@@ -2,6 +2,7 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Repository\ServerLogRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,7 +26,7 @@ class ServerLog
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    private UserInterface $user;
 
     #[ORM\ManyToOne(targetEntity: Server::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -69,12 +70,12 @@ class ServerLog
         return $this->createdAt;
     }
 
-    public function getUser(): User
+    public function getUser(): UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(UserInterface $user): self
     {
         $this->user = $user;
         return $this;

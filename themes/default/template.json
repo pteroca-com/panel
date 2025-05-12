@@ -5,7 +5,7 @@
     "author": "PteroCA.com",
     "version": "1.0.2",
     "license": "MIT",
-    "pterocaVersion": "0.5.0",
+    "pterocaVersion": "0.5.2",
     "phpVersion": ">=8.2",
     "options": {
       "supportDarkMode": true,

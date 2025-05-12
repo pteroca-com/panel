@@ -2,6 +2,7 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\LogRepository")]
@@ -27,7 +28,7 @@ class Log
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    private UserInterface $user;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -78,12 +79,12 @@ class Log
         return $this->createdAt;
     }
 
-    public function getUser(): User
+    public function getUser(): UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(UserInterface $user): self
     {
         $this->user = $user;
         return $this;

@@ -2,10 +2,11 @@
 
 namespace App\Core\Service\Payment;
 
+use App\Core\Contract\UserInterface;
 use App\Core\DTO\PaymentSessionDTO;
 use App\Core\Entity\Payment;
-use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
+use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Message\SendEmailMessage;
@@ -34,7 +35,7 @@ class PaymentService
     ) {}
 
     public function createPayment(
-        User $user,
+        UserInterface $user,
         float $amount,
         string $currency,
         string $voucherCode,
@@ -74,7 +75,19 @@ class PaymentService
         return $session->getUrl();
     }
 
-    public function finalizePayment(User $user, string $sessionId): ?string
+    public function continuePayment(
+        string $sessionId,
+    ): string
+    {
+        $retrievedSession = $this->paymentProvider->retrieveSession($sessionId);
+        if ($retrievedSession->getPaymentStatus() === PaymentStatusEnum::PAID->value) {
+            throw new \Exception($this->translator->trans('pteroca.recharge.payment_already_processed'));
+        }
+
+        return $retrievedSession->getUrl();
+    }
+
+    public function finalizePayment(UserInterface $user, string $sessionId): ?string
     {
         $session = $this->paymentProvider->retrieveSession($sessionId);
         if (empty($session)) {
@@ -124,7 +137,7 @@ class PaymentService
         return null;
     }
 
-    public function getUserPayments(User $user, ?int $limit = null): array
+    public function getUserPayments(UserInterface $user, ?int $limit = null): array
     {
         return $this->paymentRepository->createQueryBuilder('p')
             ->where('p.user = :user')
@@ -135,8 +148,12 @@ class PaymentService
             ->getResult();
     }
 
-    private function savePaymentSession(User $user, PaymentSessionDTO $session, float $balanceAmount, string $voucherCode): void
-    {
+    private function savePaymentSession(
+        UserInterface $user,
+        PaymentSessionDTO $session,
+        float $balanceAmount,
+        string $voucherCode,
+    ): void {
         if (!empty($voucherCode)) {
             $voucher = $this->voucherPaymentService->getVoucher($voucherCode);
         }
@@ -150,7 +167,7 @@ class PaymentService
             ->setStatus($session->getPaymentStatus());
 
         if (!empty($voucher)) {
-            $payment->setUsedVoucher($voucher->getId());
+            $payment->setUsedVoucher($voucher);
         }
 
         $this->paymentRepository->save($payment);

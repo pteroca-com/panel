@@ -2,8 +2,10 @@
 
 namespace App\Core\Controller\Panel;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Crud\PanelCrudService;
+use App\Core\Trait\GetUserTrait;
 use App\Core\Trait\DisallowForDemoModeTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -17,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 abstract class AbstractPanelController extends AbstractCrudController
 {
     use DisallowForDemoModeTrait;
+    use GetuserTrait;
 
     private array $crudTemplateContext = [];
 

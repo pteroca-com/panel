@@ -12,4 +12,16 @@ readonly class ServerDetailsDTO
         public array $featureLimits,
         public array $egg,
     ) {}
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'description' => $this->description,
+            'ip' => $this->ip,
+            'limits' => $this->limits,
+            'featureLimits' => $this->featureLimits,
+            'egg' => $this->egg,
+        ];
+    }
 }

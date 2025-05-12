@@ -54,6 +54,13 @@ class AppExtension extends AbstractExtension
         ];
     }
 
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('format_bytes', [$this, 'formatBytes']),
+        ];
+    }
+
     public function getCurrency(): string
     {
         $currency = $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);

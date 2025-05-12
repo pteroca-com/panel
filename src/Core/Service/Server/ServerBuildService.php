@@ -2,9 +2,9 @@
 
 namespace App\Core\Service\Server;
 
-use App\Core\Entity\Product;
+use App\Core\Contract\ProductInterface;
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\ServerProduct;
-use App\Core\Entity\User;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use JsonException;
@@ -19,8 +19,8 @@ class ServerBuildService
     ) {}
 
     public function prepareServerBuild(
-        Product|ServerProduct $product,
-        User $user,
+        ProductInterface $product,
+        UserInterface $user,
         int $eggId,
         string $serverName = '',
     ): array

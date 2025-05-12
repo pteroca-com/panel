@@ -2,9 +2,12 @@
 
 namespace App\Core\Controller;
 
-use App\Core\Entity\User;
-use App\Core\Entity\UserAccount;
+use App\Core\Contract\UserInterface;
+use App\Core\Controller\Panel\AbstractPanelController;
+use App\Core\Entity\Panel\UserAccount;
+use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -14,7 +17,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
@@ -25,13 +27,15 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class UserAccountCrudController extends AbstractCrudController
+class UserAccountCrudController extends AbstractPanelController
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TranslatorInterface $translator,
         private readonly PterodactylService $pterodactylService,
+        PanelCrudService $panelCrudService,
     ) {
+        parent::__construct($panelCrudService);
     }
 
     public static function getEntityFqcn(): string
@@ -41,10 +45,9 @@ class UserAccountCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $actions->disable(Action::NEW);
-        $actions->disable(Action::DELETE);
-        $actions->disable(Action::DETAIL);
+        $actions->disable(Action::NEW, Action::DELETE, Action::DETAIL);
         $actions->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
+
         return parent::configureActions($actions);
     }
 
@@ -82,6 +85,8 @@ class UserAccountCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
+        $this->appendCrudTemplateContext(CrudTemplateContextEnum::USER_ACCOUNT->value);
+
         $crud
             ->setEntityLabelInSingular($this->translator->trans('pteroca.dashboard.account_settings'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.dashboard.account_settings'))
@@ -95,6 +100,7 @@ class UserAccountCrudController extends AbstractCrudController
         $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
         $queryBuilder->where('entity.email = :email');
         $queryBuilder->setParameter('email', $this->getUser()->getEmail());
+
         return $queryBuilder;
     }
 
@@ -122,13 +128,7 @@ class UserAccountCrudController extends AbstractCrudController
     {
         $this->disallowForDemoMode();
 
-        if ($entityInstance instanceof User) {
-            $currentUser = $this->getUser();
-            $entityInstance->setIsBlocked($currentUser->isBlocked());
-            $entityInstance->setIsVerified($currentUser->isVerified());
-            $entityInstance->setBalance($currentUser->getBalance());
-            $entityInstance->setRoles($currentUser->getRoles());
-
+        if ($entityInstance instanceof UserInterface) {
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);

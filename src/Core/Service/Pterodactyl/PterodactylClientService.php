@@ -2,7 +2,7 @@
 
 namespace App\Core\Service\Pterodactyl;
 
-use App\Core\Entity\User;
+use App\Core\Contract\UserInterface;
 use App\Core\Enum\SettingEnum;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Service\SettingService;
@@ -21,7 +21,7 @@ class PterodactylClientService
     ) {
     }
 
-    public function getApi(User $user): PterodactylApi
+    public function getApi(UserInterface $user): PterodactylApi
     {
         if (empty($user->getPterodactylUserApiKey())) {
             throw new UserDoesNotHaveClientApiKeyException();

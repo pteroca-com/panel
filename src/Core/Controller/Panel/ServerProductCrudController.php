@@ -266,9 +266,8 @@ class ServerProductCrudController extends AbstractPanelController
     {
         $this->disallowForDemoMode();
 
-        $this->deleteServerService->deleteServer($entityInstance);
-
         if ($entityInstance instanceof ServerProduct) {
+            $this->deleteServerService->deleteServer($entityInstance->getServer());
             $entityInstance->getServer()->setDeletedAtValue();
         }
 

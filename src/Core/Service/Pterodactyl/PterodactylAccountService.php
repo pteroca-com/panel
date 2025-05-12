@@ -2,7 +2,7 @@
 
 namespace App\Core\Service\Pterodactyl;
 
-use App\Core\Entity\User;
+use App\Core\Contract\UserInterface;
 use App\Core\Exception\PterodactylAccountEmailAlreadyExists;
 use Exception;
 use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
@@ -18,7 +18,7 @@ class PterodactylAccountService
     {
     }
 
-    public function createPterodactylAccount(User $user, string $plainPassword): PterodactylUser
+    public function createPterodactylAccount(UserInterface $user, string $plainPassword): PterodactylUser
     {
        try {
            return $this->pterodactylService->getApi()->users->create([
@@ -50,7 +50,7 @@ class PterodactylAccountService
        }
     }
 
-    public function updatePterodactylAccountPassword(User $user, string $plainPassword): PterodactylUser
+    public function updatePterodactylAccountPassword(UserInterface $user, string $plainPassword): PterodactylUser
     {
         try {
             $currentPterodactylUser = $this->pterodactylService->getApi()->users->get($user->getPterodactylUserId());
@@ -66,7 +66,7 @@ class PterodactylAccountService
         }
     }
 
-    public function deletePterodactylAccount(User $user): void
+    public function deletePterodactylAccount(UserInterface $user): void
     {
         $this->pterodactylService
             ->getApi()

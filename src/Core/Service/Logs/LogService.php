@@ -2,8 +2,8 @@
 
 namespace App\Core\Service\Logs;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Log;
-use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Repository\LogRepository;
 use App\Core\Service\System\IpAddressProviderService;
@@ -15,7 +15,7 @@ class LogService
         private readonly IpAddressProviderService $ipAddressProviderService
     ) {}
 
-    public function logAction(User $user, LogActionEnum $action, array $details = []): void
+    public function logAction(UserInterface $user, LogActionEnum $action, array $details = []): void
     {
         $newLog = (new Log())
             ->setActionId(strtolower($action->name))
@@ -25,7 +25,7 @@ class LogService
         $this->logRepository->save($newLog);
     }
 
-    public function getLogsByUser(User $user, ?int $limit): array
+    public function getLogsByUser(UserInterface $user, ?int $limit): array
     {
         return $this->logRepository->findBy(['user' => $user], ['createdAt' => 'DESC'], $limit);
     }

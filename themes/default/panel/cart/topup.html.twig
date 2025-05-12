@@ -108,13 +108,6 @@
                             </span>
                         </div>
 
-                        <div class="col-12 d-none" data-alert="not_enough_balance">
-                            <div class="alert alert-warning mt-1" role="alert">
-                                <i class="fa fa-exclamation-triangle me-1"></i>
-                                {{ 'pteroca.product.not_enough_balance'|trans }}
-                            </div>
-                        </div>
-
                         <div class="col-12">
                             <button type="submit" id="order-submit" class="btn btn-primary mt-3 w-100">
                                 <i class="fa fa-shopping-basket"></i> {{ 'pteroca.product.order_now'|trans }}
@@ -154,10 +147,6 @@
             }
 
             document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ request.currency|upper }}`
-
-            const insufficientBalance = currentUserBalance < summaryPrice;
-            document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
-            document.querySelector('button#order-submit').disabled = insufficientBalance;
         }
     </script>
 {% endblock %}

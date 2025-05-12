@@ -2,6 +2,7 @@
 
 namespace App\Core\Controller\Panel;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\User;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -135,7 +136,7 @@ class UserCrudController extends AbstractPanelController
     {
         $this->disallowForDemoMode();
 
-        if ($entityInstance instanceof User) {
+        if ($entityInstance instanceof UserInterface) {
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);
@@ -162,7 +163,7 @@ class UserCrudController extends AbstractPanelController
     {
         $this->disallowForDemoMode();
 
-        if ($entityInstance instanceof User) {
+        if ($entityInstance instanceof UserInterface) {
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);
@@ -200,7 +201,7 @@ class UserCrudController extends AbstractPanelController
     {
         $this->disallowForDemoMode();
 
-        if ($entityInstance instanceof User) {
+        if ($entityInstance instanceof UserInterface) {
             try {
                 $this->pterodactylService->getApi()->users->delete($entityInstance->getPterodactylUserId());
             } catch (Exception) {

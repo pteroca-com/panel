@@ -173,7 +173,7 @@ pteroca:
     server_description: 'Описание сервера'
     server_current_software: 'Текущее серверное ПО'
   servers:
-    title: 'Сервера'
+    title: 'Мои серверы'
     active: 'Активный'
     suspended: 'Приостановлен'
     ip_address: 'IP-адрес'
@@ -336,6 +336,10 @@ pteroca:
     create_database: 'Создана база данных'
     delete_database: 'Удалена база данных'
     rotate_database_password: 'Смена пароля базы данных'
+    create_allocation: 'Создано распределение'
+    edit_allocation: 'Изменено распределение'
+    delete_allocation: 'Удалено распределение'
+    make_primary_allocation: 'Установлено основное распределение'
 
   voucher:
     expired: 'Срок действия ваучера истек.'
@@ -614,6 +618,7 @@ pteroca:
       menu: 'Меню'
       dashboard: 'Панель'
       servers: 'Сервера'
+      my_servers: 'Мои серверы'
       shop: 'Магазин'
       wallet: 'Кошелек'
       administration: 'Администрирование'
@@ -636,7 +641,9 @@ pteroca:
       server_builds: 'Серверы'
       vouchers: 'Ваучеры'
       voucher_usages: 'Использованные купоны'
-
+      my_account: 'Мой аккаунт'
+      account_settings: 'Настройки аккаунта'
+      last_update: 'Последнее обновление'
   api:
     servers:
       not_found: 'Сервер не найден.'

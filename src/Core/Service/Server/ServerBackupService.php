@@ -2,8 +2,8 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
-use App\Core\Entity\User;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
@@ -18,7 +18,7 @@ class ServerBackupService
 
     public function createBackup(
         Server $server,
-        User $user,
+        UserInterface $user,
         ?string $backupName,
         ?string $ignoredFiles,
         bool $isLocked = false,
@@ -51,7 +51,7 @@ class ServerBackupService
 
     public function getBackupDownloadUrl(
         Server $server,
-        User $user,
+        UserInterface $user,
         string $backupId,
     ): string
     {
@@ -84,7 +84,7 @@ class ServerBackupService
 
     public function deleteBackup(
         Server $server,
-        User $user,
+        UserInterface $user,
         string $backupId,
     ): string
     {
@@ -104,7 +104,7 @@ class ServerBackupService
         return $deletedBackup;
     }
 
-    private function getPterodactylClientApi(User $user): PterodactylApi
+    private function getPterodactylClientApi(UserInterface $user): PterodactylApi
     {
         return $this->pterodactylClientService
             ->getApi($user);

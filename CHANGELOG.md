@@ -2,6 +2,33 @@
 
 ---
 
+## [0.5.2] - 2025-05-12
+
+### Added
+- Added command to migrate servers from Pterodactyl to PteroCA.
+- Added user account verification check before allowing voucher usage.
+- Added server IP address and current expiration date to the server renewal view.
+- Added my account tab with payment history and account settings.
+
+### Changed
+- Renamed the Servers menu item to My servers for improved clarity.
+- Refactored some code to improve readability and maintainability.
+- Improved styling of input placeholders.
+
+### Fixed
+- Fixed an issue where activating a voucher to top up balance did not work correctly.
+- Fixed an error that occurred when deleting a server from the PteroCA panel.
+- Fixed missing translations in the Server Logs section.
+
+---
+
+## [0.5.1] - 2025-05-07
+
+### Fixed
+- Fixed a bug on the balance top‑up page that threw an error whenever the entered amount exceeded the available balance.
+
+---
+
 ## [0.5.0] - 2025-05-05
 
 ### Added

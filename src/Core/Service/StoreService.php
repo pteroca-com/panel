@@ -2,13 +2,12 @@
 
 namespace App\Core\Service;
 
+use App\Core\Contract\ProductInterface;
+use App\Core\Contract\ProductPriceInterface;
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Category;
 use App\Core\Entity\Product;
-use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
-use App\Core\Entity\ServerProduct;
-use App\Core\Entity\ServerProductPrice;
-use App\Core\Entity\User;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -134,7 +133,7 @@ class StoreService
     }
 
     public function validateBoughtProduct(
-        Product|ServerProduct $product,
+        ProductInterface $product,
         ?int $eggId,
         int $priceId,
         ?Server $server = null
@@ -151,7 +150,7 @@ class StoreService
         }
     }
 
-    public function validateUserBalanceByPrice(User $user, ProductPrice|ServerProductPrice $selectedPrice): void
+    public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice): void
     {
         if ($selectedPrice->getPrice() > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));

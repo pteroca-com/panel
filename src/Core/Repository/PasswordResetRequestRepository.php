@@ -2,8 +2,8 @@
 
 namespace App\Core\Repository;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\PasswordResetRequest;
-use App\Core\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,7 +23,7 @@ class PasswordResetRequestRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function hasActiveRequest(User $user): bool
+    public function hasActiveRequest(UserInterface $user): bool
     {
         return $this->createQueryBuilder('prr')
             ->select('COUNT(prr.id)')

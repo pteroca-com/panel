@@ -14,6 +14,7 @@ enum CrudTemplateContextEnum: string
     case USER = 'user';
     case SETTING = 'setting';
     case VOUCHER = 'voucher';
-
     case VOUCHER_USAGE = 'voucher_usage';
+    case USER_ACCOUNT = 'user_account';
+    case USER_PAYMENT = 'user_payment';
 }

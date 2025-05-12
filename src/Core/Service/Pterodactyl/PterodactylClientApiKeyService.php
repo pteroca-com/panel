@@ -2,7 +2,7 @@
 
 namespace App\Core\Service\Pterodactyl;
 
-use App\Core\Entity\User;
+use App\Core\Contract\UserInterface;
 use App\Core\Enum\SettingEnum;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Service\SettingService;
@@ -22,7 +22,7 @@ class PterodactylClientApiKeyService
     {
     }
 
-    public function createClientApiKey(User $user): string
+    public function createClientApiKey(UserInterface $user): string
     {
         try {
             $endpointUrl = sprintf(
