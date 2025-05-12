@@ -25,7 +25,10 @@ class ServerController extends APIAbstractController
     ): JsonResponse
     {
         $server = $this->getServer($id);
-        $serverDetails = $this->serverService->getServerDetails($server);
+        $serverDetails = $this->serverService
+            ->getServerDetails($server)
+            ?->toArray();
+        unset($serverDetails['egg']);
 
         return new JsonResponse($serverDetails);
     }

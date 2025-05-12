@@ -2,6 +2,8 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\ProductInterface;
+use App\Core\Contract\ProductPriceInterface;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use App\Core\Trait\ProductEntityTrait;
@@ -14,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\ServerProductRepository")]
-class ServerProduct
+class ServerProduct implements ProductInterface
 {
     use ProductEntityTrait;
 
@@ -98,7 +100,7 @@ class ServerProduct
         return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
     }
 
-    public function addPrice(ServerProductPrice $price): self
+    public function addPrice(ProductPriceInterface $price): self
     {
         if (!$this->prices->contains($price)) {
             $this->prices[] = $price;
@@ -108,7 +110,7 @@ class ServerProduct
         return $this;
     }
 
-    public function removePrice(ServerProductPrice $price): self
+    public function removePrice(ProductPriceInterface $price): self
     {
         if ($this->prices->removeElement($price)) {
             if ($price->getServerProduct() === $this) {

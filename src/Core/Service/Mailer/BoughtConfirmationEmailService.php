@@ -2,10 +2,10 @@
 
 namespace App\Core\Service\Mailer;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Product;
 use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
-use App\Core\Entity\User;
 use App\Core\Enum\SettingEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Service\Server\ServerService;
@@ -23,7 +23,7 @@ class BoughtConfirmationEmailService
     ) {}
 
     public function sendBoughtConfirmationEmail(
-        User $user,
+        UserInterface $user,
         Server $server,
         Product $product,
         int $priceId,
@@ -61,8 +61,11 @@ class BoughtConfirmationEmailService
         $this->messageBus->dispatch($emailMessage);
     }
 
-    public function sendRenewConfirmationEmail(User $user, Server $server, string $pterodactylAccountUsername): void
-    {
+    public function sendRenewConfirmationEmail(
+        UserInterface $user,
+        Server $server,
+        string $pterodactylAccountUsername
+    ): void {
         $serverDetails = $this->serverService->getServerDetails($server);
         $product = $server->getServerProduct();
         $selectedPrice = $product->getSelectedPrice();

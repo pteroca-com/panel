@@ -2,6 +2,7 @@
 
 namespace App\Core\Entity;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Repository\VoucherUsageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -19,7 +20,7 @@ class VoucherUsage
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?UserInterface $user = null;
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $usedAt;
@@ -45,12 +46,12 @@ class VoucherUsage
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(UserInterface $user): self
     {
         $this->user = $user;
         return $this;

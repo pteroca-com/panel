@@ -2,7 +2,7 @@
 
 namespace App\Core\Service\Authorization;
 
-use App\Core\Entity\User;
+use App\Core\Contract\UserInterface;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use Firebase\JWT\JWT;
@@ -13,7 +13,7 @@ class SSOLoginRedirectService
         private readonly SettingService $settingService,
     ) {}
 
-    public function createSSOToken(User $user): string
+    public function createSSOToken(UserInterface $user): string
     {
         $payload = [
             'iss' => $this->settingService->getSetting(SettingEnum::SITE_URL->value),

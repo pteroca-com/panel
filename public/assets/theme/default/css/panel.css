@@ -223,3 +223,14 @@ input#command {
     align-items: center;
     height: 100vh;
 }
+
+#cart-ip-address {
+    min-width: 150px;
+    display: inline-block;
+    font-weight: 600;
+}
+
+.placeholder {
+    background-color: #b2b2b2;
+    border-radius: 4px;
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Entity;
+namespace App\Core\Entity\Panel;
 
 use App\Core\Enum\UserRoleEnum;
 use Doctrine\ORM\Mapping as ORM;

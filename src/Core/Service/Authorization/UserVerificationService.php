@@ -2,7 +2,7 @@
 
 namespace App\Core\Service\Authorization;
 
-use App\Core\Entity\User;
+use App\Core\Contract\UserInterface;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -14,7 +14,7 @@ class UserVerificationService
         private readonly TranslatorInterface $translator,
     ) {}
 
-    public function validateUserVerification(User $user): void
+    public function validateUserVerification(UserInterface $user): void
     {
         $isVerificationRequired = $this->settingService
             ->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);

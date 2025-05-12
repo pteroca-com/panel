@@ -2,7 +2,7 @@
 
 namespace App\Core\Service\Voucher;
 
-use App\Core\Entity\User;
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Voucher;
 use App\Core\Enum\VoucherTypeEnum;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -25,7 +25,7 @@ class VoucherPaymentService
         }
     }
 
-    public function validateVoucherCode(string $voucherCode, User $user, VoucherTypeEnum $voucherType): void
+    public function validateVoucherCode(string $voucherCode, UserInterface $user, VoucherTypeEnum $voucherType): void
     {
         $redeemResult = $this->voucherService->redeemVoucher($voucherCode, null, $user);
         if (false === $redeemResult->isSuccess()) {
@@ -37,7 +37,7 @@ class VoucherPaymentService
         }
     }
 
-    public function redeemPaymentVoucher(float $amount, string $voucherCode, User $user): float
+    public function redeemPaymentVoucher(float $amount, string $voucherCode, UserInterface $user): float
     {
         $redeemResult = $this->voucherService->redeemVoucher($voucherCode, $amount, $user);
         if (false === $redeemResult->isSuccess()) {

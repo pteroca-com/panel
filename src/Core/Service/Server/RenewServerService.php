@@ -2,8 +2,8 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
-use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\VoucherTypeEnum;
@@ -16,7 +16,6 @@ use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RenewServerService extends AbstractActionServerService
@@ -37,7 +36,7 @@ class RenewServerService extends AbstractActionServerService
 
     public function renewServer(
         Server $server,
-        User|UserInterface $user,
+        UserInterface $user,
         ?string $voucherCode = null
     ): void
     {

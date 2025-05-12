@@ -178,7 +178,7 @@ pteroca:
     server_current_software: 'वर्तमान सॉफ़्टवेयर'
 
   servers:
-    title: 'सर्वर'
+    title: 'मेरे सर्वर'
     active: 'सक्रिय'
     suspended: 'निलंबित'
     ip_address: 'आईपी पता'
@@ -342,6 +342,10 @@ pteroca:
     create_database: 'डेटाबेस बनाया गया'
     delete_database: 'डेटाबेस हटाया गया'
     rotate_database_password: 'डेटाबेस का पासवर्ड घुमाया गया'
+    create_allocation: 'आवंटन बनाया गया'
+    edit_allocation: 'आवंटन संपादित किया गया'
+    delete_allocation: 'आवंटन हटाया गया'
+    make_primary_allocation: 'प्राथमिक आवंटन बनाया गया'
 
   voucher:
     expired: 'यह वाउचर समाप्त हो चुका है.'
@@ -570,6 +574,7 @@ pteroca:
       payments: 'भुगतान'
       balance_amount: 'बैलेंस राशि'
       used_voucher: 'उपयोग किया गया वाउचर'
+      last_update: 'अंतिम अपडेट'
     log:
       log: 'लॉग'
       logs: 'लॉग्स'
@@ -620,6 +625,7 @@ pteroca:
       menu: 'मेनू'
       dashboard: 'डैशबोर्ड'
       servers: 'सर्वर'
+      my_servers: 'मेरे सर्वर'
       shop: 'दुकान'
       wallet: 'वॉलेट'
       administration: 'प्रशासन'
@@ -642,6 +648,8 @@ pteroca:
       server_builds: 'सर्वर'
       vouchers: 'वाउचर'
       voucher_usages: 'भुनाए गए वाउचर'
+      my_account: 'मेरा खाता'
+      account_settings: 'खाता सेटिंग्स'
 
   api:
     servers:

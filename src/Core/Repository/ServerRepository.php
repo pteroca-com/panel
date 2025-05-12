@@ -2,8 +2,8 @@
 
 namespace App\Core\Repository;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
-use App\Core\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -51,7 +51,7 @@ class ServerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getActiveServersByUser(User $user): array
+    public function getActiveServersByUser(UserInterface $user): array
     {
         return $this->createQueryBuilder('s')
             ->where('s.user = :user')

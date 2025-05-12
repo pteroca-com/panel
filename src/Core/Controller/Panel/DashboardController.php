@@ -10,12 +10,13 @@ use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
 use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
 use App\Core\Entity\Category;
 use App\Core\Entity\Log;
+use App\Core\Entity\Panel\UserAccount;
+use App\Core\Entity\Panel\UserPayment;
 use App\Core\Entity\Payment;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
 use App\Core\Entity\User;
-use App\Core\Entity\UserAccount;
 use App\Core\Entity\Voucher;
 use App\Core\Entity\VoucherUsage;
 use App\Core\Enum\SettingContextEnum;
@@ -26,6 +27,7 @@ use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
 use App\Core\Service\Template\TemplateManager;
+use App\Core\Trait\GetUserTrait;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -39,6 +41,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DashboardController extends AbstractDashboardController
 {
+    use GetUserTrait;
+
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly SettingService $settingService,
@@ -94,9 +98,13 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::section($this->translator->trans('pteroca.crud.menu.menu'));
         yield MenuItem::linkToDashboard($this->translator->trans('pteroca.crud.menu.dashboard'), 'fa fa-home');
-        yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', 'servers');
+        yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.my_servers'), 'fa fa-server', 'servers');
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart', 'store');
         yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.wallet'), 'fa fa-wallet', 'recharge_balance');
+        yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.my_account'), 'fa fa-user')->setSubItems([
+            MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', UserPayment::class),
+            MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.account_settings'), 'fa fa-user-cog', UserAccount::class),
+        ]);
 
         if ($this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
             yield MenuItem::section($this->translator->trans('pteroca.crud.menu.administration'));

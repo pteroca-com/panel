@@ -42,7 +42,7 @@ class PaymentRepository extends ServiceEntityRepository
     public function getUserSuccessfulPayments(int $userId): array
     {
         return $this->createQueryBuilder('p')
-            ->where('p.userId = :userId')
+            ->where('p.user = :userId')
             ->andWhere('p.status = :status')
             ->setParameter('userId', $userId)
             ->setParameter('status', PaymentStatusEnum::PAID->value)
@@ -54,7 +54,7 @@ class PaymentRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->select('COUNT(p.id)')
-            ->where('p.userId = :userId')
+            ->where('p.user = :userId')
             ->andWhere('p.status = :status')
             ->setParameter('userId', $userId)
             ->setParameter('status', PaymentStatusEnum::PAID->value)

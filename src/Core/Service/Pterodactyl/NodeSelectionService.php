@@ -2,8 +2,7 @@
 
 namespace App\Core\Service\Pterodactyl;
 
-use App\Core\Entity\Product;
-use App\Core\Entity\ServerProduct;
+use App\Core\Contract\ProductInterface;
 use Exception;
 
 class NodeSelectionService
@@ -12,7 +11,7 @@ class NodeSelectionService
         private readonly PterodactylService $pterodactylService
     ) {}
 
-    public function getBestAllocationId(Product|ServerProduct $product): int
+    public function getBestAllocationId(ProductInterface $product): int
     {
         $bestNode = null;
         $bestNodeFreeMemory = 0;

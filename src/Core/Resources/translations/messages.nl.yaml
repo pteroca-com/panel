@@ -151,7 +151,7 @@ pteroca:
     server_description: 'Server omschrijving'
     server_current_software: 'Huidige software'
   servers:
-    title: 'Servers'
+    title: 'Mijn servers'
     active: 'Actief'
     suspended: 'Opgeschort'
     ip_address: 'IP-adres'
@@ -312,6 +312,10 @@ pteroca:
     create_database: 'Database aangemaakt'
     delete_database: 'Database verwijderd'
     rotate_database_password: 'Database wachtwoord gewijzigd'
+    create_allocation: 'Toewijzing aangemaakt'
+    edit_allocation: 'Toewijzing bewerkt'
+    delete_allocation: 'Toewijzing verwijderd'
+    make_primary_allocation: 'Ingesteld als primaire toewijzing'
   cart_configuration:
     title: 'Configureer je server'
     configuration: 'Configuratie'
@@ -557,6 +561,7 @@ pteroca:
       payments: 'Betalingen'
       balance_amount: 'Saldo bedrag'
       used_voucher: 'Gebruikte voucher'
+      last_update: 'Laatste update'
     voucher:
       voucher: 'Voucher'
       vouchers: 'Vouchers'
@@ -607,6 +612,7 @@ pteroca:
       menu: 'Menu'
       dashboard: 'Dashboard'
       servers: 'Servers'
+      my_servers: 'Mijn servers'
       shop: 'Winkel'
       wallet: 'Saldo'
       administration: 'Beheer'
@@ -629,6 +635,9 @@ pteroca:
       server_builds: 'Servers'
       vouchers: 'Vouchers'
       voucher_usages: 'Ingewisselde vouchers'
+      my_account: 'Mijn account'
+      account_settings: 'Accountinstellingen'
+
   api:
     servers:
       not_found: 'Server niet gevonden.'

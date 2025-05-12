@@ -2,8 +2,8 @@
 
 namespace App\Core\Service\Crud;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Setting;
-use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingTypeEnum;
 use App\Core\Service\Logs\LogService;
@@ -19,7 +19,7 @@ class PanelCrudService
     {
     }
 
-    public function logEntityAction(LogActionEnum $action, $entityInstance, User $user, string $entityName): void
+    public function logEntityAction(LogActionEnum $action, $entityInstance, UserInterface $user, string $entityName): void
     {
         if (is_a($entityInstance, Setting::class)
             && $entityInstance->getType() === SettingTypeEnum::SECRET->value) {

@@ -2,10 +2,10 @@
 
 namespace App\Core\Service\Logs;
 
+use App\Core\Contract\UserInterface;
 use App\Core\DTO\PaginationDTO;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
-use App\Core\Entity\User;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Repository\ServerLogRepository;
 
@@ -15,7 +15,7 @@ class ServerLogService
         private readonly ServerLogRepository $serverLogRepository,
     ) {}
 
-    public function logServerAction(User $user, Server $server, ServerLogActionEnum $action, array $details = []): void
+    public function logServerAction(UserInterface $user, Server $server, ServerLogActionEnum $action, array $details = []): void
     {
         $serverLog = (new ServerLog())
             ->setActionId(strtolower($action->name))

@@ -178,7 +178,7 @@ pteroca:
     server_current_software: 'Logiciel actuel'
 
   servers:
-    title: 'Serveurs'
+    title: 'Mes serveurs'
     active: 'Actif'
     suspended: 'Suspendu'
     ip_address: 'Adresse IP'
@@ -342,6 +342,10 @@ pteroca:
     create_database: 'Base de données créée'
     delete_database: 'Base de données supprimée'
     rotate_database_password: 'Mot de passe de la base de données modifié'
+    create_allocation: 'Allocation créée'
+    edit_allocation: 'Allocation modifiée'
+    delete_allocation: 'Allocation supprimée'
+    make_primary_allocation: 'Allocation définie comme principale'
 
   voucher:
     expired: 'Ce bon a expiré.'
@@ -570,6 +574,7 @@ pteroca:
       payments: 'Paiements'
       balance_amount: 'Montant du solde'
       used_voucher: 'Bon utilisé'
+      last_update: 'Dernière mise à jour'
     log:
       log: 'Journal'
       logs: 'Journaux'
@@ -620,6 +625,7 @@ pteroca:
       menu: 'Menu'
       dashboard: 'Tableau de bord'
       servers: 'Serveurs'
+      my_servers: 'Mes serveurs'
       shop: 'Boutique'
       wallet: 'Portefeuille'
       administration: 'Administration'
@@ -642,6 +648,8 @@ pteroca:
       server_builds: 'Serveurs'
       vouchers: 'Bons'
       voucher_usages: 'Bons utilisés'
+      my_account: 'Mon compte'
+      account_settings: 'Paramètres du compte'
 
   api:
     servers:
