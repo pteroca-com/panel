@@ -11,48 +11,76 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container mt-4 category-list">
-        {% if products|length > 0 %}
-            {% set row = 0 %}
-            {% for product in products %}
-                {% set row = row + 1 %}
-                {% if row == 1 or row % 3 == 1 %}
-                    <div class="row">
-                {% endif %}
-
-                <div class="col-md-4 mb-4">
-                    {% include 'panel/store/components/product.html.twig' with { 'product': product } %}
-                </div>
-
-                {% if row % 3 == 0 %}
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="bg-light rounded-3 p-4 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle me-3">
+                            <i class="fas fa-store p-3 text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">{{ 'pteroca.store.title'|trans }}</h4>
+                            <p class="text-muted mb-0">{{ 'pteroca.store.description'|trans }}</p>
+                        </div>
                     </div>
-                {% endif %}
-            {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% if products|length > 0 %}
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle me-3">
+                            <i class="fas fa-box p-3 text-success"></i>
+                        </div>
+                        <h5 class="mb-0 fw-bold">{{ 'pteroca.store.products_with_no_category'|trans }}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mb-5">
+                {% for product in products %}
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        {% include 'panel/store/components/product.html.twig' with { 'product': product } %}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
 
-
         {% if categories|length > 0 %}
-            {% set row = 0 %}
-            {% for category in categories %}
-                {% set row = row + 1 %}
-                {% if row == 0 %}
-                    <div class="row">
-                {% endif %}
-                <div class="col-md-4 mb-4">
-                    {% include 'panel/store/components/category.html.twig' with { 'category': category } %}
-                </div>
-                {% if row % 3 == 0 %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle me-3">
+                            <i class="fas fa-folder p-3 text-primary"></i>
+                        </div>
+                        <h5 class="mb-0 fw-bold">{{ 'pteroca.store.categories'|trans }}</h5>
                     </div>
-                {% endif %}
-            {% endfor %}
+                </div>
+            </div>
+            <div class="row g-4">
+                {% for category in categories %}
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        {% include 'panel/store/components/category.html.twig' with { 'category': category } %}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
 
         {% if categories|length == 0 and products|length == 0 %}
             <div class="row">
-                <div class="col-md-12">
-                    <div class="alert alert-info" role="alert">
-                        <i class="fa fa-exclamation-circle"></i>
-                        {{ 'pteroca.store.no_categories'|trans }}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <div class="bg-light rounded-circle mx-auto mb-4" style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-store text-muted" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-3">Sklep jest pusty</h4>
+                        <p class="text-muted mb-4">{{ 'pteroca.store.no_categories'|trans }}</p>
+                        <div class="alert alert-info border-0 shadow-sm" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Skontaktuj się z administratorem, aby dodać produkty lub kategorie.
+                        </div>
                     </div>
                 </div>
             </div>

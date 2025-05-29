@@ -144,6 +144,9 @@ pteroca:
     no_categories: 'There are no categories yet.'
     no_products: 'There are no products yet.'
     price_not_found: 'Price not found'
+    description: 'Select the category or product you are interested in'
+    products_with_no_category: 'Products without category'
+    categories: 'Categories'
   cart_configuration:
     title: 'Configure your server'
     configuration: 'Configuration'

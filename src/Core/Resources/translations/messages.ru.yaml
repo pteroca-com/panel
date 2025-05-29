@@ -140,6 +140,9 @@ pteroca:
     no_categories: 'Категорий пока нет.'
     no_products: 'Еще нет товаров.'
     price_not_found: 'Цена не найдена'
+    description: 'Выберите категорию или продукт, который вас интересует'
+    products_with_no_category: 'Товары без категории'
+    categories: 'Категории'
   cart_configuration:
     title: 'Настроить сервер'
     configuration: 'Конфигурация'

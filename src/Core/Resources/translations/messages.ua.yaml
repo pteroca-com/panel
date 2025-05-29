@@ -144,6 +144,9 @@ pteroca:
     no_categories: 'Ще не додано жодних категорій у магазин.'
     no_products: 'У цій категорії немає продуктів.'
     price_not_found: 'Ціну не знайдено'
+    description: 'Виберіть категорію або продукт, який вас цікавить'
+    products_with_no_category: 'Товари без категорії'
+    categories: 'Категорії'
   cart_configuration:
     title: 'Налаштувати сервер'
     configuration: 'Конфігурація'
