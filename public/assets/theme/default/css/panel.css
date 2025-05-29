@@ -19,6 +19,16 @@
     border-color: var(--primary-color);
 }
 
+.btn-outline-primary:hover i {
+    color: white;
+}
+
+.btn:not(:disabled):not(.disabled):not(.btn-link):active,
+.btn:not(:disabled):not(.disabled):not(.btn-link):active:focus,
+.btn:not(:disabled):not(.disabled):not(.btn-link):focus {
+    color: white;
+}
+
 .ea-dark-scheme .form-switch .form-check-input:checked, .form-switch .form-check-input:checked {
     background-color: var(--primary-color);
     border-color: var(--primary-color);

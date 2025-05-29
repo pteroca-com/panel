@@ -192,6 +192,9 @@ pteroca:
     extend: 'Verlängern'
     no_servers: 'Sie haben noch keine Server.'
     click_to_buy: 'Klicken Sie hier, um einen Server zu kaufen.'
+    name: 'Name'
+    status: 'Status'
+    actions: 'Aktionen'
 
   server:
     title: 'Serververwaltung'

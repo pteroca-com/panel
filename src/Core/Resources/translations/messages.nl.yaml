@@ -165,6 +165,10 @@ pteroca:
     extend: 'Uitbreiden'
     no_servers: 'U heeft nog geen servers.'
     click_to_buy: 'Klik hier om een server te kopen.'
+    name: 'Naam'
+    status: 'Status'
+    actions: 'Acties'
+    
   server:
     title: 'Server beheer'
     console: 'Console'
