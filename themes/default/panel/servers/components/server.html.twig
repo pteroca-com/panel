@@ -1,58 +1,201 @@
-<div class="card" data-server-id="{{ server.id }}">
+<div class="card h-100 shadow-sm border-0 server-card" data-server-id="{{ server.id }}">
     {% if server.imagePath is defined and server.imagePath %}
-        <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
-            target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
-            <img src="{{ server.imagePath }}" class="card-img-top" alt="{{ server.serverProduct.name }}">
-        </a>
-    {% endif %}
-    <div class="card-body">
-        <h5 class="card-title mt-2 mb-4 px-3">
-            {{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}
-            {% if not server.isSuspended %}
-                <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
-            {% else %}
-                <span class="badge badge-danger">{{ 'pteroca.servers.suspended'|trans }}</span>
-            {% endif %}
-        </h5>
-        <p class="card-text">
-            <ul class="list-group placeholder-glow placeholder-wave">
-                <li class="list-group-item">
-                    <strong>{{ 'pteroca.servers.ip_address'|trans }}:</strong>
-                    <span class="placeholder col-6 float-end mt-1 rounded-1" data-ip></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>{{ 'pteroca.servers.ram_memory'|trans }}:</strong>
-                    <span class="placeholder col-6 float-end mt-1 rounded-1" data-limits-memory data-unit="MB"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>{{ 'pteroca.servers.disk'|trans }}:</strong>
-                    <span class="placeholder col-6 float-end mt-1 rounded-1" data-limits-disk data-unit="MB"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>{{ 'pteroca.servers.cpu'|trans }}:</strong>
-                    <span class="placeholder col-6 float-end mt-1 rounded-1" data-limits-cpu data-unit="%"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>{{ 'pteroca.servers.valid_until'|trans }}:</strong>
-                    <span class="col-6 float-end mt-1">{{ server.expiresAt|date('Y-m-d H:i') }}</span>
-                </li>
-            </ul>
-        </p>
-        <div class="row mt-4">
-            <div class="col-6">
-                <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
-                   class="btn btn-primary w-100"
-                   target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
-                    <i class="fas fa-cogs fa-xs me-1"></i>
-                    {{ 'pteroca.servers.manage_server'|trans }}
-                </a>
+        <div class="position-relative overflow-hidden">
+            <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
+                target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
+                <img src="{{ server.imagePath }}" class="card-img-top server-image" alt="{{ server.serverProduct.name }}">
+            </a>
+            <div class="position-absolute top-0 end-0 m-2">
+                {% if not server.isSuspended %}
+                    <span class="badge bg-success rounded-pill px-3 py-2 shadow-sm">
+                        <i class="fas fa-check-circle me-1"></i>
+                        {{ 'pteroca.servers.active'|trans }}
+                    </span>
+                {% else %}
+                    <span class="badge bg-danger rounded-pill px-3 py-2 shadow-sm">
+                        <i class="fas fa-pause-circle me-1"></i>
+                        {{ 'pteroca.servers.suspended'|trans }}
+                    </span>
+                {% endif %}
             </div>
-            <div class="col-6">
-                <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" class="btn btn-primary w-100">
-                    <i class="fas fa-sync fa-xs me-1"></i>
-                    {{ 'pteroca.servers.extend'|trans }}
-                </a>
+        </div>
+    {% endif %}
+    
+    <div class="card-body d-flex flex-column">
+        <div class="mb-3">
+            <h5 class="card-title fw-bold text-primary mb-2">
+                <i class="fas fa-server me-2"></i>
+                {{ server.serverProduct.name }}
+            </h5>
+            <p class="text-muted small mb-0">
+                <i class="fas fa-hashtag me-1"></i>
+                ID: {{ server.pterodactylServerIdentifier }}
+            </p>
+            {% if server.imagePath is not defined or not server.imagePath %}
+                <div class="mt-2">
+                    {% if not server.isSuspended %}
+                        <span class="badge bg-success-subtle rounded-pill px-3 py-2">
+                            <i class="fas fa-check-circle me-1"></i>
+                            {{ 'pteroca.servers.active'|trans }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-danger rounded-pill px-3 py-2">
+                            <i class="fas fa-pause-circle me-1"></i>
+                            {{ 'pteroca.servers.suspended'|trans }}
+                        </span>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="server-specs mb-4 flex-grow-1">
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="spec-item p-3 bg-light rounded-3 h-100">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-globe text-primary me-2"></i>
+                            <small class="text-muted fw-semibold">{{ 'pteroca.servers.ip_address'|trans }}</small>
+                        </div>
+                        <div class="spec-value placeholder-glow">
+                            <span class="placeholder col-12 rounded-2" data-ip></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="spec-item p-3 bg-light rounded-3 h-100">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-memory text-info me-2"></i>
+                            <small class="text-muted fw-semibold">{{ 'pteroca.servers.ram_memory'|trans }}</small>
+                        </div>
+                        <div class="spec-value placeholder-glow">
+                            <span class="placeholder col-12 rounded-2" data-limits-memory data-unit="MB"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="spec-item p-3 bg-light rounded-3 h-100">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-hdd text-warning me-2"></i>
+                            <small class="text-muted fw-semibold">{{ 'pteroca.servers.disk'|trans }}</small>
+                        </div>
+                        <div class="spec-value placeholder-glow">
+                            <span class="placeholder col-12 rounded-2" data-limits-disk data-unit="MB"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="spec-item p-3 bg-light rounded-3 h-100">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-microchip text-success me-2"></i>
+                            <small class="text-muted fw-semibold">{{ 'pteroca.servers.cpu'|trans }}</small>
+                        </div>
+                        <div class="spec-value placeholder-glow">
+                            <span class="placeholder col-12 rounded-2" data-limits-cpu data-unit="%"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="expiry-info mt-3 p-3 bg-light rounded-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar-alt text-secondary me-2"></i>
+                        <small class="text-muted fw-semibold">{{ 'pteroca.servers.valid_until'|trans }}</small>
+                    </div>
+                    <span class="fw-bold text-dark">{{ server.expiresAt|date('Y-m-d H:i') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="server-actions mt-auto">
+            <div class="row g-2">
+                <div class="col-6">
+                    <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
+                       class="btn btn-primary w-100 d-flex align-items-center justify-content-center"
+                       target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}">
+                        <i class="fas fa-cogs me-2"></i>
+                        <span>{{ 'pteroca.servers.manage_server'|trans }}</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
+                       class="btn btn-secondary w-100 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-sync me-2"></i>
+                        <span>{{ 'pteroca.servers.extend'|trans }}</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.server-card {
+    transition: all 0.3s ease;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.server-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.server-image {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.server-image:hover {
+    transform: scale(1.05);
+}
+
+.spec-item {
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.spec-item:hover {
+    border-color: #dee2e6;
+    background-color: #f8f9fa !important;
+}
+
+.spec-value {
+    font-weight: 600;
+    color: #495057;
+}
+
+.server-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+}
+
+.server-actions .btn:hover {
+    transform: translateY(-1px);
+}
+
+.expiry-info {
+    border: 1px solid #e9ecef;
+}
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+@media (max-width: 576px) {
+    .server-specs .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .server-actions .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 8px;
+    }
+}
+</style>
