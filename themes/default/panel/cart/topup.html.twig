@@ -44,20 +44,30 @@
             <div class="row">
                 <div class="col-8 pe-5">
                     <div class="row">
-                        <div class="col-12 p-3 background-secondary">
+                        <div class="col-12 p-4 background-secondary rounded shadow-sm border">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <h4>{{ 'pteroca.cart_topup.order'|trans }}</h4>
+                                    <h4 class="text-primary mb-0"><i class="fas fa-wallet me-2"></i>{{ 'pteroca.cart_topup.order'|trans }}</h4>
                                 </div>
                                 <div class="col-12">
-                                    <p>{{ 'pteroca.cart_topup.order_description'|trans }} - {{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}</p>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <span class="text-muted small">{{ 'pteroca.cart_topup.order_description'|trans }}</span>
+                                            <div class="fw-bold fs-5 text-success mt-1">
+                                                <i class="fas fa-coins me-2"></i>{{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <i class="fas fa-plus-circle text-success" style="font-size: 2rem;"></i>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 mt-5">
                             <div class="row">
                                 <div class="col-12 mb-4">
-                                    <h4>{{ 'pteroca.cart_topup.payment_method'|trans }}</h4>
+                                    <h4 class="text-primary"><i class="fas fa-credit-card me-2"></i>{{ 'pteroca.cart_topup.payment_method'|trans }}</h4>
                                 </div>
                                 <div class="col-12">
                                     <div class="row g-3">
@@ -87,13 +97,18 @@
                 <div class="col-4 h-100">
                     <div class="row">
                         <div class="col-12 mb-3">
-                            <h4>{{ 'pteroca.cart_configuration.order_summary'|trans }}</h4>
+                            <h4 class="text-primary"><i class="fas fa-receipt me-2"></i>{{ 'pteroca.cart_configuration.order_summary'|trans }}</h4>
                         </div>
                         <div class="col-12">
                             <b>{{ 'pteroca.cart_topup.order_description'|trans }}</b> ({{ request.amount|number_format(2, '.', '') }} {{ get_currency() }})
                             <span class="float-end">
                                 {{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}
                             </span>
+                            <hr>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted">{{ 'pteroca.cart_topup.payment_method'|trans }}:</small><br>
+                            <span id="selected-payment-method">Stripe</span>
                             <hr>
                         </div>
                         <div class="col-12 d-none" id="applied-discount">
@@ -130,7 +145,14 @@
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
 
+            // Add event listeners for payment method selection
+            const paymentRadios = document.querySelectorAll('input[name="payment_provider"]');
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', updateSelectedPaymentMethod);
+            });
+
             calculatePrice();
+            updateSelectedPaymentMethod();
         })
 
         function calculatePrice() {
@@ -147,6 +169,15 @@
             }
 
             document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ request.currency|upper }}`
+        }
+
+        function updateSelectedPaymentMethod() {
+            const selectedRadio = document.querySelector('input[name="payment_provider"]:checked');
+            if (selectedRadio) {
+                const label = document.querySelector(`label[for="${selectedRadio.id}"]`);
+                const methodName = label.querySelector('.card-title').textContent;
+                document.querySelector('#selected-payment-method').textContent = methodName;
+            }
         }
     </script>
 {% endblock %}
