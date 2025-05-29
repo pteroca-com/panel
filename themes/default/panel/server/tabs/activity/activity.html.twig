@@ -42,7 +42,7 @@
             </div>
 
             {% include 'panel/server/components/pagination.html.twig' with {
-                totalItems: serverLogs.items,
+                totalItems: serverLogs.totalItems,
                 currentPage: serverLogs.currentPage,
                 totalPages: serverLogs.totalPages,
                 url: path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }),
@@ -55,6 +55,9 @@
 
 {% block body_javascript %}
     <script>
+        window.showDetailsText = '{{ 'pteroca.server.show_details'|trans }}';
+        window.hideDetailsText = '{{ 'pteroca.server.hide_details'|trans }}';
+
         function formatJSON(json) {
             try {
                 var parsedJSON = JSON.parse(json);
@@ -64,24 +67,24 @@
             }
         }
 
-        function toggleDetails(logId) {
+        window.toggleDetails = function(logId) {
             const detailsElement = document.getElementById('log-details-' + logId),
                 buttonElement = document.getElementById('toggle-btn-' + logId);
 
             if (detailsElement.style.display === "none") {
                 detailsElement.style.display = "block";
-                buttonElement.innerText = '{{ 'pteroca.server.hide_details'|trans }}';
+                buttonElement.innerText = window.hideDetailsText;
             } else {
                 detailsElement.style.display = "none";
-                buttonElement.innerText = '{{ 'pteroca.server.show_details'|trans }}';
+                buttonElement.innerText = window.showDetailsText;
             }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            {% for log in serverLogs %}
-            const logDetails = document.getElementById('log-details-{{ log.id }}');
-            if (logDetails) {
-                logDetails.innerText = formatJSON(logDetails.innerText);
+            {% for log in serverLogs.items %}
+            var logDetailsElement = document.getElementById('log-details-{{ log.id }}');
+            if (logDetailsElement) {
+                logDetailsElement.innerText = formatJSON(logDetailsElement.innerText);
             }
             {% endfor %}
         });

@@ -1,17 +1,17 @@
-{% if totalItems|length > 0 %}
+{% if totalItems > 0 and totalPages > 1 %}
     <div class="list-pagination d-flex justify-content-end">
         <nav class="pager list-pagination-paginator first-page">
             <ul class="pagination">
                 <li class="page-item {% if currentPage <= 1 %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url }}&page=1{{ anchor }}">«</a>
+                    <a class="page-link" href="{{ url }}{{ '?' in url ? '&' : '?' }}page=1{{ anchor }}">«</a>
                 </li>
                 <li class="page-item {% if currentPage <= 1 %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url }}&page={{ currentPage - 1 }}{{ anchor }}" rel="back">‹</a>
+                    <a class="page-link" href="{{ url }}{{ '?' in url ? '&' : '?' }}page={{ currentPage - 1 }}{{ anchor }}" rel="back">‹</a>
                 </li>
 
                 {% if currentPage > 1 %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url }}&page={{ currentPage - 1 }}{{ anchor }}">{{ currentPage - 1 }}</a>
+                        <a class="page-link" href="{{ url }}{{ '?' in url ? '&' : '?' }}page={{ currentPage - 1 }}{{ anchor }}">{{ currentPage - 1 }}</a>
                     </li>
                 {% endif %}
                 <li class="page-item active">
@@ -19,15 +19,15 @@
                 </li>
                 {% if totalPages > currentPage %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url }}&page={{ currentPage + 1 }}{{ anchor }}">{{ currentPage + 1 }}</a>
+                        <a class="page-link" href="{{ url }}{{ '?' in url ? '&' : '?' }}page={{ currentPage + 1 }}{{ anchor }}">{{ currentPage + 1 }}</a>
                     </li>
                 {% endif %}
 
                 <li class="page-item {% if currentPage >= totalPages %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url }}&page={{ currentPage + 1 }}{{ anchor }}" rel="next">›</a>
+                    <a class="page-link" href="{{ url }}{{ '?' in url ? '&' : '?' }}page={{ currentPage + 1 }}{{ anchor }}" rel="next">›</a>
                 </li>
                 <li class="page-item {% if currentPage >= totalPages %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url }}&page={{ totalPages }}{{ anchor }}">»</a>
+                    <a class="page-link" href="{{ url }}{{ '?' in url ? '&' : '?' }}page={{ totalPages }}{{ anchor }}">»</a>
                 </li>
             </ul>
         </nav>
