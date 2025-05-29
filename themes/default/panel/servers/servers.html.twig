@@ -5,6 +5,14 @@
 {% block content_title %}{{ 'pteroca.servers.title'|trans }}{% endblock %}
 
 {% block page_actions %}
+    <div class="btn-group me-2" role="group" aria-label="Widok">
+        <button type="button" class="btn btn-outline-primary active" id="view-cards" title="Widok kafelków">
+            <i class="fas fa-th-large"></i>
+        </button>
+        <button type="button" class="btn btn-outline-primary" id="view-list" title="Widok listy">
+            <i class="fas fa-list"></i>
+        </button>
+    </div>
     <a class="btn btn-secondary" href="{{ path('panel') }}">
         {{ 'pteroca.system.back'|trans }}
     </a>
@@ -13,19 +21,50 @@
 {% block main %}
     <div class="container mt-4">
         {% if servers|length > 0 %}
-            {% set row = 1 %}
-            {% for server in servers %}
-                {% if row == 1 %}
-                    <div class="row">
-                {% endif %}
-                <div class="col-12 col-lg-6 col-xl-4 mb-4">
-                    {% include 'panel/servers/components/server.html.twig' %}
-                </div>
-                {% if row % 3 == 0 %}
+            {# Widok kafelków #}
+            <div id="cards-view">
+                {% set row = 1 %}
+                {% for server in servers %}
+                    {% if row == 1 %}
+                        <div class="row">
+                    {% endif %}
+                    <div class="col-12 col-lg-6 col-xl-4 mb-4">
+                        {% include 'panel/servers/components/server.html.twig' %}
+                    </div>
+                    {% if row % 3 == 0 %}
+                        </div>
+                    {% endif %}
+                    {% set row = row + 1 %}
+                {% endfor %}
+                {% if row % 3 != 1 %}
                     </div>
                 {% endif %}
-                {% set row = row + 1 %}
-            {% endfor %}
+            </div>
+
+            {# Widok listy #}
+            <div id="list-view" style="display: none;">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>{{ 'pteroca.servers.image'|trans }}</th>
+                                <th>{{ 'pteroca.servers.name'|trans }}</th>
+                                <th>{{ 'pteroca.servers.ip_address'|trans }}</th>
+                                <th>{{ 'pteroca.servers.ram_memory'|trans }}</th>
+                                <th>{{ 'pteroca.servers.disk'|trans }}</th>
+                                <th>{{ 'pteroca.servers.cpu'|trans }}</th>
+                                <th>{{ 'pteroca.servers.valid_until'|trans }}</th>
+                                <th>{{ 'pteroca.servers.actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="placeholder-glow placeholder-wave">
+                            {% for server in servers %}
+                                {% include 'panel/servers/components/server-list.html.twig' %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         {% else %}
             <div class="row">
                 <div class="col-md-12">
@@ -39,42 +78,78 @@
 {% block body_javascript %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.card[data-server-id]');
+            // Przełączanie widoków
+            const viewCardsBtn = document.getElementById('view-cards');
+            const viewListBtn = document.getElementById('view-list');
+            const cardsView = document.getElementById('cards-view');
+            const listView = document.getElementById('list-view');
 
-            cards.forEach(card => {
-                const serverId = card.getAttribute('data-server-id'),
+            // Przywracanie zapisanego widoku z localStorage
+            const savedView = localStorage.getItem('servers-view') || 'cards';
+            if (savedView === 'list') {
+                switchToListView();
+            }
+
+            viewCardsBtn.addEventListener('click', function() {
+                switchToCardsView();
+                localStorage.setItem('servers-view', 'cards');
+            });
+
+            viewListBtn.addEventListener('click', function() {
+                switchToListView();
+                localStorage.setItem('servers-view', 'list');
+            });
+
+            function switchToCardsView() {
+                viewCardsBtn.classList.add('active');
+                viewListBtn.classList.remove('active');
+                cardsView.style.display = 'block';
+                listView.style.display = 'none';
+            }
+
+            function switchToListView() {
+                viewListBtn.classList.add('active');
+                viewCardsBtn.classList.remove('active');
+                cardsView.style.display = 'none';
+                listView.style.display = 'block';
+            }
+
+            // Pobieranie danych serwerów
+            const serverElements = document.querySelectorAll('[data-server-id]');
+
+            serverElements.forEach(element => {
+                const serverId = element.getAttribute('data-server-id'),
                     endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details'
 
                 fetch(endpointUrl)
                     .then(response => response.json())
                     .then(data => {
-                        updateCardElements(card, data);
-                        document.querySelectorAll('.placeholder-glow').forEach(element => element.classList.remove('placeholder-glow'));
-                        document.querySelectorAll('.placeholder-wave').forEach(element => element.classList.remove('placeholder-wave'));
+                        updateServerElements(element, data);
+                        document.querySelectorAll('.placeholder-glow').forEach(el => el.classList.remove('placeholder-glow'));
+                        document.querySelectorAll('.placeholder-wave').forEach(el => el.classList.remove('placeholder-wave'));
                     })
                     .catch(error => console.error('Error fetching server details:', error));
             });
 
-            function updateCardElements(card, data, prefix = '') {
+            function updateServerElements(element, data, prefix = '') {
                 for (const [key, value] of Object.entries(data)) {
                     let dataKey = prefix ? `${prefix}-${key}` : key;
                     dataKey = dataKey.replaceAll(' ', '-').replaceAll('.', '-').toLowerCase();
                     if (typeof value === 'object' && value !== null) {
-                        updateCardElements(card, value, dataKey);
+                        updateServerElements(element, value, dataKey);
                     } else {
-                        const element = card.querySelector(`[data-${dataKey}]`);
-                        if (element) {
-                            if (element.hasAttribute('data-unit')) {
-                                element.textContent = `${value} ${element.getAttribute('data-unit')}`;
+                        const targetElement = element.querySelector(`[data-${dataKey}]`);
+                        if (targetElement) {
+                            if (targetElement.hasAttribute('data-unit')) {
+                                targetElement.textContent = `${value} ${targetElement.getAttribute('data-unit')}`;
                             } else {
-                                element.textContent = value;
+                                targetElement.textContent = value;
                             }
-                            element.classList.remove('placeholder');
+                            targetElement.classList.remove('placeholder');
                         }
                     }
                 }
             }
         });
-
     </script>
 {% endblock %}

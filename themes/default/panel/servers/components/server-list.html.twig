@@ -1,0 +1,50 @@
+<tr data-server-id="{{ server.id }}">
+    <td>
+        {% if server.imagePath is defined and server.imagePath %}
+            <img src="{{ server.imagePath }}" class="img-thumbnail" style="width: 50px; height: 50px;" alt="{{ server.serverProduct.name }}">
+        {% else %}
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fas fa-server text-white"></i>
+            </div>
+        {% endif %}
+    </td>
+    <td>
+        <strong>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</strong>
+        <br>
+        {% if not server.isSuspended %}
+            <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
+        {% else %}
+            <span class="badge badge-danger">{{ 'pteroca.servers.suspended'|trans }}</span>
+        {% endif %}
+    </td>
+    <td>
+        <span class="placeholder col-8 rounded-1" data-ip></span>
+    </td>
+    <td>
+        <span class="placeholder col-6 rounded-1" data-limits-memory data-unit="MB"></span>
+    </td>
+    <td>
+        <span class="placeholder col-6 rounded-1" data-limits-disk data-unit="MB"></span>
+    </td>
+    <td>
+        <span class="placeholder col-6 rounded-1" data-limits-cpu data-unit="%"></span>
+    </td>
+    <td>
+        {{ server.expiresAt|date('Y-m-d H:i') }}
+    </td>
+    <td>
+        <div class="btn-group" role="group">
+            <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
+               class="btn btn-primary btn-sm"
+               target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}"
+               title="{{ 'pteroca.servers.manage_server'|trans }}">
+                <i class="fas fa-cogs fa-xs"></i>
+            </a>
+            <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
+               class="btn btn-primary btn-sm"
+               title="{{ 'pteroca.servers.extend'|trans }}">
+                <i class="fas fa-sync fa-xs"></i>
+            </a>
+        </div>
+    </td>
+</tr>
