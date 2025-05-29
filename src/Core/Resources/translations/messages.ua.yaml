@@ -192,6 +192,9 @@ pteroca:
     extend: 'Продовжити'
     no_servers: 'У вас ще немає серверів.'
     click_to_buy: 'Натисніть тут, щоб купити сервер.'
+    name: 'Імʼя'
+    status: 'Статус'
+    actions: 'Дії'
 
   server:
     title: 'Управління сервером'

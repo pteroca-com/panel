@@ -192,6 +192,9 @@ pteroca:
     extend: '延长'
     no_servers: '您还没有服务器。'
     click_to_buy: '点击此处购买服务器。'
+    name: '名称'
+    status: '状态'
+    actions: '操作'
 
   server:
     title: '服务器管理'

@@ -192,6 +192,9 @@ pteroca:
     extend: 'Estender'
     no_servers: 'Você ainda não tem servidores.'
     click_to_buy: 'Clique aqui para comprar um servidor.'
+    name: 'Nome'
+    status: 'Status'
+    actions: 'Ações'
 
   server:
     title: 'Gerenciamento do servidor'

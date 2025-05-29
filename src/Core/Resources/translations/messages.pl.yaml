@@ -192,7 +192,7 @@ pteroca:
     extend: 'Przedłuż'
     no_servers: 'Nie masz jeszcze żadnych serwerów.'
     click_to_buy: 'Kliknij tutaj, aby kupić serwer.'
-    image: 'Obrazek'
+    status: 'Status'
     name: 'Nazwa'
     actions: 'Akcje'
 
