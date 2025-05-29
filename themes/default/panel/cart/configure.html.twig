@@ -23,24 +23,59 @@
             <div class="row">
                 <div class="col-8 pe-5">
                     <div class="row">
-                        <div class="col-12 p-3 background-secondary">
+                        <div class="col-12 p-4 background-secondary rounded shadow-sm border">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <h4>{{ product.name }}</h4>
+                                    <h4 class="text-primary mb-0"><i class="fas fa-server me-2"></i>{{ product.name }}</h4>
                                 </div>
-                                <div class="col-6 small">{{ product.memory }} MB {{ 'pteroca.product.ram'|trans }}</div>
-                                <div class="col-6 small">{{ product.cpu }}% {{ 'pteroca.product.cpu'|trans }}</div>
-                                <div class="col-6 small">{{ product.diskSpace }} MB {{ 'pteroca.product.disk'|trans }}</div>
-                                <div class="col-6 small">{{ product.swap }} MB {{ 'pteroca.product.swap'|trans }}</div>
-                                <div class="col-6 small">{{ product.ports }} {{ 'pteroca.product.ports'|trans }}</div>
-                                <div class="col-6 small">{{ product.backups }} {{ 'pteroca.product.backups'|trans }}</div>
-                                <div class="col-6 small">{{ product.dbCount }} {{ 'pteroca.product.databases'|trans }}</div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-memory text-info me-2"></i>
+                                        <span class="small">{{ product.memory }} MB {{ 'pteroca.product.ram'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-microchip text-warning me-2"></i>
+                                        <span class="small">{{ product.cpu }}% {{ 'pteroca.product.cpu'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-hdd text-success me-2"></i>
+                                        <span class="small">{{ product.diskSpace }} MB {{ 'pteroca.product.disk'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exchange-alt text-secondary me-2"></i>
+                                        <span class="small">{{ product.swap }} MB {{ 'pteroca.product.swap'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-plug text-primary me-2"></i>
+                                        <span class="small">{{ product.ports }} {{ 'pteroca.product.ports'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-save text-info me-2"></i>
+                                        <span class="small">{{ product.backups }} {{ 'pteroca.product.backups'|trans }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-database text-warning me-2"></i>
+                                        <span class="small">{{ product.dbCount }} {{ 'pteroca.product.databases'|trans }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-12 mt-5">
                             <div class="row">
                                 <div class="col-12 mb-4">
-                                    <h4>{{ 'pteroca.cart_configuration.configuration'|trans }}</h4>
+                                    <h4 class="text-primary"><i class="fas fa-cogs me-2"></i>{{ 'pteroca.cart_configuration.configuration'|trans }}</h4>
                                 </div>
                                 <input type="hidden" name="product" value="{{ product.id }}">
                                 <div class="col-12 col-md-6">
@@ -102,13 +137,15 @@
                 <div class="col-4 h-100">
                     <div class="row">
                         <div class="col-12 mb-3">
-                            <h4>{{ 'pteroca.cart_configuration.order_summary'|trans }}</h4>
+                            <h4 class="text-primary"><i class="fas fa-receipt me-2"></i>{{ 'pteroca.cart_configuration.order_summary'|trans }}</h4>
                         </div>
                         <div class="col-12">
                             <b>{{ product.name }}</b>
+                            <div id="selected-dates" class="small text-muted mt-1"></div>
                             <hr>
                         </div>
                         <div class="col-12">
+                            <small class="text-muted">{{ 'pteroca.cart_configuration.period'|trans }}:</small><br>
                             <span id="selected-duration"></span> <span id="selected-price" class="float-end"></span>
                             <hr>
                         </div>
@@ -124,7 +161,7 @@
                         </div>
 
                         {% if not isProductAvailable %}
-                            <div class="col-12">
+                            <div class="col-12 mt-3">
                                 <div class="alert alert-warning mt-1" role="alert">
                                     <i class="fa fa-exclamation-triangle me-1"></i>
                                     {{ 'pteroca.product.not_available'|trans }}
@@ -132,14 +169,14 @@
                             </div>
                         {% endif %}
 
-                        <div class="col-12 d-none" data-alert="not_enough_balance">
+                        <div class="col-12 mt-3 d-none" data-alert="not_enough_balance">
                             <div class="alert alert-warning mt-1" role="alert">
                                 <i class="fa fa-exclamation-triangle me-1"></i>
                                 {{ 'pteroca.product.not_enough_balance'|trans }}
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12 mt-3">
                             <button type="submit" id="order-submit" class="btn btn-primary mt-3 w-100" disabled>
                                 <i class="fa fa-shopping-basket"></i> {{ 'pteroca.product.order_now'|trans }}
                             </button>
@@ -196,11 +233,47 @@
             document.querySelector('#selected-duration').textContent = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`
             document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`
 
+            // Calculate and display dates for static pricing
+            const datesElement = document.querySelector('#selected-dates');
+            if (selectedOption.dataset.type === 'static') {
+                const startDate = new Date();
+                const endDate = new Date();
+                const value = parseInt(selectedOption.dataset.value);
+                const unit = selectedOption.dataset.unit;
+
+                switch (unit) {
+                    case 'days':
+                        endDate.setDate(startDate.getDate() + value);
+                        break;
+                    case 'hours':
+                        endDate.setHours(startDate.getHours() + value);
+                        break;
+                    case 'minutes':
+                        endDate.setMinutes(startDate.getMinutes() + value);
+                        break;
+                }
+
+                const formatDate = (date) => {
+                    return date.toLocaleDateString('pl-PL', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                };
+
+                datesElement.textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+                datesElement.style.display = 'block';
+            } else {
+                datesElement.style.display = 'none';
+            }
+
             document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ get_currency() }}`
 
             const insufficientBalance = currentUserBalance < summaryPrice;
             document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
-            document.querySelector('button#order-submit').disabled = insufficientBalance && isProductAvailable;
+            document.querySelector('button#order-submit').disabled = insufficientBalance || !isProductAvailable;
         }
     </script>
 {% endblock %}
