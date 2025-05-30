@@ -92,6 +92,10 @@ pteroca:
     payment_provider_information: 'Informacje o dostawcy płatności'
     payment_provider_details: 'Płatności są bezpiecznie obsługiwane przez Stripe. Wprowadź kwotę, którą chcesz doładować, a następnie kliknij przycisk "Doładuj".'
     payment_is_not_configured: 'System płatności nie jest skonfigurowany. Skontaktuj się z administratorem.'
+    recharge_description: 'Doładuj balans swojego konta'
+    amount_hint: 'Wprowadź kwotę, którą chcesz doładować.'
+    view_transaction_history: 'Zobacz historię transakcji'
+    view_all_payments_description: 'Zobacz wszystkie płatności, które zostały dokonane na Twoim koncie.'
 
   product:
     information: 'Informacje'

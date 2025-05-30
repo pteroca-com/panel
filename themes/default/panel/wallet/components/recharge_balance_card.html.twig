@@ -1,19 +1,52 @@
-<div class="card mb-5">
-    <div class="card-body">
-        <h5 class="card-title text-center">{{ 'pteroca.recharge.recharge_balance'|trans }}</h5>
+<div class="card border-0 shadow-sm rounded-3 h-100">
+    <div class="card-header">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-credit-card me-2"></i>
+            <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.recharge.recharge_balance'|trans }}</h5>
+        </div>
+    </div>
+    <div class="card-body p-4">
         <form action="{{ path('panel') }}" method="get">
             <input type="hidden" name="routeName" value="cart_topup">
-            <div class="form-group mb-3 mt-4">
-                {{ form_label(form.amount, null, {'label_attr': {'class': 'form-label'}}) }}
-                <div class="form-widget">
-                    <input type="number" id="amount" name="amount" class="form-control" value="{{ field_value(form.amount) }}" required autofocus autocomplete="name" step="0.01">
+            
+            <div class="mb-4">
+                <label for="amount" class="form-label fw-semibold">
+                    <i class="fas fa-coins me-2 text-primary"></i>
+                    {{ form.amount.vars.label }}
+                </label>
+                <div class="input-group input-group-lg">
+                    <input type="number" id="amount" name="amount" class="form-control" value="{{ field_value(form.amount) }}" required autofocus autocomplete="name" step="0.01" placeholder="0.00">
+                    <span class="input-group-text h-100">{{ get_currency() }}</span>
                 </div>
                 <input type="hidden" name="currency" value="{{ field_value(form.currency) }}" />
                 {{ form_errors(form.amount) }}
+                <div class="form-text">
+                    <i class="fas fa-info-circle text-info me-1"></i>
+                    {{ 'pteroca.recharge.amount_hint'|trans }}
+                </div>
             </div>
+            
             <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-block">{{ 'pteroca.recharge.recharge'|trans }} {{ get_currency() }}</button>
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold">
+                    <i class="fas fa-plus me-2"></i>
+                    {{ 'pteroca.recharge.recharge'|trans }} {{ get_currency() }}
+                </button>
             </div>
         </form>
+        
+        <!-- Transaction History Link -->
+        <div class="text-center mt-4">
+            <hr class="my-3">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="bg-info bg-opacity-10 rounded-circle me-2">
+                    <i class="fas fa-history p-2 text-info" style="font-size: 0.875rem;"></i>
+                </div>
+                <a href="{{ path('panel') }}?crudAction=index&crudControllerFqcn=App%5CCore%5CController%5CUserPaymentCrudController" class="text-decoration-none fw-semibold text-info">
+                    <i class="fas fa-external-link-alt me-1" style="font-size: 0.75rem;"></i>
+                    {{ 'pteroca.recharge.view_transaction_history'|trans }}
+                </a>
+            </div>
+            <small class="text-muted d-block mt-1">{{ 'pteroca.recharge.view_all_payments_description'|trans }}</small>
+        </div>
     </div>
 </div>
