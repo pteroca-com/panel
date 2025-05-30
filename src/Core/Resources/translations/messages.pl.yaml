@@ -168,6 +168,7 @@ pteroca:
     order: 'Zamów'
     order_description: 'Doładuj środki'
     payment_method: 'Metoda płatności'
+    description: 'Doładuj balans swojego konta'
   cart_renew:
     title: 'Odnów swój serwer'
     description: 'Przedłuż swój serwer, aby uniknąć jego zawieszenia lub usunięcia.'
