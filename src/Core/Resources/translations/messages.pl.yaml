@@ -68,6 +68,9 @@ pteroca:
     ip_address: 'Adres IP'
     view_all_servers: 'Przejdź do serwerów'
     title: 'Dashboard'
+    welcome_message: 'Twoje centrum dowodzenia serwerami'
+    quick_actions: 'Szybkie akcje'
+    browse_store: 'Przeglądaj sklep'
   recharge:
     recharge_balance: 'Doładuj balans'
     recharge: 'Doładuj'

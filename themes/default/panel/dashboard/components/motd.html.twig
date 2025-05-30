@@ -1,10 +1,20 @@
 {% if motdEnabled %}
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title">{{ motdTitle|raw }}</h5>
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-info text-white">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-bullhorn me-2"></i>
+                <h5 class="mb-1 fw-bold text-white">{{ motdTitle|raw }}</h5>
+            </div>
         </div>
-        <div class="card-body">
-            {{ motdMessage|raw }}
+        <div class="card-body p-4">
+            <div class="d-flex align-items-start">
+                <div class="bg-info bg-opacity-10 rounded-circle me-3 flex-shrink-0">
+                    <i class="fas fa-info-circle p-3 text-info"></i>
+                </div>
+                <div class="flex-grow-1">
+                    {{ motdMessage|raw }}
+                </div>
+            </div>
         </div>
     </div>
 {% endif %}

@@ -5,17 +5,73 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container pt-3">
+    <div class="container-fluid mt-4">
+        <!-- Header Section -->
         <div class="row">
-            <div class="col-auto">
-                {% include 'panel/dashboard/components/balance.html.twig' %}
+            <div class="col-12">
+                <div class="bg-light rounded-3 p-4 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle me-3">
+                            <i class="fas fa-tachometer-alt p-3 text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">{{ 'pteroca.dashboard.title'|trans }}</h4>
+                            <p class="text-muted mb-0">{{ 'pteroca.dashboard.welcome_message'|trans }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row mt-4">
-            <div class="col-12 col-xl-6">
+
+        <div class="row g-4">
+            <!-- Balance Card -->
+            <div class="col-lg-4 col-md-6">
+                {% include 'panel/dashboard/components/balance.html.twig' %}
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="col-lg-8 col-md-6">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-bolt me-2"></i>
+                            <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.dashboard.quick_actions'|trans }}</h5>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <a href="{{ path('panel', { routeName: 'store' }) }}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-store fs-3 mb-2"></i>
+                                    <span class="fw-semibold">{{ 'pteroca.dashboard.browse_store'|trans }}</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{{ path('panel', { routeName: 'servers' }) }}" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-server fs-3 mb-2"></i>
+                                    <span class="fw-semibold">{{ 'pteroca.dashboard.my_servers'|trans }}</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-wallet fs-3 mb-2"></i>
+                                    <span class="fw-semibold">{{ 'pteroca.dashboard.account_recharge'|trans }}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+            <!-- Servers Section -->
+            <div class="col-12 col-xl-8">
                 {% include 'panel/dashboard/components/servers.html.twig' %}
             </div>
-            <div class="col-12 col-xl-6">
+            
+            <!-- Right Column -->
+            <div class="col-12 col-xl-4">
                 {% include 'panel/dashboard/components/motd.html.twig' %}
                 {% include 'panel/dashboard/components/activity.html.twig' %}
             </div>
