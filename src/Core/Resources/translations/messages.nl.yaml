@@ -141,6 +141,9 @@ pteroca:
     description: 'Selecteer de categorie of het product waarin u geïnteresseerd bent'
     products_with_no_category: 'Producten zonder categorie'
     categories: 'Categorieën'
+    category_description: 'Producten beschikbaar in deze categorie'
+    available_products: 'Beschikbare producten'
+    no_products_title: 'Geen producten'
   renew:
     title: 'Server verlengen'
     renew: 'Server verlengen'

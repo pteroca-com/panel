@@ -147,6 +147,9 @@ pteroca:
     description: '请选择您感兴趣的类别或产品'
     products_with_no_category: '无类别产品'
     categories: '类别'
+    category_description: '该类别下的产品'
+    available_products: '可用产品'
+    no_products_title: '没有产品'
   cart_configuration:
     title: '配置你的服务器'
     configuration: '配置'

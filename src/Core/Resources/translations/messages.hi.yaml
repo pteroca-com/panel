@@ -147,6 +147,9 @@ pteroca:
     description: 'कृपया वह श्रेणी या उत्पाद चुनें जिसमें आप रुचि रखते हैं'
     products_with_no_category: 'कोई श्रेणी नहीं वाले उत्पाद'
     categories: 'श्रेणियाँ'
+    category_description: 'इस श्रेणी में उपलब्ध उत्पाद'
+    available_products: 'उपलब्ध उत्पाद'
+    no_products_title: 'कोई उत्पाद नहीं'
   cart_configuration:
     title: 'अपने सर्वर को कॉन्फ़िगर करें'
     configuration: 'कॉन्फ़िगरेशन'

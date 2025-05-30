@@ -147,6 +147,9 @@ pteroca:
     description: 'Seleziona la categoria o il prodotto che ti interessa'
     products_with_no_category: 'Prodotti senza categoria'
     categories: 'Categorie'
+    category_description: 'Prodotti disponibili in questa categoria'
+    available_products: 'Prodotti disponibili'
+    no_products_title: 'Nessun prodotto'
   cart_configuration:
     title: 'Configura il tuo server'
     configuration: 'Configurazione'

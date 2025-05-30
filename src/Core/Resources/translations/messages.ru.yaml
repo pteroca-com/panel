@@ -143,6 +143,9 @@ pteroca:
     description: 'Выберите категорию или продукт, который вас интересует'
     products_with_no_category: 'Товары без категории'
     categories: 'Категории'
+    category_description: 'Товары, доступные в этой категории'
+    available_products: 'Доступные товары'
+    no_products_title: 'Нет товаров'
   cart_configuration:
     title: 'Настроить сервер'
     configuration: 'Конфигурация'
