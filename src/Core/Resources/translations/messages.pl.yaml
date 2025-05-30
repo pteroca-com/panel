@@ -162,6 +162,7 @@ pteroca:
     auto_renewal: 'Automatyczne odnawianie'
     enable: 'Włącz automatyczne odnawianie'
     disable: 'Wyłącz automatyczne odnawianie'
+    description: 'Skonfiguruj swój serwer i przejdź do płatności'
   cart_topup:
     title: 'Doładuj swoje konto'
     order: 'Zamów'
