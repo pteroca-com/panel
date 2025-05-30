@@ -170,6 +170,7 @@ pteroca:
     payment_method: 'Metoda płatności'
   cart_renew:
     title: 'Odnów swój serwer'
+    description: 'Przedłuż swój serwer, aby uniknąć jego zawieszenia lub usunięcia.'
   cart:
     use_voucher: 'Użyj kuponu'
     voucher_code: 'Kod kuponu'
