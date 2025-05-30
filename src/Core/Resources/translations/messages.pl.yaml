@@ -129,6 +129,7 @@ pteroca:
     ports: 'Porty'
     discount: 'Zniżka'
     discount_hint: 'Zniżka zostanie zastosowana tylko do pierwszego cyklu rozliczeniowego.'
+    product_order_details: 'Szczegóły produktu i możliwość zamówienia'
 
   store:
     title: 'Sklep'
@@ -150,6 +151,8 @@ pteroca:
     category_description: 'Produkty dostępne w tej kategorii'
     available_products: 'Dostępne produkty'
     no_products_title: 'Brak produktów'
+    shop_is_empty: 'Sklep jest pusty'
+    no_products_and_categories: 'Nie ma jeszcze żadnych produktów ani kategorii w sklepie.'
   cart_configuration:
     title: 'Skonfiguruj swój serwer'
     configuration: 'Konfiguracja'

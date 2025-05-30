@@ -11,162 +11,290 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container mt-5 product-details">
-        <h1 class="product-name">{{ product.name }}</h1>
+    <div class="container-fluid mt-4">
+        <!-- Header Section -->
         <div class="row">
-            {% if product.bannerPath %}
-                <div class="col-md-12 product-image-container mt-4 mb-5" style='background: url("{{ product.bannerPath }}")'></div>
-            {% else %}
-                <div class="col-md-12 mt-4 mb-4"></div>
-            {% endif %}
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-12">
-                        <h2>{{ 'pteroca.product.information'|trans }}</h2>
-                        <div class="row mt-4">
-                            <div class="col-6">
-                                <ul class="list-group">
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.name'|trans }}:</strong> {{ product.name }}</li>
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.ram'|trans }}:</strong> {{ product.memory }} MB</li>
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.cpu'|trans }}:</strong> {{ product.cpu }}%</li>
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.ports'|trans }}:</strong> {{ product.ports }}</li>
-                                </ul>
-                            </div>
-                            <div class="col-6">
-                                <ul class="list-group">
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.disk'|trans }}:</strong> {{ product.diskSpace }} MB</li>
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.backups'|trans }}:</strong> {{ product.backups }}</li>
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.swap'|trans }}:</strong> {{ product.swap }} MB</li>
-                                    <li class="list-group-item"><strong>{{ 'pteroca.product.databases'|trans }}:</strong> {{ product.dbCount }}</li>
-                                </ul>
-                            </div>
+            <div class="col-12">
+                <div class="bg-light rounded-3 p-4 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success rounded-circle me-3">
+                            <i class="fas fa-box p-3 text-white"></i>
                         </div>
-                    </div>
-                    <div class="col-12 mt-5">
-                        <h5>{{ 'pteroca.product.description'|trans }}</h5>
-                        <p class="pt-3">{{ product.description }}</p>
+                        <div>
+                            <h4 class="mb-1 fw-bold">{{ product.name }}</h4>
+                            <p class="text-muted mb-0">{{ 'pteroca.product.product_order_details'|trans }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <h2>{{ 'pteroca.product.order'|trans }}</h2>
-                <form action="{{ path('panel') }}">
-                    <input type="hidden" name="id" value="{{ product.id }}">
-                    <input type="hidden" name="routeName" value="cart_configure">
-                    <div class="form-group">
-                        <label for="duration">{{ 'pteroca.product.period'|trans }}</label>
-                        <select id="duration" name="duration" class="form-control">
-                            {% for price in product.prices %}
-                                {% if price.type.value == 'static' %}
-                                    <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
-                                        {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}
-                                    </option>
-                                {% elseif price.type.value == 'on_demand' %}
-                                    <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
-                                        {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
-                                    </option>
+        </div>
+
+        <!-- Banner Section -->
+        {% if product.bannerPath %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                        <img src="{{ product.bannerPath }}" class="card-img-top" alt="{{ product.name }}" style="height: 300px; object-fit: cover;">
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Main Content -->
+        <div class="row g-4">
+            <!-- Product Information -->
+            <div class="col-lg-8">
+                <!-- Specifications Card -->
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <h5 class="mb-1 fw-bold card-title">{{ 'pteroca.product.information'|trans }}</h5>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-tag p-3 text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.name'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.name }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-info bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-memory p-3 text-info"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.ram'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.memory }} MB</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-warning bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-microchip p-3 text-warning"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.cpu'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.cpu }}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-network-wired p-3 text-secondary"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.ports'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.ports }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-success bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-hdd p-3 text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.disk'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.diskSpace }} MB</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-danger bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-save p-3 text-danger"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.backups'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.backups }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-dark bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-exchange-alt p-3 text-dark"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.swap'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.swap }} MB</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item border-0 px-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle me-3">
+                                                <i class="fas fa-database p-3 text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ 'pteroca.product.databases'|trans }}:</strong>
+                                                <span class="ms-2">{{ product.dbCount }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Card -->
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-secondary text-white">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-file-alt me-2"></i>
+                            <h5 class="mb-1 fw-bold card-title">{{ 'pteroca.product.description'|trans }}</h5>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="mb-0">{{ product.description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Form -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 sticky-top" style="top: 20px;">
+                    <div class="card-header bg-success">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            <h5 class="mb-1 fw-bold card-title">{{ 'pteroca.product.order'|trans }}</h5>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="{{ path('panel') }}">
+                            <input type="hidden" name="id" value="{{ product.id }}">
+                            <input type="hidden" name="routeName" value="cart_configure">
+                            
+                            <div class="mb-4">
+                                <label for="duration" class="form-label fw-semibold">
+                                    <i class="fas fa-clock me-2 text-primary"></i>
+                                    {{ 'pteroca.product.period'|trans }}
+                                </label>
+                                <select id="duration" name="duration" class="form-select form-select-lg">
+                                    {% for price in product.prices %}
+                                        {% if price.type.value == 'static' %}
+                                            <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
+                                                {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}
+                                            </option>
+                                        {% elseif price.type.value == 'on_demand' %}
+                                            <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
+                                                {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="egg" class="form-label fw-semibold">
+                                    <i class="fas fa-cog me-2 text-warning"></i>
+                                    {{ 'pteroca.product.egg'|trans }}
+                                </label>
+                                <select id="egg" name="egg" class="form-select form-select-lg">
+                                    {% for egg in eggs %}
+                                        <option value="{{ egg.id }}">{{ egg.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if product.allowChangeEgg %}
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle text-info me-1"></i>
+                                        {{ 'pteroca.product.egg_hint'|trans }}
+                                    </div>
                                 {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="egg">{{ 'pteroca.product.egg'|trans }}</label>
-                        <select id="egg" name="egg" class="form-control">
-                            {% for egg in eggs %}
-                                <option value="{{ egg.id }}">{{ egg.name }}</option>
-                            {% endfor %}
-                        </select>
-                        {% if product.allowChangeEgg %}
-                            <small class="form-text text-muted"><i class="fas fa-info-circle"></i> {{ 'pteroca.product.egg_hint'|trans }}</small>
-                        {% endif %}
-                    </div>
-                    <div class="form-group">
-                        <label for="price">{{ 'pteroca.product.price_calculation'|trans }}</label>
+                            <!-- Price Calculation -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-calculator me-2 text-info"></i>
+                                    {{ 'pteroca.product.price_calculation'|trans }}
+                                </label>
+                                <div class="bg-light rounded-3 p-3">
+                                    <div class="row g-2">
+                                        <div class="col-12" data-type="perMinute">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted"></span>
+                                                <span class="fw-semibold"><span></span> {{ get_currency() }} / {{ 'pteroca.product.per_minute'|trans }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" data-type="perHour">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted"></span>
+                                                <span class="fw-semibold"><span></span> {{ get_currency() }} / {{ 'pteroca.product.per_hour'|trans }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" data-type="perDay">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">{{ 'pteroca.product.per_day'|trans }}</span>
+                                                <span class="fw-semibold"><span></span> {{ get_currency() }} / {{ 'pteroca.product.per_day'|trans }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" data-type="perWeek">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">{{ 'pteroca.product.per_week'|trans }}</span>
+                                                <span class="fw-semibold"><span></span> {{ get_currency() }} / {{ 'pteroca.product.per_week'|trans }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" data-type="perMonth">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">{{ 'pteroca.product.per_month'|trans }}</span>
+                                                <span class="fw-semibold"><span></span> {{ get_currency() }} / {{ 'pteroca.product.per_month'|trans }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="row">
-                            <div class="col-12" data-type="perMinute">
-                                <div class="row">
-                                    <div class="col-6">
-                                        {{ 'pteroca.product.per_minute'|trans }}
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <span></span> {{ get_currency() }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12" data-type="perHour">
-                                <div class="row">
-                                    <div class="col-6">
-                                        {{ 'pteroca.product.per_hour'|trans }}
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <span></span> {{ get_currency() }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12" data-type="perDay">
-                                <div class="row">
-                                    <div class="col-6">
-                                        {{ 'pteroca.product.per_day'|trans }}
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <span></span> {{ get_currency() }}
+                            <!-- Summary -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-receipt me-2 text-success"></i>
+                                    {{ 'pteroca.product.summary'|trans }}
+                                </label>
+                                <div class="bg-success bg-opacity-10 rounded-3 p-3 border border-success border-opacity-25">
+                                    <div class="row g-2">
+                                        <div class="col-12" data-type="billingPeriod">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">{{ 'pteroca.product.billing_period'|trans }}</span>
+                                                <span class="fw-semibold"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" data-type="totalPrice">
+                                            <div class="d-flex justify-content-between border-top pt-2">
+                                                <span class="fw-bold text-success">{{ 'pteroca.product.total_price'|trans }}</span>
+                                                <span class="fw-bold text-success fs-5"></span> {{ get_currency() }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12" data-type="perWeek">
-                                <div class="row">
-                                    <div class="col-6">
-                                        {{ 'pteroca.product.per_week'|trans }}
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <span></span> {{ get_currency() }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12" data-type="perMonth">
-                                <div class="row">
-                                    <div class="col-6">
-                                        {{ 'pteroca.product.per_month'|trans }}
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <span></span> {{ get_currency() }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="price">{{ 'pteroca.product.summary'|trans }}</label>
-                        <div class="row">
-                            <div class="col-12" data-type="billingPeriod">
-                                <div class="row">
-                                    <div class="col-6">
-                                        {{ 'pteroca.product.billing_period'|trans }}
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <span></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 fw-semibold" data-type="totalPrice">
-                                <div class="row">
-                                    <div class="col-6">
-                                        {{ 'pteroca.product.total_price'|trans }}
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <span></span> {{ get_currency() }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <button type="submit" id="order-submit" class="btn btn-primary mt-3 w-100">
-                        <i class="fa fa-shopping-basket"></i> {{ 'pteroca.product.order_now'|trans }}
-                    </button>
-                </form>
+                            <div class="d-grid">
+                                <button type="submit" id="order-submit" class="btn btn-success btn-lg rounded-pill fw-semibold">
+                                    <i class="fas fa-shopping-bag me-2"></i>
+                                    {{ 'pteroca.product.order_now'|trans }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

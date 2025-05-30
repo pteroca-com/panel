@@ -10,7 +10,7 @@
         </div>
     {% else %}
         <div class="card-img-top bg-gradient" style="height: 200px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-box text-white" style="font-size: 3rem; opacity: 0.8;"></i>
+            <i class="fas fa-box" style="font-size: 3rem; opacity: 0.8;"></i>
         </div>
     {% endif %}
     <div class="card-body d-flex flex-column p-4">
@@ -18,9 +18,9 @@
             <div class="bg-success bg-opacity-10 rounded-circle me-3">
                 <i class="fas fa-shopping-cart p-3 text-success"></i>
             </div>
-            <h5 class="card-title mb-0 fw-bold text-dark">{{ product.name }}</h5>
+            <h5 class="card-title mb-0 fw-bold">{{ product.name }}</h5>
         </div>
-        <p class="card-text text-muted mb-4 flex-grow-1">{{ product.description }}</p>
+        <p class="card-text mb-4 flex-grow-1">{{ product.description }}</p>
         <div class="d-grid">
             <a href="{{ path('panel', { routeName: 'store_product', id: product.id }) }}" class="btn btn-success btn-lg rounded-pill fw-semibold">
                 <i class="fas fa-shopping-bag me-2"></i>
