@@ -243,4 +243,5 @@ input#command {
 .placeholder {
     background-color: #b2b2b2;
     border-radius: 4px;
+    min-width: 80px;
 }

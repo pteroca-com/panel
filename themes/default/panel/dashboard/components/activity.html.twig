@@ -9,7 +9,7 @@
         {% if logs|length > 0 %}
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th class="fw-semibold">
                                 <i class="fas fa-bolt me-2 text-primary"></i>
@@ -37,7 +37,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-dark">{{ log.ipAddress }}</span>
+                                    <span class="badge">{{ log.ipAddress }}</span>
                                 </td>
                                 <td>
                                     <small class="text-muted">{{ log.createdAt|date('Y-m-d H:i:s') }}</small>
@@ -49,7 +49,7 @@
             </div>
         {% else %}
             <div class="text-center py-4">
-                <div class="bg-light rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <div class="rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-history text-muted" style="font-size: 1.5rem;"></i>
                 </div>
                 <h6 class="fw-bold text-dark mb-1">{{ 'pteroca.dashboard.no_activity'|trans }}</h6>

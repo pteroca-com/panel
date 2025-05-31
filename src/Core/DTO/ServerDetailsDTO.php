@@ -5,6 +5,7 @@ namespace App\Core\DTO;
 readonly class ServerDetailsDTO
 {
     public function __construct(
+        public string $identifier,
         public string $name,
         public string $description,
         public string $ip,
@@ -16,6 +17,7 @@ readonly class ServerDetailsDTO
     public function toArray(): array
     {
         return [
+            'identifier' => $this->identifier,
             'name' => $this->name,
             'description' => $this->description,
             'ip' => $this->ip,
