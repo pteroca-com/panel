@@ -214,6 +214,7 @@ pteroca:
     status: 'Status'
     name: 'Nazwa'
     actions: 'Akcje'
+    description: 'Zarządzaj swoimi serwerami, przeglądaj ich szczegóły i wykonuj różne akcje, takie jak przedłużanie, zarządzanie i konfiguracja.'
 
   server:
     title: 'Zarządzanie serwerem'
