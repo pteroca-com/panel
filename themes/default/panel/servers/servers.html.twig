@@ -111,16 +111,25 @@
                 listView.style.display = 'block';
             }
 
-            const serverElements = document.querySelectorAll('[data-server-id]');
+            // Zbierz unikalne ID serwerów, żeby uniknąć podwójnych zapytań
+            const serverIds = new Set();
+            document.querySelectorAll('[data-server-id]').forEach(element => {
+                serverIds.add(element.getAttribute('data-server-id'));
+            });
 
-            serverElements.forEach(element => {
-                const serverId = element.getAttribute('data-server-id'),
-                    endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details'
+            // Wykonaj zapytanie tylko raz dla każdego serwera
+            serverIds.forEach(serverId => {
+                const endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details';
 
                 fetch(endpointUrl)
                     .then(response => response.json())
                     .then(data => {
-                        updateServerElements(element, data);
+                        // Aktualizuj wszystkie elementy z tym samym server-id (widok kafelków i listy)
+                        const serverElements = document.querySelectorAll(`[data-server-id="${serverId}"]`);
+                        serverElements.forEach(element => {
+                            updateServerElements(element, data);
+                        });
+                        
                         document.querySelectorAll('.placeholder-glow').forEach(el => el.classList.remove('placeholder-glow'));
                         document.querySelectorAll('.placeholder-wave').forEach(el => el.classList.remove('placeholder-wave'));
                     })
