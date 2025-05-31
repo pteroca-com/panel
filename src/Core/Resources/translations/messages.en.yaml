@@ -68,6 +68,9 @@ pteroca:
     ip_address: 'IP address'
     view_all_servers: 'View all servers'
     title: 'Dashboard'
+    welcome_message: 'Your server command center'
+    quick_actions: 'Quick actions'
+    browse_store: 'Browse store'
   recharge:
     recharge_balance: 'Recharge balance'
     recharge: 'Recharge'
@@ -92,6 +95,10 @@ pteroca:
     payment_provider_information: 'Payment provider information'
     payment_provider_details: 'Payments are securely handled by Stripe. Enter the amount you want to recharge, then click "Recharge".'
     payment_is_not_configured: 'Payment is not configured. Please contact the administrator.'
+    recharge_description: 'Recharge your account balance'
+    amount_hint: 'Enter the amount you want to recharge.'
+    view_transaction_history: 'View transaction history'
+    view_all_payments_description: 'View all payments that have been made on your account.'
 
   product:
     information: 'Information'
@@ -129,6 +136,7 @@ pteroca:
     ports: 'Ports'
     discount: 'Discount'
     discount_hint: 'Discount will be applied only to the first billing cycle.'
+    product_order_details: 'Product details and ordering options'
 
   store:
     title: 'Store'
@@ -150,6 +158,8 @@ pteroca:
     category_description: 'Products available in this category'
     available_products: 'Available products'
     no_products_title: 'No products'
+    shop_is_empty: 'Shop is empty'
+    no_products_and_categories: 'There are no products or categories in the store yet.'
   cart_configuration:
     title: 'Configure your server'
     configuration: 'Configuration'
@@ -159,13 +169,16 @@ pteroca:
     auto_renewal: 'Auto-renewal'
     enable: 'Enable auto-renewal'
     disable: 'Disable auto-renewal'
+    description: 'Configure your server and proceed to payment'
   cart_topup:
     title: 'Top up your account'
     order: 'Order'
     order_description: 'Top up funds'
     payment_method: 'Payment method'
+    description: 'Recharge your account balance'
   cart_renew:
     title: 'Renew your server'
+    description: 'Extend your server to avoid suspension or deletion.'
   cart:
     use_voucher: 'Use voucher'
     voucher_code: 'Voucher code'
@@ -201,6 +214,7 @@ pteroca:
     name: 'Name'
     status: 'Status'
     actions: 'Actions'
+    description: 'Manage your servers, view their details and perform various actions such as extending, managing and configuration.'
 
   server:
     title: 'Server management'

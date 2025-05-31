@@ -68,6 +68,9 @@ pteroca:
     ip_address: 'Dirección IP'
     view_all_servers: 'Ver todos los servidores'
     title: 'Tablero'
+    welcome_message: 'Su centro de comando de servidores'
+    quick_actions: 'Acciones rápidas'
+    browse_store: 'Explorar tienda'
   recharge:
     recharge_balance: 'Recargar saldo'
     recharge: 'Recargar'
@@ -92,6 +95,10 @@ pteroca:
     payment_provider_information: 'Información del proveedor de pagos'
     payment_provider_details: 'Los pagos son gestionados de forma segura a través de Stripe. Ingresa la cantidad que deseas recargar y luego haz clic en "Recargar".'
     payment_is_not_configured: 'El sistema de pagos no está configurado. Contacta con el administrador.'
+    recharge_description: 'Recarga el saldo de tu cuenta'
+    amount_hint: 'Ingresa la cantidad que deseas recargar.'
+    view_transaction_history: 'Ver historial de transacciones'
+    view_all_payments_description: 'Muestra todos los pagos realizados en tu cuenta.'
 
   product:
     information: 'Información'
@@ -129,6 +136,7 @@ pteroca:
     ports: 'Puertos'
     discount: 'Descuento'
     discount_hint: 'El descuento se aplicará solo al primer ciclo de facturación.'
+    product_order_details: 'Detalles del producto y opciones de pedido'
 
   store:
     title: 'Tienda'
@@ -150,6 +158,8 @@ pteroca:
     category_description: 'Productos disponibles en esta categoría'
     available_products: 'Productos disponibles'
     no_products_title: 'Sin productos'
+    shop_is_empty: 'La tienda está vacía'
+    no_products_and_categories: 'Aún no hay productos o categorías en la tienda.'
   cart_configuration:
     title: 'Configura tu servidor'
     configuration: 'Configuración'
@@ -159,13 +169,16 @@ pteroca:
     auto_renewal: 'Renovación automática'
     enable: 'Habilitar renovación automática'
     disable: 'Deshabilitar renovación automática'
+    description: 'Configura tu servidor y procede con el pago'
   cart_topup:
     title: 'Recarga tu cuenta'
     order: 'Ordenar'
     order_description: 'Recargar fondos'
     payment_method: 'Método de pago'
+    description: 'Recarga el saldo de tu cuenta'
   cart_renew:
     title: 'Renueva tu servidor'
+    description: 'Renueva tu servidor para evitar la suspensión o eliminación.'
   cart:
     use_voucher: 'Usar cupón'
     voucher_code: 'Código de cupón'
@@ -201,6 +214,7 @@ pteroca:
     name: 'Nombre'
     status: 'Estado'
     actions: 'Acciones'
+    description: 'Gestiona tus servidores, ve sus detalles y realiza varias acciones como renovación, gestión y configuración.'
 
   server:
     title: 'Gestión del servidor'
@@ -303,16 +317,16 @@ pteroca:
     password: 'Contraseña'
     jdbc_connection_string: 'Cadena de conexión JDBC'
     rotate_password: 'Cambiar contraseña'
-    ip_address: 'IP-Adresse'
-    port: 'Port'
-    notes: 'Notizen'
-    create_allocation: 'Zuweisung erstellen'
-    delete_allocation: 'Zuweisung löschen'
-    delete_allocation_confirmation: 'Diese Zuweisung wird sofort von Ihrem Server entfernt. Sind Sie sicher, dass Sie fortfahren möchten?'
-    error_during_deleting_allocation: 'Beim Löschen der Zuweisung ist ein Fehler aufgetreten.'
-    cannot_delete_primary_allocation: 'Die primäre Zuweisung kann nicht gelöscht werden.'
-    extend_server_expires_on_demand: 'Ihr <strong>{{ productName }}</strong>-Server läuft derzeit <strong>auf Abruf</strong>.'
-    on_demand_billing_cycle: 'Der Abrechnungszyklus ({{ productPrice }} {{ internalCurrency }} / Minute) wird unterbrochen, wenn der Server offline ist, und Ressourcen sind kostenlos.'
+    ip_address: 'Dirección IP'
+    port: 'Puerto'
+    notes: 'Notas'
+    create_allocation: 'Crear asignación'
+    delete_allocation: 'Eliminar asignación'
+    delete_allocation_confirmation: 'Esta asignación será eliminada inmediatamente de su servidor. ¿Está seguro de que desea continuar?'
+    error_during_deleting_allocation: 'Se produjo un error al eliminar la asignación.'
+    cannot_delete_primary_allocation: 'La asignación principal no puede ser eliminada.'
+    extend_server_expires_on_demand: 'Su servidor <strong>{{ productName }}</strong> está actualmente configurado para funcionar <strong>bajo demanda</strong>.'
+    on_demand_billing_cycle: 'El ciclo de facturación ({{ productPrice }} {{ internalCurrency }} / minuto) se pausará cuando el servidor esté fuera de línea, y los recursos serán gratuitos.'
     type: 'Tipo'
     primary: 'Principal'
     secondary: 'Secundario'

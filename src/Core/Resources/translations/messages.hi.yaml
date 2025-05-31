@@ -68,6 +68,9 @@ pteroca:
     ip_address: 'आईपी पता'
     view_all_servers: 'सभी सर्वर देखें'
     title: 'डैशबोर्ड'
+    welcome_message: 'आपका सर्वर कमांड सेंटर'
+    quick_actions: 'त्वरित क्रियाएं'
+    browse_store: 'स्टोर ब्राउज़ करें'
   recharge:
     recharge_balance: 'शेष राशि जोड़ें'
     recharge: 'रिचार्ज करें'
@@ -92,6 +95,10 @@ pteroca:
     payment_provider_information: 'भुगतान प्रदाता जानकारी'
     payment_provider_details: 'भुगतान सुरक्षित रूप से Stripe द्वारा संभाला जाता है। वह राशि दर्ज करें जिसे आप जोड़ना चाहते हैं, फिर "रिचार्ज करें" पर क्लिक करें।'
     payment_is_not_configured: 'भुगतान कॉन्फ़िगर नहीं किया गया है। कृपया व्यवस्थापक से संपर्क करें।'
+    recharge_description: 'अपने खाते की शेष राशि रिचार्ज करें'
+    amount_hint: 'वह राशि दर्ज करें जिसे आप रिचार्ज करना चाहते हैं।'
+    view_transaction_history: 'लेन-देन इतिहास देखें'
+    view_all_payments_description: 'आपके खाते पर किए गए सभी भुगतान दिखाता है।'
 
   product:
     information: 'जानकारी'
@@ -129,6 +136,7 @@ pteroca:
     ports: 'पोर्ट्स'
     discount: 'छूट'
     discount_hint: 'छूट केवल पहले बिलिंग चक्र पर लागू होगी।'
+    product_order_details: 'उत्पाद विवरण और ऑर्डर विकल्प'
 
   store:
     title: 'स्टोर'
@@ -150,6 +158,8 @@ pteroca:
     category_description: 'इस श्रेणी में उपलब्ध उत्पाद'
     available_products: 'उपलब्ध उत्पाद'
     no_products_title: 'कोई उत्पाद नहीं'
+    shop_is_empty: 'स्टोर खाली है'
+    no_products_and_categories: 'स्टोर में अभी तक कोई उत्पाद या श्रेणियाँ नहीं हैं।'
   cart_configuration:
     title: 'अपने सर्वर को कॉन्फ़िगर करें'
     configuration: 'कॉन्फ़िगरेशन'
@@ -159,13 +169,16 @@ pteroca:
     auto_renewal: 'स्वचालित नवीनीकरण'
     enable: 'स्वचालित नवीनीकरण सक्षम करें'
     disable: 'स्वचालित नवीनीकरण अक्षम करें'
+    description: 'अपने सर्वर को कॉन्फ़िगर करें और भुगतान के लिए आगे बढ़ें'
   cart_topup:
     title: 'अपना खाता रिचार्ज करें'
     order: 'ऑर्डर'
     order_description: 'फंड्स रिचार्ज करें'
     payment_method: 'भुगतान विधि'
+    description: 'अपने खाते की शेष राशि रिचार्ज करें'
   cart_renew:
     title: 'अपने सर्वर का नवीनीकरण करें'
+    description: 'निलंबन या हटाने से बचने के लिए अपने सर्वर का नवीनीकरण करें।'
   cart:
     use_voucher: 'वाउचर का उपयोग करें'
     voucher_code: 'वाउचर कोड'
@@ -201,6 +214,7 @@ pteroca:
     name: 'नाम'
     status: 'स्थिति'
     actions: 'क्रियाएँ'
+    description: 'अपने सर्वरों का प्रबंधन करें, उनके विवरण देखें और नवीनीकरण, प्रबंधन और कॉन्फ़िगरेशन जैसी विभिन्न क्रियाएं करें।'
 
   server:
     title: 'सर्वर प्रबंधन'
@@ -809,4 +823,3 @@ pteroca:
       pterodactyl_api_connection_success: "Pterodactyl API से सफलतापूर्वक कनेक्ट हो गया।"
       email_checking_smtp_connection: "SMTP सर्वर कनेक्शन की जाँच की जा रही है..."
       email_smtp_connection_success: "SMTP सर्वर से सफलतापूर्वक कनेक्ट हो गया।"
-

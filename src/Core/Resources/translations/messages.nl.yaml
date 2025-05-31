@@ -64,6 +64,9 @@ pteroca:
     ip_address: 'IP-adres'
     view_all_servers: 'Bekijk alle servers'
     title: 'Dashboard'
+    welcome_message: 'Uw server commandocentrum'
+    quick_actions: 'Snelle acties'
+    browse_store: 'Winkel bekijken'
   recharge:
     recharge_balance: 'Opladen saldo'
     recharge: 'Opladen'
@@ -88,6 +91,10 @@ pteroca:
     payment_provider_information: 'Betalingsprovider informatie'
     payment_provider_details: 'Betalingen worden veilig verwerkt door Stripe. Voer het bedrag in dat u wilt opwaarderen en klik vervolgens op ''Opwaarderen''.'
     payment_is_not_configured: 'Betaling is niet geconfigureerd. Neem contact op met de beheerder.'
+    recharge_description: 'Laad het saldo van uw account op'
+    amount_hint: 'Voer het bedrag in dat u wilt opladen.'
+    view_transaction_history: 'Bekijk transactiegeschiedenis'
+    view_all_payments_description: 'Toont alle betalingen die op uw account zijn gedaan.'
   product:
     information: 'Informatie'
     ram: 'Geheugen'
@@ -124,6 +131,7 @@ pteroca:
     ports: 'Poorten'
     discount: 'Korting'
     discount_hint: 'Korting toegepast op de totale prijs'
+    product_order_details: 'Productdetails en besteloptie'
   store:
     title: 'Winkel'
     order: 'Bestel'
@@ -144,6 +152,8 @@ pteroca:
     category_description: 'Producten beschikbaar in deze categorie'
     available_products: 'Beschikbare producten'
     no_products_title: 'Geen producten'
+    shop_is_empty: 'De winkel is leeg'
+    no_products_and_categories: 'Er zijn nog geen producten of categorieën in de winkel.'
   renew:
     title: 'Server verlengen'
     renew: 'Server verlengen'
@@ -174,6 +184,7 @@ pteroca:
     name: 'Naam'
     status: 'Status'
     actions: 'Acties'
+    description: 'Beheer uw servers, bekijk hun details en voer verschillende acties uit zoals verlenging, beheer en configuratie.'
     
   server:
     title: 'Server beheer'
@@ -335,13 +346,16 @@ pteroca:
     auto_renewal: 'Automatische verlenging'
     enable: 'Activeren'
     disable: 'Deactiveren'
+    description: 'Configureer uw server en ga door naar betaling'
   cart_topup:
     title: 'Vul je account aan'
     order: 'Bestellen'
     order_description: 'Saldo opwaarderen'
     payment_method: 'Betalingsmethode'
+    description: 'Laad het saldo van uw account op'
   cart_renew:
     title: 'Verleng je server'
+    description: 'Verleng uw server om opschorting of verwijdering te voorkomen.'
   cart:
     use_voucher: 'Gebruik voucher'
     voucher_code: 'Voucher code'

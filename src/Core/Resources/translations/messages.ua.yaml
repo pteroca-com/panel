@@ -91,6 +91,11 @@ pteroca:
     current_balance: 'Поточний баланс'
     payment_provider_information: 'Інформація про постачальника платіжних послуг'
     payment_provider_details: 'Платежі обробляються безпечно через Stripe. Введіть суму, яку ви хочете поповнити, а потім натисніть "Поповнити".'
+    recharge_description: 'Поповніть баланс вашого облікового запису'
+    amount_hint: 'Введіть суму, яку ви хочете поповнити.'
+    view_transaction_history: 'Переглянути історію транзакцій'
+    view_all_payments_description: 'Показує всі платежі, здійснені на вашому обліковому записі.'
+    payment_is_not_configured: 'Платіжна система не налаштована. Зв'яжіться з адміністратором.'
     payment_is_not_configured: 'Платіжна система не налаштована. Зв’яжіться з адміністратором.'
 
   product:
@@ -129,6 +134,7 @@ pteroca:
     ports: 'Порти'
     discount: 'Знижка'
     discount_hint: 'Знижка буде застосована лише до першого платіжного циклу.'
+    product_order_details: 'Деталі продукту та варіанти замовлення'
 
   store:
     title: 'Магазин'
@@ -150,6 +156,8 @@ pteroca:
     category_description: 'Товари, доступні в цій категорії'
     available_products: 'Доступні товари'
     no_products_title: 'Немає товарів'
+    shop_is_empty: 'Магазин порожній'
+    no_products_and_categories: 'У магазині поки що немає товарів або категорій.'
   cart_configuration:
     title: 'Налаштувати сервер'
     configuration: 'Конфігурація'
@@ -159,13 +167,16 @@ pteroca:
     auto_renewal: 'Автоматичне подовження'
     enable: 'Увімкнути автоматичне подовження'
     disable: 'Вимкнути автоматичне подовження'
+    description: 'Налаштуйте ваш сервер та здійсніть оплату'
   cart_topup:
     title: 'Поповнити свій рахунок'
     order: 'Замовити'
     order_description: 'Поповнити кошти'
     payment_method: 'Спосіб оплати'
+    description: 'Поповніть баланс вашого облікового запису'
   cart_renew:
     title: 'Подовжити сервер'
+    description: 'Подовжіть ваш сервер, щоб продовжити його використання'
   cart:
     use_voucher: 'Використати ваучер'
     voucher_code: 'Код ваучера'
@@ -201,6 +212,7 @@ pteroca:
     name: 'Імʼя'
     status: 'Статус'
     actions: 'Дії'
+    description: 'Керуйте всіма вашими серверами з цієї сторінки'
 
   server:
     title: 'Управління сервером'

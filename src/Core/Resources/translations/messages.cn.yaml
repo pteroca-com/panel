@@ -68,6 +68,9 @@ pteroca:
     ip_address: 'IP 地址'
     view_all_servers: '查看所有服务器'
     title: '仪表板'
+    welcome_message: '您的服务器指挥中心'
+    quick_actions: '快速操作'
+    browse_store: '浏览商店'
   recharge:
     recharge_balance: '充值余额'
     recharge: '充值'
@@ -92,6 +95,10 @@ pteroca:
     payment_provider_information: '支付提供商信息'
     payment_provider_details: '支付由 Stripe 安全处理。请输入您想充值的金额，然后点击“充值”。'
     payment_is_not_configured: '支付系统未配置。请联系管理员。'
+    recharge_description: '充值您的账户余额'
+    amount_hint: '输入您想要充值的金额。'
+    view_transaction_history: '查看交易记录'
+    view_all_payments_description: '显示您账户上进行的所有支付。'
 
   product:
     information: '信息'
@@ -129,6 +136,7 @@ pteroca:
     ports: '端口'
     discount: '折扣'
     discount_hint: '仅适用于第一个账单周期。'
+    product_order_details: '产品详情和订购选项'
 
   store:
     title: '商店'
@@ -150,6 +158,8 @@ pteroca:
     category_description: '该类别下的产品'
     available_products: '可用产品'
     no_products_title: '没有产品'
+    shop_is_empty: '商店为空'
+    no_products_and_categories: '商店中暂时没有产品或类别。'
   cart_configuration:
     title: '配置你的服务器'
     configuration: '配置'
@@ -159,13 +169,16 @@ pteroca:
     auto_renewal: '自动续订'
     enable: '启用自动续订'
     disable: '禁用自动续订'
+    description: '配置您的服务器并进行支付'
   cart_topup:
     title: '充值你的账户'
     order: '订单'
     order_description: '充值资金'
     payment_method: '支付方式'
+    description: '充值您的账户余额'
   cart_renew:
     title: '续订你的服务器'
+    description: '续订您的服务器以继续使用'
   cart:
     use_voucher: '使用优惠券'
     voucher_code: '优惠券代码'
@@ -201,6 +214,7 @@ pteroca:
     name: '名称'
     status: '状态'
     actions: '操作'
+    description: '管理您的服务器，查看其详细信息并执行各种操作，如续订、管理和配置。'
 
   server:
     title: '服务器管理'

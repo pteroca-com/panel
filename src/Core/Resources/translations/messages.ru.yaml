@@ -89,6 +89,10 @@ pteroca:
     payment_provider_information: 'Информация о платежном провайдере'
     payment_provider_details: 'Платежи безопасно обрабатываются Stripe. Введите сумму, которую вы хотите пополнить, затем нажмите "Пополнить счет".'
     payment_is_not_configured: 'Оплата не настроена. Пожалуйста, свяжитесь с администратором.'
+    recharge_description: 'Пополните баланс вашего аккаунта'
+    amount_hint: 'Введите сумму, которую вы хотите пополнить.'
+    view_transaction_history: 'Посмотреть историю транзакций'
+    view_all_payments_description: 'Показывает все платежи, совершенные на вашем аккаунте.'
   product:
     information: 'Информация'
     ram: 'ОЗУ'
@@ -125,6 +129,7 @@ pteroca:
     ports: 'Порты'
     discount: 'Скидка'
     discount_hint: 'Скидка будет применена только к первому платежному периоду.'
+    product_order_details: 'Детали продукта и варианты заказа'
 
   store:
     title: 'Магазин'
@@ -146,6 +151,8 @@ pteroca:
     category_description: 'Товары, доступные в этой категории'
     available_products: 'Доступные товары'
     no_products_title: 'Нет товаров'
+    shop_is_empty: 'Магазин пуст'
+    no_products_and_categories: 'В магазине пока нет товаров или категорий.'
   cart_configuration:
     title: 'Настроить сервер'
     configuration: 'Конфигурация'
@@ -155,13 +162,16 @@ pteroca:
     auto_renewal: 'Автопродление'
     enable: 'Включить автопродление'
     disable: 'Отключить автопродление'
+    description: 'Настройте ваш сервер и произведите оплату'
   cart_topup:
     title: 'Пополнить аккаунт'
     order: 'Заказать'
     order_description: 'Пополнить средства'
     payment_method: 'Способ оплаты'
+    description: 'Пополните баланс вашего аккаунта'
   cart_renew:
     title: 'Продлить сервер'
+    description: 'Продлите ваш сервер, чтобы продолжить его использование'
   cart:
     use_voucher: 'Использовать ваучер'
     voucher_code: 'Код ваучера'
@@ -196,6 +206,7 @@ pteroca:
     name: 'Имя'
     status: 'Статус'
     actions: 'Действия'
+    description: 'Управляйте всеми вашими серверами с этой страницы'
     
   server:
     title: 'Управление сервером'

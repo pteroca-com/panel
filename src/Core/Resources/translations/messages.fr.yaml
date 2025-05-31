@@ -68,6 +68,9 @@ pteroca:
     ip_address: 'Adresse IP'
     view_all_servers: 'Voir tous les serveurs'
     title: 'Tableau de bord'
+    welcome_message: 'Votre centre de commande de serveurs'
+    quick_actions: 'Actions rapides'
+    browse_store: 'Parcourir la boutique'
   recharge:
     recharge_balance: 'Recharger le solde'
     recharge: 'Recharger'
@@ -91,6 +94,10 @@ pteroca:
     current_balance: 'Solde actuel'
     payment_provider_information: 'Informations sur le prestataire de paiement'
     payment_provider_details: 'Les paiements sont sécurisés via Stripe. Entrez le montant que vous souhaitez recharger, puis cliquez sur "Recharger".'
+    recharge_description: 'Rechargez le solde de votre compte'
+    amount_hint: 'Entrez le montant que vous souhaitez recharger.'
+    view_transaction_history: 'Voir l''historique des transactions'
+    view_all_payments_description: 'Affiche tous les paiements effectués sur votre compte.'
     payment_is_not_configured: 'Le système de paiement n’est pas configuré. Contactez l’administrateur.'
 
   product:
@@ -128,7 +135,9 @@ pteroca:
     total_price: 'Prix total'
     ports: 'Ports'
     discount: 'Réduction'
-    discount_hint: 'La réduction ne s\''appliquera qu\''au premier cycle de facturation.'
+    discount_hint: 'La réduction ne s''appliquera qu''au premier cycle de facturation.'
+    product_order_details: 'Détails du produit et options de commande'
+
 
   store:
     title: 'Boutique'
@@ -150,6 +159,8 @@ pteroca:
     category_description: 'Produits disponibles dans cette catégorie'
     available_products: 'Produits disponibles'
     no_products_title: 'Aucun produit'
+    shop_is_empty: 'La boutique est vide'
+    no_products_and_categories: 'Il n''y a pas encore de produits ou de catégories dans la boutique.'
   cart_configuration:
     title: 'Configurer votre serveur'
     configuration: 'Configuration'
@@ -159,13 +170,16 @@ pteroca:
     auto_renewal: 'Renouvellement automatique'
     enable: 'Activer le renouvellement automatique'
     disable: 'Désactiver le renouvellement automatique'
+    description: 'Configurez votre serveur et procédez au paiement'
   cart_topup:
     title: 'Recharger votre compte'
     order: 'Commander'
     order_description: 'Recharger des fonds'
     payment_method: 'Méthode de paiement'
+    description: 'Rechargez le solde de votre compte'
   cart_renew:
     title: 'Renouveler votre serveur'
+    description: 'Renouvelez votre serveur pour continuer à l''utiliser'
   cart:
     use_voucher: 'Utiliser un bon'
     voucher_code: 'Code du bon'
@@ -201,6 +215,7 @@ pteroca:
     name: 'Nom'
     status: 'Statut'
     actions: 'Actions'
+    description: 'Gérez tous vos serveurs depuis cette page'
 
   server:
     title: 'Gestion du serveur'

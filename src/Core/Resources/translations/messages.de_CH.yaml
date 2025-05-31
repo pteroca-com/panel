@@ -66,6 +66,9 @@ pteroca:
     ip_address: 'IP-Adresse'
     view_all_servers: 'Alle Server anzeigen'
     title: 'Dashboard'
+    welcome_message: 'Ihr Server-Kommandozentrum'
+    quick_actions: 'Schnelle Aktionen'
+    browse_store: 'Shop durchsuchen'
   recharge:
     recharge_balance: 'Guthaben aufladen'
     recharge: 'Aufladen'
@@ -90,6 +93,10 @@ pteroca:
     payment_provider_information: 'Zahlungsanbieter Informationen'
     payment_provider_details: 'Zahlungen werden sicher von Stripe abgewickelt. Geben Sie den Betrag ein, den Sie aufladen möchten, und klicken Sie dann auf "Aufladen".'
     payment_is_not_configured: 'Die Zahlung ist nicht konfiguriert. Bitte wenden Sie sich an den Administrator.'
+    recharge_description: 'Laden Sie Ihr Kontoguthaben auf'
+    amount_hint: 'Geben Sie den Betrag ein, den Sie aufladen möchten.'
+    view_transaction_history: 'Transaktionshistorie anzeigen'
+    view_all_payments_description: 'Zeigen Sie alle Zahlungen an, die auf Ihrem Konto getätigt wurden.'
   product:
     information: 'Informationen'
     ram: 'RAM'
@@ -126,6 +133,7 @@ pteroca:
     ports: 'Ports'
     discount: 'Rabatt'
     discount_hint: 'Der Rabatt wird nur auf den ersten Abrechnungszyklus angewendet'
+    product_order_details: 'Produktdetails und Bestelloptionen'
   store:
     title: 'Shop'
     order: 'Bestellung'
@@ -146,6 +154,8 @@ pteroca:
     category_description: 'Produkte in dieser Kategorie'
     available_products: 'Verfügbare Produkte'
     no_products_title: 'Keine Produkte'
+    shop_is_empty: 'Shop ist leer'
+    no_products_and_categories: 'Es gibt noch keine Produkte oder Kategorien im Shop.'
   cart_configuration:
     title: 'Konfigurieren Sie Ihren Server'
     configuration: 'Konfiguration'
@@ -155,13 +165,16 @@ pteroca:
     auto_renewal: 'Automatische Verlängerung'
     enable: 'Automatische Verlängerung aktivieren'
     disable: 'Automatische Verlängerung deaktivieren'
+    description: 'Konfigurieren Sie Ihren Server und fahren Sie mit der Zahlung fort'
   cart_topup:
     title: 'Konto aufladen'
     order: 'Bestellung'
     order_description: 'Guthaben aufladen'
     payment_method: 'Zahlungsmethode'
+    description: 'Laden Sie Ihr Kontoguthaben auf'
   cart_renew:
     title: 'Server verlängern'
+    description: 'Verlängern Sie Ihren Server, um eine Sperrung oder Löschung zu vermeiden.'
   cart:
     use_voucher: 'Gutschein verwenden'
     voucher_code: 'Gutscheincode'
@@ -196,6 +209,7 @@ pteroca:
     name: 'Name'
     status: 'Status'
     actions: 'Aktionen'
+    description: 'Verwalten Sie Ihre Server, zeigen Sie deren Details an und führen Sie verschiedene Aktionen wie Verlängerung, Verwaltung und Konfiguration durch.'
   server:
     title: 'Serververwaltung'
     console: 'Konsole'

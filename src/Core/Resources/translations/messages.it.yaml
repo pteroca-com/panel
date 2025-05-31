@@ -68,6 +68,9 @@ pteroca:
     ip_address: 'Indirizzo IP'
     view_all_servers: 'Visualizza tutti i server'
     title: 'Cruscotto'
+    welcome_message: 'Il tuo centro di comando server'
+    quick_actions: 'Azioni rapide'
+    browse_store: 'Sfoglia negozio'
   recharge:
     recharge_balance: 'Ricarica saldo'
     recharge: 'Ricarica'
@@ -92,6 +95,10 @@ pteroca:
     payment_provider_information: 'Informazioni sul fornitore di pagamenti'
     payment_provider_details: "I pagamenti sono gestiti in modo sicuro tramite Stripe. Inserisci l'importo che desideri ricaricare e poi clicca su 'Ricarica'."
     payment_is_not_configured: "Il sistema di pagamento non è configurato. Contatta l'amministratore."
+    recharge_description: 'Ricarica il saldo del tuo account'
+    amount_hint: 'Inserisci l''importo che desideri ricaricare.'
+    view_transaction_history: 'Visualizza storico transazioni'
+    view_all_payments_description: 'Mostra tutti i pagamenti effettuati sul tuo account.'
 
   product:
     information: 'Informazioni'
@@ -129,6 +136,7 @@ pteroca:
     ports: 'Porte'
     discount: 'Sconto'
     discount_hint: 'Lo sconto verrà applicato solo al primo ciclo di fatturazione.'
+    product_order_details: 'Dettagli del prodotto e opzioni di ordine'
 
   store:
     title: 'Negozio'
@@ -150,6 +158,8 @@ pteroca:
     category_description: 'Prodotti disponibili in questa categoria'
     available_products: 'Prodotti disponibili'
     no_products_title: 'Nessun prodotto'
+    shop_is_empty: 'Il negozio è vuoto'
+    no_products_and_categories: 'Non ci sono ancora prodotti o categorie nel negozio.'
   cart_configuration:
     title: 'Configura il tuo server'
     configuration: 'Configurazione'
@@ -159,13 +169,16 @@ pteroca:
     auto_renewal: 'Rinnovo automatico'
     enable: 'Abilita rinnovo automatico'
     disable: 'Disabilita rinnovo automatico'
+    description: 'Configura il tuo server e procedi al pagamento'
   cart_topup:
     title: 'Ricarica il tuo conto'
     order: 'Ordina'
     order_description: 'Ricarica fondi'
     payment_method: 'Metodo di pagamento'
+    description: 'Ricarica il saldo del tuo account'
   cart_renew:
     title: 'Rinnova il tuo server'
+    description: 'Rinnova il tuo server per evitare la sospensione o la rimozione.'
   cart:
     use_voucher: 'Utilizza il buono'
     voucher_code: 'Codice buono'
@@ -201,6 +214,7 @@ pteroca:
     name: 'Nome'
     status: 'Stato'
     actions: 'Azioni'
+    description: 'Gestisci i tuoi server, visualizza i loro dettagli ed esegui varie azioni come rinnovo, gestione e configurazione.'
 
   server:
     title: 'Gestione del server'
