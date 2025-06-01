@@ -1,25 +1,5 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block head_stylesheets %}
-    {{ parent() }}
-    <style>
-        .card-input-element + label {
-            cursor: pointer;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .card-input-element:checked + label {
-            border: 2px solid var(--bs-primary);
-            box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.5);
-        }
-
-        .card-input-element:disabled + label {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-    </style>
-{% endblock %}
-
 {% block title %}| {{ 'pteroca.cart_topup.title'|trans }}{% endblock %}
 
 {% block content %}

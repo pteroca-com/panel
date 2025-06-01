@@ -245,3 +245,94 @@ input#command {
     border-radius: 4px;
     min-width: 80px;
 }
+
+/* Server card styles - moved from themes/default/panel/servers/components/server.html.twig */
+.server-card {
+    transition: all 0.3s ease;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.server-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.server-image {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.server-image:hover {
+    transform: scale(1.05);
+}
+
+.spec-item {
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.spec-item:hover {
+    border-color: #dee2e6;
+    background-color: #f8f9fa !important;
+}
+
+.spec-value {
+    font-weight: 600;
+    color: #495057;
+}
+
+.server-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+}
+
+.server-actions .btn:hover {
+    transform: translateY(-1px);
+}
+
+.expiry-info {
+    border: 1px solid #e9ecef;
+}
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+@media (max-width: 576px) {
+    .server-specs .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .server-actions .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 8px;
+    }
+}
+
+/* Terminal styles - moved from themes/default/panel/server/tabs/console/console.html.twig */
+#terminal > div {
+    padding: 10px;
+}
+
+/* Payment form styles - moved from themes/default/panel/cart/topup.html.twig */
+.card-input-element + label {
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.card-input-element:checked + label {
+    border: 2px solid var(--bs-primary);
+    box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.5);
+}
+
+.card-input-element:disabled + label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
