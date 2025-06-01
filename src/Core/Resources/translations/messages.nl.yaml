@@ -728,6 +728,7 @@ pteroca:
   admin:
     overview:
       title: 'Beheerder Overzicht'
+      useful_resources: 'Nuttige Bronnen'
       servers: 'Actieve servers'
       users: 'Geregistreerde gebruikers'
       payments: 'Betalingen'

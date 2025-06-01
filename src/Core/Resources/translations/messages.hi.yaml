@@ -742,6 +742,7 @@ pteroca:
   admin:
     overview:
       title: 'व्यवस्थापक अवलोकन'
+      useful_resources: 'उपयोगी संसाधन'
       servers: 'सक्रिय सर्वर'
       users: 'पंजीकृत उपयोगकर्ता'
       payments: 'भुगतान'

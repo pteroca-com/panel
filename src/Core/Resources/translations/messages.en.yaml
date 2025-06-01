@@ -743,6 +743,7 @@ pteroca:
   admin:
     overview:
       title: 'Admin Overview'
+      useful_resources: 'Useful Resources'
       servers: 'Active Servers'
       users: 'Registered Users'
       payments: 'Payments'

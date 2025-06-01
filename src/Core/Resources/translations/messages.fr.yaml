@@ -743,6 +743,7 @@ pteroca:
   admin:
     overview:
       title: 'Vue d’ensemble Admin'
+      useful_resources: 'Ressources Utiles'
       servers: 'Serveurs Actifs'
       users: 'Utilisateurs Enregistrés'
       payments: 'Paiements'

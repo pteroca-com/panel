@@ -742,6 +742,7 @@ pteroca:
   admin:
     overview:
       title: '管理员概览'
+      useful_resources: '有用资源'
       servers: '活跃服务器'
       users: '注册用户'
       payments: '支付'
