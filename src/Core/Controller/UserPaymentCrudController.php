@@ -64,7 +64,9 @@ class UserPaymentCrudController extends AbstractPanelController
                 ->formatValue(fn ($value) => sprintf(
                     "<span class='badge %s'>%s</span>",
                     $value === 'paid' ? 'badge-success' : 'badge-danger',
-                    $value,
+                    $value === 'paid' 
+                        ? $this->translator->trans('pteroca.recharge.transaction_paid')
+                        : $this->translator->trans('pteroca.recharge.transaction_unpaid'),
                 )),
             TextField::new('amountWithCurrency', $this->translator->trans('pteroca.crud.payment.amount'))
                 ->onlyOnIndex(),
