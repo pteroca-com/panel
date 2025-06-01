@@ -579,6 +579,9 @@ pteroca:
       created_at: 'Дата создания'
       updated_at: 'Последняя активность'
       avatar: 'Аватар'
+      repeat_password: 'Повторите пароль'
+      repeat_password_hint: 'Введите пароль еще раз для подтверждения.'
+      passwords_must_match: 'Пароли должны совпадать.'
     payment:
       session_id: 'ID сеанса'
       status: 'Статус'

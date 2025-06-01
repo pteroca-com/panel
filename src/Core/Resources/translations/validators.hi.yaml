@@ -1,0 +1,6 @@
+pteroca:
+  crud:
+    user:
+      passwords_must_match: 'पासवर्ड मेल खाना चाहिए।'
+  register:
+    email_already_exists: 'इस ईमेल पते के साथ पहले से ही एक खाता मौजूद है।'

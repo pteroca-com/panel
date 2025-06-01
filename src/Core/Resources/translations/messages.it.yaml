@@ -587,6 +587,9 @@ pteroca:
       created_at: 'Creato il'
       updated_at: 'Aggiornato il'
       avatar: 'Avatar'
+      repeat_password: 'Ripeti password'
+      repeat_password_hint: 'Inserisci nuovamente la password per confermare.'
+      passwords_must_match: 'Le password devono corrispondere.'
     payment:
       session_id: 'ID sessione'
       status: 'Stato'

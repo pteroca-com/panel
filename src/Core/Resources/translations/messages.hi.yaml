@@ -587,6 +587,9 @@ pteroca:
       created_at: 'बनाया गया'
       updated_at: 'अंतिम गतिविधि'
       avatar: 'अवतार'
+      repeat_password: 'पासवर्ड दोहराएं'
+      repeat_password_hint: 'पुष्टि के लिए पासवर्ड फिर से दर्ज करें।'
+      passwords_must_match: 'पासवर्ड मेल खाना चाहिए।'
     payment:
       session_id: 'सत्र आईडी'
       status: 'स्थिति'

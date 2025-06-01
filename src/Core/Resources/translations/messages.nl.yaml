@@ -575,6 +575,9 @@ pteroca:
       created_at: 'Aangemaakt op'
       updated_at: 'Laatste activiteit'
       avatar: 'Profielafbeelding'
+      repeat_password: 'Herhaal wachtwoord'
+      repeat_password_hint: 'Voer het wachtwoord opnieuw in ter bevestiging.'
+      passwords_must_match: 'Wachtwoorden moeten overeenkomen.'
     payment:
       session_id: 'Sessie-ID'
       status: 'Status'

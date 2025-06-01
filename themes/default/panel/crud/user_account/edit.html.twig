@@ -1,7 +1,7 @@
 {% extends '@EasyAdmin/crud/edit.html.twig' %}
 
-{% block content_header_wrapper %}
-    <div class="container-fluid mt-4">
+{% block content_header %}
+    <div class="container-fluid">
         <!-- Custom Header Section -->
         <div class="row">
             <div class="col-12">
@@ -16,15 +16,14 @@
                                 <p class="text-muted mb-0">{{ 'pteroca.crud.user_account.description'|trans }}</p>
                             </div>
                         </div>
+                        <!-- Page Actions -->
+                        {% block page_actions_wrapper %}
+                            <div class="page-actions">{% block page_actions %}{{ parent() }}{% endblock %}</div>
+                        {% endblock %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Original EasyAdmin Header (hidden) -->
-    {{ parent() }}
-    <style>
-        .content-header { display: none; }
-    </style>
 {% endblock %}
+

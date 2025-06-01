@@ -587,6 +587,9 @@ pteroca:
       created_at: '创建于'
       updated_at: '更新于'
       avatar: '头像'
+      repeat_password: '重复密码'
+      repeat_password_hint: '请再次输入密码以确认。'
+      passwords_must_match: '两次输入的密码必须一致。'
     payment:
       session_id: '会话 ID'
       status: '状态'

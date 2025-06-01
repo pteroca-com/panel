@@ -91,6 +91,11 @@ class UserAccountCrudController extends AbstractPanelController
                 ->onlyOnForms()
                 ->setHelp($this->translator->trans('pteroca.crud.user.password_hint'))
                 ->setColumns(5),
+            TextField::new('repeatPassword', $this->translator->trans('pteroca.crud.user.repeat_password'))
+                ->setFormTypeOption('attr', ['type' => 'password'])
+                ->onlyOnForms()
+                ->setHelp($this->translator->trans('pteroca.crud.user.repeat_password_hint'))
+                ->setColumns(5),
             
         ];
     }
@@ -138,7 +143,14 @@ class UserAccountCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof UserInterface) {
+        if ($entityInstance instanceof UserAccount) {
+            // Sprawdź, czy hasła się zgadzają
+            if ($entityInstance->getPlainPassword() && $entityInstance->getRepeatPassword()) {
+                if ($entityInstance->getPlainPassword() !== $entityInstance->getRepeatPassword()) {
+                    throw new \InvalidArgumentException($this->translator->trans('pteroca.crud.user.passwords_must_match'));
+                }
+            }
+
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);
