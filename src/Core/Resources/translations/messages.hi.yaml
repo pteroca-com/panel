@@ -137,6 +137,7 @@ pteroca:
     discount: 'छूट'
     discount_hint: 'छूट केवल पहले बिलिंग चक्र पर लागू होगी।'
     product_order_details: 'उत्पाद विवरण और ऑर्डर विकल्प'
+    total: 'कुल'
 
   store:
     title: 'स्टोर'

@@ -19,13 +19,11 @@
                 eggSelector.dispatchEvent(new Event('change'));
             }
 
-            // Dodaj listener do formularza, żeby zapisać konfigurację przed wysłaniem
             const form = document.querySelector('form');
             if (form) {
                 form.addEventListener('submit', saveEggsConfigurationToHiddenField);
             }
 
-            // Sprawdź czy są już wypełnione pola po powrocie z błędem walidacji
             setTimeout(() => {
                 restoreFormValuesAfterValidationError();
             }, 1500);
@@ -325,7 +323,6 @@
             }
         }
 
-        // Nowa funkcja do zapisywania konfiguracji przed wysłaniem formularza
         function saveEggsConfigurationToHiddenField() {
             const eggsConfiguration = {};
             const allEggsInputs = document.querySelectorAll('input[name*="eggs_configuration"], select[name*="eggs_configuration"]');
@@ -357,15 +354,12 @@
             }
         }
 
-        // Nowa funkcja do przywracania wartości po błędzie walidacji
         function restoreFormValuesAfterValidationError() {
-            // Sprawdź czy istnieją już wypełnione pola eggs_configuration
             const existingInputs = document.querySelectorAll('input[name*="eggs_configuration"], select[name*="eggs_configuration"]');
             if (existingInputs.length === 0) {
-                return; // Brak pól do przywrócenia
+                return;
             }
 
-            // Zbierz aktualne wartości z pól formularza
             const currentValues = {};
             existingInputs.forEach(input => {
                 const nameMatch = input.name.match(/eggs_configuration\[(\d+)\]\[(options|variables)\]\[([^\]]+)\]\[([^\]]+)\]/);
@@ -388,11 +382,9 @@
                 }
             });
 
-            // Jeśli są jakieś wartości, użyj ich zamiast domyślnych
             if (Object.keys(currentValues).length > 0) {
                 loadedEggsConfigurations = currentValues;
                 
-                // Przywróć wartości w polach
                 Object.entries(currentValues).forEach(([eggId, configurations]) => {
                     const inputName = `eggs_configuration[${eggId}]`;
                     if (configurations.options) {

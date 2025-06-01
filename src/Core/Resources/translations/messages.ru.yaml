@@ -130,6 +130,7 @@ pteroca:
     discount: 'Скидка'
     discount_hint: 'Скидка будет применена только к первому платежному периоду.'
     product_order_details: 'Детали продукта и варианты заказа'
+    total: 'Итого'
 
   store:
     title: 'Магазин'

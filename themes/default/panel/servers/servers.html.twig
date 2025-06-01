@@ -19,11 +19,11 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <div class="btn-group me-2" role="group" aria-label="Widok">
-                                <button type="button" class="btn btn-outline-primary active" id="view-cards" title="Widok kafelków">
+                            <div class="btn-group me-2" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="view-cards">
                                     <i class="fas fa-th-large"></i>
                                 </button>
-                                <button type="button" class="btn btn-outline-primary" id="view-list" title="Widok listy">
+                                <button type="button" class="btn btn-outline-primary" id="view-list">
                                     <i class="fas fa-list"></i>
                                 </button>
                             </div>
@@ -34,7 +34,6 @@
         </div>
 
         {% if servers|length > 0 %}
-            {# Widok kafelków #}
             <div id="cards-view">
                 {% set row = 1 %}
                 {% for server in servers %}
@@ -124,20 +123,17 @@
                 listView.style.display = 'block';
             }
 
-            // Zbierz unikalne ID serwerów, żeby uniknąć podwójnych zapytań
             const serverIds = new Set();
             document.querySelectorAll('[data-server-id]').forEach(element => {
                 serverIds.add(element.getAttribute('data-server-id'));
             });
 
-            // Wykonaj zapytanie tylko raz dla każdego serwera
             serverIds.forEach(serverId => {
                 const endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details';
 
                 fetch(endpointUrl)
                     .then(response => response.json())
                     .then(data => {
-                        // Aktualizuj wszystkie elementy z tym samym server-id (widok kafelków i listy)
                         const serverElements = document.querySelectorAll(`[data-server-id="${serverId}"]`);
                         serverElements.forEach(element => {
                             updateServerElements(element, data);

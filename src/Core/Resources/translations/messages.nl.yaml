@@ -132,6 +132,7 @@ pteroca:
     discount: 'Korting'
     discount_hint: 'Korting toegepast op de totale prijs'
     product_order_details: 'Productdetails en besteloptie'
+    total: 'Totaal'
   store:
     title: 'Winkel'
     order: 'Bestel'

@@ -135,6 +135,7 @@ pteroca:
     discount: 'Знижка'
     discount_hint: 'Знижка буде застосована лише до першого платіжного циклу.'
     product_order_details: 'Деталі продукту та варіанти замовлення'
+    total: 'Всього'
 
   store:
     title: 'Магазин'

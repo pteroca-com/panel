@@ -134,6 +134,7 @@ pteroca:
     discount: 'Rabatt'
     discount_hint: 'Der Rabatt wird nur auf den ersten Abrechnungszyklus angewendet'
     product_order_details: 'Produktdetails und Bestelloptionen'
+    total: 'Gesamt'
   store:
     title: 'Shop'
     order: 'Bestellung'

@@ -137,6 +137,7 @@ pteroca:
     discount: '折扣'
     discount_hint: '仅适用于第一个账单周期。'
     product_order_details: '产品详情和订购选项'
+    total: '总计'
 
   store:
     title: '商店'

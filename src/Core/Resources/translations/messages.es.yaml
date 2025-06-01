@@ -137,6 +137,7 @@ pteroca:
     discount: 'Descuento'
     discount_hint: 'El descuento se aplicará solo al primer ciclo de facturación.'
     product_order_details: 'Detalles del producto y opciones de pedido'
+    total: 'Total'
 
   store:
     title: 'Tienda'

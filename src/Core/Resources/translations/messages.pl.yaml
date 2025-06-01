@@ -137,6 +137,7 @@ pteroca:
     discount: 'Zniżka'
     discount_hint: 'Zniżka zostanie zastosowana tylko do pierwszego cyklu rozliczeniowego.'
     product_order_details: 'Szczegóły produktu i możliwość zamówienia'
+    total: 'Łącznie'
 
   store:
     title: 'Sklep'
