@@ -604,6 +604,8 @@ pteroca:
       used_voucher: '已使用的代金券'
       last_update: '最近更新'
       description: '管理您的付款并查看交易历史'
+      continue_payment: '继续付款'
+      detail: '详情'
     user_account:
       description: '编辑您的个人数据，更改密码并管理账户设置'
     log:

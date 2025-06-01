@@ -22,7 +22,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -91,13 +90,13 @@ class UserPaymentCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
-        $continuePayment = Action::new('continuePayment', 'Continue payment', 'fa fa-credit-card')
+        $continuePayment = Action::new('continuePayment', $this->translator->trans('pteroca.crud.payment.continue_payment'), 'fa fa-credit-card')
             ->linkToCrudAction('continuePayment')
             ->setHtmlAttributes(['target' => '_blank'])
             ->displayIf(static function (UserPayment $payment) {
                 return $payment->getStatus() !== PaymentStatusEnum::PAID->value;
             });
-        $showOnlyPaid = Action::new(name: Action::DETAIL, icon: 'fa fa-eye')
+        $showOnlyPaid = Action::new(name: Action::DETAIL, label: $this->translator->trans('pteroca.crud.payment.detail'), icon: 'fa fa-eye')
             ->linkToCrudAction('detail')
             ->displayIf(static function (UserPayment $payment) {
                 return $payment->getStatus() === PaymentStatusEnum::PAID->value;

@@ -592,6 +592,8 @@ pteroca:
       used_voucher: 'Gebruikte voucher'
       last_update: 'Laatste update'
       description: 'Beheer je betalingen en bekijk de transactiegeschiedenis'
+      continue_payment: 'Betaling voortzetten'
+      detail: 'Details'
     user_account:
       description: 'Bewerk je persoonlijke gegevens, wijzig je wachtwoord en beheer je accountinstellingen'
     voucher:

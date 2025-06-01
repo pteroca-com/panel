@@ -604,6 +604,8 @@ pteroca:
       used_voucher: 'उपयोग किया गया वाउचर'
       last_update: 'अंतिम अपडेट'
       description: 'अपने भुगतान प्रबंधित करें और लेनदेन इतिहास देखें'
+      continue_payment: 'भुगतान जारी रखें'
+      detail: 'विवरण'
     user_account:
       description: 'अपना व्यक्तिगत डेटा संपादित करें, पासवर्ड बदलें और खाता सेटिंग्स प्रबंधित करें'
     log:

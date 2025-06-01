@@ -604,6 +604,8 @@ pteroca:
       used_voucher: 'Użyty voucher'
       last_update: 'Ostatnia aktualizacja'
       description: 'Zarządzaj swoimi płatnościami i przeglądaj historię transakcji'
+      continue_payment: 'Kontynuuj płatność'
+      detail: 'Szczegóły'
     user_account:
       description: 'Edytuj swoje dane osobowe, zmień hasło i zarządzaj ustawieniami konta'
     log:

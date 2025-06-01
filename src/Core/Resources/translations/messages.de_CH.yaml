@@ -598,6 +598,8 @@ pteroca:
       used_voucher: 'Verwendeter Gutschein'
       last_update: 'Letzte Aktualisierung'
       description: 'Verwalten Sie Ihre Zahlungen und sehen Sie die Transaktionshistorie ein'
+      continue_payment: 'Zahlung fortsetzen'
+      detail: 'Details'
     user_account:
       description: 'Bearbeiten Sie Ihre persönlichen Daten, ändern Sie Ihr Passwort und verwalten Sie Ihre Kontoeinstellungen'
     log:

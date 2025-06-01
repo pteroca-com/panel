@@ -600,6 +600,9 @@ pteroca:
       balance_amount: 'Сума балансу'
       used_voucher: 'Використаний ваучер'
       last_update: 'Останнє оновлення'
+      description: 'Керуйте своїми платежами та переглядайте історію транзакцій'
+      continue_payment: 'Продовжити платіж'
+      detail: 'Деталі'
     log:
       log: 'Журнал'
       logs: 'Журнали'
