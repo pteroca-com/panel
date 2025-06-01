@@ -834,3 +834,21 @@ pteroca:
       pterodactyl_api_connection_success: "Pomyślnie połączono z API Pterodactyl."
       email_checking_smtp_connection: "Sprawdzanie połączenia z serwerem SMTP..."
       email_smtp_connection_success: "Pomyślnie połączono z serwerem SMTP."
+
+  error:
+    404:
+      title: 'Strona nie została znaleziona'
+      message: 'Przepraszamy, ale strona której szukasz nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.'
+      go_home: 'Strona główna'
+      go_back: 'Wróć'
+    500:
+      title: 'Błąd serwera'
+      message: 'Przepraszamy, wystąpił błąd wewnętrzny serwera. Nasz zespół został powiadomiony o problemie. Spróbuj odświeżyć stronę za kilka minut lub skontaktuj się z administratorem.'
+      go_home: 'Strona główna'
+      refresh: 'Odśwież stronę'
+      go_back: 'Wróć'
+    general:
+      title: 'Wystąpił błąd'
+      message: 'Przepraszamy, wystąpił nieoczekiwany błąd. Spróbuj ponownie za chwilę.'
+      go_home: 'Strona główna'
+      go_back: 'Wróć'

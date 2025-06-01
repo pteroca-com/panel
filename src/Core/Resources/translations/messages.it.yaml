@@ -834,3 +834,21 @@ pteroca:
       pterodactyl_api_connection_success: "Connessione all'API di Pterodactyl avvenuta con successo."
       email_checking_smtp_connection: "Verifica della connessione al server SMTP in corso..."
       email_smtp_connection_success: "Connessione al server SMTP avvenuta con successo."
+
+  error:
+    404:
+      title: 'Pagina non trovata'
+      message: 'Spiacenti, ma la pagina che stai cercando non esiste o è stata spostata. Controlla l''URL o torna alla pagina principale.'
+      go_home: 'Pagina principale'
+      go_back: 'Indietro'
+    500:
+      title: 'Errore del server'
+      message: 'Spiacenti, si è verificato un errore interno del server. Il nostro team è stato notificato del problema. Prova ad aggiornare la pagina tra qualche minuto o contatta l''amministratore.'
+      go_home: 'Pagina principale'
+      refresh: 'Aggiorna pagina'
+      go_back: 'Indietro'
+    general:
+      title: 'Si è verificato un errore'
+      message: 'Spiacenti, si è verificato un errore imprevisto. Riprova tra un momento.'
+      go_home: 'Pagina principale'
+      go_back: 'Indietro'

@@ -835,3 +835,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Connexion réussie à l’API Pterodactyl.'
       email_checking_smtp_connection: 'Vérification de la connexion au serveur SMTP...'
       email_smtp_connection_success: 'Connexion réussie au serveur SMTP.'
+
+  error:
+    404:
+      title: 'Page non trouvée'
+      message: 'Désolé, mais la page que vous recherchez n''existe pas ou a été déplacée. Vérifiez l''URL ou retournez à la page d''accueil.'
+      go_home: 'Page d''accueil'
+      go_back: 'Retour'
+    500:
+      title: 'Erreur du serveur'
+      message: 'Désolé, une erreur interne du serveur s''est produite. Notre équipe a été notifiée du problème. Essayez de rafraîchir la page dans quelques minutes ou contactez l''administrateur.'
+      go_home: 'Page d''accueil'
+      refresh: 'Actualiser la page'
+      go_back: 'Retour'
+    general:
+      title: 'Une erreur s''est produite'
+      message: 'Désolé, une erreur inattendue s''est produite. Veuillez réessayer dans un moment.'
+      go_home: 'Page d''accueil'
+      go_back: 'Retour'

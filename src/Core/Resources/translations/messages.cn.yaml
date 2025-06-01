@@ -834,3 +834,21 @@ pteroca:
       pterodactyl_api_connection_success: '成功连接到 Pterodactyl API。'
       email_checking_smtp_connection: '正在检查 SMTP 服务器连接...'
       email_smtp_connection_success: '成功连接到 SMTP 服务器。'
+
+  error:
+    404:
+      title: '页面未找到'
+      message: '抱歉，您要查找的页面不存在或已被移动。请检查URL或返回主页。'
+      go_home: '主页'
+      go_back: '返回'
+    500:
+      title: '服务器错误'
+      message: '抱歉，发生了内部服务器错误。我们的团队已收到问题通知。请几分钟后尝试刷新页面或联系管理员。'
+      go_home: '主页'
+      refresh: '刷新页面'
+      go_back: '返回'
+    general:
+      title: '发生错误'
+      message: '抱歉，发生了意外错误。请稍后再试。'
+      go_home: '主页'
+      go_back: '返回'

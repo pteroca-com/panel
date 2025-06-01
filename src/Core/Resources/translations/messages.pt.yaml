@@ -834,3 +834,21 @@ pteroca:
       pterodactyl_api_connection_success: "Conexão com a API do Pterodactyl bem-sucedida."
       email_checking_smtp_connection: "Verificando a conexão com o servidor SMTP..."
       email_smtp_connection_success: "Conexão com o servidor SMTP bem-sucedida."
+
+  error:
+    404:
+      title: 'Página não encontrada'
+      message: 'Desculpe, mas a página que você está procurando não existe ou foi movida. Verifique a URL ou volte para a página principal.'
+      go_home: 'Página principal'
+      go_back: 'Voltar'
+    500:
+      title: 'Erro do servidor'
+      message: 'Desculpe, ocorreu um erro interno do servidor. Nossa equipe foi notificada do problema. Tente atualizar a página em alguns minutos ou entre em contato com o administrador.'
+      go_home: 'Página principal'
+      refresh: 'Atualizar página'
+      go_back: 'Voltar'
+    general:
+      title: 'Ocorreu um erro'
+      message: 'Desculpe, ocorreu um erro inesperado. Tente novamente em um momento.'
+      go_home: 'Página principal'
+      go_back: 'Voltar'

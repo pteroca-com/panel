@@ -834,3 +834,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Erfolgreich mit der Pterodactyl-API verbunden.'
       email_checking_smtp_connection: 'Verbindung zum SMTP-Server wird überprüft...'
       email_smtp_connection_success: 'Erfolgreich mit dem SMTP-Server verbunden.'
+
+  error:
+    404:
+      title: 'Seite nicht gefunden'
+      message: 'Entschuldigung, aber die Seite, die Sie suchen, existiert nicht oder wurde verschoben. Überprüfen Sie die URL oder kehren Sie zur Startseite zurück.'
+      go_home: 'Startseite'
+      go_back: 'Zurück'
+    500:
+      title: 'Serverfehler'
+      message: 'Entschuldigung, es ist ein interner Serverfehler aufgetreten. Unser Team wurde über das Problem benachrichtigt. Versuchen Sie, die Seite in ein paar Minuten zu aktualisieren oder kontaktieren Sie den Administrator.'
+      go_home: 'Startseite'
+      refresh: 'Seite aktualisieren'
+      go_back: 'Zurück'
+    general:
+      title: 'Ein Fehler ist aufgetreten'
+      message: 'Entschuldigung, es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es in einem Moment erneut.'
+      go_home: 'Startseite'
+      go_back: 'Zurück'

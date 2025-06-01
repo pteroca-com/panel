@@ -819,3 +819,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Met succes verbonden met de Pterodactyl API.'
       email_checking_smtp_connection: 'De verbinding met de SMTP-server controleren...'
       email_smtp_connection_success: 'Succesvol verbonden met de SMTP-server.'
+
+  error:
+    404:
+      title: 'Pagina niet gevonden'
+      message: 'Sorry, maar de pagina die u zoekt bestaat niet of is verplaatst. Controleer de URL of ga terug naar de hoofdpagina.'
+      go_home: 'Hoofdpagina'
+      go_back: 'Terug'
+    500:
+      title: 'Serverfout'
+      message: 'Sorry, er is een interne serverfout opgetreden. Ons team is op de hoogte gesteld van het probleem. Probeer de pagina over een paar minuten te vernieuwen of neem contact op met de beheerder.'
+      go_home: 'Hoofdpagina'
+      refresh: 'Pagina vernieuwen'
+      go_back: 'Terug'
+    general:
+      title: 'Er is een fout opgetreden'
+      message: 'Sorry, er is een onverwachte fout opgetreden. Probeer het over een moment opnieuw.'
+      go_home: 'Hoofdpagina'
+      go_back: 'Terug'
