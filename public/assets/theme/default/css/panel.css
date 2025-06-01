@@ -327,3 +327,7 @@ input#command {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.form-select-lg, .form-control, .input-group-text {
+    font-size: 0.95rem !important;
+}
