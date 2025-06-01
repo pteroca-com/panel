@@ -599,6 +599,9 @@ pteroca:
       balance_amount: 'Kwota salda'
       used_voucher: 'Użyty voucher'
       last_update: 'Ostatnia aktualizacja'
+      description: 'Zarządzaj swoimi płatnościami i przeglądaj historię transakcji'
+    user_account:
+      description: 'Edytuj swoje dane osobowe, zmień hasło i zarządzaj ustawieniami konta'
     log:
       log: 'Log'
       logs: 'Logi'

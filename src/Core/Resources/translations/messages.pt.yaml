@@ -599,6 +599,9 @@ pteroca:
       balance_amount: 'Valor do saldo'
       used_voucher: 'Voucher usado'
       last_update: 'Última atualização'
+      description: 'Gerencie seus pagamentos e visualize o histórico de transações'
+    user_account:
+      description: 'Edite seus dados pessoais, altere sua senha e gerencie as configurações da conta'
     log:
       log: 'Registro'
       logs: 'Registros'

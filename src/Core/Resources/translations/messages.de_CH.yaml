@@ -593,6 +593,9 @@ pteroca:
       balance_amount: 'Kontostand'
       used_voucher: 'Verwendeter Gutschein'
       last_update: 'Letzte Aktualisierung'
+      description: 'Verwalten Sie Ihre Zahlungen und sehen Sie die Transaktionshistorie ein'
+    user_account:
+      description: 'Bearbeiten Sie Ihre persönlichen Daten, ändern Sie Ihr Passwort und verwalten Sie Ihre Kontoeinstellungen'
     log:
       log: 'Log'
       logs: 'Logs'

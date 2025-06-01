@@ -587,6 +587,9 @@ pteroca:
       balance_amount: 'Saldo bedrag'
       used_voucher: 'Gebruikte voucher'
       last_update: 'Laatste update'
+      description: 'Beheer je betalingen en bekijk de transactiegeschiedenis'
+    user_account:
+      description: 'Bewerk je persoonlijke gegevens, wijzig je wachtwoord en beheer je accountinstellingen'
     voucher:
       voucher: 'Voucher'
       vouchers: 'Vouchers'

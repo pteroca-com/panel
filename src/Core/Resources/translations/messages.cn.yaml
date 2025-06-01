@@ -599,6 +599,9 @@ pteroca:
       balance_amount: '余额金额'
       used_voucher: '已使用的代金券'
       last_update: '最近更新'
+      description: '管理您的付款并查看交易历史'
+    user_account:
+      description: '编辑您的个人数据，更改密码并管理账户设置'
     log:
       log: '日志'
       logs: '日志'

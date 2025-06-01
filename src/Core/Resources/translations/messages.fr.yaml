@@ -600,6 +600,9 @@ pteroca:
       balance_amount: 'Montant du solde'
       used_voucher: 'Bon utilisé'
       last_update: 'Dernière mise à jour'
+      description: 'Gérez vos paiements et consultez l''historique des transactions'
+    user_account:
+      description: 'Modifiez vos données personnelles, changez le mot de passe et gérez les paramètres du compte'
     log:
       log: 'Journal'
       logs: 'Journaux'

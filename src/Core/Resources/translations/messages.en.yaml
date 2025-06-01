@@ -600,6 +600,9 @@ pteroca:
       balance_amount: 'Balance amount'
       used_voucher: 'Used voucher'
       last_update: 'Last update'
+      description: 'Manage your payments and view transaction history'
+    user_account:
+      description: 'Edit your personal data, change password and manage account settings'
     log:
       log: 'Log'
       logs: 'Logs'
