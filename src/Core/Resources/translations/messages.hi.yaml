@@ -91,6 +91,7 @@ pteroca:
     failed_to_create_payment: 'भुगतान बनाने में विफल।'
     payment_not_found: 'भुगतान नहीं मिला।'
     payment_already_processed: 'भुगतान पहले ही संसाधित किया जा चुका है।'
+    payment_url_not_available: 'भुगतान URL उपलब्ध नहीं है।'
     current_balance: 'वर्तमान शेष राशि'
     payment_provider_information: 'भुगतान प्रदाता जानकारी'
     payment_provider_details: 'भुगतान सुरक्षित रूप से Stripe द्वारा संभाला जाता है। वह राशि दर्ज करें जिसे आप जोड़ना चाहते हैं, फिर "रिचार्ज करें" पर क्लिक करें।'

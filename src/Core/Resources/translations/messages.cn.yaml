@@ -91,6 +91,7 @@ pteroca:
     failed_to_create_payment: '未能创建支付。'
     payment_not_found: '未找到支付。'
     payment_already_processed: '支付已处理。'
+    payment_url_not_available: '支付URL不可用。'
     current_balance: '当前余额'
     payment_provider_information: '支付提供商信息'
     payment_provider_details: '支付由 Stripe 安全处理。请输入您想充值的金额，然后点击“充值”。'

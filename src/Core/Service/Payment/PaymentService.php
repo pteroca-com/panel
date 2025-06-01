@@ -80,11 +80,19 @@ class PaymentService
     ): string
     {
         $retrievedSession = $this->paymentProvider->retrieveSession($sessionId);
+        if ($retrievedSession === null) {
+            throw new \Exception($this->translator->trans('pteroca.recharge.payment_not_found'));
+        }
         if ($retrievedSession->getPaymentStatus() === PaymentStatusEnum::PAID->value) {
             throw new \Exception($this->translator->trans('pteroca.recharge.payment_already_processed'));
         }
 
-        return $retrievedSession->getUrl();
+        $url = $retrievedSession->getUrl();
+        if ($url === null) {
+            throw new \Exception($this->translator->trans('pteroca.recharge.payment_url_not_available'));
+        }
+
+        return $url;
     }
 
     public function finalizePayment(UserInterface $user, string $sessionId): ?string

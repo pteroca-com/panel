@@ -91,6 +91,7 @@ pteroca:
     failed_to_create_payment: 'Échec de la création du paiement.'
     payment_not_found: 'Paiement non trouvé.'
     payment_already_processed: 'Le paiement a déjà été traité.'
+    payment_url_not_available: 'L''URL de paiement n''est pas disponible.'
     current_balance: 'Solde actuel'
     payment_provider_information: 'Informations sur le prestataire de paiement'
     payment_provider_details: 'Les paiements sont sécurisés via Stripe. Entrez le montant que vous souhaitez recharger, puis cliquez sur "Recharger".'

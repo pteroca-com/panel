@@ -89,6 +89,7 @@ pteroca:
     failed_to_create_payment: 'Fehler beim Erstellen der Zahlung.'
     payment_not_found: 'Zahlung nicht gefunden.'
     payment_already_processed: 'Zahlung wurde bereits bearbeitet.'
+    payment_url_not_available: 'Zahlungs-URL ist nicht verfügbar.'
     current_balance: 'Aktueller Kontostand'
     payment_provider_information: 'Zahlungsanbieter Informationen'
     payment_provider_details: 'Zahlungen werden sicher von Stripe abgewickelt. Geben Sie den Betrag ein, den Sie aufladen möchten, und klicken Sie dann auf "Aufladen".'

@@ -85,6 +85,7 @@ pteroca:
     failed_to_create_payment: 'Не удалось создать платёж.'
     payment_not_found: 'Платеж не найден.'
     payment_already_processed: 'Платёж уже был обработан.'
+    payment_url_not_available: 'URL платежа недоступен.'
     current_balance: 'Текущий баланс'
     payment_provider_information: 'Информация о платежном провайдере'
     payment_provider_details: 'Платежи безопасно обрабатываются Stripe. Введите сумму, которую вы хотите пополнить, затем нажмите "Пополнить счет".'
