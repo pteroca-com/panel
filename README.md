@@ -26,6 +26,12 @@ It offers advanced billing, live server controls, and deep customization — all
 
 ---
 
+⭐ **Enjoying PteroCA? Don’t forget to star us on GitHub!**
+
+Your star helps us reach more developers and improve the project faster.
+
+---
+
 ### 🚀 Getting Started
 
 #### Installation
@@ -77,6 +83,8 @@ Also, if you're interested in helping translate PteroCA.com into more languages,
 
 Want to create your own custom themes for PteroCA?
 You can! Learn how to build and register your own themes in the [Theme Development Guide](https://docs.pteroca.com/guidebook/themes).
+
 ---
+
 ### 🔑 License
 PteroCA is an open-source project licensed under the [MIT License](https://github.com/pteroca-com/panel/blob/main/LICENSE).
