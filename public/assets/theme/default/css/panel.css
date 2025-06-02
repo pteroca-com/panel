@@ -331,3 +331,18 @@ input#command {
 .form-select-lg, .form-control, .input-group-text {
     font-size: 0.95rem !important;
 }
+
+.page-login .input-group-lg .input-group-text {
+    min-height: calc(1.5em + 1rem + 2px);
+    display: flex;
+    align-items: center;
+}
+.page-login .btn-primary {
+    background-color: rgb(93, 137, 186) !important;
+    border-color: rgb(93, 137, 186) !important;
+    color: white !important;
+}
+.page-login .btn-primary:hover {
+    background-color: rgb(82, 121, 167) !important;
+    border-color: rgb(82, 121, 167) !important;
+}

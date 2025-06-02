@@ -16,6 +16,9 @@ pteroca:
     invalid_captcha: 'Verificación CAPTCHA no válida.'
     user_blocked: 'Tu cuenta ha sido bloqueada.'
     dont_have_account_yet: '¿No tienes una cuenta? ¡Regístrate!'
+    subtitle: 'Inicia sesión en tu cuenta'
+    email_placeholder: 'tu@email.com'
+    password_placeholder: 'Introduce la contraseña'
 
   register:
     title: 'Registrarse'

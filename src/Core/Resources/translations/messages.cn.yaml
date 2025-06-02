@@ -16,6 +16,9 @@ pteroca:
     invalid_captcha: 'CAPTCHA 验证无效。'
     user_blocked: '您的账户已被锁定。'
     dont_have_account_yet: '还没有账户？注册！'
+    subtitle: '登录您的账户'
+    email_placeholder: '您的邮箱@email.com'
+    password_placeholder: '输入密码'
 
   register:
     title: '注册'

@@ -15,6 +15,9 @@ pteroca:
     invalid_captcha: 'Ongeldige CAPTCHA-verificatie.'
     user_blocked: 'Uw account is geblokkeerd.'
     dont_have_account_yet: "Heeft u nog geen account? Registreer nu!"
+    subtitle: 'Log in op uw account'
+    email_placeholder: 'uw@email.com'
+    password_placeholder: 'Voer uw wachtwoord in'
   register:
     title: 'Registreren'
     name: 'Voornaam'

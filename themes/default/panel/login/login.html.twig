@@ -9,22 +9,6 @@
     {% endif %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
-    <style>
-        .input-group-lg .input-group-text {
-            min-height: calc(1.5em + 1rem + 2px);
-            display: flex;
-            align-items: center;
-        }
-        .btn-primary {
-            background-color: rgb(93, 137, 186) !important;
-            border-color: rgb(93, 137, 186) !important;
-            color: white !important;
-        }
-        .btn-primary:hover {
-            background-color: rgb(82, 121, 167) !important;
-            border-color: rgb(82, 121, 167) !important;
-        }
-    </style>
 {% endblock %}
 
 {% block head_favicon %}
@@ -55,7 +39,7 @@
                     <!-- Title Section -->
                     <div class="text-center mb-4">
                         <h1 class="h4 fw-bold text-dark mb-1">{{ 'pteroca.login.title'|trans }}</h1>
-                        <p class="text-muted small mb-0">Zaloguj się do swojego konta</p>
+                        <p class="text-muted small mb-0">{{ 'pteroca.login.subtitle'|trans }}</p>
                     </div>
 
                     <!-- Flash Messages -->
@@ -91,7 +75,7 @@
                                 name="{{ username_parameter|default('_username') }}" 
                                 class="form-control form-control-lg" 
                                 value="{{ last_username|default('') }}" 
-                                placeholder="twoj@email.com"
+                                placeholder="{{ 'pteroca.login.email_placeholder'|trans }}"
                                 required 
                                 autofocus 
                                 autocomplete="username"
@@ -110,7 +94,7 @@
                                     id="password" 
                                     name="{{ password_parameter|default('_password') }}" 
                                     class="form-control form-control-lg" 
-                                    placeholder="Wprowadź hasło"
+                                    placeholder="{{ 'pteroca.login.password_placeholder'|trans }}"
                                     required 
                                     autocomplete="current-password"
                                 >
@@ -178,7 +162,7 @@
                 <p class="text-white small mb-0">
                     Powered by 
                     <a href="https://pteroca.com" target="_blank" class="text-white text-decoration-none">
-                        Pteroca v{{ get_app_version() }}
+                        PteroCA v{{ get_app_version() }}
                     </a> 
                     &copy; {{ 'now'|date('Y') }}
                 </p>

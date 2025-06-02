@@ -16,6 +16,9 @@ pteroca:
     invalid_captcha: 'Ungültige CAPTCHA-Verifizierung.'
     user_blocked: 'Ihr Konto wurde gesperrt.'
     dont_have_account_yet: 'Noch kein Konto? Jetzt registrieren!'
+    subtitle: 'Melden Sie sich in Ihrem Konto an'
+    email_placeholder: 'ihre@email.com'
+    password_placeholder: 'Passwort eingeben'
 
   register:
     title: 'Registrieren'

@@ -16,6 +16,9 @@ pteroca:
     invalid_captcha: 'Неверная CAPTCHA.'
     user_blocked: 'Ваша учётная запись заблокирована.'
     dont_have_account_yet: "Еще нет аккаунта? Зарегистрируйтесь сейчас!"
+    subtitle: 'Войдите в свой аккаунт'
+    email_placeholder: 'ваш@email.com'
+    password_placeholder: 'Введите пароль'
   register:
     title: 'Регистрация'
     name: 'Имя'
