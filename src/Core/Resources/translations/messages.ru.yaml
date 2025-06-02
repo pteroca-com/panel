@@ -73,6 +73,9 @@ pteroca:
     ip_address: 'IP-адрес'
     view_all_servers: 'Посмотреть все сервера'
     title: 'Панель управления'
+    welcome_message: 'Центр управления вашим сервером'
+    quick_actions: 'Быстрые действия'
+    browse_store: 'Просмотр магазина'
   recharge:
     recharge_balance: 'Пополнить баланс'
     recharge: 'Пополнить'
@@ -603,6 +606,12 @@ pteroca:
       payments: 'Платежи'
       balance_amount: 'Сумма баланса'
       used_voucher: 'Использованный купон'
+      last_update: 'Последнее обновление'
+      description: 'Управляйте платежами и просматривайте историю транзакций'
+      continue_payment: 'Продолжить платеж'
+      detail: 'Подробности'
+    user_account:
+      description: 'Редактируйте свои персональные данные, изменяйте пароль и управляйте настройками аккаунта'
     log:
       log: 'Лог'
       logs: 'Логи'
@@ -678,12 +687,6 @@ pteroca:
       voucher_usages: 'Использованные купоны'
       my_account: 'Мой аккаунт'
       account_settings: 'Настройки аккаунта'
-      last_update: 'Последнее обновление'
-      description: 'Управляйте своими платежами и просматривайте историю транзакций'
-      continue_payment: 'Продолжить платеж'
-      detail: 'Детали'
-    user_account:
-      description: 'Редактируйте свои персональные данные, изменяйте пароль и управляйте настройками аккаунта'
   api:
     servers:
       not_found: 'Сервер не найден.'

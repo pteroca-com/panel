@@ -76,6 +76,9 @@ pteroca:
     ip_address: 'IP-адреса'
     view_all_servers: 'Переглянути всі сервери'
     title: 'Панель приладів'
+    welcome_message: 'Центр керування вашим сервером'
+    quick_actions: 'Швидкі дії'
+    browse_store: 'Переглянути магазин'
   recharge:
     recharge_balance: 'Поповнити баланс'
     recharge: 'Поповнити'
@@ -612,6 +615,8 @@ pteroca:
       description: 'Керуйте своїми платежами та переглядайте історію транзакцій'
       continue_payment: 'Продовжити платіж'
       detail: 'Деталі'
+    user_account:
+      description: 'Редагуйте свої персональні дані, змінюйте пароль та керуйте налаштуваннями акаунта'
     log:
       log: 'Журнал'
       logs: 'Журнали'
