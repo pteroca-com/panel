@@ -92,6 +92,7 @@ pteroca:
     payment_not_found: 'Pagamento não encontrado.'
     payment_already_processed: 'O pagamento já foi processado.'
     payment_url_not_available: 'URL de pagamento não disponível.'
+    payment_expired: 'Este pagamento expirou e não pode mais ser continuado. Por favor, crie um novo pagamento.'
     current_balance: 'Saldo atual'
     payment_provider_information: 'Informações do provedor de pagamento'
     payment_provider_details: 'Os pagamentos são processados com segurança pelo Stripe. Insira o valor que deseja recarregar e clique em "Recarregar".'

@@ -89,6 +89,7 @@ pteroca:
     payment_not_found: 'Платіж не знайдено.'
     payment_already_processed: 'Платіж уже оброблено.'
     payment_url_not_available: 'URL платежу недоступний.'
+    payment_expired: 'Цей платіж прострочений і більше не може бути продовжений. Будь ласка, створіть новий платіж.'
     current_balance: 'Поточний баланс'
     payment_provider_information: 'Інформація про постачальника платіжних послуг'
     payment_provider_details: 'Платежі обробляються безпечно через Stripe. Введіть суму, яку ви хочете поповнити, а потім натисніть "Поповнити".'

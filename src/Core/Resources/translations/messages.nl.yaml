@@ -88,6 +88,7 @@ pteroca:
     payment_not_found: 'Betaling niet gevonden.'
     payment_already_processed: 'Betaling is al verwerkt.'
     payment_url_not_available: 'Betalings-URL is niet beschikbaar.'
+    payment_expired: 'Deze betaling is verlopen en kan niet meer worden voortgezet. Maak alstublieft een nieuwe betaling aan.'
     current_balance: 'Huidig saldo'
     payment_provider_information: 'Betalingsprovider informatie'
     payment_provider_details: 'Betalingen worden veilig verwerkt door Stripe. Voer het bedrag in dat u wilt opwaarderen en klik vervolgens op ''Opwaarderen''.'

@@ -9,6 +9,7 @@ use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\VoucherTypeEnum;
+use App\Core\Exception\PaymentExpiredException;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Provider\Payment\PaymentProviderInterface;
 use App\Core\Repository\PaymentRepository;
@@ -89,7 +90,7 @@ class PaymentService
 
         $url = $retrievedSession->getUrl();
         if ($url === null) {
-            throw new \Exception($this->translator->trans('pteroca.recharge.payment_url_not_available'));
+            throw new PaymentExpiredException($this->translator->trans('pteroca.recharge.payment_expired'));
         }
 
         return $url;

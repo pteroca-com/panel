@@ -92,6 +92,7 @@ pteroca:
     payment_not_found: 'Zahlung nicht gefunden.'
     payment_already_processed: 'Die Zahlung wurde bereits verarbeitet.'
     payment_url_not_available: 'Zahlungs-URL ist nicht verfügbar.'
+    payment_expired: 'Diese Zahlung ist abgelaufen und kann nicht mehr fortgesetzt werden. Bitte erstellen Sie eine neue Zahlung.'
     current_balance: 'Aktueller Kontostand'
     payment_provider_information: 'Informationen zum Zahlungsanbieter'
     payment_provider_details: 'Zahlungen werden sicher über Stripe abgewickelt. Geben Sie den Betrag ein, den Sie aufladen möchten, und klicken Sie dann auf "Aufladen".'

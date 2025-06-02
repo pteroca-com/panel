@@ -9,6 +9,7 @@ use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Exception\PaymentExpiredException;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\SettingService;
@@ -51,7 +52,15 @@ class UserPaymentCrudController extends AbstractPanelController
             throw new \Exception('Invalid entity type');
         }
 
-        $continuePaymentUrl = $this->paymentService->continuePayment($entity->getSessionId());
+        try {
+            $continuePaymentUrl = $this->paymentService->continuePayment($entity->getSessionId());
+        } catch (PaymentExpiredException $e) {
+            $this->addFlash('danger', $e->getMessage());
+            return $this->redirectToRoute('panel', [
+                'crudAction' => 'index',
+                'crudControllerFqcn' => self::class,
+            ]);
+        }
 
         return $this->redirect($continuePaymentUrl);
     }

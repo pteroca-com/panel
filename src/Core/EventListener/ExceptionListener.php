@@ -48,7 +48,6 @@ class ExceptionListener
             $response = new Response($content, $statusCode);
             $event->setResponse($response);
         } catch (\Exception $e) {
-            dd($e->getMessage());
             return;
         }
     }

@@ -92,6 +92,7 @@ pteroca:
     payment_not_found: 'Nie znaleziono płatności.'
     payment_already_processed: 'Płatność została już przetworzona.'
     payment_url_not_available: 'URL płatności nie jest dostępny.'
+    payment_expired: 'Ta płatność wygasła i nie można jej już kontynuować. Proszę utworzyć nową płatność.'
     current_balance: 'Aktualne saldo'
     payment_provider_information: 'Informacje o dostawcy płatności'
     payment_provider_details: 'Płatności są bezpiecznie obsługiwane przez Stripe. Wprowadź kwotę, którą chcesz doładować, a następnie kliknij przycisk "Doładuj".'

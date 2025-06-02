@@ -92,6 +92,7 @@ pteroca:
     payment_not_found: 'Payment not found.'
     payment_already_processed: 'Payment has already been processed.'
     payment_url_not_available: 'Payment URL is not available.'
+    payment_expired: 'This payment has expired and can no longer be continued. Please create a new payment.'
     current_balance: 'Current balance'
     payment_provider_information: 'Payment provider information'
     payment_provider_details: 'Payments are securely handled by Stripe. Enter the amount you want to recharge, then click "Recharge".'
