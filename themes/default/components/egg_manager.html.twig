@@ -18,6 +18,15 @@
                 eggSelector.addEventListener('change', loadEggsData);
                 eggSelector.dispatchEvent(new Event('change'));
             }
+
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', saveEggsConfigurationToHiddenField);
+            }
+
+            setTimeout(() => {
+                restoreFormValuesAfterValidationError();
+            }, 1500);
         });
 
         function loadEggs() {
@@ -296,16 +305,99 @@
 
         function setConfigurationInputValue(inputName, optionIndex, optionName, value) {
             const valueInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
+                selectInput = document.querySelector(`select[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
                 viewableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_viewable]"]`),
                 editableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_editable]"]`);
+            
             if (valueInput) {
                 valueInput.value = value.value;
+            }
+            if (selectInput) {
+                selectInput.value = value.value;
             }
             if (viewableInput) {
                 viewableInput.checked = value.user_viewable || false;
             }
             if (editableInput) {
                 editableInput.checked = value.user_editable || false;
+            }
+        }
+
+        function saveEggsConfigurationToHiddenField() {
+            const eggsConfiguration = {};
+            const allEggsInputs = document.querySelectorAll('input[name*="eggs_configuration"], select[name*="eggs_configuration"]');
+            
+            allEggsInputs.forEach(input => {
+                const nameMatch = input.name.match(/eggs_configuration\[(\d+)\]\[(options|variables)\]\[([^\]]+)\]\[([^\]]+)\]/);
+                if (nameMatch) {
+                    const [, eggId, type, itemId, property] = nameMatch;
+                    
+                    if (!eggsConfiguration[eggId]) {
+                        eggsConfiguration[eggId] = { options: {}, variables: {} };
+                    }
+                    
+                    if (!eggsConfiguration[eggId][type][itemId]) {
+                        eggsConfiguration[eggId][type][itemId] = {};
+                    }
+                    
+                    if (input.type === 'checkbox') {
+                        eggsConfiguration[eggId][type][itemId][property] = input.checked;
+                    } else {
+                        eggsConfiguration[eggId][type][itemId][property] = input.value;
+                    }
+                }
+            });
+
+            const hiddenField = document.querySelector('#Product_eggsConfiguration');
+            if (hiddenField && Object.keys(eggsConfiguration).length > 0) {
+                hiddenField.value = JSON.stringify(eggsConfiguration);
+            }
+        }
+
+        function restoreFormValuesAfterValidationError() {
+            const existingInputs = document.querySelectorAll('input[name*="eggs_configuration"], select[name*="eggs_configuration"]');
+            if (existingInputs.length === 0) {
+                return;
+            }
+
+            const currentValues = {};
+            existingInputs.forEach(input => {
+                const nameMatch = input.name.match(/eggs_configuration\[(\d+)\]\[(options|variables)\]\[([^\]]+)\]\[([^\]]+)\]/);
+                if (nameMatch) {
+                    const [, eggId, type, itemId, property] = nameMatch;
+                    
+                    if (!currentValues[eggId]) {
+                        currentValues[eggId] = { options: {}, variables: {} };
+                    }
+                    
+                    if (!currentValues[eggId][type][itemId]) {
+                        currentValues[eggId][type][itemId] = {};
+                    }
+                    
+                    if (input.type === 'checkbox') {
+                        currentValues[eggId][type][itemId][property] = input.checked;
+                    } else {
+                        currentValues[eggId][type][itemId][property] = input.value;
+                    }
+                }
+            });
+
+            if (Object.keys(currentValues).length > 0) {
+                loadedEggsConfigurations = currentValues;
+                
+                Object.entries(currentValues).forEach(([eggId, configurations]) => {
+                    const inputName = `eggs_configuration[${eggId}]`;
+                    if (configurations.options) {
+                        Object.entries(configurations.options).forEach(([name, value]) => {
+                            setConfigurationInputValue(inputName, 'options', name, value);
+                        });
+                    }
+                    if (configurations.variables) {
+                        Object.entries(configurations.variables).forEach(([variableId, variable]) => {
+                            setConfigurationInputValue(inputName, 'variables', variableId, variable);
+                        });
+                    }
+                });
             }
         }
     </script>

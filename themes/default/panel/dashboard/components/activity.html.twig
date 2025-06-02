@@ -1,25 +1,60 @@
-<div class="card mb-4">
+<div class="card border-0 shadow-sm rounded-3">
     <div class="card-header">
-        <h5 class="card-title">{{ 'pteroca.dashboard.last_activity'|trans }}</h5>
+        <div class="d-flex align-items-center">
+            <i class="fas fa-history me-2"></i>
+            <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.dashboard.last_activity'|trans }}</h5>
+        </div>
     </div>
-    <div class="card-body">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>{{ 'pteroca.dashboard.action'|trans }}</th>
-                <th>{{ 'pteroca.dashboard.ip_address'|trans }}</th>
-                <th>{{ 'pteroca.dashboard.date'|trans }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for log in logs %}
-                <tr>
-                    <td>{{ ('pteroca.actions.' ~ log.actionId)|trans }}</td>
-                    <td>{{ log.ipAddress }}</td>
-                    <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <div class="card-body p-4">
+        {% if logs|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th class="fw-semibold">
+                                <i class="fas fa-bolt me-2 text-primary"></i>
+                                {{ 'pteroca.dashboard.action'|trans }}
+                            </th>
+                            <th class="fw-semibold">
+                                <i class="fas fa-globe me-2 text-info"></i>
+                                {{ 'pteroca.dashboard.ip_address'|trans }}
+                            </th>
+                            <th class="fw-semibold">
+                                <i class="fas fa-calendar me-2 text-warning"></i>
+                                {{ 'pteroca.dashboard.date'|trans }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-2">
+                                            <i class="fas fa-user-check p-2 text-primary" style="font-size: 0.75rem;"></i>
+                                        </div>
+                                        {{ ('pteroca.actions.' ~ log.actionId)|trans }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge">{{ log.ipAddress }}</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ log.createdAt|date('Y-m-d H:i:s') }}</small>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <div class="rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-history text-muted" style="font-size: 1.5rem;"></i>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">{{ 'pteroca.dashboard.no_activity'|trans }}</h6>
+                <p class="text-muted mb-0 small">{{ 'pteroca.dashboard.no_activity_description'|trans }}</p>
+            </div>
+        {% endif %}
     </div>
 </div>

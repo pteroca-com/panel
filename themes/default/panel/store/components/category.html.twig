@@ -1,12 +1,33 @@
-<div class="card h-100">
+<div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
     {% if category.imagePath %}
-        <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}">
-            <img src="{{ category.imagePath }}" class="card-img-top" alt="{{ category.name }}">
-        </a>
+        <div class="position-relative overflow-hidden">
+            <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}" class="text-decoration-none">
+                <img src="{{ category.imagePath }}" class="card-img-top" alt="{{ category.name }}" style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+            </a>
+            <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge bg-primary rounded-pill px-3 py-2">
+                    <i class="fas fa-folder"></i>
+                </span>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-img-top bg-gradient" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-folder text-white" style="font-size: 3rem; opacity: 0.8;"></i>
+        </div>
     {% endif %}
-    <div class="card-body d-flex flex-column">
-        <h5 class="card-title">{{ category.name }}</h5>
-        <p class="card-text">{{ category.description }}</p>
-        <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}" class="btn btn-primary mt-auto w-100">{{ 'pteroca.store.show_offer'|trans }}</a>
+    <div class="card-body d-flex flex-column p-4">
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-primary bg-opacity-10 rounded-circle me-3">
+                <i class="fas fa-tag p-3 text-primary"></i>
+            </div>
+            <h5 class="card-title mb-0 fw-bold">{{ category.name }}</h5>
+        </div>
+        <p class="card-text mb-4 flex-grow-1">{{ category.description }}</p>
+        <div class="d-grid">
+            <a href="{{ path('panel', { routeName: 'store_category', id: category.id }) }}" class="btn btn-primary btn-lg rounded-pill fw-semibold">
+                <i class="fas fa-arrow-right me-2"></i>
+                {{ 'pteroca.store.show_offer'|trans }}
+            </a>
+        </div>
     </div>
 </div>

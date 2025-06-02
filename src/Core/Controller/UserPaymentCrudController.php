@@ -9,6 +9,7 @@ use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Exception\PaymentExpiredException;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\SettingService;
@@ -22,7 +23,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -52,7 +52,15 @@ class UserPaymentCrudController extends AbstractPanelController
             throw new \Exception('Invalid entity type');
         }
 
-        $continuePaymentUrl = $this->paymentService->continuePayment($entity->getSessionId());
+        try {
+            $continuePaymentUrl = $this->paymentService->continuePayment($entity->getSessionId());
+        } catch (PaymentExpiredException $e) {
+            $this->addFlash('danger', $e->getMessage());
+            return $this->redirectToRoute('panel', [
+                'crudAction' => 'index',
+                'crudControllerFqcn' => self::class,
+            ]);
+        }
 
         return $this->redirect($continuePaymentUrl);
     }
@@ -65,7 +73,9 @@ class UserPaymentCrudController extends AbstractPanelController
                 ->formatValue(fn ($value) => sprintf(
                     "<span class='badge %s'>%s</span>",
                     $value === 'paid' ? 'badge-success' : 'badge-danger',
-                    $value,
+                    $value === 'paid' 
+                        ? $this->translator->trans('pteroca.recharge.transaction_paid')
+                        : $this->translator->trans('pteroca.recharge.transaction_unpaid'),
                 )),
             TextField::new('amountWithCurrency', $this->translator->trans('pteroca.crud.payment.amount'))
                 ->onlyOnIndex(),
@@ -91,13 +101,13 @@ class UserPaymentCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
-        $continuePayment = Action::new('continuePayment', 'Continue payment', 'fa fa-credit-card')
+        $continuePayment = Action::new('continuePayment', $this->translator->trans('pteroca.crud.payment.continue_payment'), 'fa fa-credit-card')
             ->linkToCrudAction('continuePayment')
             ->setHtmlAttributes(['target' => '_blank'])
             ->displayIf(static function (UserPayment $payment) {
                 return $payment->getStatus() !== PaymentStatusEnum::PAID->value;
             });
-        $showOnlyPaid = Action::new(name: Action::DETAIL, icon: 'fa fa-eye')
+        $showOnlyPaid = Action::new(name: Action::DETAIL, label: $this->translator->trans('pteroca.crud.payment.detail'), icon: 'fa fa-eye')
             ->linkToCrudAction('detail')
             ->displayIf(static function (UserPayment $payment) {
                 return $payment->getStatus() === PaymentStatusEnum::PAID->value;

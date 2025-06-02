@@ -9,18 +9,24 @@ pteroca:
   login:
     title: 'Zaloguj się'
     email_address: 'Adres e-mail'
+    email_placeholder: 'twoj@email.com'
     password: 'Hasło'
+    password_placeholder: 'Wprowadź hasło'
     forgot_password: 'Zapomniałeś hasła?'
     remember_me: 'Zapamiętaj mnie'
     sign_in: 'Zaloguj się'
     invalid_captcha: 'Nieprawidłowa weryfikacja CAPTCHA.'
     user_blocked: 'Twoje konto zostało zablokowane.'
     dont_have_account_yet: 'Nie masz jeszcze konta? Zarejestruj się!'
+    subtitle: 'Zaloguj się do swojego konta'
 
   register:
     title: 'Zarejestruj się'
+    subtitle: 'Utwórz swoje nowe konto'
     name: 'Imię'
+    name_placeholder: 'Wprowadź swoje imię'
     surname: 'Nazwisko'
+    surname_placeholder: 'Wprowadź swoje nazwisko'
     email_address: 'Adres e-mail'
     password: 'Hasło'
     accept_terms: 'Akceptuję <a href="{{ link }}" target="_blank">regulamin</a>'
@@ -38,6 +44,8 @@ pteroca:
     invalid_email: 'Nieprawidłowy adres e-mail.'
     email_already_exists: 'Konto o podanym adresie e-mail już istnieje.'
     already_have_account: 'Masz już konto? Zaloguj się!'
+    email_placeholder: 'twoj@email.com'
+    password_placeholder: 'Wprowadź hasło'
 
   recovery:
     title: 'Przypomnij hasło'
@@ -68,6 +76,9 @@ pteroca:
     ip_address: 'Adres IP'
     view_all_servers: 'Przejdź do serwerów'
     title: 'Dashboard'
+    welcome_message: 'Twoje centrum dowodzenia serwerami'
+    quick_actions: 'Szybkie akcje'
+    browse_store: 'Przeglądaj sklep'
   recharge:
     recharge_balance: 'Doładuj balans'
     recharge: 'Doładuj'
@@ -88,10 +99,16 @@ pteroca:
     failed_to_create_payment: 'Nie udało się utworzyć płatności.'
     payment_not_found: 'Nie znaleziono płatności.'
     payment_already_processed: 'Płatność została już przetworzona.'
+    payment_url_not_available: 'URL płatności nie jest dostępny.'
+    payment_expired: 'Ta płatność wygasła i nie można jej już kontynuować. Proszę utworzyć nową płatność.'
     current_balance: 'Aktualne saldo'
     payment_provider_information: 'Informacje o dostawcy płatności'
     payment_provider_details: 'Płatności są bezpiecznie obsługiwane przez Stripe. Wprowadź kwotę, którą chcesz doładować, a następnie kliknij przycisk "Doładuj".'
     payment_is_not_configured: 'System płatności nie jest skonfigurowany. Skontaktuj się z administratorem.'
+    recharge_description: 'Doładuj balans swojego konta'
+    amount_hint: 'Wprowadź kwotę, którą chcesz doładować.'
+    view_transaction_history: 'Zobacz historię transakcji'
+    view_all_payments_description: 'Zobacz wszystkie płatności, które zostały dokonane na Twoim koncie.'
 
   product:
     information: 'Informacje'
@@ -129,6 +146,8 @@ pteroca:
     ports: 'Porty'
     discount: 'Zniżka'
     discount_hint: 'Zniżka zostanie zastosowana tylko do pierwszego cyklu rozliczeniowego.'
+    product_order_details: 'Szczegóły produktu i możliwość zamówienia'
+    total: 'Łącznie'
 
   store:
     title: 'Sklep'
@@ -144,6 +163,14 @@ pteroca:
     no_categories: 'Nie ma jeszcze żadnych kategorii dodanych do sklepu.'
     no_products: 'Nie ma jeszcze żadnych produktów w tej kategorii.'
     price_not_found: 'Nie znaleziono ceny'
+    description: 'Wybierz kategorię lub produkt, który Cię interesuje'
+    products_with_no_category: 'Produkty bez kategorii'
+    categories: 'Kategorie'
+    category_description: 'Produkty dostępne w tej kategorii'
+    available_products: 'Dostępne produkty'
+    no_products_title: 'Brak produktów'
+    shop_is_empty: 'Sklep jest pusty'
+    no_products_and_categories: 'Nie ma jeszcze żadnych produktów ani kategorii w sklepie.'
   cart_configuration:
     title: 'Skonfiguruj swój serwer'
     configuration: 'Konfiguracja'
@@ -153,13 +180,16 @@ pteroca:
     auto_renewal: 'Automatyczne odnawianie'
     enable: 'Włącz automatyczne odnawianie'
     disable: 'Wyłącz automatyczne odnawianie'
+    description: 'Skonfiguruj swój serwer i przejdź do płatności'
   cart_topup:
     title: 'Doładuj swoje konto'
     order: 'Zamów'
     order_description: 'Doładuj środki'
     payment_method: 'Metoda płatności'
+    description: 'Doładuj balans swojego konta'
   cart_renew:
     title: 'Odnów swój serwer'
+    description: 'Przedłuż swój serwer, aby uniknąć jego zawieszenia lub usunięcia.'
   cart:
     use_voucher: 'Użyj kuponu'
     voucher_code: 'Kod kuponu'
@@ -192,6 +222,10 @@ pteroca:
     extend: 'Przedłuż'
     no_servers: 'Nie masz jeszcze żadnych serwerów.'
     click_to_buy: 'Kliknij tutaj, aby kupić serwer.'
+    status: 'Status'
+    name: 'Nazwa'
+    actions: 'Akcje'
+    description: 'Zarządzaj swoimi serwerami, przeglądaj ich szczegóły i wykonuj różne akcje, takie jak przedłużanie, zarządzanie i konfiguracja.'
 
   server:
     title: 'Zarządzanie serwerem'
@@ -562,6 +596,9 @@ pteroca:
       created_at: 'Utworzono'
       updated_at: 'Ostatnia aktywność'
       avatar: 'Awatar'
+      repeat_password: 'Powtórz hasło'
+      repeat_password_hint: 'Wprowadź ponownie hasło w celu potwierdzenia.'
+      passwords_must_match: 'Hasła muszą być identyczne.'
     payment:
       session_id: 'ID sesji'
       status: 'Status'
@@ -575,6 +612,11 @@ pteroca:
       balance_amount: 'Kwota salda'
       used_voucher: 'Użyty voucher'
       last_update: 'Ostatnia aktualizacja'
+      description: 'Zarządzaj swoimi płatnościami i przeglądaj historię transakcji'
+      continue_payment: 'Kontynuuj płatność'
+      detail: 'Szczegóły'
+    user_account:
+      description: 'Edytuj swoje dane osobowe, zmień hasło i zarządzaj ustawieniami konta'
     log:
       log: 'Log'
       logs: 'Logi'
@@ -715,6 +757,7 @@ pteroca:
   admin:
     overview:
       title: 'Przegląd Administracyjny'
+      useful_resources: 'Przydatne zasoby'
       servers: 'Aktywne Serwery'
       users: 'Zarejestrowani Użytkownicy'
       payments: 'Płatności'
@@ -800,3 +843,21 @@ pteroca:
       pterodactyl_api_connection_success: "Pomyślnie połączono z API Pterodactyl."
       email_checking_smtp_connection: "Sprawdzanie połączenia z serwerem SMTP..."
       email_smtp_connection_success: "Pomyślnie połączono z serwerem SMTP."
+
+  error:
+    404:
+      title: 'Strona nie została znaleziona'
+      message: 'Przepraszamy, ale strona której szukasz nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.'
+      go_home: 'Strona główna'
+      go_back: 'Wróć'
+    500:
+      title: 'Błąd serwera'
+      message: 'Przepraszamy, wystąpił błąd wewnętrzny serwera. Nasz zespół został powiadomiony o problemie. Spróbuj odświeżyć stronę za kilka minut lub skontaktuj się z administratorem.'
+      go_home: 'Strona główna'
+      refresh: 'Odśwież stronę'
+      go_back: 'Wróć'
+    general:
+      title: 'Wystąpił błąd'
+      message: 'Przepraszamy, wystąpił nieoczekiwany błąd. Spróbuj ponownie za chwilę.'
+      go_home: 'Strona główna'
+      go_back: 'Wróć'

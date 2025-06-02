@@ -9,18 +9,24 @@ pteroca:
   login:
     title: 'Entrar'
     email_address: 'Endereço de e-mail'
+    email_placeholder: 'seu@email.com'
     password: 'Senha'
+    password_placeholder: 'Digite sua senha'
     forgot_password: 'Esqueceu a senha?'
     remember_me: 'Lembrar-me'
     sign_in: 'Entrar'
     invalid_captcha: 'Verificação CAPTCHA inválida.'
     user_blocked: 'Sua conta foi bloqueada.'
     dont_have_account_yet: 'Ainda não tem uma conta? Cadastre-se!'
+    subtitle: 'Faça login na sua conta'
 
   register:
     title: 'Registrar'
+    subtitle: 'Crie sua nova conta'
     name: 'Nome'
+    name_placeholder: 'Digite seu nome'
     surname: 'Sobrenome'
+    surname_placeholder: 'Digite seu sobrenome'
     email_address: 'Endereço de e-mail'
     password: 'Senha'
     accept_terms: 'Aceito os <a href="{{ link }}" target="_blank">termos e condições</a>'
@@ -38,6 +44,8 @@ pteroca:
     invalid_email: 'Endereço de e-mail inválido.'
     email_already_exists: 'Já existe uma conta com este endereço de e-mail.'
     already_have_account: 'Já tem uma conta? Faça login!'
+    email_placeholder: 'seu@email.com'
+    password_placeholder: 'Digite sua senha'
 
   recovery:
     title: 'Recuperar senha'
@@ -68,6 +76,9 @@ pteroca:
     ip_address: 'Endereço IP'
     view_all_servers: 'Ver todos os servidores'
     title: 'Painel de controle'
+    welcome_message: 'Seu centro de comando de servidores'
+    quick_actions: 'Ações rápidas'
+    browse_store: 'Navegar na loja'
   recharge:
     recharge_balance: 'Recarregar saldo'
     recharge: 'Recarregar'
@@ -88,10 +99,16 @@ pteroca:
     failed_to_create_payment: 'Falha ao criar o pagamento.'
     payment_not_found: 'Pagamento não encontrado.'
     payment_already_processed: 'O pagamento já foi processado.'
+    payment_url_not_available: 'URL de pagamento não disponível.'
+    payment_expired: 'Este pagamento expirou e não pode mais ser continuado. Por favor, crie um novo pagamento.'
     current_balance: 'Saldo atual'
     payment_provider_information: 'Informações do provedor de pagamento'
     payment_provider_details: 'Os pagamentos são processados com segurança pelo Stripe. Insira o valor que deseja recarregar e clique em "Recarregar".'
     payment_is_not_configured: 'O sistema de pagamento não está configurado. Entre em contato com o administrador.'
+    recharge_description: 'Recarregue o saldo da sua conta'
+    amount_hint: 'Insira o valor que deseja recarregar.'
+    view_transaction_history: 'Ver histórico de transações'
+    view_all_payments_description: 'Mostra todos os pagamentos feitos em sua conta.'
 
   product:
     information: 'Informações'
@@ -129,6 +146,8 @@ pteroca:
     ports: 'Portas'
     discount: 'Desconto'
     discount_hint: 'O desconto será aplicado apenas ao primeiro ciclo de cobrança.'
+    product_order_details: 'Detalhes do produto e opções de pedido'
+    total: 'Total'
 
   store:
     title: 'Loja'
@@ -144,6 +163,14 @@ pteroca:
     no_categories: 'Nenhuma categoria foi adicionada à loja ainda.'
     no_products: 'Não há produtos nesta categoria.'
     price_not_found: 'Preço não encontrado'
+    description: 'Selecione a categoria ou produto do seu interesse'
+    products_with_no_category: 'Produtos sem categoria'
+    categories: 'Categorias'
+    category_description: 'Produtos disponíveis nesta categoria'
+    available_products: 'Produtos disponíveis'
+    no_products_title: 'Nenhum produto'
+    shop_is_empty: 'A loja está vazia'
+    no_products_and_categories: 'Ainda não há produtos ou categorias na loja.'
   cart_configuration:
     title: 'Configure seu servidor'
     configuration: 'Configuração'
@@ -153,13 +180,16 @@ pteroca:
     auto_renewal: 'Renovação automática'
     enable: 'Habilitar renovação automática'
     disable: 'Desabilitar renovação automática'
+    description: 'Configure seu servidor e prossiga para o pagamento'
   cart_topup:
     title: 'Recarregar sua conta'
     order: 'Pedir'
     order_description: 'Recarregar fundos'
     payment_method: 'Método de pagamento'
+    description: 'Recarregue o saldo da sua conta'
   cart_renew:
     title: 'Renove seu servidor'
+    description: 'Renove seu servidor para evitar suspensão ou remoção.'
   cart:
     use_voucher: 'Usar vale'
     voucher_code: 'Código do vale'
@@ -192,6 +222,10 @@ pteroca:
     extend: 'Estender'
     no_servers: 'Você ainda não tem servidores.'
     click_to_buy: 'Clique aqui para comprar um servidor.'
+    name: 'Nome'
+    status: 'Status'
+    actions: 'Ações'
+    description: 'Gerencie seus servidores, visualize seus detalhes e execute várias ações como renovação, gerenciamento e configuração.'
 
   server:
     title: 'Gerenciamento do servidor'
@@ -562,6 +596,9 @@ pteroca:
       created_at: 'Criado em'
       updated_at: 'Atualizado em'
       avatar: 'Avatar'
+      repeat_password: 'Repetir senha'
+      repeat_password_hint: 'Digite a senha novamente para confirmar.'
+      passwords_must_match: 'As senhas devem coincidir.'
     payment:
       session_id: 'ID da sessão'
       status: 'Status'
@@ -575,6 +612,11 @@ pteroca:
       balance_amount: 'Valor do saldo'
       used_voucher: 'Voucher usado'
       last_update: 'Última atualização'
+      description: 'Gerencie seus pagamentos e visualize o histórico de transações'
+      continue_payment: 'Continuar pagamento'
+      detail: 'Detalhes'
+    user_account:
+      description: 'Edite seus dados pessoais, altere sua senha e gerencie as configurações da conta'
     log:
       log: 'Registro'
       logs: 'Registros'
@@ -715,6 +757,7 @@ pteroca:
   admin:
     overview:
       title: 'Visão Geral do Admin'
+      useful_resources: 'Recursos Úteis'
       servers: 'Servidores Ativos'
       users: 'Usuários Registrados'
       payments: 'Pagamentos'
@@ -801,3 +844,20 @@ pteroca:
       email_checking_smtp_connection: "Verificando a conexão com o servidor SMTP..."
       email_smtp_connection_success: "Conexão com o servidor SMTP bem-sucedida."
 
+  error:
+    404:
+      title: 'Página não encontrada'
+      message: 'Desculpe, mas a página que você está procurando não existe ou foi movida. Verifique a URL ou volte para a página principal.'
+      go_home: 'Página principal'
+      go_back: 'Voltar'
+    500:
+      title: 'Erro do servidor'
+      message: 'Desculpe, ocorreu um erro interno do servidor. Nossa equipe foi notificada do problema. Tente atualizar a página em alguns minutos ou entre em contato com o administrador.'
+      go_home: 'Página principal'
+      refresh: 'Atualizar página'
+      go_back: 'Voltar'
+    general:
+      title: 'Ocorreu um erro'
+      message: 'Desculpe, ocorreu um erro inesperado. Tente novamente em um momento.'
+      go_home: 'Página principal'
+      go_back: 'Voltar'

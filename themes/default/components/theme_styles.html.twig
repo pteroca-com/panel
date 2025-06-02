@@ -19,5 +19,11 @@
         --link-hover-color: {{ defaultThemeColors.theme_default_dark_link_hover_color }};
         --table-hover-cell-bg: var(--secondary-color);
         --bs-border-color:  var(--bs-border-color-translucent);
+        .bg-light {
+            background-color: var(--table-hover-cell-bg) !important;
+        }
+        .bg-light:hover {
+            background-color: var(--bs-border-color) !important;
+        }
     }
 </style>

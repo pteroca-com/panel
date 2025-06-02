@@ -34,6 +34,7 @@ class ServerService
         );
 
         return new ServerDetailsDTO(
+            identifier: $server->getPterodactylServerIdentifier(),
             name: $pterodactylServer->get('name'),
             description: $pterodactylServer->get('description'),
             ip: $serverIpAddress,

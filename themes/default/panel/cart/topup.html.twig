@@ -1,117 +1,175 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block head_stylesheets %}
-    {{ parent() }}
-    <style>
-        .card-input-element + label {
-            cursor: pointer;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .card-input-element:checked + label {
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 0 5px var(--primary-color);
-        }
-
-        .card-input-element:disabled + label {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-    </style>
-{% endblock %}
-
 {% block title %}| {{ 'pteroca.cart_topup.title'|trans }}{% endblock %}
 
-{% block content_title %}{{ 'pteroca.cart_topup.title'|trans }}{% endblock %}
+{% block content %}
+    <div class="container-fluid mt-4">
+        <!-- Header Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="bg-light rounded-3 p-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle me-3">
+                                <i class="fas fa-wallet p-3 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-1 fw-bold">{{ 'pteroca.cart_topup.title'|trans }}</h4>
+                                <p class="text-muted mb-0">{{ 'pteroca.cart_topup.description'|trans }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#useVoucherModal">
+                                <i class="fa fa-plus me-2"></i>{{ 'pteroca.cart.use_voucher'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-{% block page_actions %}
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#useVoucherModal">
-        <i class="fa fa-plus"></i>
-        {{ 'pteroca.cart.use_voucher'|trans }}
-    </button>
-
-    <a class="btn btn-secondary" href="{{ path('panel') }}">
-        {{ 'pteroca.system.back'|trans }}
-    </a>
-{% endblock %}
-
-{% block main %}
-    <div class="container mt-4">
         <form action="{{ path('panel', { routeName: 'cart_topup' }) }}" method="post">
             <input type="hidden" name="amount" value="{{ request.amount }}" id="topup-amount">
             <input type="hidden" name="currency" value="{{ request.currency }}">
             <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="payment_discount">
-            <div class="row">
-                <div class="col-8 pe-5">
-                    <div class="row">
-                        <div class="col-12 p-3 background-secondary">
-                            <div class="row">
-                                <div class="col-12 mb-3">
-                                    <h4>{{ 'pteroca.cart_topup.order'|trans }}</h4>
+            
+            <div class="row g-4">
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    <!-- Top-up Order Card -->
+                    <div class="card border-0 shadow-sm rounded-3 mb-4">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-wallet me-2"></i>
+                                <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.cart_topup.order'|trans }}</h5>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bg-success bg-opacity-10 rounded-circle me-3">
+                                            <i class="fas fa-coins p-3 text-success"></i>
+                                        </div>
+                                        <div>
+                                            <small>{{ 'pteroca.cart_topup.order_description'|trans }}</small>
+                                            <div class="fw-bold fs-5 text-success">
+                                                {{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-12">
-                                    <p>{{ 'pteroca.cart_topup.order_description'|trans }} - {{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}</p>
+                                <div class="text-end">
+                                    <i class="fas fa-plus-circle text-success" style="font-size: 3rem;"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 mt-5">
-                            <div class="row">
-                                <div class="col-12 mb-4">
-                                    <h4>{{ 'pteroca.cart_topup.payment_method'|trans }}</h4>
-                                </div>
-                                <div class="col-12">
-                                    <div class="row g-3">
-                                        <div class="col-12 col-sm-6 col-md-6 col-lg-4">
-                                            <input type="radio"
-                                                   name="payment_provider"
-                                                   id="provider1"
-                                                   value="provider1"
-                                                   class="card-input-element d-none"
-                                                   checked>
-                                            <label for="provider1" class="card p-3 card-input">
-                                                <div class="card-body text-center">
-                                                    <img src="{{ asset('assets/img/payments/stripe.svg') }}"
-                                                         alt="Provider 1"
-                                                         class="img-fluid"
-                                                         style="max-height: 40px;">
-                                                    <h5 class="card-title mt-2">Stripe</h5>
-                                                </div>
-                                            </label>
+                    </div>
+
+                    <!-- Payment Method Card -->
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-credit-card me-2"></i>
+                                <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.cart_topup.payment_method'|trans }}</h5>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                                    <input type="radio"
+                                           name="payment_provider"
+                                           id="provider1"
+                                           value="provider1"
+                                           class="card-input-element d-none"
+                                           checked>
+                                    <label for="provider1" class="card border-2 shadow-sm rounded-3 card-input h-100">
+                                        <div class="card-body text-center p-4">
+                                            <img src="{{ asset('assets/img/payments/stripe.svg') }}"
+                                                 alt="Stripe"
+                                                 class="img-fluid mb-3"
+                                                 style="max-height: 40px;">
+                                            <h6 class="card-title mb-0 fw-semibold">Stripe</h6>
                                         </div>
-                                    </div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-4 h-100">
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <h4>{{ 'pteroca.cart_configuration.order_summary'|trans }}</h4>
-                        </div>
-                        <div class="col-12">
-                            <b>{{ 'pteroca.cart_topup.order_description'|trans }}</b> ({{ request.amount|number_format(2, '.', '') }} {{ get_currency() }})
-                            <span class="float-end">
-                                {{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}
-                            </span>
-                            <hr>
-                        </div>
-                        <div class="col-12 d-none" id="applied-discount">
-                            {{ 'pteroca.product.discount'|trans }} <small>(<span id="applied-discount-code"></span>, -<span id="applied-discount-value"></span>%)</small>
-                            <i class="fa fa-close ps-1 hover-pointer" id="applied-discount-remove"></i>
-                            <span class="float-end">-<span id="applied-discount-amount"></span> {{ request.currency|upper }}</span>
-                            <hr>
-                        </div>
-                        <div class="col-12">
-                            <span id="selected-summary" class="fs-3 float-end">
-                                {{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}
-                            </span>
-                        </div>
 
-                        <div class="col-12">
-                            <button type="submit" id="order-submit" class="btn btn-primary mt-3 w-100">
-                                <i class="fa fa-shopping-basket"></i> {{ 'pteroca.product.order_now'|trans }}
-                            </button>
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-3 sticky-top" style="top: 20px;">
+                        <div class="card-header bg-success text-white">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-receipt me-2"></i>
+                                <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.cart_configuration.order_summary'|trans }}</h5>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Top-up Amount -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ 'pteroca.cart_topup.order_description'|trans }}</strong>
+                                        <div class="small text-muted">{{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-semibold">{{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <hr class="my-3">
+                            
+                            <!-- Payment Method -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small>{{ 'pteroca.cart_topup.payment_method'|trans }}:</small>
+                                        <div id="selected-payment-method" class="fw-semibold">Stripe</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Discount Section -->
+                            <div class="mb-3 d-none" id="applied-discount">
+                                <hr class="my-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-success">{{ 'pteroca.product.discount'|trans }}</small>
+                                        <div class="small text-muted">
+                                            <span id="applied-discount-code"></span> (-<span id="applied-discount-value"></span>%)
+                                            <i class="fa fa-question-circle-o ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.product.discount_hint'|trans }}"></i>
+                                            <i class="fa fa-close ms-1 hover-pointer text-danger" id="applied-discount-remove"></i>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-success">-<span id="applied-discount-amount"></span> {{ request.currency|upper }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-3">
+
+                            <!-- Total -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">{{ 'pteroca.product.total'|trans }}:</span>
+                                    <span id="selected-summary" class="fw-bold text-primary fs-4">
+                                        {{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Order Button -->
+                            <div class="d-grid">
+                                <button type="submit" id="order-submit" class="btn btn-success btn-lg rounded-pill fw-semibold">
+                                    <i class="fa fa-shopping-basket me-2"></i>
+                                    {{ 'pteroca.product.order_now'|trans }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,7 +188,14 @@
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
 
+            // Add event listeners for payment method selection
+            const paymentRadios = document.querySelectorAll('input[name="payment_provider"]');
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', updateSelectedPaymentMethod);
+            });
+
             calculatePrice();
+            updateSelectedPaymentMethod();
         })
 
         function calculatePrice() {
@@ -147,6 +212,15 @@
             }
 
             document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ request.currency|upper }}`
+        }
+
+        function updateSelectedPaymentMethod() {
+            const selectedRadio = document.querySelector('input[name="payment_provider"]:checked');
+            if (selectedRadio) {
+                const label = document.querySelector(`label[for="${selectedRadio.id}"]`);
+                const methodName = label.querySelector('.card-title').textContent;
+                document.querySelector('#selected-payment-method').textContent = methodName;
+            }
         }
     </script>
 {% endblock %}

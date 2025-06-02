@@ -1,0 +1,6 @@
+pteroca:
+  crud:
+    user:
+      passwords_must_match: 'Passwörter müssen übereinstimmen.'
+  register:
+    email_already_exists: 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.'

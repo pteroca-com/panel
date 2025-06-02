@@ -9,18 +9,24 @@ pteroca:
   login:
     title: 'Accedi'
     email_address: 'Indirizzo e-mail'
+    email_placeholder: 'tua@email.com'
     password: 'Password'
+    password_placeholder: 'Inserisci la password'
     forgot_password: 'Hai dimenticato la password?'
     remember_me: 'Ricordami'
     sign_in: 'Accedi'
     invalid_captcha: 'Verifica CAPTCHA non valida.'
     user_blocked: 'Il tuo account è stato bloccato.'
     dont_have_account_yet: 'Non hai ancora un account? Registrati!'
+    subtitle: 'Accedi al tuo account'
 
   register:
     title: 'Registrati'
+    subtitle: 'Crea il tuo nuovo account'
     name: 'Nome'
+    name_placeholder: 'Inserisci il tuo nome'
     surname: 'Cognome'
+    surname_placeholder: 'Inserisci il tuo cognome'
     email_address: 'Indirizzo e-mail'
     password: 'Password'
     accept_terms: 'Accetto i <a href="{{ link }}" target="_blank">termini e condizioni</a>'
@@ -38,6 +44,8 @@ pteroca:
     invalid_email: 'Indirizzo e-mail non valido.'
     email_already_exists: 'Esiste già un account con questo indirizzo e-mail.'
     already_have_account: 'Hai già un account? Accedi!'
+    email_placeholder: 'tua@email.com'
+    password_placeholder: 'Inserisci la password'
 
   recovery:
     title: 'Recupera password'
@@ -68,6 +76,9 @@ pteroca:
     ip_address: 'Indirizzo IP'
     view_all_servers: 'Visualizza tutti i server'
     title: 'Cruscotto'
+    welcome_message: 'Il tuo centro di comando server'
+    quick_actions: 'Azioni rapide'
+    browse_store: 'Sfoglia negozio'
   recharge:
     recharge_balance: 'Ricarica saldo'
     recharge: 'Ricarica'
@@ -88,10 +99,16 @@ pteroca:
     failed_to_create_payment: 'Impossibile creare il pagamento.'
     payment_not_found: 'Pagamento non trovato.'
     payment_already_processed: 'Il pagamento è già stato elaborato.'
+    payment_url_not_available: 'URL di pagamento non disponibile.'
+    payment_expired: 'Questo pagamento è scaduto e non può più essere continuato. Si prega di creare un nuovo pagamento.'
     current_balance: 'Saldo attuale'
     payment_provider_information: 'Informazioni sul fornitore di pagamenti'
     payment_provider_details: "I pagamenti sono gestiti in modo sicuro tramite Stripe. Inserisci l'importo che desideri ricaricare e poi clicca su 'Ricarica'."
     payment_is_not_configured: "Il sistema di pagamento non è configurato. Contatta l'amministratore."
+    recharge_description: 'Ricarica il saldo del tuo account'
+    amount_hint: 'Inserisci l''importo che desideri ricaricare.'
+    view_transaction_history: 'Visualizza storico transazioni'
+    view_all_payments_description: 'Mostra tutti i pagamenti effettuati sul tuo account.'
 
   product:
     information: 'Informazioni'
@@ -129,6 +146,8 @@ pteroca:
     ports: 'Porte'
     discount: 'Sconto'
     discount_hint: 'Lo sconto verrà applicato solo al primo ciclo di fatturazione.'
+    product_order_details: 'Dettagli del prodotto e opzioni di ordine'
+    total: 'Totale'
 
   store:
     title: 'Negozio'
@@ -144,6 +163,14 @@ pteroca:
     no_categories: 'Nessuna categoria è stata ancora aggiunta al negozio.'
     no_products: 'Non ci sono ancora prodotti in questa categoria.'
     price_not_found: 'Prezzo non trovato'
+    description: 'Seleziona la categoria o il prodotto che ti interessa'
+    products_with_no_category: 'Prodotti senza categoria'
+    categories: 'Categorie'
+    category_description: 'Prodotti disponibili in questa categoria'
+    available_products: 'Prodotti disponibili'
+    no_products_title: 'Nessun prodotto'
+    shop_is_empty: 'Il negozio è vuoto'
+    no_products_and_categories: 'Non ci sono ancora prodotti o categorie nel negozio.'
   cart_configuration:
     title: 'Configura il tuo server'
     configuration: 'Configurazione'
@@ -153,13 +180,16 @@ pteroca:
     auto_renewal: 'Rinnovo automatico'
     enable: 'Abilita rinnovo automatico'
     disable: 'Disabilita rinnovo automatico'
+    description: 'Configura il tuo server e procedi al pagamento'
   cart_topup:
     title: 'Ricarica il tuo conto'
     order: 'Ordina'
     order_description: 'Ricarica fondi'
     payment_method: 'Metodo di pagamento'
+    description: 'Ricarica il saldo del tuo account'
   cart_renew:
     title: 'Rinnova il tuo server'
+    description: 'Rinnova il tuo server per evitare la sospensione o la rimozione.'
   cart:
     use_voucher: 'Utilizza il buono'
     voucher_code: 'Codice buono'
@@ -192,6 +222,10 @@ pteroca:
     extend: 'Estendi'
     no_servers: 'Non hai ancora server.'
     click_to_buy: 'Clicca qui per acquistare un server.'
+    name: 'Nome'
+    status: 'Stato'
+    actions: 'Azioni'
+    description: 'Gestisci i tuoi server, visualizza i loro dettagli ed esegui varie azioni come rinnovo, gestione e configurazione.'
 
   server:
     title: 'Gestione del server'
@@ -562,6 +596,9 @@ pteroca:
       created_at: 'Creato il'
       updated_at: 'Aggiornato il'
       avatar: 'Avatar'
+      repeat_password: 'Ripeti password'
+      repeat_password_hint: 'Inserisci nuovamente la password per confermare.'
+      passwords_must_match: 'Le password devono corrispondere.'
     payment:
       session_id: 'ID sessione'
       status: 'Stato'
@@ -575,6 +612,11 @@ pteroca:
       balance_amount: 'Importo saldo'
       used_voucher: 'Voucher utilizzato'
       last_update: 'Ultimo aggiornamento'
+      description: 'Gestisci i tuoi pagamenti e visualizza la cronologia delle transazioni'
+      continue_payment: 'Continua pagamento'
+      detail: 'Dettagli'
+    user_account:
+      description: 'Modifica i tuoi dati personali, cambia la password e gestisci le impostazioni dell''account'
     log:
       log: 'Registro'
       logs: 'Registri'
@@ -715,6 +757,7 @@ pteroca:
   admin:
     overview:
       title: 'Panoramica Amministratore'
+      useful_resources: 'Risorse Utili'
       servers: 'Server Attivi'
       users: 'Utenti Registrati'
       payments: 'Pagamenti'
@@ -800,3 +843,21 @@ pteroca:
       pterodactyl_api_connection_success: "Connessione all'API di Pterodactyl avvenuta con successo."
       email_checking_smtp_connection: "Verifica della connessione al server SMTP in corso..."
       email_smtp_connection_success: "Connessione al server SMTP avvenuta con successo."
+
+  error:
+    404:
+      title: 'Pagina non trovata'
+      message: 'Spiacenti, ma la pagina che stai cercando non esiste o è stata spostata. Controlla l''URL o torna alla pagina principale.'
+      go_home: 'Pagina principale'
+      go_back: 'Indietro'
+    500:
+      title: 'Errore del server'
+      message: 'Spiacenti, si è verificato un errore interno del server. Il nostro team è stato notificato del problema. Prova ad aggiornare la pagina tra qualche minuto o contatta l''amministratore.'
+      go_home: 'Pagina principale'
+      refresh: 'Aggiorna pagina'
+      go_back: 'Indietro'
+    general:
+      title: 'Si è verificato un errore'
+      message: 'Spiacenti, si è verificato un errore imprevisto. Riprova tra un momento.'
+      go_home: 'Pagina principale'
+      go_back: 'Indietro'

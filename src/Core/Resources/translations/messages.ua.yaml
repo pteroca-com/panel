@@ -16,9 +16,13 @@ pteroca:
     invalid_captcha: 'Неправильна перевірка CAPTCHA.'
     user_blocked: 'Ваш обліковий запис заблокований.'
     dont_have_account_yet: 'Ще немає облікового запису? Зареєструйтеся!'
+    subtitle: 'Увійдіть до свого облікового запису'
+    email_placeholder: 'ваш@email.com'
+    password_placeholder: 'Введіть пароль'
 
   register:
     title: 'Реєстрація'
+    subtitle: 'Створіть свій новий обліковий запис'
     name: 'Ім’я'
     surname: 'Прізвище'
     email_address: 'Електронна пошта'
@@ -38,6 +42,10 @@ pteroca:
     invalid_email: 'Неправильна електронна пошта.'
     email_already_exists: 'Обліковий запис з такою електронною поштою вже існує.'
     already_have_account: 'Вже є обліковий запис? Увійдіть!'
+    name_placeholder: 'Введіть ваше ім''я'
+    surname_placeholder: 'Введіть ваше прізвище'
+    email_placeholder: 'ваш@email.com'
+    password_placeholder: 'Введіть пароль'
 
   recovery:
     title: 'Відновити пароль'
@@ -68,6 +76,9 @@ pteroca:
     ip_address: 'IP-адреса'
     view_all_servers: 'Переглянути всі сервери'
     title: 'Панель приладів'
+    welcome_message: 'Центр керування вашим сервером'
+    quick_actions: 'Швидкі дії'
+    browse_store: 'Переглянути магазин'
   recharge:
     recharge_balance: 'Поповнити баланс'
     recharge: 'Поповнити'
@@ -88,10 +99,16 @@ pteroca:
     failed_to_create_payment: 'Не вдалося створити платіж.'
     payment_not_found: 'Платіж не знайдено.'
     payment_already_processed: 'Платіж уже оброблено.'
+    payment_url_not_available: 'URL платежу недоступний.'
+    payment_expired: 'Цей платіж прострочений і більше не може бути продовжений. Будь ласка, створіть новий платіж.'
     current_balance: 'Поточний баланс'
     payment_provider_information: 'Інформація про постачальника платіжних послуг'
     payment_provider_details: 'Платежі обробляються безпечно через Stripe. Введіть суму, яку ви хочете поповнити, а потім натисніть "Поповнити".'
-    payment_is_not_configured: 'Платіжна система не налаштована. Зв’яжіться з адміністратором.'
+    recharge_description: 'Поповніть баланс вашого облікового запису'
+    amount_hint: 'Введіть суму, яку ви хочете поповнити.'
+    view_transaction_history: 'Переглянути історію транзакцій'
+    view_all_payments_description: 'Показує всі платежі, здійснені на вашому обліковому записі.'
+    payment_is_not_configured: 'Платіжна система не налаштована. Зв''яжіться з адміністратором.'
 
   product:
     information: 'Інформація'
@@ -129,6 +146,8 @@ pteroca:
     ports: 'Порти'
     discount: 'Знижка'
     discount_hint: 'Знижка буде застосована лише до першого платіжного циклу.'
+    product_order_details: 'Деталі продукту та варіанти замовлення'
+    total: 'Всього'
 
   store:
     title: 'Магазин'
@@ -144,6 +163,14 @@ pteroca:
     no_categories: 'Ще не додано жодних категорій у магазин.'
     no_products: 'У цій категорії немає продуктів.'
     price_not_found: 'Ціну не знайдено'
+    description: 'Виберіть категорію або продукт, який вас цікавить'
+    products_with_no_category: 'Товари без категорії'
+    categories: 'Категорії'
+    category_description: 'Товари, доступні в цій категорії'
+    available_products: 'Доступні товари'
+    no_products_title: 'Немає товарів'
+    shop_is_empty: 'Магазин порожній'
+    no_products_and_categories: 'У магазині поки що немає товарів або категорій.'
   cart_configuration:
     title: 'Налаштувати сервер'
     configuration: 'Конфігурація'
@@ -153,13 +180,16 @@ pteroca:
     auto_renewal: 'Автоматичне подовження'
     enable: 'Увімкнути автоматичне подовження'
     disable: 'Вимкнути автоматичне подовження'
+    description: 'Налаштуйте ваш сервер та здійсніть оплату'
   cart_topup:
     title: 'Поповнити свій рахунок'
     order: 'Замовити'
     order_description: 'Поповнити кошти'
     payment_method: 'Спосіб оплати'
+    description: 'Поповніть баланс вашого облікового запису'
   cart_renew:
     title: 'Подовжити сервер'
+    description: 'Подовжіть ваш сервер, щоб продовжити його використання'
   cart:
     use_voucher: 'Використати ваучер'
     voucher_code: 'Код ваучера'
@@ -192,6 +222,10 @@ pteroca:
     extend: 'Продовжити'
     no_servers: 'У вас ще немає серверів.'
     click_to_buy: 'Натисніть тут, щоб купити сервер.'
+    name: 'Імʼя'
+    status: 'Статус'
+    actions: 'Дії'
+    description: 'Керуйте всіма вашими серверами з цієї сторінки'
 
   server:
     title: 'Управління сервером'
@@ -562,6 +596,9 @@ pteroca:
       created_at: 'Створено'
       updated_at: 'Оновлено'
       avatar: 'Аватар'
+      repeat_password: 'Повторіть пароль'
+      repeat_password_hint: 'Введіть пароль ще раз для підтвердження.'
+      passwords_must_match: 'Паролі повинні збігатися.'
     payment:
       session_id: 'ID сесії'
       status: 'Статус'
@@ -575,6 +612,11 @@ pteroca:
       balance_amount: 'Сума балансу'
       used_voucher: 'Використаний ваучер'
       last_update: 'Останнє оновлення'
+      description: 'Керуйте своїми платежами та переглядайте історію транзакцій'
+      continue_payment: 'Продовжити платіж'
+      detail: 'Деталі'
+    user_account:
+      description: 'Редагуйте свої персональні дані, змінюйте пароль та керуйте налаштуваннями акаунта'
     log:
       log: 'Журнал'
       logs: 'Журнали'
@@ -715,6 +757,7 @@ pteroca:
   admin:
     overview:
       title: 'Адміністративний Огляд'
+      useful_resources: 'Корисні Ресурси'
       servers: 'Активні Сервери'
       users: 'Зареєстровані Користувачі'
       payments: 'Платежі'
@@ -800,3 +843,21 @@ pteroca:
       pterodactyl_api_connection_success: "Успішно підключено до API Pterodactyl."
       email_checking_smtp_connection: "Перевірка підключення до SMTP сервера..."
       email_smtp_connection_success: "Успішно підключено до SMTP сервера."
+
+  error:
+    404:
+      title: 'Сторінка не знайдена'
+      message: 'Вибачте, але сторінка, яку ви шукаєте, не існує або була переміщена. Перевірте URL або поверніться на головну сторінку.'
+      go_home: 'Головна сторінка'
+      go_back: 'Назад'
+    500:
+      title: 'Помилка сервера'
+      message: 'Вибачте, сталася внутрішня помилка сервера. Наша команда була повідомлена про проблему. Спробуйте оновити сторінку через кілька хвилин або зверніться до адміністратора.'
+      go_home: 'Головна сторінка'
+      refresh: 'Оновити сторінку'
+      go_back: 'Назад'
+    general:
+      title: 'Сталася помилка'
+      message: 'Вибачте, сталася неочікувана помилка. Спробуйте ще раз через деякий час.'
+      go_home: 'Головна сторінка'
+      go_back: 'Назад'

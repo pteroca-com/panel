@@ -19,6 +19,10 @@
     border-color: var(--primary-color);
 }
 
+.btn-outline-primary:hover i {
+    color: white;
+}
+
 .ea-dark-scheme .form-switch .form-check-input:checked, .form-switch .form-check-input:checked {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -233,4 +237,112 @@ input#command {
 .placeholder {
     background-color: #b2b2b2;
     border-radius: 4px;
+    min-width: 80px;
+}
+
+.server-card {
+    transition: all 0.3s ease;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.server-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.server-image {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.server-image:hover {
+    transform: scale(1.05);
+}
+
+.spec-item {
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.spec-item:hover {
+    border-color: #dee2e6;
+    background-color: #f8f9fa !important;
+}
+
+.spec-value {
+    font-weight: 600;
+    color: #495057;
+}
+
+.server-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+}
+
+.server-actions .btn:hover {
+    transform: translateY(-1px);
+}
+
+.expiry-info {
+    border: 1px solid #e9ecef;
+}
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+@media (max-width: 576px) {
+    .server-specs .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .server-actions .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 8px;
+    }
+}
+
+#terminal > div {
+    padding: 10px;
+}
+
+.card-input-element + label {
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.card-input-element:checked + label {
+    border: 2px solid var(--bs-primary);
+    box-shadow: 0 0 5px rgba(var(--bs-primary-rgb), 0.5);
+}
+
+.card-input-element:disabled + label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-select-lg, .form-control, .input-group-text {
+    font-size: 0.95rem !important;
+}
+
+.page-login .input-group-lg .input-group-text {
+    min-height: calc(1.5em + 1rem + 2px);
+    display: flex;
+    align-items: center;
+}
+.page-login .btn-primary {
+    background-color: rgb(93, 137, 186) !important;
+    border-color: rgb(93, 137, 186) !important;
+    color: white !important;
+}
+.page-login .btn-primary:hover {
+    background-color: rgb(82, 121, 167) !important;
+    border-color: rgb(82, 121, 167) !important;
 }

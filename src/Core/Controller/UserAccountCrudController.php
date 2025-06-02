@@ -20,6 +20,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -60,17 +61,11 @@ class UserAccountCrudController extends AbstractPanelController
         );
 
         return [
+            FormField::addRow(),
             IdField::new('id')->hideOnForm(),
             EmailField::new('email', $this->translator->trans('pteroca.crud.user.email'))
-                ->setFormTypeOption('disabled', true),
-            TextField::new('name', $this->translator->trans('pteroca.crud.user.name'))
-                ->setMaxLength(255),
-            TextField::new('surname', $this->translator->trans('pteroca.crud.user.surname'))
-                ->setMaxLength(255),
-            TextField::new('plainPassword', $this->translator->trans('pteroca.crud.user.password'))
-                ->setFormTypeOption('attr', ['type' => 'password'])
-                ->onlyOnForms()
-                ->setHelp($this->translator->trans('pteroca.crud.user.password_hint')),
+                ->setFormTypeOption('disabled', true)
+                ->setColumns(5),
             ImageField::new('avatarPath', $this->translator->trans('pteroca.crud.user.avatar'))
                 ->setBasePath($this->getParameter('avatar_base_path'))
                 ->setUploadDir($uploadDirectory)
@@ -79,7 +74,29 @@ class UserAccountCrudController extends AbstractPanelController
                 ->setFileConstraints(new Image([
                     'maxSize' => $this->getParameter('avatar_max_size'),
                     'mimeTypes' => $this->getParameter('avatar_allowed_extensions'),
-                ])),
+                ]))
+                ->setColumns(5),
+
+            FormField::addRow(),
+            TextField::new('name', $this->translator->trans('pteroca.crud.user.name'))
+                ->setMaxLength(255)
+                ->setColumns(5),
+            TextField::new('surname', $this->translator->trans('pteroca.crud.user.surname'))
+                ->setMaxLength(255)
+                ->setColumns(5),
+
+            FormField::addRow(),
+            TextField::new('plainPassword', $this->translator->trans('pteroca.crud.user.password'))
+                ->setFormTypeOption('attr', ['type' => 'password'])
+                ->onlyOnForms()
+                ->setHelp($this->translator->trans('pteroca.crud.user.password_hint'))
+                ->setColumns(5),
+            TextField::new('repeatPassword', $this->translator->trans('pteroca.crud.user.repeat_password'))
+                ->setFormTypeOption('attr', ['type' => 'password'])
+                ->onlyOnForms()
+                ->setHelp($this->translator->trans('pteroca.crud.user.repeat_password_hint'))
+                ->setColumns(5),
+            
         ];
     }
 
@@ -126,7 +143,14 @@ class UserAccountCrudController extends AbstractPanelController
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof UserInterface) {
+        if ($entityInstance instanceof UserAccount) {
+            // Sprawdź, czy hasła się zgadzają
+            if ($entityInstance->getPlainPassword() && $entityInstance->getRepeatPassword()) {
+                if ($entityInstance->getPlainPassword() !== $entityInstance->getRepeatPassword()) {
+                    throw new \InvalidArgumentException($this->translator->trans('pteroca.crud.user.passwords_must_match'));
+                }
+            }
+
             if ($plainPassword = $entityInstance->getPlainPassword()) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);

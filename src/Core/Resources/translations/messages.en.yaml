@@ -9,18 +9,24 @@ pteroca:
   login:
     title: 'Login'
     email_address: 'Email address'
+    email_placeholder: 'your@email.com'
     password: 'Password'
+    password_placeholder: 'Enter password'
     forgot_password: 'Forgot your password?'
     remember_me: 'Remember me'
     sign_in: 'Sign in'
     invalid_captcha: 'Invalid CAPTCHA verification.'
     user_blocked: 'Your account has been blocked.'
     dont_have_account_yet: "Don't have an account yet? Register now!"
+    subtitle: 'Sign in to your account'
 
   register:
     title: 'Register'
+    subtitle: 'Create your new account'
     name: 'First name'
+    name_placeholder: 'Enter your first name'
     surname: 'Last name'
+    surname_placeholder: 'Enter your last name'
     email_address: 'Email address'
     password: 'Password'
     accept_terms: 'I accept the <a href="{{ link }}" target="_blank">terms of service</a>'
@@ -38,6 +44,8 @@ pteroca:
     invalid_email: 'Email address is invalid.'
     email_already_exists: 'An account with that email address already exists.'
     already_have_account: 'Already have an account? Sign in now!'
+    email_placeholder: 'your@email.com'
+    password_placeholder: 'Enter password'
 
   recovery:
     title: 'Password Recovery'
@@ -68,6 +76,9 @@ pteroca:
     ip_address: 'IP address'
     view_all_servers: 'View all servers'
     title: 'Dashboard'
+    welcome_message: 'Your server command center'
+    quick_actions: 'Quick actions'
+    browse_store: 'Browse store'
   recharge:
     recharge_balance: 'Recharge balance'
     recharge: 'Recharge'
@@ -88,10 +99,16 @@ pteroca:
     failed_to_create_payment: 'Failed to create payment.'
     payment_not_found: 'Payment not found.'
     payment_already_processed: 'Payment has already been processed.'
+    payment_url_not_available: 'Payment URL is not available.'
+    payment_expired: 'This payment has expired and can no longer be continued. Please create a new payment.'
     current_balance: 'Current balance'
     payment_provider_information: 'Payment provider information'
     payment_provider_details: 'Payments are securely handled by Stripe. Enter the amount you want to recharge, then click "Recharge".'
     payment_is_not_configured: 'Payment is not configured. Please contact the administrator.'
+    recharge_description: 'Recharge your account balance'
+    amount_hint: 'Enter the amount you want to recharge.'
+    view_transaction_history: 'View transaction history'
+    view_all_payments_description: 'View all payments that have been made on your account.'
 
   product:
     information: 'Information'
@@ -129,6 +146,8 @@ pteroca:
     ports: 'Ports'
     discount: 'Discount'
     discount_hint: 'Discount will be applied only to the first billing cycle.'
+    product_order_details: 'Product details and ordering options'
+    total: 'Total'
 
   store:
     title: 'Store'
@@ -144,6 +163,14 @@ pteroca:
     no_categories: 'There are no categories yet.'
     no_products: 'There are no products yet.'
     price_not_found: 'Price not found'
+    description: 'Select the category or product you are interested in'
+    products_with_no_category: 'Products without category'
+    categories: 'Categories'
+    category_description: 'Products available in this category'
+    available_products: 'Available products'
+    no_products_title: 'No products'
+    shop_is_empty: 'Shop is empty'
+    no_products_and_categories: 'There are no products or categories in the store yet.'
   cart_configuration:
     title: 'Configure your server'
     configuration: 'Configuration'
@@ -153,13 +180,16 @@ pteroca:
     auto_renewal: 'Auto-renewal'
     enable: 'Enable auto-renewal'
     disable: 'Disable auto-renewal'
+    description: 'Configure your server and proceed to payment'
   cart_topup:
     title: 'Top up your account'
     order: 'Order'
     order_description: 'Top up funds'
     payment_method: 'Payment method'
+    description: 'Recharge your account balance'
   cart_renew:
     title: 'Renew your server'
+    description: 'Extend your server to avoid suspension or deletion.'
   cart:
     use_voucher: 'Use voucher'
     voucher_code: 'Voucher code'
@@ -192,6 +222,10 @@ pteroca:
     extend: 'Extend'
     no_servers: 'You do not have any servers yet.'
     click_to_buy: 'Click here to buy a server.'
+    name: 'Name'
+    status: 'Status'
+    actions: 'Actions'
+    description: 'Manage your servers, view their details and perform various actions such as extending, managing and configuration.'
 
   server:
     title: 'Server management'
@@ -563,6 +597,9 @@ pteroca:
       created_at: 'Created at'
       updated_at: 'Last activity'
       avatar: 'Avatar'
+      repeat_password: 'Repeat password'
+      repeat_password_hint: 'Enter the password again to confirm.'
+      passwords_must_match: 'Passwords must match.'
     payment:
       session_id: 'Session ID'
       status: 'Status'
@@ -576,6 +613,11 @@ pteroca:
       balance_amount: 'Balance amount'
       used_voucher: 'Used voucher'
       last_update: 'Last update'
+      description: 'Manage your payments and view transaction history'
+      continue_payment: 'Continue payment'
+      detail: 'Detail'
+    user_account:
+      description: 'Edit your personal data, change password and manage account settings'
     log:
       log: 'Log'
       logs: 'Logs'
@@ -716,6 +758,7 @@ pteroca:
   admin:
     overview:
       title: 'Admin Overview'
+      useful_resources: 'Useful Resources'
       servers: 'Active Servers'
       users: 'Registered Users'
       payments: 'Payments'
@@ -801,3 +844,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Successfully connected to the Pterodactyl API.'
       email_checking_smtp_connection: 'Checking the connection to the SMTP server...'
       email_smtp_connection_success: 'Successfully connected to the SMTP server.'
+
+  error:
+    404:
+      title: 'Page not found'
+      message: 'Sorry, but the page you are looking for does not exist or has been moved. Check the URL or return to the home page.'
+      go_home: 'Home page'
+      go_back: 'Go back'
+    500:
+      title: 'Server error'
+      message: 'Sorry, an internal server error occurred. Our team has been notified of the problem. Try refreshing the page in a few minutes or contact the administrator.'
+      go_home: 'Home page'
+      refresh: 'Refresh page'
+      go_back: 'Go back'
+    general:
+      title: 'An error occurred'
+      message: 'Sorry, an unexpected error occurred. Please try again in a moment.'
+      go_home: 'Home page'
+      go_back: 'Go back'

@@ -11,148 +11,247 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container pt-3">
-        <div class="row">
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-server"></i> {{ 'pteroca.admin.overview.servers'|trans }}</h5>
-                        <div class="card-text text-small">{{ 'pteroca.admin.overview.now'|trans }}</div>
-                        <div class="card-text display-5">{{ statistics.activeServers }}</div>
+    <div class="container-fluid mt-4">
+        <div class="row g-4">
+            <!-- Statistics Cards -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-primary rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-server text-white fs-4"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">{{ 'pteroca.admin.overview.servers'|trans }}</h5>
+                        <div class="text-muted small mb-2">{{ 'pteroca.admin.overview.now'|trans }}</div>
+                        <div class="display-4 fw-bold text-primary">{{ statistics.activeServers }}</div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-users"></i> {{ 'pteroca.admin.overview.users'|trans }}</h5>
-                        <div class="card-text text-small">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
-                        <div class="card-text display-5">{{ statistics.usersRegisteredLastMonth }}</div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-users text-white fs-4"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">{{ 'pteroca.admin.overview.users'|trans }}</h5>
+                        <div class="text-muted small mb-2">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
+                        <div class="display-4 fw-bold text-success">{{ statistics.usersRegisteredLastMonth }}</div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-money-bill"></i> {{ 'pteroca.admin.overview.payments'|trans }}</h5>
-                        <div class="card-text text-small">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
-                        <div class="card-text display-5">{{ statistics.paymentsCreatedLastMonth }}</div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-warning rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-money-bill text-white fs-4"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">{{ 'pteroca.admin.overview.payments'|trans }}</h5>
+                        <div class="text-muted small mb-2">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
+                        <div class="display-4 fw-bold text-warning">{{ statistics.paymentsCreatedLastMonth }}</div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-lg-3 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa-solid fa-life-ring"></i> {{ 'pteroca.admin.overview.links'|trans }}</h5>
-                        <div class="card-text text-small"><span class="fw-bolder">{{ 'pteroca.admin.overview.project_site'|trans }}:</span> <a href="https://pteroca.com/" target="_blank">pteroca.com</a></div>
-                        <div class="card-text text-small"><span class="fw-bolder">{{ 'pteroca.admin.overview.documentation'|trans }}:</span> <a href="https://docs.pteroca.com/" target="_blank">docs.pteroca.com</a></div>
-                        <div class="card-text text-small">
-                            <span class="fw-bolder">{{ 'pteroca.admin.overview.support'|trans }}:</span> <a href="https://github.com/pteroca-com/panel/issues" target="_blank">Github Issues</a> / <a href="https://discord.gg/Gz5phhuZym" target="_blank">Discord</a>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-info rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-life-ring text-white fs-4"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">{{ 'pteroca.admin.overview.links'|trans }}</h5>
+                        <div class="text-muted small mb-2">{{ 'pteroca.admin.overview.useful_resources'|trans }}</div>
+                        <div class="text-muted small">
+                            <div class="mb-1">
+                                <strong>{{ 'pteroca.admin.overview.project_site'|trans }}:</strong> 
+                                <a href="https://pteroca.com/" target="_blank" class="text-decoration-none">PteroCA.com</a>
+                            </div>
+                            <div class="mb-1">
+                                <strong>{{ 'pteroca.admin.overview.documentation'|trans }}:</strong> 
+                                <a href="https://docs.pteroca.com/" target="_blank" class="text-decoration-none">docs.PteroCA.com</a>
+                            </div>
+                            <div>
+                                <strong>{{ 'pteroca.admin.overview.support'|trans }}:</strong> 
+                                <a href="https://github.com/pteroca-com/panel/issues" target="_blank" class="text-decoration-none">Github</a> / 
+                                <a href="https://discord.gg/Gz5phhuZym" target="_blank" class="text-decoration-none">Discord</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row mt-3">
+
+        <div class="row g-4 mt-2">
+            <!-- Payment Overview -->
             <div class="col-12 col-xl-8">
-                <div class="row">
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title">
-                                    {{ 'pteroca.admin.overview.payment_overview'|trans }}
-                                    <a href="{{ path('panel', { crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\PaymentCrudController' }) }}" class="btn btn-primary btm-sm float-end">{{ 'pteroca.admin.overview.view_all'|trans }} <i class="fa fa-arrow-right-long"></i></a>
-                                </h5>
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-header bg-transparent border-0 p-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-credit-card me-2 text-primary"></i>
+                                        <h5 class="mb-0 fw-bold">{{ 'pteroca.admin.overview.payment_overview'|trans }}</h5>
+                                    </div>
+                                    <a href="{{ path('panel', { crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\PaymentCrudController' }) }}" class="btn btn-primary btn-sm">
+                                        {{ 'pteroca.admin.overview.view_all'|trans }} <i class="fa fa-arrow-right-long ms-1"></i>
+                                    </a>
+                                </div>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-4">
                                 {% if not statistics.lastPayments %}
-                                    <div class="alert alert-info">{{ 'pteroca.admin.overview.no_payments'|trans }}</div>
+                                    <div class="alert alert-info border-0 rounded-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {{ 'pteroca.admin.overview.no_payments'|trans }}
+                                    </div>
                                 {% else %}
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">{{ 'pteroca.admin.overview.user'|trans }}</th>
-                                            <th scope="col">{{ 'pteroca.admin.overview.amount'|trans }}</th>
-                                            <th scope="col">{{ 'pteroca.admin.overview.currency'|trans }}</th>
-                                            <th scope="col">{{ 'pteroca.admin.overview.status'|trans }}</th>
-                                            <th scope="col">{{ 'pteroca.admin.overview.date'|trans }}</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for payment in statistics.lastPayments %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead class="table-light">
                                             <tr>
-                                                <th scope="row">{{ payment.id }}</th>
-                                                <td>{{ payment.user.email }}</td>
-                                                <td>{{ payment.amount|number_format(2, ',', ' ') }}</td>
-                                                <td>{{ payment.currency }}</td>
-                                                <td>{{ payment.status }}</td>
-                                                <td>{{ payment.createdAt|date('Y-m-d H:i') }}</td>
+                                                <th scope="col" class="fw-semibold">#</th>
+                                                <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.user'|trans }}</th>
+                                                <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.amount'|trans }}</th>
+                                                <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.currency'|trans }}</th>
+                                                <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.status'|trans }}</th>
+                                                <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.date'|trans }}</th>
                                             </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                            {% for payment in statistics.lastPayments %}
+                                                <tr>
+                                                    <th scope="row" class="fw-semibold">{{ payment.id }}</th>
+                                                    <td>{{ payment.user.email }}</td>
+                                                    <td class="fw-semibold">{{ payment.amount|number_format(2, ',', ' ') }}</td>
+                                                    <td><span class="badge bg-light text-dark">{{ payment.currency }}</span></td>
+                                                    <td>
+                                                        {% if payment.status == 'paid' %}
+                                                            <span class="badge badge-success">
+                                                                <i class="fas fa-check me-1"></i>{{ 'pteroca.recharge.transaction_paid'|trans }}
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="badge badge-danger">
+                                                                <i class="fas fa-times me-1"></i>{{ 'pteroca.recharge.transaction_unpaid'|trans }}
+                                                            </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-muted">{{ payment.createdAt|date('Y-m-d H:i') }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title">
-                                    {{ 'pteroca.admin.overview.last_registered_users'|trans }}
-                                    <a href="{{ path('panel', { crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\UserCrudController' }) }}" class="btn btn-primary btm-sm float-end">{{ 'pteroca.admin.overview.view_all'|trans }} <i class="fa fa-arrow-right-long"></i></a>
-                                </h5>
+                    
+                    <!-- Last Registered Users -->
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-header bg-transparent border-0 p-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-plus me-2 text-success"></i>
+                                        <h5 class="mb-0 fw-bold">{{ 'pteroca.admin.overview.last_registered_users'|trans }}</h5>
+                                    </div>
+                                    <a href="{{ path('panel', { crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\UserCrudController' }) }}" class="btn btn-success btn-sm">
+                                        {{ 'pteroca.admin.overview.view_all'|trans }} <i class="fa fa-arrow-right-long ms-1"></i>
+                                    </a>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">{{ 'pteroca.admin.overview.user'|trans }}</th>
-                                        <th scope="col">{{ 'pteroca.admin.overview.balance'|trans }}</th>
-                                        <th scope="col">{{ 'pteroca.admin.overview.status'|trans }}</th>
-                                        <th scope="col">{{ 'pteroca.admin.overview.date'|trans }}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for user in statistics.lastRegisteredUsers %}
+                            <div class="card-body p-4">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
                                         <tr>
-                                            <th scope="row">{{ user.id }}</th>
-                                            <td>{{ user.email }}</td>
-                                            <td>{{ user.balance|number_format(2, ',', ' ') }} {{ get_currency() }}</td>
-                                            <td>{{ user.isVerified ? 'pteroca.admin.overview.verified'|trans : 'pteroca.admin.overview.unverified'|trans }}</td>
-                                            <td>{{ user.createdAt|date('Y-m-d H:i') }}</td>
+                                            <th scope="col" class="fw-semibold">#</th>
+                                            <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.user'|trans }}</th>
+                                            <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.balance'|trans }}</th>
+                                            <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.status'|trans }}</th>
+                                            <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.date'|trans }}</th>
                                         </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                        {% for user in statistics.lastRegisteredUsers %}
+                                            <tr>
+                                                <th scope="row" class="fw-semibold">{{ user.id }}</th>
+                                                <td>{{ user.email }}</td>
+                                                <td class="fw-semibold">{{ user.balance|number_format(2, ',', ' ') }} {{ get_currency() }}</td>
+                                                <td>
+                                                    {% if user.isVerified %}
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-check me-1"></i>{{ 'pteroca.admin.overview.verified'|trans }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning">
+                                                            <i class="fas fa-clock me-1"></i>{{ 'pteroca.admin.overview.unverified'|trans }}
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-muted">{{ user.createdAt|date('Y-m-d H:i') }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- System Information -->
             <div class="col-12 col-xl-4">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="fa-solid fa-server"></i> {{ 'pteroca.admin.overview.system'|trans }}</h5>
-                                <div class="card-text text-small">
-                                    <span class="fw-bolder">PteroCA Version:</span>
-                                    v{{ get_app_version() }}
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-transparent border-0 p-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-server me-2 text-info"></i>
+                            <h5 class="mb-0 fw-bold">{{ 'pteroca.admin.overview.system'|trans }}</h5>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">PteroCA Version:</span>
+                                <div>
+                                    <span class="fw-bold">v{{ get_app_version() }}</span>
                                     <span id="pteroca-version-result"></span>
                                 </div>
-                                <div class="card-text text-small">
-                                    <span class="fw-bolder">Pterodactyl API:</span>
-                                    <span class="{{ systemInformation.pterodactyl.status ? 'text-success' : 'text-danger' }}">
-                                {{ systemInformation.pterodactyl.status ? '<i class="fa-solid fa-check"></i> OK' : '<i class="fa-solid fa-x"></i> Error' }}
-                            </span>
-                                </div>
-                                <div class="card-text text-small"><span class="fw-bolder">PHP:</span> {{ systemInformation.php.version }} </div>
-                                <div class="card-text text-small"><span class="fw-bolder">Database:</span> {{ systemInformation.database.version }} </div>
-                                <div class="card-text text-small"><span class="fw-bolder">Web:</span> {{ systemInformation.webserver }} </div>
-                                <div class="card-text text-small"><span class="fw-bolder">Host:</span> {{ systemInformation.os|join(' ') }} </div>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">Pterodactyl API:</span>
+                                <span class="{{ systemInformation.pterodactyl.status ? 'text-success' : 'text-danger' }} fw-semibold">
+                                    {{ systemInformation.pterodactyl.status ? '<i class="fa-solid fa-check me-1"></i>OK' : '<i class="fa-solid fa-x me-1"></i>Error' }}
+                                </span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">PHP:</span>
+                                <span class="fw-bold" style="word-break: break-word; font-size: 0.9em; text-align: right;">{{ systemInformation.php.version }}</span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">Database:</span>
+                                <span class="fw-bold" style="word-break: break-word; font-size: 0.9em; text-align: right;">{{ systemInformation.database.version }}</span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">Web:</span>
+                                <span class="fw-bold" style="word-break: break-word; font-size: 0.9em; text-align: right;">{{ systemInformation.webserver }}</span>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">Host:</span>
+                                <span class="fw-bold" style="word-break: break-word; font-size: 0.9em; text-align: right;">{{ systemInformation.os|join(' ') }}</span>
                             </div>
                         </div>
                     </div>

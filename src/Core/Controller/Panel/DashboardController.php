@@ -61,7 +61,7 @@ class DashboardController extends AbstractDashboardController
         return $this->render('panel/dashboard/dashboard.html.twig', [
             'servers' => $this->serverRepository->getActiveServersByUser($user),
             'user' => $user,
-            'logs' => $this->logService->getLogsByUser($user, 10),
+            'logs' => $this->logService->getLogsByUser($user, 5),
             'motdEnabled' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value),
             'motdTitle' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_TITLE->value),
             'motdMessage' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_MESSAGE->value),
