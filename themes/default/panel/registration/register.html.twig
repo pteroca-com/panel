@@ -1,100 +1,214 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
 
-{% block body_class 'page-login' %}
-{% block title %}{{ get_title() }} | {{ 'pteroca.register.title'|trans }}{% endblock %}
+{% block body_class 'page-login bg-light' %}
+{% block page_title %}{{ get_title() }} | {{ 'pteroca.register.title'|trans }}{% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ template_asset('css/app.css') }}">
+{% block head_stylesheets %}
+    {% if get_captcha_site_key() %}
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% endif %}
+    {{ parent() }}
     <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
 {% endblock %}
 
-{% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                {% include '@EasyAdmin/flash_messages.html.twig' %}
+{% block head_favicon %}
+    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
+{% endblock %}
 
-                <div class="login-wrapper">
-                    <header class="main-header register-header">
-                        <div id="header-logo">
-                            <div class="logo">
-                                <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="panel-login-logo">
+{% block wrapper_wrapper %}
+    {% set page_title = block('page_title') %}
+
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+        <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+            <!-- Logo Section - poza kartą -->
+            <div class="text-center mb-4">
+                {% block header_logo %}
+                    <div class="mb-3">
+                        <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid" style="max-height: 80px;" />
+                    </div>
+                {% endblock header_logo %}
+            </div>
+            
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <!-- Title Section -->
+                    <div class="text-center mb-4">
+                        <h1 class="h4 fw-bold text-dark mb-1">{{ 'pteroca.register.title'|trans }}</h1>
+                        <p class="text-muted small mb-0">{{ 'pteroca.register.subtitle'|trans }}</p>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% include '@EasyAdmin/flash_messages.html.twig' %}
+
+                    <!-- Error Messages -->
+                    {% if errors|default([])|length > 0 %}
+                        <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
+                                {% for error in errors %}
+                                    <div>{{ error|trans }}</div>
+                                {% endfor %}
                             </div>
                         </div>
-                    </header>
-                    <section class="content">
-                        <div class="login-title mt-3">
-                            {{ 'pteroca.register.title'|trans }}
+                    {% endif %}
+
+                    {{ form_errors(registrationForm) }}
+
+                    <!-- Registration Form -->
+                    {{ form_start(registrationForm) }}
+                        <!-- Name Field -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold">
+                                <i class="fas fa-user me-1 text-muted"></i>
+                                {{ 'pteroca.register.name'|trans }}
+                            </label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="{{ field_name(registrationForm.name) }}" 
+                                class="form-control form-control-lg" 
+                                value="{{ field_value(registrationForm.name) }}" 
+                                placeholder="{{ 'pteroca.register.name_placeholder'|trans }}"
+                                required 
+                                autofocus 
+                                autocomplete="given-name"
+                            >
                         </div>
-                        {% if errors|length > 0 %}
-                            <div class="mb-3">
-                                <div class="w-100 alert alert-danger rounded">
-                                    {% for error in errors %}
-                                        <div>{{ error|trans }}</div>
-                                    {% endfor %}
-                                </div>
+
+                        <!-- Surname Field -->
+                        <div class="mb-3">
+                            <label for="surname" class="form-label fw-semibold">
+                                <i class="fas fa-user me-1 text-muted"></i>
+                                {{ 'pteroca.register.surname'|trans }}
+                            </label>
+                            <input 
+                                type="text" 
+                                id="surname" 
+                                name="{{ field_name(registrationForm.surname) }}" 
+                                class="form-control form-control-lg" 
+                                value="{{ field_value(registrationForm.surname) }}" 
+                                placeholder="{{ 'pteroca.register.surname_placeholder'|trans }}"
+                                required 
+                                autocomplete="family-name"
+                            >
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold">
+                                <i class="fas fa-envelope me-1 text-muted"></i>
+                                {{ 'pteroca.register.email_address'|trans }}
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="{{ field_name(registrationForm.email) }}" 
+                                class="form-control form-control-lg" 
+                                value="{{ field_value(registrationForm.email) }}" 
+                                placeholder="{{ 'pteroca.register.email_placeholder'|trans }}"
+                                required 
+                                autocomplete="email"
+                            >
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">
+                                <i class="fas fa-lock me-1 text-muted"></i>
+                                {{ 'pteroca.register.password'|trans }}
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="{{ field_name(registrationForm.plainPassword) }}" 
+                                    class="form-control form-control-lg" 
+                                    placeholder="{{ 'pteroca.register.password_placeholder'|trans }}"
+                                    required 
+                                    autocomplete="new-password"
+                                >
+                                <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                                </span>
                             </div>
-                        {% endif %}
+                        </div>
 
-                        {{ form_errors(registrationForm) }}
-
-                        {{ form_start(registrationForm) }}
-                            <div class="form-group">
-                                <label class="form-control-label required" for="name">{{ 'pteroca.register.name'|trans }}</label>
-                                <div class="form-widget">
-                                    <input type="text" id="name" name="{{ field_name(registrationForm.name) }}" class="form-control" value="{{ field_value(registrationForm.name) }}" required autofocus autocomplete="name">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-control-label required" for="surname">{{ 'pteroca.register.surname'|trans }}</label>
-                                <div class="form-widget">
-                                    <input type="text" id="surname" name="{{ field_name(registrationForm.surname) }}" class="form-control" value="{{ field_value(registrationForm.surname) }}" required autofocus autocomplete="surname">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-control-label required" for="email">{{ 'pteroca.register.email_address'|trans }}</label>
-                                <div class="form-widget">
-                                    <input type="email" id="email" name="{{ field_name(registrationForm.email) }}" class="form-control" value="{{ field_value(registrationForm.email) }}" required autofocus autocomplete="email">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-control-label required" for="password">{{ 'pteroca.register.password'|trans }}</label>
-                                <div class="form-widget">
-                                    <input type="password" id="password" name="{{ field_name(registrationForm.plainPassword) }}" class="form-control" required autocomplete="current-password">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <input class="form-check-input" type="checkbox" id="agree_terms" name="{{ field_name(registrationForm.agreeTerms) }}" {{ registrationForm.agreeTerms|default(false) ? 'checked' }}>
-                                <label class="form-check-label" for="agree_terms">
+                        <!-- Terms Agreement -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="checkbox" 
+                                    id="agree_terms" 
+                                    name="{{ field_name(registrationForm.agreeTerms) }}" 
+                                    {{ registrationForm.agreeTerms|default(false) ? 'checked' }}
+                                    required
+                                >
+                                <label class="form-check-label text-muted small" for="agree_terms">
                                     {{ 'pteroca.register.accept_terms'|trans({'{{ link }}': path('terms_of_service') })|raw }}
                                 </label>
                             </div>
+                        </div>
 
-                            <input type="hidden" name="_token" value="{{ csrf_token('user_registration') }}">
-
-                            <div class="form-group">
-                                <button type="submit" name="register-submit" class="btn btn-lg btn-block">{{ 'pteroca.register.submit'|trans }}</button>
+                        <!-- reCAPTCHA -->
+                        {% if get_captcha_site_key() %}
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="g-recaptcha" data-sitekey="{{ get_captcha_site_key() }}"></div>
                             </div>
-                        {{ form_end(registrationForm) }}
+                        {% endif %}
 
-                        <div class="text-center small">
-                            <a href="{{ path('app_login') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('user_registration') }}">
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" name="register-submit" class="btn btn-primary btn-lg fw-semibold">
+                                <i class="fas fa-user-plus me-2"></i>
+                                {{ 'pteroca.register.submit'|trans }}
+                            </button>
+                        </div>
+                    {{ form_end(registrationForm) }}
+
+                    <!-- Login Link -->
+                    <div class="text-center">
+                        <p class="text-muted small mb-0">
+                            <a href="{{ path('app_login') }}" class="text-decoration-none">
                                 {{ 'pteroca.register.already_have_account'|trans }}
                             </a>
-                        </div>
-                    </section>
-                    <div class="col-12 text-center mt-2 powered-by">
-                        Powered by <a href="https://pteroca.com" target="_blank">Pteroca v{{ get_app_version() }}</a> &copy; {{ 'now'|date('Y') }}
+                        </p>
                     </div>
                 </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-3">
+                <p class="text-white small mb-0">
+                    Powered by 
+                    <a href="https://pteroca.com" target="_blank" class="text-white text-decoration-none">
+                        PteroCA v{{ get_app_version() }}
+                    </a> 
+                    &copy; {{ 'now'|date('Y') }}
+                </p>
             </div>
         </div>
     </div>
 
+    <!-- JavaScript for password toggle -->
+    <script>
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
 
-
+    <script src="{{ asset('login.js', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}"></script>
 {% endblock %}

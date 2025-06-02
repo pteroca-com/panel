@@ -16,6 +16,9 @@ pteroca:
     invalid_captcha: 'Неверная CAPTCHA.'
     user_blocked: 'Ваша учётная запись заблокирована.'
     dont_have_account_yet: "Еще нет аккаунта? Зарегистрируйтесь сейчас!"
+    subtitle: 'Войдите в свой аккаунт'
+    email_placeholder: 'ваш@email.com'
+    password_placeholder: 'Введите пароль'
   register:
     title: 'Регистрация'
     name: 'Имя'
@@ -37,6 +40,11 @@ pteroca:
     invalid_email: 'Некорректный адрес электронной почты.'
     email_already_exists: 'Учетная запись с таким адресом электронной почты уже существует.'
     already_have_account: 'Уже зарегистрированы? Войдите сейчас!'
+    subtitle: 'Создайте свою новую учетную запись'
+    name_placeholder: 'Введите ваше имя'
+    surname_placeholder: 'Введите вашу фамилию'
+    email_placeholder: 'ваш@email.com'
+    password_placeholder: 'Введите пароль'
   recovery:
     title: 'Восстановление пароля'
     email_address: 'Email адрес'
@@ -65,6 +73,9 @@ pteroca:
     ip_address: 'IP-адрес'
     view_all_servers: 'Посмотреть все сервера'
     title: 'Панель управления'
+    welcome_message: 'Центр управления вашим сервером'
+    quick_actions: 'Быстрые действия'
+    browse_store: 'Просмотр магазина'
   recharge:
     recharge_balance: 'Пополнить баланс'
     recharge: 'Пополнить'
@@ -85,10 +96,16 @@ pteroca:
     failed_to_create_payment: 'Не удалось создать платёж.'
     payment_not_found: 'Платеж не найден.'
     payment_already_processed: 'Платёж уже был обработан.'
+    payment_url_not_available: 'URL платежа недоступен.'
+    payment_expired: 'Этот платеж истек и больше не может быть продолжен. Пожалуйста, создайте новый платеж.'
     current_balance: 'Текущий баланс'
     payment_provider_information: 'Информация о платежном провайдере'
     payment_provider_details: 'Платежи безопасно обрабатываются Stripe. Введите сумму, которую вы хотите пополнить, затем нажмите "Пополнить счет".'
     payment_is_not_configured: 'Оплата не настроена. Пожалуйста, свяжитесь с администратором.'
+    recharge_description: 'Пополните баланс вашего аккаунта'
+    amount_hint: 'Введите сумму, которую вы хотите пополнить.'
+    view_transaction_history: 'Посмотреть историю транзакций'
+    view_all_payments_description: 'Показывает все платежи, совершенные на вашем аккаунте.'
   product:
     information: 'Информация'
     ram: 'ОЗУ'
@@ -125,6 +142,8 @@ pteroca:
     ports: 'Порты'
     discount: 'Скидка'
     discount_hint: 'Скидка будет применена только к первому платежному периоду.'
+    product_order_details: 'Детали продукта и варианты заказа'
+    total: 'Итого'
 
   store:
     title: 'Магазин'
@@ -140,6 +159,14 @@ pteroca:
     no_categories: 'Категорий пока нет.'
     no_products: 'Еще нет товаров.'
     price_not_found: 'Цена не найдена'
+    description: 'Выберите категорию или продукт, который вас интересует'
+    products_with_no_category: 'Товары без категории'
+    categories: 'Категории'
+    category_description: 'Товары, доступные в этой категории'
+    available_products: 'Доступные товары'
+    no_products_title: 'Нет товаров'
+    shop_is_empty: 'Магазин пуст'
+    no_products_and_categories: 'В магазине пока нет товаров или категорий.'
   cart_configuration:
     title: 'Настроить сервер'
     configuration: 'Конфигурация'
@@ -149,13 +176,16 @@ pteroca:
     auto_renewal: 'Автопродление'
     enable: 'Включить автопродление'
     disable: 'Отключить автопродление'
+    description: 'Настройте ваш сервер и произведите оплату'
   cart_topup:
     title: 'Пополнить аккаунт'
     order: 'Заказать'
     order_description: 'Пополнить средства'
     payment_method: 'Способ оплаты'
+    description: 'Пополните баланс вашего аккаунта'
   cart_renew:
     title: 'Продлить сервер'
+    description: 'Продлите ваш сервер, чтобы продолжить его использование'
   cart:
     use_voucher: 'Использовать ваучер'
     voucher_code: 'Код ваучера'
@@ -187,6 +217,11 @@ pteroca:
     extend: 'Продлить'
     no_servers: 'У вас еще нет серверов.'
     click_to_buy: 'Нажмите здесь для покупки сервера.'
+    name: 'Имя'
+    status: 'Статус'
+    actions: 'Действия'
+    description: 'Управляйте всеми вашими серверами с этой страницы'
+    
   server:
     title: 'Управление сервером'
     console: 'Консоль'
@@ -556,6 +591,9 @@ pteroca:
       created_at: 'Дата создания'
       updated_at: 'Последняя активность'
       avatar: 'Аватар'
+      repeat_password: 'Повторите пароль'
+      repeat_password_hint: 'Введите пароль еще раз для подтверждения.'
+      passwords_must_match: 'Пароли должны совпадать.'
     payment:
       session_id: 'ID сеанса'
       status: 'Статус'
@@ -568,6 +606,12 @@ pteroca:
       payments: 'Платежи'
       balance_amount: 'Сумма баланса'
       used_voucher: 'Использованный купон'
+      last_update: 'Последнее обновление'
+      description: 'Управляйте платежами и просматривайте историю транзакций'
+      continue_payment: 'Продолжить платеж'
+      detail: 'Подробности'
+    user_account:
+      description: 'Редактируйте свои персональные данные, изменяйте пароль и управляйте настройками аккаунта'
     log:
       log: 'Лог'
       logs: 'Логи'
@@ -643,7 +687,6 @@ pteroca:
       voucher_usages: 'Использованные купоны'
       my_account: 'Мой аккаунт'
       account_settings: 'Настройки аккаунта'
-      last_update: 'Последнее обновление'
   api:
     servers:
       not_found: 'Сервер не найден.'
@@ -707,6 +750,7 @@ pteroca:
   admin:
     overview:
       title: 'Обзор админа'
+      useful_resources: 'Полезные ресурсы'
       servers: 'Активные серверы'
       users: 'Зарегистрированные пользователи'
       payments: 'Платежи'
@@ -792,3 +836,21 @@ pteroca:
       pterodactyl_api_connection_success: "Успешно подключено к API Pterodactyl."
       email_checking_smtp_connection: "Проверка подключения к SMTP серверу..."
       email_smtp_connection_success: "Успешно подключено к SMTP серверу."
+
+  error:
+    404:
+      title: 'Страница не найдена'
+      message: 'Извините, но страница, которую вы ищете, не существует или была перемещена. Проверьте URL или вернитесь на главную страницу.'
+      go_home: 'Главная страница'
+      go_back: 'Назад'
+    500:
+      title: 'Ошибка сервера'
+      message: 'Извините, произошла внутренняя ошибка сервера. Наша команда была уведомлена о проблеме. Попробуйте обновить страницу через несколько минут или обратитесь к администратору.'
+      go_home: 'Главная страница'
+      refresh: 'Обновить страницу'
+      go_back: 'Назад'
+    general:
+      title: 'Произошла ошибка'
+      message: 'Извините, произошла неожиданная ошибка. Попробуйте еще раз через некоторое время.'
+      go_home: 'Главная страница'
+      go_back: 'Назад'

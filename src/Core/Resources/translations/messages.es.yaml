@@ -13,18 +13,24 @@ pteroca:
   login:
     title: 'Iniciar sesión'
     email_address: 'Dirección de correo electrónico'
+    email_placeholder: 'tu@email.com'
     password: 'Contraseña'
+    password_placeholder: 'Introduce la contraseña'
     forgot_password: '¿Olvidaste tu contraseña?'
     remember_me: 'Recuérdame'
     sign_in: 'Iniciar sesión'
     invalid_captcha: 'Verificación CAPTCHA no válida.'
     user_blocked: 'Tu cuenta ha sido bloqueada.'
     dont_have_account_yet: '¿No tienes una cuenta? ¡Regístrate!'
+    subtitle: 'Inicia sesión en tu cuenta'
 
   register:
     title: 'Registrarse'
+    subtitle: 'Crea tu nueva cuenta'
     name: 'Nombre'
+    name_placeholder: 'Introduce tu nombre'
     surname: 'Apellido'
+    surname_placeholder: 'Introduce tu apellido'
     email_address: 'Dirección de correo electrónico'
     password: 'Contraseña'
     accept_terms: 'Acepto los <a href="{{ link }}" target="_blank">términos y condiciones</a>'
@@ -42,6 +48,8 @@ pteroca:
     invalid_email: 'Dirección de correo electrónico no válida.'
     email_already_exists: 'Ya existe una cuenta con esta dirección de correo electrónico.'
     already_have_account: '¿Ya tienes una cuenta? ¡Inicia sesión!'
+    email_placeholder: 'tu@email.com'
+    password_placeholder: 'Introduce la contraseña'
 
   recovery:
     title: 'Recuperar contraseña'
@@ -72,6 +80,9 @@ pteroca:
     ip_address: 'Dirección IP'
     view_all_servers: 'Ver todos los servidores'
     title: 'Tablero'
+    welcome_message: 'Su centro de comando de servidores'
+    quick_actions: 'Acciones rápidas'
+    browse_store: 'Explorar tienda'
   recharge:
     recharge_balance: 'Recargar saldo'
     recharge: 'Recargar'
@@ -92,10 +103,16 @@ pteroca:
     failed_to_create_payment: 'No se pudo crear el pago.'
     payment_not_found: 'Pago no encontrado.'
     payment_already_processed: 'El pago ya ha sido procesado.'
+    payment_url_not_available: 'La URL de pago no está disponible.'
+    payment_expired: 'Este pago ha expirado y ya no se puede continuar. Por favor, cree un nuevo pago.'
     current_balance: 'Saldo actual'
     payment_provider_information: 'Información del proveedor de pagos'
     payment_provider_details: 'Los pagos son gestionados de forma segura a través de Stripe. Ingresa la cantidad que deseas recargar y luego haz clic en "Recargar".'
     payment_is_not_configured: 'El sistema de pagos no está configurado. Contacta con el administrador.'
+    recharge_description: 'Recarga el saldo de tu cuenta'
+    amount_hint: 'Ingresa la cantidad que deseas recargar.'
+    view_transaction_history: 'Ver historial de transacciones'
+    view_all_payments_description: 'Muestra todos los pagos realizados en tu cuenta.'
 
   product:
     information: 'Información'
@@ -133,6 +150,8 @@ pteroca:
     ports: 'Puertos'
     discount: 'Descuento'
     discount_hint: 'El descuento se aplicará solo al primer ciclo de facturación.'
+    product_order_details: 'Detalles del producto y opciones de pedido'
+    total: 'Total'
 
   store:
     title: 'Tienda'
@@ -148,6 +167,14 @@ pteroca:
     no_categories: 'Aún no se han añadido categorías a la tienda.'
     no_products: 'No hay productos en esta categoría.'
     price_not_found: 'No se encontró el precio'
+    description: 'Seleccione la categoría o producto que le interese'
+    products_with_no_category: 'Productos sin categoría'
+    categories: 'Categorías'
+    category_description: 'Productos disponibles en esta categoría'
+    available_products: 'Productos disponibles'
+    no_products_title: 'Sin productos'
+    shop_is_empty: 'La tienda está vacía'
+    no_products_and_categories: 'Aún no hay productos o categorías en la tienda.'
   cart_configuration:
     title: 'Configura tu servidor'
     configuration: 'Configuración'
@@ -157,13 +184,16 @@ pteroca:
     auto_renewal: 'Renovación automática'
     enable: 'Habilitar renovación automática'
     disable: 'Deshabilitar renovación automática'
+    description: 'Configura tu servidor y procede con el pago'
   cart_topup:
     title: 'Recarga tu cuenta'
     order: 'Ordenar'
     order_description: 'Recargar fondos'
     payment_method: 'Método de pago'
+    description: 'Recarga el saldo de tu cuenta'
   cart_renew:
     title: 'Renueva tu servidor'
+    description: 'Renueva tu servidor para evitar la suspensión o eliminación.'
   cart:
     use_voucher: 'Usar cupón'
     voucher_code: 'Código de cupón'
@@ -196,6 +226,10 @@ pteroca:
     extend: 'Extender'
     no_servers: 'Aún no tienes servidores.'
     click_to_buy: 'Haz clic aquí para comprar un servidor.'
+    name: 'Nombre'
+    status: 'Estado'
+    actions: 'Acciones'
+    description: 'Gestiona tus servidores, ve sus detalles y realiza varias acciones como renovación, gestión y configuración.'
 
   server:
     title: 'Gestión del servidor'
@@ -298,16 +332,16 @@ pteroca:
     password: 'Contraseña'
     jdbc_connection_string: 'Cadena de conexión JDBC'
     rotate_password: 'Cambiar contraseña'
-    ip_address: 'IP-Adresse'
-    port: 'Port'
-    notes: 'Notizen'
-    create_allocation: 'Zuweisung erstellen'
-    delete_allocation: 'Zuweisung löschen'
-    delete_allocation_confirmation: 'Diese Zuweisung wird sofort von Ihrem Server entfernt. Sind Sie sicher, dass Sie fortfahren möchten?'
-    error_during_deleting_allocation: 'Beim Löschen der Zuweisung ist ein Fehler aufgetreten.'
-    cannot_delete_primary_allocation: 'Die primäre Zuweisung kann nicht gelöscht werden.'
-    extend_server_expires_on_demand: 'Ihr <strong>{{ productName }}</strong>-Server läuft derzeit <strong>auf Abruf</strong>.'
-    on_demand_billing_cycle: 'Der Abrechnungszyklus ({{ productPrice }} {{ internalCurrency }} / Minute) wird unterbrochen, wenn der Server offline ist, und Ressourcen sind kostenlos.'
+    ip_address: 'Dirección IP'
+    port: 'Puerto'
+    notes: 'Notas'
+    create_allocation: 'Crear asignación'
+    delete_allocation: 'Eliminar asignación'
+    delete_allocation_confirmation: 'Esta asignación será eliminada inmediatamente de su servidor. ¿Está seguro de que desea continuar?'
+    error_during_deleting_allocation: 'Se produjo un error al eliminar la asignación.'
+    cannot_delete_primary_allocation: 'La asignación principal no puede ser eliminada.'
+    extend_server_expires_on_demand: 'Su servidor <strong>{{ productName }}</strong> está actualmente configurado para funcionar <strong>bajo demanda</strong>.'
+    on_demand_billing_cycle: 'El ciclo de facturación ({{ productPrice }} {{ internalCurrency }} / minuto) se pausará cuando el servidor esté fuera de línea, y los recursos serán gratuitos.'
     type: 'Tipo'
     primary: 'Principal'
     secondary: 'Secundario'
@@ -566,6 +600,9 @@ pteroca:
       created_at: 'Creado el'
       updated_at: 'Actualizado el'
       avatar: 'Avatar'
+      repeat_password: 'Repetir contraseña'
+      repeat_password_hint: 'Ingrese la contraseña nuevamente para confirmar.'
+      passwords_must_match: 'Las contraseñas deben coincidir.'
     payment:
       session_id: 'ID de la sesión'
       status: 'Estado'
@@ -579,6 +616,11 @@ pteroca:
       balance_amount: 'Cantidad de saldo'
       used_voucher: 'Cupón utilizado'
       last_update: 'Última actualización'
+      description: 'Gestiona tus pagos y consulta el historial de transacciones'
+      continue_payment: 'Continuar pago'
+      detail: 'Detalles'
+    user_account:
+      description: 'Edita tus datos personales, cambia la contraseña y gestiona la configuración de la cuenta'
     log:
       log: 'Registro'
       logs: 'Registros'
@@ -719,6 +761,7 @@ pteroca:
   admin:
     overview:
       title: 'Resumen de Administración'
+      useful_resources: 'Recursos Útiles'
       servers: 'Servidores Activos'
       users: 'Usuarios Registrados'
       payments: 'Pagos'
@@ -804,3 +847,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Conexión exitosa con la API de Pterodactyl.'
       email_checking_smtp_connection: 'Verificando la conexión con el servidor SMTP...'
       email_smtp_connection_success: 'Conexión exitosa con el servidor SMTP.'
+
+  error:
+    404:
+      title: 'Página no encontrada'
+      message: 'Lo sentimos, pero la página que buscas no existe o ha sido movida. Verifica la URL o regresa a la página principal.'
+      go_home: 'Página principal'
+      go_back: 'Volver'
+    500:
+      title: 'Error del servidor'
+      message: 'Lo sentimos, ocurrió un error interno del servidor. Nuestro equipo ha sido notificado del problema. Intenta actualizar la página en unos minutos o contacta al administrador.'
+      go_home: 'Página principal'
+      refresh: 'Actualizar página'
+      go_back: 'Volver'
+    general:
+      title: 'Ocurrió un error'
+      message: 'Lo sentimos, ocurrió un error inesperado. Por favor, inténtalo de nuevo en un momento.'
+      go_home: 'Página principal'
+      go_back: 'Volver'

@@ -1,0 +1,34 @@
+{% include 'bundles/TwigBundle/Exception/components/error_header.html.twig' with {'title': 'pteroca.error.general.title'|trans} %}
+
+    <div class="error-container fade-in">
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid">
+        </div>
+        
+        <!-- Error Code -->
+        <div class="error-code">{{ status_code|default('Error') }}</div>
+        
+        <!-- Error Title -->
+        <h1 class="error-title">
+            {{ 'pteroca.error.general.title'|trans }}
+        </h1>
+        
+        <!-- Error Description -->
+        <p class="error-description">
+            {{ 'pteroca.error.general.message'|trans }}
+        </p>
+        
+        <!-- Action Buttons -->
+        <div class="d-flex flex-column justify-content-center align-items-center gap-3">
+            <a href="{{ path('panel') }}" class="btn-custom btn-primary-custom">
+                <i class="fas fa-home"></i>
+                {{ 'pteroca.error.general.go_home'|trans }}
+            </a>
+            <button onclick="history.back()" class="btn-custom btn-secondary-custom">
+                <i class="fas fa-arrow-left"></i>
+                {{ 'pteroca.error.general.go_back'|trans }}
+            </button>
+        </div>
+
+{% include 'bundles/TwigBundle/Exception/components/error_footer.html.twig' %}

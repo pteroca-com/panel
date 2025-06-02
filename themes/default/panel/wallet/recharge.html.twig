@@ -2,29 +2,40 @@
 
 {% block title %}| {{ 'pteroca.recharge.recharge_balance'|trans }}{% endblock %}
 
-{% block content_title %}{{ 'pteroca.recharge.recharge_balance'|trans }}{% endblock %}
-
-{% block page_actions %}
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#useVoucherModal">
-        <i class="fa fa-plus"></i>
-        {{ 'pteroca.cart.use_voucher'|trans }}
-    </button>
-
-    <a class="btn btn-secondary" href="{{ path('panel') }}">
-        {{ 'pteroca.system.back'|trans }}
-    </a>
-{% endblock %}
-
-{% block main %}
-    <div class="container mt-5">
+{% block content %}
+    <div class="container-fluid mt-4">
+        <!-- Header Section -->
         <div class="row">
-            <div class="col-md-6 offset-md-3 mb-5 mt-4">
+            <div class="col-12">
+                <div class="bg-light rounded-3 p-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle me-3">
+                                <i class="fas fa-wallet p-3 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-1 fw-bold">{{ 'pteroca.recharge.recharge_balance'|trans }}</h4>
+                                <p class="text-muted mb-0">{{ 'pteroca.recharge.recharge_description'|trans }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#useVoucherModal">
+                                <i class="fa fa-plus me-2"></i>{{ 'pteroca.cart.use_voucher'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Recharge Form -->
+            <div class="col-lg-8">
                 {% include 'panel/wallet/components/recharge_balance_card.html.twig' %}
             </div>
-            <div class="col-md-6 mt-5">
-                {% include 'panel/wallet/components/transaction_history.html.twig' %}
-            </div>
-            <div class="col-md-6 mt-5">
+
+            <!-- Balance Information -->
+            <div class="col-lg-4">
                 {% include 'panel/wallet/components/additional_information.html.twig' %}
             </div>
         </div>

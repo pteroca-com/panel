@@ -9,18 +9,24 @@ pteroca:
   login:
     title: 'लॉगिन'
     email_address: 'ईमेल पता'
+    email_placeholder: 'आपका@email.com'
     password: 'पासवर्ड'
+    password_placeholder: 'पासवर्ड दर्ज करें'
     forgot_password: 'क्या आप अपना पासवर्ड भूल गए हैं?'
     remember_me: 'मुझे याद रखें'
     sign_in: 'साइन इन करें'
     invalid_captcha: 'अमान्य CAPTCHA सत्यापन।'
     user_blocked: 'आपका खाता ब्लॉक कर दिया गया है।'
     dont_have_account_yet: "अभी तक खाता नहीं है? अभी पंजीकरण करें!"
+    subtitle: 'अपने खाते में लॉगिन करें'
 
   register:
     title: 'रजिस्टर करें'
+    subtitle: 'अपना नया खाता बनाएं'
     name: 'पहला नाम'
+    name_placeholder: 'अपना पहला नाम दर्ज करें'
     surname: 'अंतिम नाम'
+    surname_placeholder: 'अपना अंतिम नाम दर्ज करें'
     email_address: 'ईमेल पता'
     password: 'पासवर्ड'
     accept_terms: 'मैं <a href="{{ link }}" target="_blank">सेवा की शर्तों</a> को स्वीकार करता/करती हूँ'
@@ -38,6 +44,8 @@ pteroca:
     invalid_email: 'अमान्य ईमेल पता।'
     email_already_exists: 'इस ईमेल पते के साथ पहले से ही एक खाता मौजूद है।'
     already_have_account: 'पहले से खाता है? अभी साइन इन करें!'
+    email_placeholder: 'आपका@email.com'
+    password_placeholder: 'पासवर्ड दर्ज करें'
 
   recovery:
     title: 'पासवर्ड पुनर्प्राप्ति'
@@ -68,6 +76,9 @@ pteroca:
     ip_address: 'आईपी पता'
     view_all_servers: 'सभी सर्वर देखें'
     title: 'डैशबोर्ड'
+    welcome_message: 'आपका सर्वर कमांड सेंटर'
+    quick_actions: 'त्वरित क्रियाएं'
+    browse_store: 'स्टोर ब्राउज़ करें'
   recharge:
     recharge_balance: 'शेष राशि जोड़ें'
     recharge: 'रिचार्ज करें'
@@ -88,10 +99,16 @@ pteroca:
     failed_to_create_payment: 'भुगतान बनाने में विफल।'
     payment_not_found: 'भुगतान नहीं मिला।'
     payment_already_processed: 'भुगतान पहले ही संसाधित किया जा चुका है।'
+    payment_url_not_available: 'भुगतान URL उपलब्ध नहीं है।'
+    payment_expired: 'यह भुगतान समाप्त हो गया है और अब जारी नहीं रखा जा सकता। कृपया एक नया भुगतान बनाएं।'
     current_balance: 'वर्तमान शेष राशि'
     payment_provider_information: 'भुगतान प्रदाता जानकारी'
     payment_provider_details: 'भुगतान सुरक्षित रूप से Stripe द्वारा संभाला जाता है। वह राशि दर्ज करें जिसे आप जोड़ना चाहते हैं, फिर "रिचार्ज करें" पर क्लिक करें।'
     payment_is_not_configured: 'भुगतान कॉन्फ़िगर नहीं किया गया है। कृपया व्यवस्थापक से संपर्क करें।'
+    recharge_description: 'अपने खाते की शेष राशि रिचार्ज करें'
+    amount_hint: 'वह राशि दर्ज करें जिसे आप रिचार्ज करना चाहते हैं।'
+    view_transaction_history: 'लेन-देन इतिहास देखें'
+    view_all_payments_description: 'आपके खाते पर किए गए सभी भुगतान दिखाता है।'
 
   product:
     information: 'जानकारी'
@@ -129,6 +146,8 @@ pteroca:
     ports: 'पोर्ट्स'
     discount: 'छूट'
     discount_hint: 'छूट केवल पहले बिलिंग चक्र पर लागू होगी।'
+    product_order_details: 'उत्पाद विवरण और ऑर्डर विकल्प'
+    total: 'कुल'
 
   store:
     title: 'स्टोर'
@@ -144,6 +163,14 @@ pteroca:
     no_categories: 'अभी तक कोई श्रेणियाँ नहीं हैं।'
     no_products: 'अभी तक कोई उत्पाद नहीं हैं।'
     price_not_found: 'कीमत नहीं मिली'
+    description: 'कृपया वह श्रेणी या उत्पाद चुनें जिसमें आप रुचि रखते हैं'
+    products_with_no_category: 'कोई श्रेणी नहीं वाले उत्पाद'
+    categories: 'श्रेणियाँ'
+    category_description: 'इस श्रेणी में उपलब्ध उत्पाद'
+    available_products: 'उपलब्ध उत्पाद'
+    no_products_title: 'कोई उत्पाद नहीं'
+    shop_is_empty: 'स्टोर खाली है'
+    no_products_and_categories: 'स्टोर में अभी तक कोई उत्पाद या श्रेणियाँ नहीं हैं।'
   cart_configuration:
     title: 'अपने सर्वर को कॉन्फ़िगर करें'
     configuration: 'कॉन्फ़िगरेशन'
@@ -153,13 +180,16 @@ pteroca:
     auto_renewal: 'स्वचालित नवीनीकरण'
     enable: 'स्वचालित नवीनीकरण सक्षम करें'
     disable: 'स्वचालित नवीनीकरण अक्षम करें'
+    description: 'अपने सर्वर को कॉन्फ़िगर करें और भुगतान के लिए आगे बढ़ें'
   cart_topup:
     title: 'अपना खाता रिचार्ज करें'
     order: 'ऑर्डर'
     order_description: 'फंड्स रिचार्ज करें'
     payment_method: 'भुगतान विधि'
+    description: 'अपने खाते की शेष राशि रिचार्ज करें'
   cart_renew:
     title: 'अपने सर्वर का नवीनीकरण करें'
+    description: 'निलंबन या हटाने से बचने के लिए अपने सर्वर का नवीनीकरण करें।'
   cart:
     use_voucher: 'वाउचर का उपयोग करें'
     voucher_code: 'वाउचर कोड'
@@ -192,6 +222,10 @@ pteroca:
     extend: 'विस्तार करें'
     no_servers: 'आपके पास अभी तक कोई सर्वर नहीं है।'
     click_to_buy: 'सर्वर खरीदने के लिए यहां क्लिक करें।'
+    name: 'नाम'
+    status: 'स्थिति'
+    actions: 'क्रियाएँ'
+    description: 'अपने सर्वरों का प्रबंधन करें, उनके विवरण देखें और नवीनीकरण, प्रबंधन और कॉन्फ़िगरेशन जैसी विभिन्न क्रियाएं करें।'
 
   server:
     title: 'सर्वर प्रबंधन'
@@ -562,6 +596,9 @@ pteroca:
       created_at: 'बनाया गया'
       updated_at: 'अंतिम गतिविधि'
       avatar: 'अवतार'
+      repeat_password: 'पासवर्ड दोहराएं'
+      repeat_password_hint: 'पुष्टि के लिए पासवर्ड फिर से दर्ज करें।'
+      passwords_must_match: 'पासवर्ड मेल खाना चाहिए।'
     payment:
       session_id: 'सत्र आईडी'
       status: 'स्थिति'
@@ -575,6 +612,11 @@ pteroca:
       balance_amount: 'बैलेंस राशि'
       used_voucher: 'उपयोग किया गया वाउचर'
       last_update: 'अंतिम अपडेट'
+      description: 'अपने भुगतान प्रबंधित करें और लेनदेन इतिहास देखें'
+      continue_payment: 'भुगतान जारी रखें'
+      detail: 'विवरण'
+    user_account:
+      description: 'अपना व्यक्तिगत डेटा संपादित करें, पासवर्ड बदलें और खाता सेटिंग्स प्रबंधित करें'
     log:
       log: 'लॉग'
       logs: 'लॉग्स'
@@ -715,6 +757,7 @@ pteroca:
   admin:
     overview:
       title: 'व्यवस्थापक अवलोकन'
+      useful_resources: 'उपयोगी संसाधन'
       servers: 'सक्रिय सर्वर'
       users: 'पंजीकृत उपयोगकर्ता'
       payments: 'भुगतान'
@@ -801,3 +844,20 @@ pteroca:
       email_checking_smtp_connection: "SMTP सर्वर कनेक्शन की जाँच की जा रही है..."
       email_smtp_connection_success: "SMTP सर्वर से सफलतापूर्वक कनेक्ट हो गया।"
 
+  error:
+    404:
+      title: 'पेज नहीं मिला'
+      message: 'खुशी है, लेकिन आप जो पेज खोज रहे हैं वह मौजूद नहीं है या स्थानांतरित हो गया है। URL की जांच करें या मुख्य पेज पर वापस जाएं।'
+      go_home: 'मुख्य पेज'
+      go_back: 'वापस'
+    500:
+      title: 'सर्वर त्रुटि'
+      message: 'खुशी है, एक आंतरिक सर्वर त्रुटि हुई है। हमारी टीम को समस्या के बारे में सूचित कर दिया गया है। कुछ मिनटों में पेज को रीफ्रेश करने का प्रयास करें या व्यवस्थापक से संपर्क करें।'
+      go_home: 'मुख्य पेज'
+      refresh: 'पेज रीफ्रेश करें'
+      go_back: 'वापस'
+    general:
+      title: 'एक त्रुटि हुई'
+      message: 'खुशी है, एक अप्रत्याशित त्रुटि हुई है। कृपया एक क्षण में फिर से कोशिश करें।'
+      go_home: 'मुख्य पेज'
+      go_back: 'वापस'

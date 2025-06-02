@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\MappedSuperclass]
@@ -43,6 +44,9 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     private ?File $avatarFile = null;
 
     private ?string $plainPassword = null;
+
+    #[Assert\EqualTo(propertyPath: 'plainPassword', message: 'pteroca.crud.user.passwords_must_match')]
+    private ?string $repeatPassword = null;
 
     /**
      * @var string The hashed password
@@ -165,6 +169,18 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPlainPassword(?string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public function getRepeatPassword(): ?string
+    {
+        return $this->repeatPassword;
+    }
+
+    public function setRepeatPassword(?string $repeatPassword): self
+    {
+        $this->repeatPassword = $repeatPassword;
 
         return $this;
     }

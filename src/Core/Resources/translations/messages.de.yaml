@@ -13,18 +13,24 @@ pteroca:
   login:
     title: 'Einloggen'
     email_address: 'E-Mail-Adresse'
+    email_placeholder: 'ihre@email.com'
     password: 'Passwort'
+    password_placeholder: 'Passwort eingeben'
     forgot_password: 'Passwort vergessen?'
     remember_me: 'Erinnere dich an mich'
     sign_in: 'Einloggen'
     invalid_captcha: 'Ungültige CAPTCHA-Verifizierung.'
     user_blocked: 'Ihr Konto wurde gesperrt.'
     dont_have_account_yet: 'Noch kein Konto? Jetzt registrieren!'
+    subtitle: 'Melden Sie sich in Ihrem Konto an'
 
   register:
     title: 'Registrieren'
+    subtitle: 'Erstellen Sie Ihr neues Konto'
     name: 'Vorname'
+    name_placeholder: 'Geben Sie Ihren Vornamen ein'
     surname: 'Nachname'
+    surname_placeholder: 'Geben Sie Ihren Nachnamen ein'
     email_address: 'E-Mail-Adresse'
     password: 'Passwort'
     accept_terms: 'Ich akzeptiere <a href="{{ link }}" target="_blank">die Nutzungsbedingungen</a>'
@@ -42,6 +48,8 @@ pteroca:
     invalid_email: 'Ungültige E-Mail-Adresse.'
     email_already_exists: 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.'
     already_have_account: 'Bereits registriert? Jetzt einloggen!'
+    email_placeholder: 'ihre@email.com'
+    password_placeholder: 'Passwort eingeben'
 
   recovery:
     title: 'Passwort zurücksetzen'
@@ -72,6 +80,9 @@ pteroca:
     ip_address: 'IP-Adresse'
     view_all_servers: 'Zu den Servern gehen'
     title: 'Instrumententafel'
+    welcome_message: 'Ihr Server-Kommandozentrum'
+    quick_actions: 'Schnelle Aktionen'
+    browse_store: 'Shop durchsuchen'
   recharge:
     recharge_balance: 'Guthaben aufladen'
     recharge: 'Aufladen'
@@ -92,10 +103,16 @@ pteroca:
     failed_to_create_payment: 'Fehler beim Erstellen der Zahlung.'
     payment_not_found: 'Zahlung nicht gefunden.'
     payment_already_processed: 'Die Zahlung wurde bereits verarbeitet.'
+    payment_url_not_available: 'Zahlungs-URL ist nicht verfügbar.'
+    payment_expired: 'Diese Zahlung ist abgelaufen und kann nicht mehr fortgesetzt werden. Bitte erstellen Sie eine neue Zahlung.'
     current_balance: 'Aktueller Kontostand'
     payment_provider_information: 'Informationen zum Zahlungsanbieter'
     payment_provider_details: 'Zahlungen werden sicher über Stripe abgewickelt. Geben Sie den Betrag ein, den Sie aufladen möchten, und klicken Sie dann auf "Aufladen".'
     payment_is_not_configured: 'Das Zahlungssystem ist nicht konfiguriert. Bitte kontaktieren Sie den Administrator.'
+    recharge_description: 'Laden Sie Ihr Kontoguthaben auf'
+    amount_hint: 'Geben Sie den Betrag ein, den Sie aufladen möchten.'
+    view_transaction_history: 'Transaktionsverlauf anzeigen'
+    view_all_payments_description: 'Zeigen Sie alle Zahlungen an, die auf Ihrem Konto getätigt wurden.'
 
   product:
     information: 'Informationen'
@@ -133,6 +150,8 @@ pteroca:
     ports: 'Ports'
     discount: 'Rabatt'
     discount_hint: 'Der Rabatt wird nur für den ersten Abrechnungszeitraum angewendet.'
+    product_order_details: 'Produktdetails und Bestelloptionen'
+    total: 'Gesamt'
 
   store:
     title: 'Shop'
@@ -148,6 +167,14 @@ pteroca:
     no_categories: 'Es wurden noch keine Kategorien zum Shop hinzugefügt.'
     no_products: 'Es gibt noch keine Produkte in dieser Kategorie.'
     price_not_found: 'Preis nicht gefunden'
+    description: 'Wählen Sie die Kategorie oder das Produkt, das Sie interessiert'
+    products_with_no_category: 'Produkte ohne Kategorie'
+    categories: 'Kategorien'
+    category_description: 'Produkte in dieser Kategorie'
+    available_products: 'Verfügbare Produkte'
+    no_products_title: 'Keine Produkte'
+    shop_is_empty: 'Shop ist leer'
+    no_products_and_categories: 'Es gibt noch keine Produkte oder Kategorien im Shop.'
   cart_configuration:
     title: 'Server konfigurieren'
     configuration: 'Konfiguration'
@@ -157,13 +184,16 @@ pteroca:
     auto_renewal: 'Automatische Verlängerung'
     enable: 'Automatische Verlängerung aktivieren'
     disable: 'Automatische Verlängerung deaktivieren'
+    description: 'Konfigurieren Sie Ihren Server und fahren Sie mit der Zahlung fort'
   cart_topup:
     title: 'Konto aufladen'
     order: 'Bestellen'
     order_description: 'Guthaben aufladen'
     payment_method: 'Zahlungsmethode'
+    description: 'Laden Sie Ihr Kontoguthaben auf'
   cart_renew:
     title: 'Server verlängern'
+    description: 'Verlängern Sie Ihren Server, um eine Sperrung oder Löschung zu vermeiden.'
   cart:
     use_voucher: 'Gutschein verwenden'
     voucher_code: 'Gutscheincode'
@@ -196,6 +226,10 @@ pteroca:
     extend: 'Verlängern'
     no_servers: 'Sie haben noch keine Server.'
     click_to_buy: 'Klicken Sie hier, um einen Server zu kaufen.'
+    name: 'Name'
+    status: 'Status'
+    actions: 'Aktionen'
+    description: 'Verwalten Sie Ihre Server, zeigen Sie deren Details an und führen Sie verschiedene Aktionen wie Verlängerung, Verwaltung und Konfiguration durch.'
 
   server:
     title: 'Serververwaltung'
@@ -566,6 +600,9 @@ pteroca:
       created_at: 'Erstellt am'
       updated_at: 'Aktualisiert am'
       avatar: 'Avatar'
+      repeat_password: 'Passwort wiederholen'
+      repeat_password_hint: 'Geben Sie das Passwort erneut ein, um es zu bestätigen.'
+      passwords_must_match: 'Die Passwörter müssen übereinstimmen.'
     payment:
       session_id: 'Sitzungs-ID'
       status: 'Status'
@@ -579,6 +616,11 @@ pteroca:
       balance_amount: 'Guthabenbetrag'
       used_voucher: 'Verwendeter Gutschein'
       last_update: 'Letzte Aktualisierung'
+      description: 'Verwalten Sie Ihre Zahlungen und sehen Sie die Transaktionshistorie ein'
+      continue_payment: 'Zahlung fortsetzen'
+      detail: 'Details'
+    user_account:
+      description: 'Bearbeiten Sie Ihre persönlichen Daten, ändern Sie das Passwort und verwalten Sie Kontoeinstellungen'
     log:
       log: 'Log'
       logs: 'Logs'
@@ -719,6 +761,7 @@ pteroca:
   admin:
     overview:
       title: 'Admin Übersicht'
+      useful_resources: 'Nützliche Ressourcen'
       servers: 'Aktive Server'
       users: 'Registrierte Benutzer'
       payments: 'Zahlungen'
@@ -804,3 +847,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Erfolgreich mit der Pterodactyl-API verbunden.'
       email_checking_smtp_connection: 'Verbindung zum SMTP-Server wird überprüft...'
       email_smtp_connection_success: 'Erfolgreich mit dem SMTP-Server verbunden.'
+
+  error:
+    404:
+      title: 'Seite nicht gefunden'
+      message: 'Entschuldigung, aber die Seite, die Sie suchen, existiert nicht oder wurde verschoben. Überprüfen Sie die URL oder kehren Sie zur Startseite zurück.'
+      go_home: 'Startseite'
+      go_back: 'Zurück'
+    500:
+      title: 'Serverfehler'
+      message: 'Entschuldigung, es ist ein interner Serverfehler aufgetreten. Unser Team wurde über das Problem benachrichtigt. Versuchen Sie, die Seite in ein paar Minuten zu aktualisieren oder kontaktieren Sie den Administrator.'
+      go_home: 'Startseite'
+      refresh: 'Seite aktualisieren'
+      go_back: 'Zurück'
+    general:
+      title: 'Ein Fehler ist aufgetreten'
+      message: 'Entschuldigung, es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es in einem Moment erneut.'
+      go_home: 'Startseite'
+      go_back: 'Zurück'

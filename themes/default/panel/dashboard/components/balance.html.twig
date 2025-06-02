@@ -1,11 +1,26 @@
-<div class="card" style="width: 18rem;">
-    <div class="card-body">
-        <h5 class="card-title">{{ 'pteroca.dashboard.account_balance'|trans }}</h5>
-        <div class="card-text">{{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}</div>
-        <div class="card-text small">{{ 'pteroca.dashboard.account_balance_description'|trans }}</div>
-        <div class="card-action mt-2">
-            <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn btn-primary">
-                <i class="fas fa-coins fa-xs me-1"></i>
+<div class="card border-0 shadow-sm rounded-3 h-100">
+    <div class="card-header bg-success text-white">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-wallet me-2"></i>
+            <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.dashboard.account_balance'|trans }}</h5>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <!-- Balance Display -->
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-success bg-opacity-10 rounded-circle me-3">
+                <i class="fas fa-coins p-3 text-success"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold text-success mb-1">{{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}</h3>
+                <p class="text-muted mb-0">{{ 'pteroca.dashboard.account_balance_description'|trans }}</p>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="d-grid">
+            <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn btn-success btn-lg rounded-pill fw-semibold">
+                <i class="fas fa-plus me-2"></i>
                 {{ 'pteroca.dashboard.account_recharge'|trans }}
             </a>
         </div>

@@ -8,17 +8,23 @@ pteroca:
   login:
     title: 'Aanmelden'
     email_address: 'Email adres'
+    email_placeholder: 'uw@email.com'
     password: 'Wachtwoord'
+    password_placeholder: 'Voer uw wachtwoord in'
     forgot_password: 'Wachtwoord vergeten?'
     remember_me: 'Onthoud mijn gegevens'
     sign_in: 'Inloggen'
     invalid_captcha: 'Ongeldige CAPTCHA-verificatie.'
     user_blocked: 'Uw account is geblokkeerd.'
     dont_have_account_yet: "Heeft u nog geen account? Registreer nu!"
+    subtitle: 'Log in op uw account'
   register:
     title: 'Registreren'
+    subtitle: 'Maak uw nieuwe account aan'
     name: 'Voornaam'
+    name_placeholder: 'Voer uw voornaam in'
     surname: 'Achternaam'
+    surname_placeholder: 'Voer uw achternaam in'
     email_address: 'Email adres'
     password: 'Wachtwoord'
     accept_terms: 'Ik accepteer de <a href="{{ link }}" target="_blank">Algemene Voorwaarden</a>'
@@ -36,6 +42,8 @@ pteroca:
     invalid_email: 'E-mail adres is ongeldig.'
     email_already_exists: 'Er bestaat al een account met dit e-mailadres.'
     already_have_account: 'Heeft u al een account? Meld u aan!'
+    email_placeholder: 'uw@email.com'
+    password_placeholder: 'Voer uw wachtwoord in'
   recovery:
     title: 'Wachtwoord herstellen'
     email_address: 'Email adres'
@@ -64,6 +72,9 @@ pteroca:
     ip_address: 'IP-adres'
     view_all_servers: 'Bekijk alle servers'
     title: 'Dashboard'
+    welcome_message: 'Uw server commandocentrum'
+    quick_actions: 'Snelle acties'
+    browse_store: 'Winkel bekijken'
   recharge:
     recharge_balance: 'Opladen saldo'
     recharge: 'Opladen'
@@ -84,10 +95,16 @@ pteroca:
     failed_to_create_payment: 'Aanmaken betaling mislukt.'
     payment_not_found: 'Betaling niet gevonden.'
     payment_already_processed: 'Betaling is al verwerkt.'
+    payment_url_not_available: 'Betalings-URL is niet beschikbaar.'
+    payment_expired: 'Deze betaling is verlopen en kan niet meer worden voortgezet. Maak alstublieft een nieuwe betaling aan.'
     current_balance: 'Huidig saldo'
     payment_provider_information: 'Betalingsprovider informatie'
     payment_provider_details: 'Betalingen worden veilig verwerkt door Stripe. Voer het bedrag in dat u wilt opwaarderen en klik vervolgens op ''Opwaarderen''.'
     payment_is_not_configured: 'Betaling is niet geconfigureerd. Neem contact op met de beheerder.'
+    recharge_description: 'Laad het saldo van uw account op'
+    amount_hint: 'Voer het bedrag in dat u wilt opladen.'
+    view_transaction_history: 'Bekijk transactiegeschiedenis'
+    view_all_payments_description: 'Toont alle betalingen die op uw account zijn gedaan.'
   product:
     information: 'Informatie'
     ram: 'Geheugen'
@@ -124,6 +141,8 @@ pteroca:
     ports: 'Poorten'
     discount: 'Korting'
     discount_hint: 'Korting toegepast op de totale prijs'
+    product_order_details: 'Productdetails en besteloptie'
+    total: 'Totaal'
   store:
     title: 'Winkel'
     order: 'Bestel'
@@ -138,6 +157,14 @@ pteroca:
     no_categories: 'Er zijn nog geen categorieën.'
     no_products: 'Er zijn nog geen producten.'
     price_not_found: 'Prijs niet gevonden'
+    description: 'Selecteer de categorie of het product waarin u geïnteresseerd bent'
+    products_with_no_category: 'Producten zonder categorie'
+    categories: 'Categorieën'
+    category_description: 'Producten beschikbaar in deze categorie'
+    available_products: 'Beschikbare producten'
+    no_products_title: 'Geen producten'
+    shop_is_empty: 'De winkel is leeg'
+    no_products_and_categories: 'Er zijn nog geen producten of categorieën in de winkel.'
   renew:
     title: 'Server verlengen'
     renew: 'Server verlengen'
@@ -165,6 +192,11 @@ pteroca:
     extend: 'Uitbreiden'
     no_servers: 'U heeft nog geen servers.'
     click_to_buy: 'Klik hier om een server te kopen.'
+    name: 'Naam'
+    status: 'Status'
+    actions: 'Acties'
+    description: 'Beheer uw servers, bekijk hun details en voer verschillende acties uit zoals verlenging, beheer en configuratie.'
+    
   server:
     title: 'Server beheer'
     console: 'Console'
@@ -325,13 +357,16 @@ pteroca:
     auto_renewal: 'Automatische verlenging'
     enable: 'Activeren'
     disable: 'Deactiveren'
+    description: 'Configureer uw server en ga door naar betaling'
   cart_topup:
     title: 'Vul je account aan'
     order: 'Bestellen'
     order_description: 'Saldo opwaarderen'
     payment_method: 'Betalingsmethode'
+    description: 'Laad het saldo van uw account op'
   cart_renew:
     title: 'Verleng je server'
+    description: 'Verleng uw server om opschorting of verwijdering te voorkomen.'
   cart:
     use_voucher: 'Gebruik voucher'
     voucher_code: 'Voucher code'
@@ -549,6 +584,9 @@ pteroca:
       created_at: 'Aangemaakt op'
       updated_at: 'Laatste activiteit'
       avatar: 'Profielafbeelding'
+      repeat_password: 'Herhaal wachtwoord'
+      repeat_password_hint: 'Voer het wachtwoord opnieuw in ter bevestiging.'
+      passwords_must_match: 'Wachtwoorden moeten overeenkomen.'
     payment:
       session_id: 'Sessie-ID'
       status: 'Status'
@@ -562,6 +600,11 @@ pteroca:
       balance_amount: 'Saldo bedrag'
       used_voucher: 'Gebruikte voucher'
       last_update: 'Laatste update'
+      description: 'Beheer je betalingen en bekijk de transactiegeschiedenis'
+      continue_payment: 'Betaling voortzetten'
+      detail: 'Details'
+    user_account:
+      description: 'Bewerk je persoonlijke gegevens, wijzig je wachtwoord en beheer je accountinstellingen'
     voucher:
       voucher: 'Voucher'
       vouchers: 'Vouchers'
@@ -700,6 +743,7 @@ pteroca:
   admin:
     overview:
       title: 'Beheerder Overzicht'
+      useful_resources: 'Nuttige Bronnen'
       servers: 'Actieve servers'
       users: 'Geregistreerde gebruikers'
       payments: 'Betalingen'
@@ -784,3 +828,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Met succes verbonden met de Pterodactyl API.'
       email_checking_smtp_connection: 'De verbinding met de SMTP-server controleren...'
       email_smtp_connection_success: 'Succesvol verbonden met de SMTP-server.'
+
+  error:
+    404:
+      title: 'Pagina niet gevonden'
+      message: 'Sorry, maar de pagina die u zoekt bestaat niet of is verplaatst. Controleer de URL of ga terug naar de hoofdpagina.'
+      go_home: 'Hoofdpagina'
+      go_back: 'Terug'
+    500:
+      title: 'Serverfout'
+      message: 'Sorry, er is een interne serverfout opgetreden. Ons team is op de hoogte gesteld van het probleem. Probeer de pagina over een paar minuten te vernieuwen of neem contact op met de beheerder.'
+      go_home: 'Hoofdpagina'
+      refresh: 'Pagina vernieuwen'
+      go_back: 'Terug'
+    general:
+      title: 'Er is een fout opgetreden'
+      message: 'Sorry, er is een onverwachte fout opgetreden. Probeer het over een moment opnieuw.'
+      go_home: 'Hoofdpagina'
+      go_back: 'Terug'

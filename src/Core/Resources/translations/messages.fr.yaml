@@ -20,6 +20,9 @@ pteroca:
     invalid_captcha: 'Vérification CAPTCHA invalide.'
     user_blocked: 'Votre compte a été bloqué.'
     dont_have_account_yet: 'Vous n’avez pas encore de compte ? Inscrivez-vous !'
+    subtitle: 'Connectez-vous à votre compte'
+    email_placeholder: 'votre@email.com'
+    password_placeholder: 'Entrez votre mot de passe'
 
   register:
     title: 'Inscription'
@@ -42,6 +45,11 @@ pteroca:
     invalid_email: 'Adresse e-mail invalide.'
     email_already_exists: 'Un compte avec cette adresse e-mail existe déjà.'
     already_have_account: 'Vous avez déjà un compte ? Connectez-vous !'
+    subtitle: 'Créez votre nouveau compte'
+    name_placeholder: 'Entrez votre prénom'
+    surname_placeholder: 'Entrez votre nom de famille'
+    email_placeholder: 'votre@email.com'
+    password_placeholder: 'Entrez votre mot de passe'
 
   recovery:
     title: 'Réinitialisation du mot de passe'
@@ -72,6 +80,9 @@ pteroca:
     ip_address: 'Adresse IP'
     view_all_servers: 'Voir tous les serveurs'
     title: 'Tableau de bord'
+    welcome_message: 'Votre centre de commande de serveurs'
+    quick_actions: 'Actions rapides'
+    browse_store: 'Parcourir la boutique'
   recharge:
     recharge_balance: 'Recharger le solde'
     recharge: 'Recharger'
@@ -92,9 +103,15 @@ pteroca:
     failed_to_create_payment: 'Échec de la création du paiement.'
     payment_not_found: 'Paiement non trouvé.'
     payment_already_processed: 'Le paiement a déjà été traité.'
+    payment_url_not_available: 'L''URL de paiement n''est pas disponible.'
+    payment_expired: 'Ce paiement a expiré et ne peut plus être continué. Veuillez créer un nouveau paiement.'
     current_balance: 'Solde actuel'
     payment_provider_information: 'Informations sur le prestataire de paiement'
     payment_provider_details: 'Les paiements sont sécurisés via Stripe. Entrez le montant que vous souhaitez recharger, puis cliquez sur "Recharger".'
+    recharge_description: 'Rechargez le solde de votre compte'
+    amount_hint: 'Entrez le montant que vous souhaitez recharger.'
+    view_transaction_history: 'Voir l''historique des transactions'
+    view_all_payments_description: 'Affiche tous les paiements effectués sur votre compte.'
     payment_is_not_configured: 'Le système de paiement n’est pas configuré. Contactez l’administrateur.'
 
   product:
@@ -132,7 +149,10 @@ pteroca:
     total_price: 'Prix total'
     ports: 'Ports'
     discount: 'Réduction'
-    discount_hint: 'La réduction ne s\''appliquera qu\''au premier cycle de facturation.'
+    discount_hint: 'La réduction ne s''appliquera qu''au premier cycle de facturation.'
+    product_order_details: 'Détails du produit et options de commande'
+    total: 'Total'
+
 
   store:
     title: 'Boutique'
@@ -148,6 +168,14 @@ pteroca:
     no_categories: 'Aucune catégorie n’a encore été ajoutée à la boutique.'
     no_products: 'Il n’y a pas encore de produits dans cette catégorie.'
     price_not_found: 'Prix introuvable'
+    description: 'Sélectionnez la catégorie ou le produit qui vous intéresse'
+    products_with_no_category: 'Produits sans catégorie'
+    categories: 'Catégories'
+    category_description: 'Produits disponibles dans cette catégorie'
+    available_products: 'Produits disponibles'
+    no_products_title: 'Aucun produit'
+    shop_is_empty: 'La boutique est vide'
+    no_products_and_categories: 'Il n''y a pas encore de produits ou de catégories dans la boutique.'
   cart_configuration:
     title: 'Configurer votre serveur'
     configuration: 'Configuration'
@@ -157,13 +185,16 @@ pteroca:
     auto_renewal: 'Renouvellement automatique'
     enable: 'Activer le renouvellement automatique'
     disable: 'Désactiver le renouvellement automatique'
+    description: 'Configurez votre serveur et procédez au paiement'
   cart_topup:
     title: 'Recharger votre compte'
     order: 'Commander'
     order_description: 'Recharger des fonds'
     payment_method: 'Méthode de paiement'
+    description: 'Rechargez le solde de votre compte'
   cart_renew:
     title: 'Renouveler votre serveur'
+    description: 'Renouvelez votre serveur pour continuer à l''utiliser'
   cart:
     use_voucher: 'Utiliser un bon'
     voucher_code: 'Code du bon'
@@ -196,6 +227,10 @@ pteroca:
     extend: 'Prolonger'
     no_servers: 'Vous n’avez pas encore de serveurs.'
     click_to_buy: 'Cliquez ici pour acheter un serveur.'
+    name: 'Nom'
+    status: 'Statut'
+    actions: 'Actions'
+    description: 'Gérez tous vos serveurs depuis cette page'
 
   server:
     title: 'Gestion du serveur'
@@ -566,6 +601,9 @@ pteroca:
       created_at: 'Créé le'
       updated_at: 'Mis à jour le'
       avatar: 'Avatar'
+      repeat_password: 'Répéter le mot de passe'
+      repeat_password_hint: 'Saisissez à nouveau le mot de passe pour confirmer.'
+      passwords_must_match: 'Les mots de passe doivent correspondre.'
     payment:
       session_id: 'ID de session'
       status: 'Statut'
@@ -579,6 +617,11 @@ pteroca:
       balance_amount: 'Montant du solde'
       used_voucher: 'Bon utilisé'
       last_update: 'Dernière mise à jour'
+      description: 'Gérez vos paiements et consultez l''historique des transactions'
+      continue_payment: 'Continuer le paiement'
+      detail: 'Détails'
+    user_account:
+      description: 'Modifiez vos données personnelles, changez le mot de passe et gérez les paramètres du compte'
     log:
       log: 'Journal'
       logs: 'Journaux'
@@ -719,6 +762,7 @@ pteroca:
   admin:
     overview:
       title: 'Vue d’ensemble Admin'
+      useful_resources: 'Ressources Utiles'
       servers: 'Serveurs Actifs'
       users: 'Utilisateurs Enregistrés'
       payments: 'Paiements'
@@ -804,3 +848,21 @@ pteroca:
       pterodactyl_api_connection_success: 'Connexion réussie à l’API Pterodactyl.'
       email_checking_smtp_connection: 'Vérification de la connexion au serveur SMTP...'
       email_smtp_connection_success: 'Connexion réussie au serveur SMTP.'
+
+  error:
+    404:
+      title: 'Page non trouvée'
+      message: 'Désolé, mais la page que vous recherchez n''existe pas ou a été déplacée. Vérifiez l''URL ou retournez à la page d''accueil.'
+      go_home: 'Page d''accueil'
+      go_back: 'Retour'
+    500:
+      title: 'Erreur du serveur'
+      message: 'Désolé, une erreur interne du serveur s''est produite. Notre équipe a été notifiée du problème. Essayez de rafraîchir la page dans quelques minutes ou contactez l''administrateur.'
+      go_home: 'Page d''accueil'
+      refresh: 'Actualiser la page'
+      go_back: 'Retour'
+    general:
+      title: 'Une erreur s''est produite'
+      message: 'Désolé, une erreur inattendue s''est produite. Veuillez réessayer dans un moment.'
+      go_home: 'Page d''accueil'
+      go_back: 'Retour'
