@@ -9,7 +9,9 @@ pteroca:
   login:
     title: 'Zaloguj się'
     email_address: 'Adres e-mail'
+    email_placeholder: 'twoj@email.com'
     password: 'Hasło'
+    password_placeholder: 'Wprowadź hasło'
     forgot_password: 'Zapomniałeś hasła?'
     remember_me: 'Zapamiętaj mnie'
     sign_in: 'Zaloguj się'
@@ -17,13 +19,14 @@ pteroca:
     user_blocked: 'Twoje konto zostało zablokowane.'
     dont_have_account_yet: 'Nie masz jeszcze konta? Zarejestruj się!'
     subtitle: 'Zaloguj się do swojego konta'
-    email_placeholder: 'twoj@email.com'
-    password_placeholder: 'Wprowadź hasło'
 
   register:
     title: 'Zarejestruj się'
+    subtitle: 'Utwórz swoje nowe konto'
     name: 'Imię'
+    name_placeholder: 'Wprowadź swoje imię'
     surname: 'Nazwisko'
+    surname_placeholder: 'Wprowadź swoje nazwisko'
     email_address: 'Adres e-mail'
     password: 'Hasło'
     accept_terms: 'Akceptuję <a href="{{ link }}" target="_blank">regulamin</a>'
@@ -41,6 +44,8 @@ pteroca:
     invalid_email: 'Nieprawidłowy adres e-mail.'
     email_already_exists: 'Konto o podanym adresie e-mail już istnieje.'
     already_have_account: 'Masz już konto? Zaloguj się!'
+    email_placeholder: 'twoj@email.com'
+    password_placeholder: 'Wprowadź hasło'
 
   recovery:
     title: 'Przypomnij hasło'

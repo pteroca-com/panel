@@ -9,7 +9,9 @@ pteroca:
   login:
     title: 'Login'
     email_address: 'Email address'
+    email_placeholder: 'your@email.com'
     password: 'Password'
+    password_placeholder: 'Enter password'
     forgot_password: 'Forgot your password?'
     remember_me: 'Remember me'
     sign_in: 'Sign in'
@@ -17,13 +19,14 @@ pteroca:
     user_blocked: 'Your account has been blocked.'
     dont_have_account_yet: "Don't have an account yet? Register now!"
     subtitle: 'Sign in to your account'
-    email_placeholder: 'your@email.com'
-    password_placeholder: 'Enter password'
 
   register:
     title: 'Register'
+    subtitle: 'Create your new account'
     name: 'First name'
+    name_placeholder: 'Enter your first name'
     surname: 'Last name'
+    surname_placeholder: 'Enter your last name'
     email_address: 'Email address'
     password: 'Password'
     accept_terms: 'I accept the <a href="{{ link }}" target="_blank">terms of service</a>'
@@ -41,6 +44,8 @@ pteroca:
     invalid_email: 'Email address is invalid.'
     email_already_exists: 'An account with that email address already exists.'
     already_have_account: 'Already have an account? Sign in now!'
+    email_placeholder: 'your@email.com'
+    password_placeholder: 'Enter password'
 
   recovery:
     title: 'Password Recovery'

@@ -9,7 +9,9 @@ pteroca:
   login:
     title: 'लॉगिन'
     email_address: 'ईमेल पता'
+    email_placeholder: 'आपका@email.com'
     password: 'पासवर्ड'
+    password_placeholder: 'पासवर्ड दर्ज करें'
     forgot_password: 'क्या आप अपना पासवर्ड भूल गए हैं?'
     remember_me: 'मुझे याद रखें'
     sign_in: 'साइन इन करें'
@@ -17,13 +19,14 @@ pteroca:
     user_blocked: 'आपका खाता ब्लॉक कर दिया गया है।'
     dont_have_account_yet: "अभी तक खाता नहीं है? अभी पंजीकरण करें!"
     subtitle: 'अपने खाते में लॉगिन करें'
-    email_placeholder: 'आपका@email.com'
-    password_placeholder: 'पासवर्ड दर्ज करें'
 
   register:
     title: 'रजिस्टर करें'
+    subtitle: 'अपना नया खाता बनाएं'
     name: 'पहला नाम'
+    name_placeholder: 'अपना पहला नाम दर्ज करें'
     surname: 'अंतिम नाम'
+    surname_placeholder: 'अपना अंतिम नाम दर्ज करें'
     email_address: 'ईमेल पता'
     password: 'पासवर्ड'
     accept_terms: 'मैं <a href="{{ link }}" target="_blank">सेवा की शर्तों</a> को स्वीकार करता/करती हूँ'
@@ -41,6 +44,8 @@ pteroca:
     invalid_email: 'अमान्य ईमेल पता।'
     email_already_exists: 'इस ईमेल पते के साथ पहले से ही एक खाता मौजूद है।'
     already_have_account: 'पहले से खाता है? अभी साइन इन करें!'
+    email_placeholder: 'आपका@email.com'
+    password_placeholder: 'पासवर्ड दर्ज करें'
 
   recovery:
     title: 'पासवर्ड पुनर्प्राप्ति'

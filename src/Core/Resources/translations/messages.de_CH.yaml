@@ -9,7 +9,9 @@ pteroca:
   login:
     title: 'Login'
     email_address: 'E-Mail Adresse'
+    email_placeholder: 'ihre@email.com'
     password: 'Passwort'
+    password_placeholder: 'Passwort eingeben'
     forgot_password: 'Passwort vergessen?'
     remember_me: 'Merke mich'
     sign_in: 'Anmelden'
@@ -17,13 +19,14 @@ pteroca:
     user_blocked: 'Ihr Konto wurde gesperrt.'
     dont_have_account_yet: "Sie haben noch kein Konto? Jetzt registrieren!"
     subtitle: 'Melden Sie sich in Ihrem Konto an'
-    email_placeholder: 'ihre@email.com'
-    password_placeholder: 'Passwort eingeben'
 
   register:
     title: 'Registrieren'
+    subtitle: 'Erstellen Sie Ihr neues Konto'
     name: 'Vorname'
+    name_placeholder: 'Geben Sie Ihren Vornamen ein'
     surname: 'Nachname'
+    surname_placeholder: 'Geben Sie Ihren Nachnamen ein'
     email_address: 'E-Mail Adresse'
     password: 'Passwort'
     accept_terms: 'Ich akzeptiere die <a href="{{ link }}" target="_blank">Nutzungsbedingungen</a>'
@@ -41,6 +44,8 @@ pteroca:
     invalid_email: 'Ungültige E-Mail-Adresse.'
     email_already_exists: 'Es existiert bereits ein Konto mit dieser E-Mail Adresse.'
     already_have_account: 'Haben Sie bereits ein Konto? Jetzt anmelden!'
+    email_placeholder: 'ihre@email.com'
+    password_placeholder: 'Passwort eingeben'
   recovery:
     title: 'Passwort-Wiederherstellung'
     email_address: 'E-Mail Adresse'

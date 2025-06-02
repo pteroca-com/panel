@@ -40,6 +40,11 @@ pteroca:
     invalid_email: 'Некорректный адрес электронной почты.'
     email_already_exists: 'Учетная запись с таким адресом электронной почты уже существует.'
     already_have_account: 'Уже зарегистрированы? Войдите сейчас!'
+    subtitle: 'Создайте свою новую учетную запись'
+    name_placeholder: 'Введите ваше имя'
+    surname_placeholder: 'Введите вашу фамилию'
+    email_placeholder: 'ваш@email.com'
+    password_placeholder: 'Введите пароль'
   recovery:
     title: 'Восстановление пароля'
     email_address: 'Email адрес'

@@ -9,7 +9,9 @@ pteroca:
   login:
     title: '登录'
     email_address: '电子邮件地址'
+    email_placeholder: '您的邮箱@email.com'
     password: '密码'
+    password_placeholder: '输入密码'
     forgot_password: '忘记密码？'
     remember_me: '记住我'
     sign_in: '登录'
@@ -17,13 +19,14 @@ pteroca:
     user_blocked: '您的账户已被锁定。'
     dont_have_account_yet: '还没有账户？注册！'
     subtitle: '登录您的账户'
-    email_placeholder: '您的邮箱@email.com'
-    password_placeholder: '输入密码'
 
   register:
     title: '注册'
+    subtitle: '创建您的新账户'
     name: '名字'
+    name_placeholder: '输入您的名字'
     surname: '姓氏'
+    surname_placeholder: '输入您的姓氏'
     email_address: '电子邮件地址'
     password: '密码'
     accept_terms: '我接受 <a href="{{ link }}" target="_blank">服务条款</a>'
@@ -41,6 +44,8 @@ pteroca:
     invalid_email: '电子邮件地址无效。'
     email_already_exists: '该电子邮件地址的账户已存在。'
     already_have_account: '已经有账户？登录！'
+    email_placeholder: '您的邮箱@email.com'
+    password_placeholder: '输入密码'
 
   recovery:
     title: '找回密码'

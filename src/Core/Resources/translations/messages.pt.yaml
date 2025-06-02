@@ -9,7 +9,9 @@ pteroca:
   login:
     title: 'Entrar'
     email_address: 'Endereço de e-mail'
+    email_placeholder: 'seu@email.com'
     password: 'Senha'
+    password_placeholder: 'Digite sua senha'
     forgot_password: 'Esqueceu a senha?'
     remember_me: 'Lembrar-me'
     sign_in: 'Entrar'
@@ -17,13 +19,14 @@ pteroca:
     user_blocked: 'Sua conta foi bloqueada.'
     dont_have_account_yet: 'Ainda não tem uma conta? Cadastre-se!'
     subtitle: 'Faça login na sua conta'
-    email_placeholder: 'seu@email.com'
-    password_placeholder: 'Digite sua senha'
 
   register:
     title: 'Registrar'
+    subtitle: 'Crie sua nova conta'
     name: 'Nome'
+    name_placeholder: 'Digite seu nome'
     surname: 'Sobrenome'
+    surname_placeholder: 'Digite seu sobrenome'
     email_address: 'Endereço de e-mail'
     password: 'Senha'
     accept_terms: 'Aceito os <a href="{{ link }}" target="_blank">termos e condições</a>'
@@ -41,6 +44,8 @@ pteroca:
     invalid_email: 'Endereço de e-mail inválido.'
     email_already_exists: 'Já existe uma conta com este endereço de e-mail.'
     already_have_account: 'Já tem uma conta? Faça login!'
+    email_placeholder: 'seu@email.com'
+    password_placeholder: 'Digite sua senha'
 
   recovery:
     title: 'Recuperar senha'

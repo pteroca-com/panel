@@ -22,6 +22,7 @@ pteroca:
 
   register:
     title: 'Реєстрація'
+    subtitle: 'Створіть свій новий обліковий запис'
     name: 'Ім’я'
     surname: 'Прізвище'
     email_address: 'Електронна пошта'
@@ -41,6 +42,10 @@ pteroca:
     invalid_email: 'Неправильна електронна пошта.'
     email_already_exists: 'Обліковий запис з такою електронною поштою вже існує.'
     already_have_account: 'Вже є обліковий запис? Увійдіть!'
+    name_placeholder: 'Введіть ваше ім''я'
+    surname_placeholder: 'Введіть ваше прізвище'
+    email_placeholder: 'ваш@email.com'
+    password_placeholder: 'Введіть пароль'
 
   recovery:
     title: 'Відновити пароль'

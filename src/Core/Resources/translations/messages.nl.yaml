@@ -8,7 +8,9 @@ pteroca:
   login:
     title: 'Aanmelden'
     email_address: 'Email adres'
+    email_placeholder: 'uw@email.com'
     password: 'Wachtwoord'
+    password_placeholder: 'Voer uw wachtwoord in'
     forgot_password: 'Wachtwoord vergeten?'
     remember_me: 'Onthoud mijn gegevens'
     sign_in: 'Inloggen'
@@ -16,12 +18,13 @@ pteroca:
     user_blocked: 'Uw account is geblokkeerd.'
     dont_have_account_yet: "Heeft u nog geen account? Registreer nu!"
     subtitle: 'Log in op uw account'
-    email_placeholder: 'uw@email.com'
-    password_placeholder: 'Voer uw wachtwoord in'
   register:
     title: 'Registreren'
+    subtitle: 'Maak uw nieuwe account aan'
     name: 'Voornaam'
+    name_placeholder: 'Voer uw voornaam in'
     surname: 'Achternaam'
+    surname_placeholder: 'Voer uw achternaam in'
     email_address: 'Email adres'
     password: 'Wachtwoord'
     accept_terms: 'Ik accepteer de <a href="{{ link }}" target="_blank">Algemene Voorwaarden</a>'
@@ -39,6 +42,8 @@ pteroca:
     invalid_email: 'E-mail adres is ongeldig.'
     email_already_exists: 'Er bestaat al een account met dit e-mailadres.'
     already_have_account: 'Heeft u al een account? Meld u aan!'
+    email_placeholder: 'uw@email.com'
+    password_placeholder: 'Voer uw wachtwoord in'
   recovery:
     title: 'Wachtwoord herstellen'
     email_address: 'Email adres'

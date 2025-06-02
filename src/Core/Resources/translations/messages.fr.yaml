@@ -41,6 +41,11 @@ pteroca:
     invalid_email: 'Adresse e-mail invalide.'
     email_already_exists: 'Un compte avec cette adresse e-mail existe déjà.'
     already_have_account: 'Vous avez déjà un compte ? Connectez-vous !'
+    subtitle: 'Créez votre nouveau compte'
+    name_placeholder: 'Entrez votre prénom'
+    surname_placeholder: 'Entrez votre nom de famille'
+    email_placeholder: 'votre@email.com'
+    password_placeholder: 'Entrez votre mot de passe'
 
   recovery:
     title: 'Réinitialisation du mot de passe'

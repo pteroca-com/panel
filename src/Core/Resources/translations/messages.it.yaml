@@ -9,7 +9,9 @@ pteroca:
   login:
     title: 'Accedi'
     email_address: 'Indirizzo e-mail'
+    email_placeholder: 'tua@email.com'
     password: 'Password'
+    password_placeholder: 'Inserisci la password'
     forgot_password: 'Hai dimenticato la password?'
     remember_me: 'Ricordami'
     sign_in: 'Accedi'
@@ -17,13 +19,14 @@ pteroca:
     user_blocked: 'Il tuo account è stato bloccato.'
     dont_have_account_yet: 'Non hai ancora un account? Registrati!'
     subtitle: 'Accedi al tuo account'
-    email_placeholder: 'tua@email.com'
-    password_placeholder: 'Inserisci la password'
 
   register:
     title: 'Registrati'
+    subtitle: 'Crea il tuo nuovo account'
     name: 'Nome'
+    name_placeholder: 'Inserisci il tuo nome'
     surname: 'Cognome'
+    surname_placeholder: 'Inserisci il tuo cognome'
     email_address: 'Indirizzo e-mail'
     password: 'Password'
     accept_terms: 'Accetto i <a href="{{ link }}" target="_blank">termini e condizioni</a>'
@@ -41,6 +44,8 @@ pteroca:
     invalid_email: 'Indirizzo e-mail non valido.'
     email_already_exists: 'Esiste già un account con questo indirizzo e-mail.'
     already_have_account: 'Hai già un account? Accedi!'
+    email_placeholder: 'tua@email.com'
+    password_placeholder: 'Inserisci la password'
 
   recovery:
     title: 'Recupera password'
