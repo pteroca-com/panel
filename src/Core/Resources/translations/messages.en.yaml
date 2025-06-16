@@ -349,6 +349,14 @@ pteroca:
     create_allocation_confirmation: 'Are you sure you want to create additional allocation?'
     error_during_creating_allocation: 'An error occurred while creating the allocation.'
     auto_allocation_disabled_for_this_instance: 'Auto allocation is disabled for this instance.'
+    users: 'Users'
+    user_email: 'Email'
+    user_permissions: 'Permissions'
+    user_created: 'Created at'
+    actions: 'Actions'
+    users_management: 'Users management'
+    add_user: 'Add user'
+    remove: 'Remove'
 
   actions:
     login: 'Login'

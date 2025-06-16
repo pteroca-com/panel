@@ -1,0 +1,94 @@
+{% block main %}
+    <div class="tab-pane" id="users">
+        <div class="row pt-3">
+            <div class="col-12 mb-3">
+                <h5>{{ 'pteroca.server.users_management'|trans }}</h5>
+                
+                {% if serverData.subusers|length > 0 %}
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>{{ 'pteroca.server.user_email'|trans }}</th>
+                            <th>{{ 'pteroca.server.user_permissions'|trans }}</th>
+                            <th>{{ 'pteroca.server.user_created'|trans }}</th>
+                            <th>{{ 'pteroca.server.actions'|trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for subuser in serverData.subusers %}
+                            <tr>
+                                <td>
+                                    <strong>{{ subuser.email }}</strong>
+                                    {% if subuser['2fa_enabled'] %}
+                                        <span class="badge bg-success ms-2">2FA</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if subuser.permissions is defined and subuser.permissions|length > 0 %}
+                                        <div class="permissions-list">
+                                            {% for permission in subuser.permissions %}
+                                                <span class="badge bg-secondary me-1 mb-1 text-white">{{ permission }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">{{ 'pteroca.server.no_permissions'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if subuser.created_at is defined %}
+                                        {{ subuser.created_at|date('Y-m-d H:i:s') }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editUser('{{ subuser.uuid }}')">
+                                            <i class="fas fa-edit"></i> {{ 'pteroca.server.edit'|trans }}
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeUser('{{ subuser.uuid }}')">
+                                            <i class="fas fa-trash"></i> {{ 'pteroca.server.remove'|trans }}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="alert alert-info col-6 offset-3" role="alert">
+                        <i class="fas fa-info-circle pe-1"></i>
+                        {{ 'pteroca.server.no_subusers'|trans }}
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <button type="button" class="btn btn-primary" onclick="addNewUser()">
+                        <i class="fas fa-plus"></i> {{ 'pteroca.server.add_user'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        function addNewUser() {
+            // TODO: Implementacja dodawania nowego użytkownika
+            alert('{{ 'pteroca.server.feature_coming_soon'|trans }}');
+        }
+        
+        function editUser(userUuid) {
+            // TODO: Implementacja edycji użytkownika
+            alert('{{ 'pteroca.server.feature_coming_soon'|trans }} - Edit user: ' + userUuid);
+        }
+        
+        function removeUser(userUuid) {
+            if (confirm('{{ 'pteroca.server.confirm_remove_user'|trans }}')) {
+                // TODO: Implementacja usuwania użytkownika
+                alert('{{ 'pteroca.server.feature_coming_soon'|trans }} - Remove user: ' + userUuid);
+            }
+        }
+    </script>
+{% endblock %}

@@ -96,6 +96,14 @@ class ServerDataService
             }
         }
 
+        $subusers = $pterodactylClientApi->servers
+            ->http
+            ->get(sprintf(
+                'servers/%s/users',
+                $server->getPterodactylServerIdentifier(),
+            ))
+            ->toArray();
+
         return new ServerDataDTO(
             $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
@@ -109,6 +117,7 @@ class ServerDataService
             new ServerVariableCollection($serverVariables),
             $serverBackups ?? [],
             $allocatedPorts,
+            $subusers,
         );
     }
 

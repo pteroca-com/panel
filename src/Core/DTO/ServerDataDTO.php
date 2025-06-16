@@ -19,6 +19,7 @@ class ServerDataDTO
         public ServerVariableCollection $serverVariables,
         public array $serverBackups,
         public array $allocatedPorts,
+        public array $subusers,
     )
     {
     }
