@@ -7,11 +7,13 @@ use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
+use App\Core\Service\Pterodactyl\PterodactylService;
 
 class ServerUserService
 {
     public function __construct(
         private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylService $pterodactylService,
         private readonly ServerLogService $serverLogService,
     ) {}
 
@@ -23,7 +25,7 @@ class ServerUserService
         return $this->pterodactylClientService
             ->getApi($user)
             ->http
-            ->get("servers/{$server->getPterodactylServerIdentifier()}/users")
+            ->get(sprintf('servers/%s/users', $server->getPterodactylServerIdentifier()))
             ->toArray();
     }
 
@@ -39,7 +41,7 @@ class ServerUserService
     {
         $pterodactylClientApi = $this->pterodactylClientService->getApi($user);
 
-        $result = $pterodactylClientApi->http->post("servers/{$server->getPterodactylServerIdentifier()}/users", [
+        $result = $pterodactylClientApi->http->post(sprintf('servers/%s/users', $server->getPterodactylServerIdentifier()), [
             'email' => $email,
             'permissions' => $permissions,
         ]);
@@ -57,6 +59,62 @@ class ServerUserService
         return $result->toArray();
     }
 
+    public function addExistingUserToServer(
+        Server $server,
+        UserInterface $user,
+        string $email,
+        array $permissions = []
+    ): array
+    {
+        $pterodactylClientApi = $this->pterodactylClientService->getApi($user);
+        $pterodactylApi = $this->pterodactylService->getApi();
+
+        try {
+            $existingUsers = $pterodactylApi->users->all(['filter[email]' => $email]);
+
+            if (count($existingUsers->toArray()) === 0) {
+                throw new \Exception(sprintf('User with email %s does not exist in the system. The user must register first.', $email));
+            }
+
+            $currentSubusers = $this->getAllSubusers($server, $user);
+            foreach ($currentSubusers['data'] ?? [] as $subuser) {
+                if (isset($subuser['attributes']['email']) && $subuser['attributes']['email'] === $email) {
+                    throw new \Exception(sprintf('User with email %s is already added to this server.', $email));
+                }
+            }
+
+            $result = $pterodactylClientApi->http->post(sprintf('servers/%s/users', $server->getPterodactylServerIdentifier()), [
+                'email' => $email,
+                'permissions' => $permissions,
+            ]);
+
+            $this->serverLogService->logServerAction(
+                $user,
+                $server,
+                ServerLogActionEnum::CREATE_SUBUSER,
+                [
+                    'email' => $email,
+                    'permissions_count' => count($permissions),
+                ]
+            );
+
+            return $result->toArray();
+
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'No user found') !== false || 
+                strpos($e->getMessage(), 'does not exist') !== false) {
+                throw new \Exception(sprintf('User with email %s does not exist in the system. The user must register first.', $email));
+            }
+            
+            if (strpos($e->getMessage(), 'already assigned') !== false ||
+                strpos($e->getMessage(), 'already exists') !== false) {
+                throw new \Exception(sprintf('User with email %s is already added to this server.', $email));
+            }
+
+            throw $e;
+        }
+    }
+
     /**
      * Aktualizuje uprawnienia subusera
      */
@@ -70,7 +128,7 @@ class ServerUserService
         $result = $this->pterodactylClientService
             ->getApi($user)
             ->http
-            ->post("servers/{$server->getPterodactylServerIdentifier()}/users/{$subuserUuid}", [
+            ->post(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid), [
                 'permissions' => $permissions,
             ]);
 
@@ -87,9 +145,6 @@ class ServerUserService
         return $result->toArray();
     }
 
-    /**
-     * Usuwa subusera z serwera
-     */
     public function deleteSubuser(
         Server $server,
         UserInterface $user,
@@ -99,7 +154,7 @@ class ServerUserService
         $this->pterodactylClientService
             ->getApi($user)
             ->http
-            ->delete("servers/{$server->getPterodactylServerIdentifier()}/users/{$subuserUuid}");
+            ->delete(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid));
 
         $this->serverLogService->logServerAction(
             $user,
@@ -111,9 +166,6 @@ class ServerUserService
         );
     }
 
-    /**
-     * Pobiera szczegóły konkretnego subusera
-     */
     public function getSubuser(
         Server $server,
         UserInterface $user,
@@ -123,7 +175,7 @@ class ServerUserService
         return $this->pterodactylClientService
             ->getApi($user)
             ->http
-            ->get("servers/{$server->getPterodactylServerIdentifier()}/users/{$subuserUuid}")
+            ->get(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid))
             ->toArray();
     }
 }

@@ -56,7 +56,7 @@ class ServerUserController extends APIAbstractController
         }
 
         try {
-            $result = $this->serverUserService->createSubuser(
+            $result = $this->serverUserService->addExistingUserToServer(
                 $server,
                 $this->getUser(),
                 $data['email'],
