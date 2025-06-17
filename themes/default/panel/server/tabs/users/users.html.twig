@@ -69,19 +69,53 @@
                 </div>
             </div>
         </div>
+        
+        {% include 'panel/server/tabs/users/components/edit-user-modal.html.twig' %}
     </div>
 {% endblock %}
 
 {% block body_javascript %}
     <script>
+        let currentSubusers = {{ serverData.subusers|json_encode|raw }};
+        
         function addNewUser() {
             // TODO: Implementacja dodawania nowego użytkownika
             alert('{{ 'pteroca.server.feature_coming_soon'|trans }}');
         }
         
         function editUser(userUuid) {
-            // TODO: Implementacja edycji użytkownika
-            alert('{{ 'pteroca.server.feature_coming_soon'|trans }} - Edit user: ' + userUuid);
+            // Znajdź użytkownika w danych
+            const user = currentSubusers.find(u => u.uuid === userUuid);
+            if (!user) {
+                alert('Nie znaleziono użytkownika');
+                return;
+            }
+            
+            // Ustaw email w tytule modala
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('editUserUuid').value = userUuid;
+            
+            // Wyczyść wszystkie checkboxy
+            document.querySelectorAll('#editUserForm input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Zaznacz uprawnienia użytkownika
+            if (user.permissions && user.permissions.length > 0) {
+                user.permissions.forEach(permission => {
+                    const checkbox = document.querySelector(`input[value="${permission}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+            
+            // Aktualizuj checkboxy grup
+            updateGroupCheckboxes();
+            
+            // Pokaż modal
+            const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            modal.show();
         }
         
         function removeUser(userUuid) {
@@ -90,5 +124,62 @@
                 alert('{{ 'pteroca.server.feature_coming_soon'|trans }} - Remove user: ' + userUuid);
             }
         }
+        
+        function saveUserPermissions() {
+            const userUuid = document.getElementById('editUserUuid').value;
+            const form = document.getElementById('editUserForm');
+            const formData = new FormData(form);
+            const permissions = formData.getAll('permissions[]');
+            
+            // TODO: Wyślij żądanie do serwera z nowymi uprawnieniami
+            console.log('Saving permissions for user:', userUuid, permissions);
+            alert('{{ 'pteroca.server.feature_coming_soon'|trans }} - Zapisywanie uprawnień dla: ' + userUuid);
+            
+            // Zamknij modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+            modal.hide();
+        }
+        
+        function updateGroupCheckboxes() {
+            // Aktualizuj checkboxy grup na podstawie zaznaczonych uprawnień
+            document.querySelectorAll('.group-checkbox').forEach(groupCheckbox => {
+                const group = groupCheckbox.dataset.group;
+                const groupPermissions = document.querySelectorAll(`input[data-group="${group}"].permission-checkbox`);
+                const checkedPermissions = document.querySelectorAll(`input[data-group="${group}"].permission-checkbox:checked`);
+                
+                if (checkedPermissions.length === 0) {
+                    groupCheckbox.checked = false;
+                    groupCheckbox.indeterminate = false;
+                } else if (checkedPermissions.length === groupPermissions.length) {
+                    groupCheckbox.checked = true;
+                    groupCheckbox.indeterminate = false;
+                } else {
+                    groupCheckbox.checked = false;
+                    groupCheckbox.indeterminate = true;
+                }
+            });
+        }
+        
+        // Event listenery dla checkboxów grup
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obsługa checkboxów grup
+            document.querySelectorAll('.group-checkbox').forEach(groupCheckbox => {
+                groupCheckbox.addEventListener('change', function() {
+                    const group = this.dataset.group;
+                    const groupPermissions = document.querySelectorAll(`input[data-group="${group}"].permission-checkbox`);
+                    
+                    groupPermissions.forEach(permission => {
+                        permission.checked = this.checked;
+                    });
+                });
+            });
+            
+            // Obsługa pojedynczych checkboxów uprawnień
+            document.querySelectorAll('.permission-checkbox').forEach(permissionCheckbox => {
+                permissionCheckbox.addEventListener('change', function() {
+                    updateGroupCheckboxes();
+                });
+            });
+        });
     </script>
 {% endblock %}
