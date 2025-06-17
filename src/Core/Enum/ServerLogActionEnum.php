@@ -19,4 +19,7 @@ enum ServerLogActionEnum
    case EDIT_ALLOCATION;
    case MAKE_PRIMARY_ALLOCATION;
    case CREATE_ALLOCATION;
+   case CREATE_SUBUSER;
+   case UPDATE_SUBUSER;
+   case DELETE_SUBUSER;
 }

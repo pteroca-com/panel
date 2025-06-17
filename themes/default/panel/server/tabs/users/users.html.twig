@@ -41,14 +41,35 @@
                                         <span class="text-muted">-</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editUser('{{ subuser.uuid }}')">
-                                            <i class="fas fa-edit"></i> {{ 'pteroca.server.edit'|trans }}
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeUser('{{ subuser.uuid }}')">
-                                            <i class="fas fa-trash"></i> {{ 'pteroca.server.remove'|trans }}
-                                        </button>
+                                <td class="actions actions-as-dropdown text-center">
+                                    <div class="dropdown dropdown-actions">
+                                        <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                </svg>
+                                            </span>
+                                        </a>
+                                        <div class="dropdown-overlay">
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item action-edit" href="#" data-action-name="edit" data-user-uuid="{{ subuser.uuid }}">
+                                                        <span class="action-label">
+                                                            <i class="fas fa-edit"></i>
+                                                            {{ 'pteroca.server.edit'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item action-delete" href="#" data-action-name="delete" data-user-uuid="{{ subuser.uuid }}">
+                                                        <span class="action-label text-danger">
+                                                            <i class="fas fa-trash text-danger"></i>
+                                                            {{ 'pteroca.server.remove'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -71,6 +92,7 @@
         </div>
         
         {% include 'panel/server/tabs/users/components/edit-user-modal.html.twig' %}
+        {% include 'panel/server/tabs/users/components/add-user-modal.html.twig' %}
     </div>
 {% endblock %}
 
@@ -79,8 +101,61 @@
         let currentSubusers = {{ serverData.subusers|json_encode|raw }};
         
         function addNewUser() {
-            // TODO: Implementacja dodawania nowego użytkownika
-            alert('{{ 'pteroca.server.feature_coming_soon'|trans }}');
+            // Wyczyść formularz
+            document.getElementById('addUserForm').reset();
+            document.querySelectorAll('#addUserModal input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Pokaż modal
+            const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
+            modal.show();
+        }
+        
+        function saveNewUser() {
+            const form = document.getElementById('addUserForm');
+            const formData = new FormData(form);
+            const email = formData.get('email');
+            const permissions = formData.getAll('permissions[]');
+            
+            if (!email) {
+                alert('{{ 'pteroca.server.email_required'|trans }}');
+                return;
+            }
+            
+            if (permissions.length === 0) {
+                alert('{{ 'pteroca.server.at_least_one_permission_required'|trans }}');
+                return;
+            }
+            
+            fetch('{{ path('server_users_create', { id: server.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    permissions: permissions
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                } else {
+                    alert('{{ 'pteroca.server.user_created_successfully'|trans }}');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+            });
+            
+            // Zamknij modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+            modal.hide();
         }
         
         function editUser(userUuid) {
@@ -95,7 +170,7 @@
             document.getElementById('userEmail').textContent = user.email;
             document.getElementById('editUserUuid').value = userUuid;
             
-            // Wyczyść wszystkie checkboxy
+            // Wyczyść wszystkie checkboxy w modalu edycji
             document.querySelectorAll('#editUserForm input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
@@ -103,7 +178,7 @@
             // Zaznacz uprawnienia użytkownika
             if (user.permissions && user.permissions.length > 0) {
                 user.permissions.forEach(permission => {
-                    const checkbox = document.querySelector(`input[value="${permission}"]`);
+                    const checkbox = document.querySelector(`#editUserForm input[value="${permission}"]`);
                     if (checkbox) {
                         checkbox.checked = true;
                     }
@@ -111,7 +186,7 @@
             }
             
             // Aktualizuj checkboxy grup
-            updateGroupCheckboxes();
+            updateGroupCheckboxes('#editUserForm');
             
             // Pokaż modal
             const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
@@ -120,8 +195,25 @@
         
         function removeUser(userUuid) {
             if (confirm('{{ 'pteroca.server.confirm_remove_user'|trans }}')) {
-                // TODO: Implementacja usuwania użytkownika
-                alert('{{ 'pteroca.server.feature_coming_soon'|trans }} - Remove user: ' + userUuid);
+                fetch('{{ path('server_users_delete', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                    } else {
+                        alert('{{ 'pteroca.server.user_removed_successfully'|trans }}');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                });
             }
         }
         
@@ -131,21 +223,50 @@
             const formData = new FormData(form);
             const permissions = formData.getAll('permissions[]');
             
-            // TODO: Wyślij żądanie do serwera z nowymi uprawnieniami
-            console.log('Saving permissions for user:', userUuid, permissions);
-            alert('{{ 'pteroca.server.feature_coming_soon'|trans }} - Zapisywanie uprawnień dla: ' + userUuid);
+            if (permissions.length === 0) {
+                alert('{{ 'pteroca.server.at_least_one_permission_required'|trans }}');
+                return;
+            }
+            
+            fetch('{{ path('server_users_update_permissions', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    permissions: permissions
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                } else {
+                    alert('{{ 'pteroca.server.permissions_updated_successfully'|trans }}');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+            });
             
             // Zamknij modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
             modal.hide();
         }
         
-        function updateGroupCheckboxes() {
+        function updateGroupCheckboxes(formSelector = '') {
             // Aktualizuj checkboxy grup na podstawie zaznaczonych uprawnień
-            document.querySelectorAll('.group-checkbox').forEach(groupCheckbox => {
+            const selector = formSelector ? `${formSelector} .group-checkbox` : '.group-checkbox';
+            document.querySelectorAll(selector).forEach(groupCheckbox => {
                 const group = groupCheckbox.dataset.group;
-                const groupPermissions = document.querySelectorAll(`input[data-group="${group}"].permission-checkbox`);
-                const checkedPermissions = document.querySelectorAll(`input[data-group="${group}"].permission-checkbox:checked`);
+                const permissionSelector = formSelector ? 
+                    `${formSelector} input[data-group="${group}"].permission-checkbox` : 
+                    `input[data-group="${group}"].permission-checkbox`;
+                const groupPermissions = document.querySelectorAll(permissionSelector);
+                const checkedPermissions = document.querySelectorAll(`${permissionSelector}:checked`);
                 
                 if (checkedPermissions.length === 0) {
                     groupCheckbox.checked = false;
@@ -162,11 +283,33 @@
         
         // Event listenery dla checkboxów grup
         document.addEventListener('DOMContentLoaded', function() {
+            // Obsługa dropdown actions
+            document.querySelectorAll('#users .dropdown-actions .dropdown-menu .dropdown-item').forEach(function (element) {
+                element.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const anchorElement = event.target.closest('a');
+                    const actionName = anchorElement.getAttribute('data-action-name');
+                    const userUuid = anchorElement.getAttribute('data-user-uuid');
+
+                    if (actionName === 'edit') {
+                        editUser(userUuid);
+                    } else if (actionName === 'delete') {
+                        removeUser(userUuid);
+                    }
+                });
+            });
+            
             // Obsługa checkboxów grup
             document.querySelectorAll('.group-checkbox').forEach(groupCheckbox => {
                 groupCheckbox.addEventListener('change', function() {
                     const group = this.dataset.group;
-                    const groupPermissions = document.querySelectorAll(`input[data-group="${group}"].permission-checkbox`);
+                    const form = this.closest('form');
+                    const formSelector = form ? `#${form.id}` : '';
+                    const permissionSelector = formSelector ? 
+                        `${formSelector} input[data-group="${group}"].permission-checkbox` : 
+                        `input[data-group="${group}"].permission-checkbox`;
+                    const groupPermissions = document.querySelectorAll(permissionSelector);
                     
                     groupPermissions.forEach(permission => {
                         permission.checked = this.checked;
@@ -177,7 +320,9 @@
             // Obsługa pojedynczych checkboxów uprawnień
             document.querySelectorAll('.permission-checkbox').forEach(permissionCheckbox => {
                 permissionCheckbox.addEventListener('change', function() {
-                    updateGroupCheckboxes();
+                    const form = this.closest('form');
+                    const formSelector = form ? `#${form.id}` : '';
+                    updateGroupCheckboxes(formSelector);
                 });
             });
         });
