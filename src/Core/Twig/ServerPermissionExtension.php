@@ -2,7 +2,7 @@
 
 namespace App\Core\Twig;
 
-use App\Core\Security\ServerPermissionManager;
+use App\Core\DTO\Collection\ServerPermissionCollection;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -22,9 +22,9 @@ class ServerPermissionExtension extends AbstractExtension
     /**
      * Sprawdza czy użytkownik ma określone uprawnienie
      */
-    public function hasServerPermission(ServerPermissionManager $permissionManager, string $permission): bool
+    public function hasServerPermission(ServerPermissionCollection $permissionCollection, string $permission): bool
     {
-        return $permissionManager->hasPermission($permission);
+        return $permissionCollection->hasPermission($permission);
     }
 
     /**
@@ -32,9 +32,9 @@ class ServerPermissionExtension extends AbstractExtension
      * 
      * @param string[] $permissions
      */
-    public function hasAllServerPermissions(ServerPermissionManager $permissionManager, array $permissions): bool
+    public function hasAllServerPermissions(ServerPermissionCollection $permissionCollection, array $permissions): bool
     {
-        return $permissionManager->hasAllPermissions($permissions);
+        return $permissionCollection->hasAllPermissions($permissions);
     }
 
     /**
@@ -42,24 +42,24 @@ class ServerPermissionExtension extends AbstractExtension
      * 
      * @param string[] $permissions
      */
-    public function hasAnyServerPermission(ServerPermissionManager $permissionManager, array $permissions): bool
+    public function hasAnyServerPermission(ServerPermissionCollection $permissionCollection, array $permissions): bool
     {
-        return $permissionManager->hasAnyPermission($permissions);
+        return $permissionCollection->hasAnyPermission($permissions);
     }
 
     /**
      * Sprawdza czy użytkownik ma uprawnienia do określonej kategorii
      */
-    public function hasServerPermissionInCategory(ServerPermissionManager $permissionManager, string $category): bool
+    public function hasServerPermissionInCategory(ServerPermissionCollection $permissionCollection, string $category): bool
     {
-        return $permissionManager->hasPermissionInCategory($category);
+        return $permissionCollection->hasPermissionInCategory($category);
     }
 
     /**
      * Sprawdza czy użytkownik ma wszystkie uprawnienia z określonej kategorii
      */
-    public function hasAllServerPermissionsInCategory(ServerPermissionManager $permissionManager, string $category): bool
+    public function hasAllServerPermissionsInCategory(ServerPermissionCollection $permissionCollection, string $category): bool
     {
-        return $permissionManager->hasAllPermissionsInCategory($category);
+        return $permissionCollection->hasAllPermissionsInCategory($category);
     }
 }

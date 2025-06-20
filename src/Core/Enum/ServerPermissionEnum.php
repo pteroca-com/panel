@@ -63,6 +63,9 @@ enum ServerPermissionEnum: string
     // Activity permissions
     case ACTIVITY_READ = 'activity.read';
     
+    // Websocket permissions
+    case WEBSOCKET_CONNECT = 'websocket.connect';
+    
     /**
      * Grupuje uprawnienia według kategorii
      */
@@ -128,13 +131,16 @@ enum ServerPermissionEnum: string
             'activity' => [
                 self::ACTIVITY_READ,
             ],
+            'websocket' => [
+                self::WEBSOCKET_CONNECT,
+            ],
         ];
     }
     
     /**
-     * Konwertuje tablicę stringów uprawnień na tablicę obiektów enum
+     * Konwertuje tablicę stringów uprawnień na kolekcję obiektów enum
      */
-    public static function fromArray(array $permissions): array
+    public static function fromArray(array $permissions): \App\Core\DTO\Collection\ServerPermissionCollection
     {
         $result = [];
         
@@ -146,6 +152,6 @@ enum ServerPermissionEnum: string
             }
         }
         
-        return $result;
+        return new \App\Core\DTO\Collection\ServerPermissionCollection($result);
     }
 }

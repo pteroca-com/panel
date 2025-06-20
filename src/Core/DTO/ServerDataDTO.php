@@ -2,11 +2,13 @@
 
 namespace App\Core\DTO;
 
+use App\Core\DTO\Collection\ServerPermissionCollection;
 use App\Core\DTO\Collection\ServerVariableCollection;
 
 class ServerDataDTO
 {
     public function __construct(
+        public ServerPermissionCollection $serverPermissions,
         public ServerDetailsDTO $serverDetails,
         public array $pterodactylServer,
         public array $dockerImages,

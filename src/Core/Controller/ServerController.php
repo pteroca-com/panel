@@ -57,10 +57,10 @@ class ServerController extends AbstractController
 
         $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
         if ($server->getUser() !== $this->getUser() && !$isAdminView) {
-            throw $this->createAccessDeniedException();
+            throw $this->createAccessDeniedException(); // todo wyniesc do serverdataservice
         }
 
-        $serverData = $serverDataService->getServerData($server);
+        $serverData = $serverDataService->getServerData($server, $this->getUser());
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,

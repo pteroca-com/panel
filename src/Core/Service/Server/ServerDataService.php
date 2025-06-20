@@ -2,14 +2,19 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
+use App\Core\DTO\Collection\ServerPermissionCollection;
 use App\Core\DTO\Collection\ServerVariableCollection;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
+use App\Core\Enum\ServerPermissionEnum;
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Exception;
+use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class ServerDataService
 {
@@ -23,14 +28,17 @@ class ServerDataService
     {
     }
 
-    public function getServerData(Server $server): ServerDataDTO
+    public function getServerData(Server $server, UserInterface $user): ServerDataDTO
     {
+        /** @var PterodactylServer $pterodactylServer */
         $pterodactylServer = $this->pterodactylService
             ->getApi()
             ->servers
             ->get($server->getPterodactylServerId(), [
-                'include' => ['variables', 'egg', 'databases'],
+                'include' => ['variables', 'egg', 'databases', 'subusers'],
             ]);
+        
+        $permissions = $this->getPermissions($pterodactylServer, $server, $user);
         $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
 
         try {
@@ -105,6 +113,7 @@ class ServerDataService
             ->toArray();
 
         return new ServerDataDTO(
+            $permissions,
             $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
             $dockerImages,
@@ -148,5 +157,30 @@ class ServerDataService
         }));
 
         return [$hasConfigurableOptions, $hasConfigurableVariables];
+    }
+
+    private function getPermissions(PterodactylServer $pterodactylServer, Server $server, UserInterface $user): ServerPermissionCollection
+    {
+        $isAdmin = !empty(array_filter(
+            $user->getRoles(),
+            fn($role) => $role === UserRoleEnum::ROLE_ADMIN->name,
+        ));
+        $isServerOwner = $server->getUser()->getId() === $user->getId();
+
+        if (!$isAdmin && !$isServerOwner) {
+            $subUser = current(array_filter(
+                $pterodactylServer->get('relationships')['subusers']->toArray(),
+                fn($subuser) => $subuser['attributes']['user_id'] === $user->getPterodactylUserId(),
+            ));
+
+            return ServerPermissionEnum::fromArray($subUser['attributes']['permissions'] ?? []);
+        }
+
+        $allPermissions = [];
+        foreach (ServerPermissionEnum::cases() as $permission) {
+            $allPermissions[] = $permission->value;
+        }
+        
+        return ServerPermissionEnum::fromArray($allPermissions);
     }
 }
