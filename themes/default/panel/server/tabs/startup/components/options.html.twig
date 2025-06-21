@@ -16,7 +16,7 @@
                                 {% if isAdminView %}
                                     <span class="badge bg-warning text-white">{{ 'pteroca.server.admin_view'|trans }}</span>
                                 {% endif %}
-                                {% if not server.isSuspended and (serverData.productEggConfiguration.options.startup.user_editable is defined or isAdminView) %}
+                                {% if not server.isSuspended and (serverData.productEggConfiguration.options.startup.user_editable is defined or isAdminView) and hasServerPermission(serverData.serverPermissions, 'startup.update') %}
                                     <a class="float-end hover-pointer" onclick="toggleSetting('startup', true)">
                                         <i class="fas fa-edit text-white" data-option-name="startup"></i>
                                     </a>
@@ -47,7 +47,7 @@
                                 {% if isAdminView %}
                                     <span class="badge bg-warning text-white">{{ 'pteroca.server.admin_view'|trans }}</span>
                                 {% endif %}
-                                {% if not server.isSuspended and (serverData.productEggConfiguration.options.docker_image.user_editable is defined or isAdminView) %}
+                                {% if not server.isSuspended and (serverData.productEggConfiguration.options.docker_image.user_editable is defined or isAdminView) and hasServerPermission(serverData.serverPermissions, 'startup.docker-image') %}
                                     <a class="float-end hover-pointer" onclick="toggleSetting('docker_image', true)">
                                         <i class="fas fa-edit text-white" data-option-name="docker_image"></i>
                                     </a>

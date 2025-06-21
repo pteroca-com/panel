@@ -40,7 +40,7 @@
         {% include 'panel/server/tabs/navigation.html.twig' %}
         <div class="tab-content">
             {% include 'panel/server/tabs/console/console.html.twig' %}
-            {% if serverData.hasConfigurableOptions or serverData.hasConfigurableVariables %}
+            {% if (serverData.hasConfigurableOptions or serverData.hasConfigurableVariables) and hasServerPermission(serverData.serverPermissions, 'startup.read') %}
                 {% include 'panel/server/tabs/startup/startup.html.twig' %}
             {% endif %}
             {% include 'panel/server/tabs/network/network.html.twig' %}

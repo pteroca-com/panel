@@ -4,8 +4,12 @@
             {% if serverData.pterodactylClientServer and serverData.pterodactylClientAccount %}
                 {% include 'panel/server/tabs/settings/components/sftp_details.html.twig' %}
             {% endif %}
-            {% include 'panel/server/tabs/settings/components/change_server_details.html.twig' %}
-            {% include 'panel/server/tabs/settings/components/reinstall_server.html.twig' %}
+            {% if hasServerPermission(serverData.serverPermissions, 'settings.rename') %}
+                {% include 'panel/server/tabs/settings/components/change_server_details.html.twig' %}
+            {% endif %}
+            {% if hasServerPermission(serverData.serverPermissions, 'settings.reinstall') %}
+                {% include 'panel/server/tabs/settings/components/reinstall_server.html.twig' %}
+            {% endif %}
             {% include 'panel/server/tabs/settings/components/extend_server.html.twig' %}
         </div>
     </div>

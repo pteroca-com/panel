@@ -18,7 +18,7 @@
                                     {% if isAdminView %}
                                         <span class="badge bg-warning text-white">{{ 'pteroca.server.admin_view'|trans }}</span>
                                     {% endif %}
-                                    {% if not server.isSuspended and (serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is defined or isAdminView) %}
+                                    {% if not server.isSuspended and (serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is defined or isAdminView) and hasServerPermission(serverData.serverPermissions, 'startup.update') %}
                                         <a class="float-end hover-pointer" onclick="toggleSetting('{{ variable.attributes.env_variable }}')">
                                             <i class="fas fa-edit text-white" data-option-name="{{ variable.attributes.env_variable }}"></i>
                                         </a>
