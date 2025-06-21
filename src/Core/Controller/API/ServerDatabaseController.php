@@ -101,7 +101,8 @@ class ServerDatabaseController extends APIAbstractController
                 $databaseId,
             );
             $response->setData($changedDatabaseData);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            // TODO set error message
             $response->setStatusCode(400);
         }
 

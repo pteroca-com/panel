@@ -2,7 +2,12 @@
     <div class="tab-pane" id="databases">
         <div class="row pt-3">
             <div class="col-12 mb-4">
-                {% if serverData.pterodactylServer.relationships.databases.toArray()|length == 0 %}
+                {% if not hasServerPermission(serverData.serverPermissions, 'database.read') %}
+                    <div class="alert alert-warning col-6 offset-3" role="alert">
+                        <i class="fas fa-exclamation-triangle pe-1"></i>
+                        You don't have permission to view databases.
+                    </div>
+                {% elseif serverData.pterodactylServer.relationships.databases.toArray()|length == 0 %}
                     <div class="alert alert-info col-6 offset-3" role="alert">
                         <i class="fas fa-info-circle pe-1"></i>
                         {{ 'pteroca.server.no_databases'|trans }}
@@ -24,6 +29,7 @@
                                     <td class="pt-4"><pre>{{ database.remote }}</pre></td>
                                     <td class="pt-4"><pre>{{ database.username }}</pre></td>
                                     <td class="actions actions-as-dropdown text-center">
+                                        {% if hasAnyServerPermission(serverData.serverPermissions, ['database.view_password', 'database.update', 'database.delete']) %}
                                         <div class="dropdown dropdown-actions">
                                             <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="icon">
@@ -34,6 +40,7 @@
                                             </a>
                                             <div class="dropdown-overlay">
                                                 <ul class="dropdown-menu dropdown-menu-end">
+                                                    {% if hasServerPermission(serverData.serverPermissions, 'database.view_password') %}
                                                     <li>
                                                         <a class="dropdown-item action-edit" href="{{ path('server_database_get_all', { id: server.id }) }}" data-action-name="show" data-bs-toggle="modal" data-bs-target="#showDatabaseModal" data-database-name="{{ database.database }}">
                                                             <span class="action-label">
@@ -42,6 +49,18 @@
                                                             </span>
                                                         </a>
                                                     </li>
+                                                    {% endif %}
+                                                    {% if hasServerPermission(serverData.serverPermissions, 'database.update') %}
+                                                    <li>
+                                                        <a class="dropdown-item action-edit" href="#" data-action-name="rotate" data-database-id="{{ database.id }}" data-database-name="{{ database.database }}">
+                                                            <span class="action-label">
+                                                                <i class="fas fa-sync"></i>
+                                                                {{ 'pteroca.server.rotate_password'|trans }}
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+                                                    {% if hasServerPermission(serverData.serverPermissions, 'database.delete') %}
                                                     <li>
                                                         <a class="dropdown-item action-edit" href="#" data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteDatabaseModal" data-database-name="{{ database.database }}" data-database-id="{{ database.id }}">
                                                             <span class="action-label">
@@ -50,9 +69,13 @@
                                                             </span>
                                                         </a>
                                                     </li>
+                                                    {% endif %}
                                                 </ul>
                                             </div>
                                         </div>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -60,22 +83,28 @@
                     </table>
                 {% endif %}
             </div>
+            {% if hasServerPermission(serverData.serverPermissions, 'database.create') %}
             <div class="col-12 mb-3">
                 <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createDatabaseModal" {% if server.serverProduct.dbCount <= serverData.pterodactylServer.relationships.databases.toArray()|length %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_database'|trans }}
                 </button>
             </div>
+            {% endif %}
         </div>
     </div>
 
-    {% if server.serverProduct.dbCount > serverData.pterodactylServer.relationships.databases.toArray()|length %}
+    {% if server.serverProduct.dbCount > serverData.pterodactylServer.relationships.databases.toArray()|length and hasServerPermission(serverData.serverPermissions, 'database.create') %}
         {% include 'panel/server/tabs/databases/components/create_database_modal.html.twig' %}
     {% endif %}
 
     {% if serverData.pterodactylServer.relationships.databases.toArray()|length > 0 %}
-        {% include 'panel/server/tabs/databases/components/delete_database_modal.html.twig' %}
-        {% include 'panel/server/tabs/databases/components/show_database_modal.html.twig' %}
+        {% if hasServerPermission(serverData.serverPermissions, 'database.delete') %}
+            {% include 'panel/server/tabs/databases/components/delete_database_modal.html.twig' %}
+        {% endif %}
+        {% if hasServerPermission(serverData.serverPermissions, 'database.view_password') %}
+            {% include 'panel/server/tabs/databases/components/show_database_modal.html.twig' %}
+        {% endif %}
     {% endif %}
 {% endblock %}
 
@@ -91,24 +120,51 @@
                     const anchorElement = event.target.closest('a'),
                         actionName = anchorElement.getAttribute('data-action-name'),
                         endpointUrl = anchorElement.getAttribute('href'),
-                        databaseName = anchorElement.getAttribute('data-database-name')
+                        databaseName = anchorElement.getAttribute('data-database-name'),
+                        databaseId = anchorElement.getAttribute('data-database-id')
 
                     if (actionName === 'delete') {
                         document.querySelector('#database-delete-name').textContent = databaseName
-                        document.querySelector('#databaseId').value = anchorElement.getAttribute('data-database-id')
+                        document.querySelector('#databaseId').value = databaseId
 
                         return
                     }
 
-                    if (loadedDatabases.length === 0) {
-                        fetch(endpointUrl)
-                            .then(response => response.json())
-                            .then(data => {
-                                loadedDatabases = data
-                                loadCurrentDatabaseInfo(databaseName)
+                    if (actionName === 'rotate') {
+                        if (confirm('Are you sure you want to rotate the password for database "' + databaseName + '"? This will change the current password.')) {
+                            fetch('{{ path('server_database_rotate_password', { id: server.id, databaseId: '__DATABASE_ID__' }) }}'.replace('__DATABASE_ID__', databaseId), {
+                                method: 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
                             })
-                    } else {
-                        loadCurrentDatabaseInfo(databaseName)
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Password rotated successfully');
+                                    window.location.reload();
+                                } else {
+                                    alert('Error rotating password');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error rotating password');
+                            });
+                        }
+                        return
+                    }
+
+                    if (actionName === 'show') {
+                        if (loadedDatabases.length === 0) {
+                            fetch(endpointUrl)
+                                .then(response => response.json())
+                                .then(data => {
+                                    loadedDatabases = data
+                                    loadCurrentDatabaseInfo(databaseName)
+                                })
+                        } else {
+                            loadCurrentDatabaseInfo(databaseName)
+                        }
                     }
                 })
             })
