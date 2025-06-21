@@ -2,12 +2,7 @@
     <div class="tab-pane" id="databases">
         <div class="row pt-3">
             <div class="col-12 mb-4">
-                {% if not hasServerPermission(serverData.serverPermissions, 'database.read') %}
-                    <div class="alert alert-warning col-6 offset-3" role="alert">
-                        <i class="fas fa-exclamation-triangle pe-1"></i>
-                        You don't have permission to view databases.
-                    </div>
-                {% elseif serverData.pterodactylServer.relationships.databases.toArray()|length == 0 %}
+                {% if serverData.pterodactylServer.relationships.databases.toArray()|length == 0 %}
                     <div class="alert alert-info col-6 offset-3" role="alert">
                         <i class="fas fa-info-circle pe-1"></i>
                         {{ 'pteroca.server.no_databases'|trans }}

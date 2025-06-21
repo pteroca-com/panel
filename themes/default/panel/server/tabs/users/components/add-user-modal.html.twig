@@ -1,4 +1,5 @@
 <!-- Modal dodawania użytkownika -->
+{% if hasServerPermission(serverData.serverPermissions, 'user.create') %}
 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -35,3 +36,4 @@
         </div>
     </div>
 </div>
+{% endif %}

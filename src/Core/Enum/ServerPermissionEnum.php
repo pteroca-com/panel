@@ -11,10 +11,13 @@ enum ServerPermissionEnum: string
     case CONTROL_RESTART = 'control.restart';
     
     // User permissions
-    case USER_CREATE = 'user.create';
     case USER_READ = 'user.read';
+    case USER_CREATE = 'user.create';
     case USER_UPDATE = 'user.update';
     case USER_DELETE = 'user.delete';
+
+    // Activity permissions
+    case ACTIVITY_READ = 'activity.read';
     
     // File permissions
     case FILE_CREATE = 'file.create';
@@ -59,9 +62,6 @@ enum ServerPermissionEnum: string
     // Settings permissions
     case SETTINGS_RENAME = 'settings.rename';
     case SETTINGS_REINSTALL = 'settings.reinstall';
-    
-    // Activity permissions
-    case ACTIVITY_READ = 'activity.read';
     
     // Websocket permissions
     case WEBSOCKET_CONNECT = 'websocket.connect';
@@ -137,9 +137,6 @@ enum ServerPermissionEnum: string
         ];
     }
     
-    /**
-     * Konwertuje tablicę stringów uprawnień na kolekcję obiektów enum
-     */
     public static function fromArray(array $permissions): \App\Core\DTO\Collection\ServerPermissionCollection
     {
         $result = [];

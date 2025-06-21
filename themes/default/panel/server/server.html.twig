@@ -46,7 +46,9 @@
             {% include 'panel/server/tabs/network/network.html.twig' %}
             {% include 'panel/server/tabs/users/users.html.twig' %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}
-            {% include 'panel/server/tabs/activity/activity.html.twig' %}
+            {% if hasServerPermission(serverData.serverPermissions, 'activity.read') %}
+                {% include 'panel/server/tabs/activity/activity.html.twig' %}
+            {% endif %}
             {% if server.serverProduct.dbCount %}
                 {% include 'panel/server/tabs/databases/databases.html.twig' %}
             {% endif %}

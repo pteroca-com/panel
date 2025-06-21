@@ -45,6 +45,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="actions actions-as-dropdown text-center">
+                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) %}
                                     <div class="dropdown dropdown-actions">
                                         <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="icon">
@@ -55,6 +56,7 @@
                                         </a>
                                         <div class="dropdown-overlay">
                                             <ul class="dropdown-menu dropdown-menu-end">
+                                                {% if hasServerPermission(serverData.serverPermissions, 'user.update') %}
                                                 <li>
                                                     <a class="dropdown-item action-edit" href="#" data-action-name="edit" data-user-uuid="{{ subuser.uuid }}">
                                                         <span class="action-label">
@@ -63,6 +65,8 @@
                                                         </span>
                                                     </a>
                                                 </li>
+                                                {% endif %}
+                                                {% if hasServerPermission(serverData.serverPermissions, 'user.delete') %}
                                                 <li>
                                                     <a class="dropdown-item action-delete" href="#" data-action-name="delete" data-user-uuid="{{ subuser.uuid }}">
                                                         <span class="action-label text-danger">
@@ -71,9 +75,13 @@
                                                         </span>
                                                     </a>
                                                 </li>
+                                                {% endif %}
                                             </ul>
                                         </div>
                                     </div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -81,16 +89,22 @@
                     </table>
                 {% endif %}
             </div>
+            {% if hasServerPermission(serverData.serverPermissions, 'user.create') %}
             <div class="col-12 mb-3">
                 <button type="button" class="btn btn-primary float-end" onclick="addNewUser()">
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.add_user'|trans }}
                 </button>
             </div>
+            {% endif %}
         </div>
         
-        {% include 'panel/server/tabs/users/components/edit-user-modal.html.twig' %}
-        {% include 'panel/server/tabs/users/components/add-user-modal.html.twig' %}
+        {% if hasServerPermission(serverData.serverPermissions, 'user.update') %}
+            {% include 'panel/server/tabs/users/components/edit-user-modal.html.twig' %}
+        {% endif %}
+        {% if hasServerPermission(serverData.serverPermissions, 'user.create') %}
+            {% include 'panel/server/tabs/users/components/add-user-modal.html.twig' %}
+        {% endif %}
     </div>
 {% endblock %}
 
