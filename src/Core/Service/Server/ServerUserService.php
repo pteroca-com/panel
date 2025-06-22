@@ -17,9 +17,6 @@ class ServerUserService
         private readonly ServerLogService $serverLogService,
     ) {}
 
-    /**
-     * Pobiera wszystkich subuserów serwera z Pterodactyla
-     */
     public function getAllSubusers(Server $server, UserInterface $user): array
     {
         return $this->pterodactylClientService
@@ -29,9 +26,6 @@ class ServerUserService
             ->toArray();
     }
 
-    /**
-     * Tworzy nowego subusera na serwerze
-     */
     public function createSubuser(
         Server $server,
         UserInterface $user,
@@ -100,7 +94,7 @@ class ServerUserService
 
             return $result->toArray();
 
-        } catch (\Exception $e) {
+        } catch (\Exception $e) { // TODO translations
             if (strpos($e->getMessage(), 'No user found') !== false || 
                 strpos($e->getMessage(), 'does not exist') !== false) {
                 throw new \Exception(sprintf('User with email %s does not exist in the system. The user must register first.', $email));
@@ -115,9 +109,6 @@ class ServerUserService
         }
     }
 
-    /**
-     * Aktualizuje uprawnienia subusera
-     */
     public function updateSubuserPermissions(
         Server $server,
         UserInterface $user,

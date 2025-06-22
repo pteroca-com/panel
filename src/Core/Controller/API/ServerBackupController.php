@@ -2,7 +2,9 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerBackupService;
 use App\Core\Trait\InternalServerApiTrait;
 use Exception;
@@ -19,6 +21,7 @@ class ServerBackupController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerBackupService $serverBackupService,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     #[Route('/panel/api/server/{id}/backup/create', name: 'server_backup_create', methods: ['POST'])]
@@ -27,7 +30,7 @@ class ServerBackupController extends APIAbstractController
         Request $request,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_CREATE);
         $response = new JsonResponse();
 
         try {
@@ -55,7 +58,7 @@ class ServerBackupController extends APIAbstractController
         string $backupId,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_DOWNLOAD);
         $response = new JsonResponse();
 
         try {
@@ -78,7 +81,7 @@ class ServerBackupController extends APIAbstractController
         string $backupId,
     ): Response
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_DELETE);
         $response = new Response();
 
         try {

@@ -2,7 +2,9 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerDatabaseService;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,6 +18,7 @@ class ServerDatabaseController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerDatabaseService $serverDatabaseService,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     #[Route('/panel/api/server/{id}/database/all', name: 'server_database_get_all', methods: ['GET'])]
@@ -23,7 +26,7 @@ class ServerDatabaseController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_READ);
         $response = new JsonResponse();
 
         try {
@@ -45,7 +48,7 @@ class ServerDatabaseController extends APIAbstractController
         Request $request,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_CREATE);
         $response = new JsonResponse();
         $payload = $request->request->all('Database');
 
@@ -69,7 +72,7 @@ class ServerDatabaseController extends APIAbstractController
         int $databaseId,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_DELETE);
         $response = new JsonResponse();
 
         try {
@@ -91,7 +94,7 @@ class ServerDatabaseController extends APIAbstractController
         string $databaseId,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_UPDATE);
         $response = new JsonResponse();
 
         try {

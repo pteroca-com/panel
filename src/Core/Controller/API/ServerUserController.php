@@ -2,7 +2,9 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerUserService;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,12 +18,13 @@ class ServerUserController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerUserService $serverUserService,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     #[Route('/panel/api/server/{id}/users/all', name: 'server_users_get_all', methods: ['GET'])]
     public function getAllUsers(int $id): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::USER_READ);
         $response = new JsonResponse();
 
         try {
@@ -38,7 +41,7 @@ class ServerUserController extends APIAbstractController
     #[Route('/panel/api/server/{id}/users/create', name: 'server_users_create', methods: ['POST'])]
     public function createUser(int $id, Request $request): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::USER_CREATE);
         $response = new JsonResponse();
         
         $data = json_decode($request->getContent(), true);
@@ -74,7 +77,7 @@ class ServerUserController extends APIAbstractController
     #[Route('/panel/api/server/{id}/users/{userUuid}', name: 'server_users_get', methods: ['GET'])]
     public function getSubuser(int $id, string $userUuid): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::USER_READ);
         $response = new JsonResponse();
 
         try {
@@ -91,7 +94,7 @@ class ServerUserController extends APIAbstractController
     #[Route('/panel/api/server/{id}/users/{userUuid}/permissions', name: 'server_users_update_permissions', methods: ['POST'])]
     public function updateUserPermissions(int $id, string $userUuid, Request $request): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::USER_UPDATE);
         $response = new JsonResponse();
         
         $data = json_decode($request->getContent(), true);
@@ -127,7 +130,7 @@ class ServerUserController extends APIAbstractController
     #[Route('/panel/api/server/{id}/users/{userUuid}/delete', name: 'server_users_delete', methods: ['DELETE'])]
     public function deleteUser(int $id, string $userUuid): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::USER_DELETE);
         $response = new JsonResponse();
 
         try {

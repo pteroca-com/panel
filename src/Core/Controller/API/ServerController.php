@@ -3,7 +3,9 @@
 namespace App\Core\Controller\API;
 
 use App\Core\Entity\Server;
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
 use App\Core\Trait\InternalServerApiTrait;
@@ -17,6 +19,7 @@ class ServerController extends APIAbstractController
     public function __construct(
         private readonly ServerService $serverService,
         private readonly ServerRepository $serverRepository,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     #[Route('/panel/api/server/{id}/details', name: 'server_details', methods: ['GET'])]
@@ -24,7 +27,7 @@ class ServerController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::WEBSOCKET_CONNECT);
         $serverDetails = $this->serverService
             ->getServerDetails($server)
             ?->toArray();
@@ -39,26 +42,12 @@ class ServerController extends APIAbstractController
         ServerWebsocketService $serverWebsocketService,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::WEBSOCKET_CONNECT);
         $websocket = $serverWebsocketService->getWebsocketToken($server);
 
         return new JsonResponse([
             'token' => $websocket?->getToken(),
             'socket' => $websocket?->getSocket(),
         ]);
-    }
-
-    private function getServer(int $id): Server
-    {
-        $server = $this->serverRepository->find($id);
-        if (empty($server)) {
-            throw $this->createNotFoundException();
-        }
-
-        if ($server->getUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException();
-        }
-
-        return $server;
     }
 }
