@@ -2,7 +2,7 @@
     <div class="tab-pane" id="activity">
         <div class="row pt-3">
             <div class="col-12 mb-3">
-                {% if serverLogs.items|length > 0 %}
+                {% if serverData.activityLogs.items|length > 0 %}
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -13,7 +13,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for log in serverLogs.items %}
+                        {% for log in serverData.activityLogs.items %}
                             <tr>
                                 <td>{{ ('pteroca.server_actions.' ~ log.actionId)|trans }}</td>
                                 <td>
@@ -25,8 +25,8 @@
                                     </div>
                                 </td>
                                 <td>
-                                    {% set isAdminLog = log.user.email != server.user.email and 'ROLE_ADMIN' in log.user.roles %}
-                                    {{ isAdminLog ? '<span class="badge bg-primary text-white">' ~ ('pteroca.server.admin'|trans) ~'</span>' : log.user.email }}
+                                    {% set isAdminLog = log.user.email is defined and log.user.email != server.user.email and 'ROLE_ADMIN' in log.user.roles %}
+                                    {{ isAdminLog ? '<span class="badge bg-primary text-white">' ~ ('pteroca.server.admin'|trans) ~'</span>' : (log.user.email ?? '') }}
                                 </td>
                                 <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
                             </tr>
@@ -42,9 +42,9 @@
             </div>
 
             {% include 'panel/server/components/pagination.html.twig' with {
-                totalItems: serverLogs.totalItems,
-                currentPage: serverLogs.currentPage,
-                totalPages: serverLogs.totalPages,
+                totalItems: serverData.activityLogs.totalItems,
+                currentPage: serverData.activityLogs.currentPage,
+                totalPages: serverData.activityLogs.totalPages,
                 url: path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }),
                 anchor: '#activity'
             } %}
@@ -81,7 +81,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            {% for log in serverLogs.items %}
+            {% for log in serverData.activityLogs.items %}
             var logDetailsElement = document.getElementById('log-details-{{ log.id }}');
             if (logDetailsElement) {
                 logDetailsElement.innerText = formatJSON(logDetailsElement.innerText);

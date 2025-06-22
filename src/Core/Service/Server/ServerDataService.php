@@ -8,6 +8,7 @@ use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
+use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Trait\ServerPermissionsTrait;
@@ -24,11 +25,12 @@ class ServerDataService
         private readonly ServerNestService $serverNestService,
         private readonly ServerService $serverService,
         private readonly ServerVariableFactory $serverVariableFactory,
+        private readonly ServerLogService $serverLogService,
     )
     {
     }
 
-    public function getServerData(Server $server, UserInterface $user): ServerDataDTO
+    public function getServerData(Server $server, UserInterface $user, int $currentPage): ServerDataDTO
     {
         /** @var PterodactylServer $pterodactylServer */
         $pterodactylServer = $this->pterodactylService
@@ -112,7 +114,20 @@ class ServerDataService
             ))
             ->toArray();
 
+        $pterodactylActivityLogs = $pterodactylClientApi->servers
+            ->http
+            ->get(sprintf(
+                'servers/%s/activity',
+                $server->getPterodactylServerIdentifier(),
+            ))->toArray();
+        $activityLogs = $this->serverLogService->getServerLogsWithPagination(
+            $server,
+            $pterodactylActivityLogs,
+            $currentPage,
+        );
+
         return new ServerDataDTO(
+            $server,
             $permissions,
             $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
@@ -127,6 +142,7 @@ class ServerDataService
             $serverBackups ?? [],
             $allocatedPorts,
             $subusers,
+            $activityLogs,
         );
     }
 

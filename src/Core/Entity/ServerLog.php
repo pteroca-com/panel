@@ -4,6 +4,7 @@ namespace App\Core\Entity;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Repository\ServerLogRepository;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServerLogRepository::class)]
@@ -33,9 +34,11 @@ class ServerLog
     private Server $server;
 
     #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
+    public function setCreatedAtValue(?DateTimeInterface $createdAt = null): self
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = $createdAt ?: new \DateTime();
+
+        return $this;
     }
 
     public function getId(): int

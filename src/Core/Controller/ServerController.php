@@ -5,7 +5,6 @@ namespace App\Core\Controller;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
-use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Server\ServerDataService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +37,6 @@ class ServerController extends AbstractController
         Request $request,
         ServerRepository $serverRepository,
         ServerDataService $serverDataService,
-        ServerLogService $serverLogService,
     ): Response
     {
         $this->checkPermission();
@@ -57,16 +55,15 @@ class ServerController extends AbstractController
 
         $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
         if ($server->getUser() !== $this->getUser() && !$isAdminView) {
-            throw $this->createAccessDeniedException(); // todo wyniesc do serverdataservice
+            throw $this->createAccessDeniedException(); // TODO wyniesc do serverdataservice
         }
 
-        $serverData = $serverDataService->getServerData($server, $this->getUser());
+        $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,
             'serverData' => $serverData,
             'isAdminView' => $isAdminView,
-            'serverLogs' => $serverLogService->getServerLogsWithPagination($server, $currentPage),
         ]);
     }
 }
