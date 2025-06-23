@@ -6,6 +6,7 @@ use App\Core\Contract\UserInterface;
 use App\Core\DTO\Collection\ServerVariableCollection;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Logs\ServerLogService;
@@ -41,7 +42,6 @@ class ServerDataService
             ]);
         
         $permissions = $this->getServerPermissions($pterodactylServer, $server, $user);
-        $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
 
         try {
             $pterodactylClientApi = $this->pterodactylClientService
@@ -50,16 +50,18 @@ class ServerDataService
             $pterodactylClientApi = null;
         }
 
-        try {
-            $allocatedPorts = $pterodactylClientApi->servers
-                ->http
-                ->get(sprintf('servers/%s/network/allocations', $server->getPterodactylServerIdentifier()))
-                ->toArray();
-            $allocatedPorts = array_map(function ($allocation) {
-                return $allocation->toArray();
-            }, $allocatedPorts);
-        } catch (Exception $exception) {
-            $allocatedPorts = [];
+        if ($permissions->hasPermission(ServerPermissionEnum::ALLOCATION_READ)) {
+            try {
+                $allocatedPorts = $pterodactylClientApi->servers
+                    ->http
+                    ->get(sprintf('servers/%s/network/allocations', $server->getPterodactylServerIdentifier()))
+                    ->toArray();
+                $allocatedPorts = array_map(function ($allocation) {
+                    return $allocation->toArray();
+                }, $allocatedPorts);
+            } catch (Exception $exception) {
+                // TODO log error
+            }
         }
 
         $pterodactylClientServer = $pterodactylClientApi
@@ -79,70 +81,77 @@ class ServerDataService
             );
             $productEggConfiguration = $productEggsConfiguration[$pterodactylServer->get('egg')] ?? [];
         } catch (Exception $e) {
+            // TODO log error
             $productEggConfiguration = [];
         }
 
-        if ($server->getServerProduct()->getAllowChangeEgg()) {
+        if ($server->getServerProduct()->getAllowChangeEgg() && $permissions->hasPermission(ServerPermissionEnum::SETTINGS_REINSTALL)) {
             $availableNestEggs = $this->serverNestService->getServerAvailableEggs($server);
         }
 
-        [$hasConfigurableOptions, $hasConfigurableVariables] = $this->getServerConfigurableOptionsAndVariables(
-            $server,
-            $pterodactylServer->get('egg')
-        );
+        if ($permissions->hasPermission(ServerPermissionEnum::STARTUP_READ)) {
+            $dockerImages = $pterodactylServer->get('relationships')['egg']->get('docker_images');
+            [$hasConfigurableOptions, $hasConfigurableVariables] = $this->getServerConfigurableOptionsAndVariables(
+                $server,
+                $pterodactylServer->get('egg')
+            );
+            $serverVariables = $this->serverVariableFactory
+                ->createFromCollection($pterodactylServer->get('relationships')['variables']->all());
+        }
 
-        $serverVariables = $this->serverVariableFactory
-            ->createFromCollection($pterodactylServer->get('relationships')['variables']->all());
-
-        if ($server->getServerProduct()->getBackups()) {
+        if ($server->getServerProduct()->getBackups() && $permissions->hasPermission(ServerPermissionEnum::BACKUP_READ)) {
             try {
                 $serverBackups = $pterodactylClientApi
                     ->server_backups
                     ->http
                     ->get(sprintf('servers/%s/backups', $server->getPterodactylServerIdentifier()))
                     ->toArray();
-            } catch (Exception) {
-                $serverBackups = [];
+            } catch (Exception $exception) {
+                // TODO log error
             }
         }
 
-        $subusers = $pterodactylClientApi->servers
-            ->http
-            ->get(sprintf(
-                'servers/%s/users',
-                $server->getPterodactylServerIdentifier(),
-            ))
-            ->toArray();
+        if ($permissions->hasPermission(ServerPermissionEnum::USER_READ)) {
+            $subusers = $pterodactylClientApi->servers
+                ->http
+                ->get(sprintf(
+                    'servers/%s/users',
+                    $server->getPterodactylServerIdentifier(),
+                ))
+                ->toArray();
+        }
 
-        $pterodactylActivityLogs = $pterodactylClientApi->servers
-            ->http
-            ->get(sprintf(
-                'servers/%s/activity',
-                $server->getPterodactylServerIdentifier(),
-            ))->toArray();
-        $activityLogs = $this->serverLogService->getServerLogsWithPagination(
-            $server,
-            $pterodactylActivityLogs,
-            $currentPage,
-        );
+        if ($permissions->hasPermission(ServerPermissionEnum::ACTIVITY_READ)) {
+            $pterodactylActivityLogs = $pterodactylClientApi->servers
+                ->http
+                ->get(sprintf(
+                    'servers/%s/activity',
+                    $server->getPterodactylServerIdentifier(),
+                ))->toArray();
+            $activityLogs = $this->serverLogService->getServerLogsWithPagination(
+                $server,
+                $pterodactylActivityLogs,
+                $currentPage,
+            )->toArray();
+        }
 
         return new ServerDataDTO(
             $server,
             $permissions,
             $this->serverService->getServerDetails($server),
             $pterodactylServer->toArray(),
-            $dockerImages,
+            $dockerImages ?? [],
             $pterodactylClientServer?->toArray(),
             $pterodactylClientAccount?->toArray(),
             $productEggConfiguration,
             $availableNestEggs ?? null,
-            $hasConfigurableOptions,
-            $hasConfigurableVariables,
-            new ServerVariableCollection($serverVariables),
+            $hasConfigurableOptions ?? [],
+            $hasConfigurableVariables ?? [],
+            new ServerVariableCollection($serverVariables ?? []),
             $serverBackups ?? [],
-            $allocatedPorts,
-            $subusers,
-            $activityLogs,
+            $allocatedPorts ?? [],
+            $subusers ?? [],
+            $activityLogs ?? [],
         );
     }
 

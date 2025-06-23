@@ -24,7 +24,7 @@ class ServerDataDTO
         public array $serverBackups,
         public array $allocatedPorts,
         public array $subusers,
-        public PaginationDTO $activityLogs,
+        public array $activityLogs,
     )
     {
     }
