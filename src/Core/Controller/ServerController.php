@@ -6,6 +6,7 @@ use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerDataService;
+use App\Core\Service\Server\ServerService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,7 +15,7 @@ class ServerController extends AbstractController
 {
     #[Route('/servers', name: 'servers')]
     public function servers(
-        ServerRepository $serverRepository,
+        ServerService $serverService,
     ): Response
     {
         $this->checkPermission();
@@ -25,7 +26,7 @@ class ServerController extends AbstractController
                 $server->imagePath = $imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath();
             }
             return $server;
-        }, $serverRepository->getActiveServersByUser($this->getUser()));
+        }, $serverService->getServersWithAccess($this->getUser()));
 
         return $this->render('panel/servers/servers.html.twig', [
             'servers' => $servers,
@@ -53,12 +54,11 @@ class ServerController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
-        if ($server->getUser() !== $this->getUser() && !$isAdminView) {
-            throw $this->createAccessDeniedException(); // TODO wyniesc do serverdataservice
-        }
-
         $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
+        $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
+        if (empty($serverData->serverPermissions->toArray()) && !$isAdminView) {
+            throw $this->createAccessDeniedException();
+        }
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,
