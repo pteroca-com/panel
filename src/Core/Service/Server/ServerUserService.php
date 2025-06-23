@@ -4,7 +4,9 @@ namespace App\Core\Service\Server;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
+use App\Core\Entity\ServerSubuser;
 use App\Core\Enum\ServerLogActionEnum;
+use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -15,6 +17,7 @@ class ServerUserService
         private readonly PterodactylClientService $pterodactylClientService,
         private readonly PterodactylService $pterodactylService,
         private readonly ServerLogService $serverLogService,
+        private readonly ServerSubuserRepository $serverSubuserRepository,
     ) {}
 
     public function getAllSubusers(Server $server, UserInterface $user): array
@@ -24,33 +27,6 @@ class ServerUserService
             ->http
             ->get(sprintf('servers/%s/users', $server->getPterodactylServerIdentifier()))
             ->toArray();
-    }
-
-    public function createSubuser(
-        Server $server,
-        UserInterface $user,
-        string $email,
-        array $permissions = []
-    ): array
-    {
-        $pterodactylClientApi = $this->pterodactylClientService->getApi($user);
-
-        $result = $pterodactylClientApi->http->post(sprintf('servers/%s/users', $server->getPterodactylServerIdentifier()), [
-            'email' => $email,
-            'permissions' => $permissions,
-        ]);
-
-        $this->serverLogService->logServerAction(
-            $user,
-            $server,
-            ServerLogActionEnum::CREATE_SUBUSER,
-            [
-                'email' => $email,
-                'permissions_count' => count($permissions),
-            ]
-        );
-
-        return $result->toArray();
     }
 
     public function addExistingUserToServer(
@@ -82,6 +58,8 @@ class ServerUserService
                 'permissions' => $permissions,
             ]);
 
+            $this->syncServerSubuser($server, $user, $permissions);
+
             $this->serverLogService->logServerAction(
                 $user,
                 $server,
@@ -95,13 +73,13 @@ class ServerUserService
             return $result->toArray();
 
         } catch (\Exception $e) { // TODO translations
-            if (strpos($e->getMessage(), 'No user found') !== false || 
-                strpos($e->getMessage(), 'does not exist') !== false) {
+            if (str_contains($e->getMessage(), 'No user found') ||
+                str_contains($e->getMessage(), 'does not exist')) {
                 throw new \Exception(sprintf('User with email %s does not exist in the system. The user must register first.', $email));
             }
             
-            if (strpos($e->getMessage(), 'already assigned') !== false ||
-                strpos($e->getMessage(), 'already exists') !== false) {
+            if (str_contains($e->getMessage(), 'already assigned') ||
+                str_contains($e->getMessage(), 'already exists')) {
                 throw new \Exception(sprintf('User with email %s is already added to this server.', $email));
             }
 
@@ -122,6 +100,8 @@ class ServerUserService
             ->post(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid), [
                 'permissions' => $permissions,
             ]);
+
+        $this->syncServerSubuser($server, $user, $permissions);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -147,6 +127,11 @@ class ServerUserService
             ->http
             ->delete(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid));
 
+        $existingSubuser = $this->serverSubuserRepository->findSubuserByServerAndUser($server, $user);
+        if ($existingSubuser) {
+            $this->serverSubuserRepository->delete($existingSubuser);
+        }
+
         $this->serverLogService->logServerAction(
             $user,
             $server,
@@ -168,5 +153,21 @@ class ServerUserService
             ->http
             ->get(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid))
             ->toArray();
+    }
+
+    private function syncServerSubuser(Server $server, UserInterface $subuserEntity, array $permissions): void
+    {
+        $existingSubuser = $this->serverSubuserRepository->findSubuserByServerAndUser($server, $subuserEntity);
+        
+        if ($existingSubuser) {
+            $existingSubuser->setPermissions($permissions);
+            $this->serverSubuserRepository->save($existingSubuser);
+        } else {
+            $serverSubuser = new ServerSubuser();
+            $serverSubuser->setServer($server);
+            $serverSubuser->setUser($subuserEntity);
+            $serverSubuser->setPermissions($permissions);
+            $this->serverSubuserRepository->save($serverSubuser);
+        }
     }
 }
