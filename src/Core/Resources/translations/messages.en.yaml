@@ -275,6 +275,7 @@ pteroca:
     action: 'Action'
     details: 'Details'
     user: 'User'
+    source: 'Source'
     date: 'Date'
     show_details: 'Show details'
     hide_details: 'Hide details'
@@ -466,6 +467,9 @@ pteroca:
     edit_allocation: 'Edited allocation'
     delete_allocation: 'Deleted allocation'
     make_primary_allocation: 'Made allocation primary'
+    create_subuser: 'Created subuser'
+    update_subuser: 'Updated subuser'
+    delete_subuser: 'Deleted subuser'
 
   voucher:
     expired: 'The voucher has expired.'

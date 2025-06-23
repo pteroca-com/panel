@@ -6,6 +6,7 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
+                            <th>{{ 'pteroca.server.source'|trans }}</th>
                             <th>{{ 'pteroca.server.action'|trans }}</th>
                             <th>{{ 'pteroca.server.details'|trans }}</th>
                             <th>{{ 'pteroca.server.user'|trans }}</th>
@@ -16,6 +17,13 @@
                         {% for log in serverData.activityLogs.items %}
                             {% set logIndex = loop.index %}
                             <tr>
+                                <td>
+                                    {% if log.sourceType.name == 'PTEROCA' %}
+                                        <span class="badge bg-primary text-white">PteroCA</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary text-white">Pterodactyl</span>
+                                    {% endif %}
+                                </td>
                                 <td>{{ ('pteroca.server_actions.' ~ log.actionId)|trans }}</td>
                                 <td>
                                     <button id="toggle-btn-{{ logIndex }}" class="btn btn-info" onclick="toggleDetails('{{ logIndex }}')">
