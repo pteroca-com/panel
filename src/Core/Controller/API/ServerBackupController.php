@@ -97,4 +97,31 @@ class ServerBackupController extends APIAbstractController
 
         return $response;
     }
+
+    #[Route('/panel/api/server/{id}/backup/{backupId}/restore', name: 'server_backup_restore', methods: ['POST'])]
+    public function restoreBackup(
+        int $id,
+        string $backupId,
+        Request $request,
+    ): Response
+    {
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_RESTORE);
+        $response = new Response();
+
+        try {
+            $truncate = $request->request->getBoolean('truncate', false);
+            
+            $this->serverBackupService->restoreBackup(
+                $server,
+                $this->getUser(),
+                $backupId,
+                $truncate,
+            );
+            $response->setStatusCode(204);
+        } catch (Exception $exception) {
+            $response->setStatusCode(400);
+        }
+
+        return $response;
+    }
 }

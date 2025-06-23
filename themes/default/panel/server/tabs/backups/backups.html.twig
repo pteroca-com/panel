@@ -57,7 +57,7 @@
                                                 {% endif %}
                                                 {% if backup.is_successful and hasServerPermission(serverData.serverPermissions, 'backup.restore') %}
                                                     <li>
-                                                        <a class="dropdown-item action-edit" href="#" data-action-name="restore" data-backup-name="{{ backup.name }}" data-backup-id="{{ backup.uuid }}">
+                                                        <a class="dropdown-item action-edit" href="#" data-action-name="restore" data-backup-name="{{ backup.name }}" data-backup-id="{{ backup.uuid }}" data-bs-toggle="modal" data-bs-target="#restoreBackupModal">
                                                             <span class="action-label text-warning">
                                                                 <i class="fas fa-undo text-warning"></i>
                                                                 {{ 'pteroca.server.restore'|trans }}
@@ -106,6 +106,10 @@
     {% if serverData.serverBackups|length > 0 and hasServerPermission(serverData.serverPermissions, 'backup.delete') %}
         {% include 'panel/server/tabs/backups/components/delete_backup_modal.html.twig' %}
     {% endif %}
+
+    {% if serverData.serverBackups|length > 0 and hasServerPermission(serverData.serverPermissions, 'backup.restore') %}
+        {% include 'panel/server/tabs/backups/components/restore_backup_modal.html.twig' %}
+    {% endif %}
 {% endblock %}
 
 {% block body_javascript %}
@@ -134,7 +138,13 @@
                     }
 
                     if (actionName === 'restore') {
-                        alert('Restore functionality is not yet implemented.');
+                        const backupNameElement = document.querySelector('#backup-restore-name')
+
+                        if (backupNameElement) {
+                            backupNameElement.textContent = backupName
+                            document.querySelector('#confirmRestoreBackup').setAttribute('data-backup-id', backupId)
+                        }
+
                         return
                     }
 

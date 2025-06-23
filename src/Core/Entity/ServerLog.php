@@ -34,9 +34,9 @@ class ServerLog
     private Server $server;
 
     #[ORM\PrePersist]
-    public function setCreatedAtValue(?DateTimeInterface $createdAt = null): self
+    public function setCreatedAtValue(): self
     {
-        $this->createdAt = $createdAt ?: new \DateTime();
+        $this->createdAt = new \DateTime();
 
         return $this;
     }

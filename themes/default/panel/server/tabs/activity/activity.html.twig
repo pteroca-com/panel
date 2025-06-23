@@ -15,7 +15,7 @@
                         </thead>
                         <tbody>
                         {% for log in serverData.activityLogs.items %}
-                            {% set logIndex = loop.index %}
+                            {% set logIndex = log.id is not null ? log.id : 'dto_' ~ loop.index0 ~ '_' ~ log.createdAt.timestamp %}
                             <tr>
                                 <td>
                                     {% if log.sourceType.name == 'PTEROCA' %}
@@ -91,7 +91,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             {% for log in serverData.activityLogs.items %}
-            {% set logIndex = loop.index %}
+            {% set logIndex = log.id is not null ? log.id : 'dto_' ~ loop.index0 ~ '_' ~ log.createdAt.timestamp %}
             var logDetailsElement = document.getElementById('log-details-{{ logIndex }}');
             if (logDetailsElement) {
                 logDetailsElement.innerText = formatJSON(logDetailsElement.innerText);

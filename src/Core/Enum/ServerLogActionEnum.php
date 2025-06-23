@@ -12,6 +12,7 @@ enum ServerLogActionEnum
    case CREATE_BACKUP;
    case DELETE_BACKUP;
    case DOWNLOAD_BACKUP;
+   case RESTORE_BACKUP;
    case CREATE_DATABASE;
    case DELETE_DATABASE;
    case ROTATE_DATABASE_PASSWORD;

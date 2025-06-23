@@ -104,6 +104,36 @@ class ServerBackupService
         return $deletedBackup;
     }
 
+    public function restoreBackup(
+        Server $server,
+        UserInterface $user,
+        string $backupId,
+        bool $truncate = false,
+    ): void
+    {
+        $endpointUrl = sprintf(
+            'servers/%s/backups/%s/restore',
+            $server->getPterodactylServerIdentifier(), $backupId
+        );
+
+        $requestData['truncate'] = $truncate;
+
+        $this->getPterodactylClientApi($user)
+            ->server_backups
+            ->http
+            ->post($endpointUrl, $requestData);
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::RESTORE_BACKUP,
+            [
+                'backup_id' => $backupId,
+                'truncate' => $truncate,
+            ]
+        );
+    }
+
     private function getPterodactylClientApi(UserInterface $user): PterodactylApi
     {
         return $this->pterodactylClientService
