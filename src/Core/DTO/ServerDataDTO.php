@@ -25,6 +25,7 @@ class ServerDataDTO
         public array $allocatedPorts,
         public array $subusers,
         public array $activityLogs,
+        public array $serverSchedules,
     )
     {
     }

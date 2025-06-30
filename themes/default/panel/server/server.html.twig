@@ -45,6 +45,9 @@
             {% endif %}
             {% include 'panel/server/tabs/network/network.html.twig' %}
             {% include 'panel/server/tabs/users/users.html.twig' %}
+            {% if hasServerPermission(serverData.serverPermissions, 'schedule.read') %}
+                {% include 'panel/server/tabs/schedules/schedules.html.twig' %}
+            {% endif %}
             {% include 'panel/server/tabs/settings/settings.html.twig' %}
             {% if hasServerPermission(serverData.serverPermissions, 'activity.read') %}
                 {% include 'panel/server/tabs/activity/activity.html.twig' %}

@@ -135,6 +135,21 @@ class ServerDataService
             )->toArray();
         }
 
+        if ($permissions->hasPermission(ServerPermissionEnum::SCHEDULE_READ)) {
+            try {
+                $serverSchedules = $pterodactylClientApi
+                    ->servers
+                    ->http
+                    ->get(sprintf('servers/%s/schedules', $server->getPterodactylServerIdentifier()))
+                    ->toArray();
+                $serverSchedules = array_map(function ($schedule) {
+                    return $schedule->toArray();
+                }, $serverSchedules);
+            } catch (Exception $exception) {
+                // TODO log error
+            }
+        }
+
         return new ServerDataDTO(
             $server,
             $permissions,
@@ -145,13 +160,14 @@ class ServerDataService
             $pterodactylClientAccount?->toArray(),
             $productEggConfiguration,
             $availableNestEggs ?? null,
-            $hasConfigurableOptions ?? [],
-            $hasConfigurableVariables ?? [],
+            $hasConfigurableOptions ?? false,
+            $hasConfigurableVariables ?? false,
             new ServerVariableCollection($serverVariables ?? []),
             $serverBackups ?? [],
             $allocatedPorts ?? [],
             $subusers ?? [],
             $activityLogs ?? [],
+            $serverSchedules ?? [],
         );
     }
 
