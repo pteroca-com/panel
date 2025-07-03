@@ -103,6 +103,10 @@
             </div>
             {% endif %}
         </div>
+        
+        {% if hasServerPermission(serverData.serverPermissions, 'schedule.create') %}
+            {% include 'panel/server/tabs/schedules/components/add-schedule-modal.html.twig' %}
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -111,8 +115,8 @@
         let currentSchedules = {{ serverData.serverSchedules|json_encode|raw }};
         
         function addNewSchedule() {
-            // TODO: Implementacja dodawania harmonogramu
-            alert('{{ 'pteroca.server.feature_coming_soon'|trans }}');
+            const modal = new bootstrap.Modal(document.getElementById('addScheduleModal'));
+            modal.show();
         }
         
         function editSchedule(scheduleId) {
@@ -121,8 +125,27 @@
         }
         
         function deleteSchedule(scheduleId) {
-            // TODO: Implementacja usuwania harmonogramu
-            alert('{{ 'pteroca.server.feature_coming_soon'|trans }}');
+            if (confirm('{{ 'pteroca.server.confirm_delete_schedule'|trans }}')) {
+                fetch('{{ path('server_schedules_delete', { id: server.id, scheduleId: '__SCHEDULE_ID__' }) }}'.replace('__SCHEDULE_ID__', scheduleId), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                    } else {
+                        alert('{{ 'pteroca.server.schedule_deleted_successfully'|trans }}');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                });
+            }
         }
         
         // Event listenery dla dropdown actions

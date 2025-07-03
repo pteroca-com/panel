@@ -1,0 +1,181 @@
+<!-- Modal dodawania harmonogramu -->
+{% if hasServerPermission(serverData.serverPermissions, 'schedule.create') %}
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addScheduleModalLabel">{{ 'pteroca.server.create_new_schedule'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addScheduleForm" onsubmit="saveNewSchedule(); return false;">
+                <div class="modal-body">
+                    <!-- Schedule name section -->
+                    <div class="mb-4">
+                        <label for="scheduleName" class="form-label">{{ 'pteroca.server.schedule_name'|trans }}</label>
+                        <input type="text" class="form-control" id="scheduleName" name="name" required>
+                        <div class="form-text">{{ 'pteroca.server.schedule_name_description'|trans }}</div>
+                    </div>
+                    
+                    <!-- Cron expression section -->
+                    <div class="mb-4">
+                        <label class="form-label">{{ 'pteroca.server.schedule_cron_expression'|trans }}</label>
+                        <div class="row">
+                            <div class="col">
+                                <label for="cronMinute" class="form-label small">{{ 'pteroca.server.minute'|trans }}</label>
+                                <input type="text" class="form-control" id="cronMinute" name="minute" value="*/5" required>
+                            </div>
+                            <div class="col">
+                                <label for="cronHour" class="form-label small">{{ 'pteroca.server.hour'|trans }}</label>
+                                <input type="text" class="form-control" id="cronHour" name="hour" value="*" required>
+                            </div>
+                            <div class="col">
+                                <label for="cronDayOfMonth" class="form-label small">{{ 'pteroca.server.day_of_month'|trans }}</label>
+                                <input type="text" class="form-control" id="cronDayOfMonth" name="day_of_month" value="*" required>
+                            </div>
+                            <div class="col">
+                                <label for="cronMonth" class="form-label small">{{ 'pteroca.server.month'|trans }}</label>
+                                <input type="text" class="form-control" id="cronMonth" name="month" value="*" required>
+                            </div>
+                            <div class="col">
+                                <label for="cronDayOfWeek" class="form-label small">{{ 'pteroca.server.day_of_week'|trans }}</label>
+                                <input type="text" class="form-control" id="cronDayOfWeek" name="day_of_week" value="*" required>
+                            </div>
+                        </div>
+                        <div class="form-text">{{ 'pteroca.server.cron_expression_description'|trans }}</div>
+                    </div>
+                    
+                    <!-- Options section -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">{{ 'pteroca.server.schedule_options'|trans }}</h6>
+                        
+                        <!-- Show cheatsheet toggle -->
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="showCheatsheet" name="show_cheatsheet">
+                            <label class="form-check-label" for="showCheatsheet">
+                                {{ 'pteroca.server.show_cheatsheet'|trans }}
+                            </label>
+                            <div class="form-text">{{ 'pteroca.server.show_cheatsheet_description'|trans }}</div>
+                        </div>
+                        
+                        <!-- Only when server is online -->
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="onlyWhenOnline" name="only_when_online" checked>
+                            <label class="form-check-label" for="onlyWhenOnline">
+                                {{ 'pteroca.server.only_when_server_online'|trans }}
+                            </label>
+                            <div class="form-text">{{ 'pteroca.server.only_when_server_online_description'|trans }}</div>
+                        </div>
+                        
+                        <!-- Schedule enabled -->
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="scheduleEnabled" name="is_active" checked>
+                            <label class="form-check-label" for="scheduleEnabled">
+                                {{ 'pteroca.server.schedule_enabled'|trans }}
+                            </label>
+                            <div class="form-text">{{ 'pteroca.server.schedule_enabled_description'|trans }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cron cheatsheet (hidden by default) -->
+                    <div id="cronCheatsheet" class="alert alert-info" style="display: none;">
+                        <h6>{{ 'pteroca.server.cron_cheatsheet'|trans }}</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>{{ 'pteroca.server.examples'|trans }}:</strong><br>
+                                <code>*/5 * * * *</code> - {{ 'pteroca.server.every_5_minutes'|trans }}<br>
+                                <code>0 */2 * * *</code> - {{ 'pteroca.server.every_2_hours'|trans }}<br>
+                                <code>0 0 * * 0</code> - {{ 'pteroca.server.every_sunday'|trans }}<br>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>{{ 'pteroca.server.special_values'|trans }}:</strong><br>
+                                <code>*</code> - {{ 'pteroca.server.any_value'|trans }}<br>
+                                <code>*/n</code> - {{ 'pteroca.server.every_n_units'|trans }}<br>
+                                <code>n-m</code> - {{ 'pteroca.server.range_n_to_m'|trans }}<br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.cancel'|trans }}</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> {{ 'pteroca.server.create_schedule'|trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle cron cheatsheet
+    document.getElementById('showCheatsheet').addEventListener('change', function() {
+        const cheatsheet = document.getElementById('cronCheatsheet');
+        if (this.checked) {
+            cheatsheet.style.display = 'block';
+        } else {
+            cheatsheet.style.display = 'none';
+        }
+    });
+});
+
+function saveNewSchedule() {
+    const form = document.getElementById('addScheduleForm');
+    const formData = new FormData(form);
+    
+    const name = formData.get('name');
+    const minute = formData.get('minute');
+    const hour = formData.get('hour');
+    const dayOfMonth = formData.get('day_of_month');
+    const month = formData.get('month');
+    const dayOfWeek = formData.get('day_of_week');
+    const isActive = formData.get('is_active') === 'on';
+    const onlyWhenOnline = formData.get('only_when_online') === 'on';
+    
+    if (!name) {
+        alert('{{ 'pteroca.server.schedule_name'|trans }} {{ 'pteroca.server.email_required'|trans|lower }}');
+        return;
+    }
+    
+    if (!minute || !hour || !dayOfMonth || !month || !dayOfWeek) {
+        alert('{{ 'pteroca.server.cron_expression_description'|trans }}');
+        return;
+    }
+    
+    fetch('{{ path('server_schedules_create', { id: server.id }) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            name: name,
+            minute: minute,
+            hour: hour,
+            day_of_month: dayOfMonth,
+            month: month,
+            day_of_week: dayOfWeek,
+            is_active: isActive,
+            only_when_online: onlyWhenOnline
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+        } else {
+            alert('{{ 'pteroca.server.schedule_created_successfully'|trans }}');
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('{{ 'pteroca.server.error_occurred'|trans }}');
+    });
+    
+    // Zamknij modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addScheduleModal'));
+    modal.hide();
+}
+</script>
+{% endif %}
