@@ -124,7 +124,7 @@
         }
         
         function editSchedule(scheduleId) {
-            // Pobierz szczegóły harmonogramu z API
+            // Pobierz szczegóły harmonogramu z API (wraz z zadaniami)
             fetch('{{ path('server_schedules_get', { id: server.id, scheduleId: '__SCHEDULE_ID__' }) }}'.replace('__SCHEDULE_ID__', scheduleId), {
                 method: 'GET',
                 headers: {
@@ -173,8 +173,9 @@
             document.getElementById('cronMonth').textContent = scheduleData.cron.month;
             document.getElementById('cronDayOfWeek').textContent = scheduleData.cron.day_of_week;
             
-            // Załaduj taski
-            loadScheduleTasks(scheduleData.tasks || []);
+            // Załaduj taski z relationships
+            const tasks = scheduleData.relationships?.tasks || [];
+            loadScheduleTasks(tasks);
             
             // Pokaż modal
             const modal = new bootstrap.Modal(document.getElementById('editScheduleModal'));
