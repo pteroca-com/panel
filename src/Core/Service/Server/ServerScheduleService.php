@@ -87,13 +87,11 @@ class ServerScheduleService
         }
         
         if ($cronExpression !== null) {
-            $scheduleData['cron'] = [
-                'minute' => $cronExpression['minute'] ?? '*',
-                'hour' => $cronExpression['hour'] ?? '*',
-                'day_of_month' => $cronExpression['day_of_month'] ?? '*',
-                'month' => $cronExpression['month'] ?? '*',
-                'day_of_week' => $cronExpression['day_of_week'] ?? '*',
-            ];
+            $scheduleData['minute'] = $cronExpression['minute'] ?? '*';
+            $scheduleData['hour'] = $cronExpression['hour'] ?? '*';
+            $scheduleData['day_of_month'] = $cronExpression['day_of_month'] ?? '*';
+            $scheduleData['month'] = $cronExpression['month'] ?? '*';
+            $scheduleData['day_of_week'] = $cronExpression['day_of_week'] ?? '*';
         }
         
         if ($isActive !== null) {
