@@ -26,4 +26,6 @@ enum ServerLogActionEnum
    case CREATE_SCHEDULE;
    case UPDATE_SCHEDULE;
    case DELETE_SCHEDULE;
+   case UPDATE_SCHEDULE_TASK;
+   case CREATE_SCHEDULE_TASK;
 }

@@ -143,4 +143,85 @@ class ServerScheduleController extends APIAbstractController
 
         return $response;
     }
+
+    #[Route('/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}', name: 'server_schedule_tasks_update', methods: ['PUT'])]
+    public function updateScheduleTask(int $id, int $scheduleId, int $taskId, Request $request): JsonResponse
+    {
+        $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
+        $response = new JsonResponse();
+        
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['action']) || empty($data['action'])) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => 'Action is required']);
+            return $response;
+        }
+
+        if (!isset($data['payload']) || empty($data['payload'])) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => 'Payload is required']);
+            return $response;
+        }
+
+        try {
+            $result = $this->serverScheduleService->updateScheduleTask(
+                $server,
+                $this->getUser(),
+                $scheduleId,
+                $taskId,
+                $data['action'],
+                $data['payload'],
+                $data['time_offset'] ?? 0,
+                $data['continue_on_failure'] ?? false
+            );
+
+            $response->setData(['success' => true, 'task' => $result]);
+        } catch (\Exception $e) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => $e->getMessage()]);
+        }
+
+        return $response;
+    }
+
+    #[Route('/panel/api/server/{id}/schedules/{scheduleId}/tasks', name: 'server_schedule_tasks_create', methods: ['POST'])]
+    public function createScheduleTask(int $id, int $scheduleId, Request $request): JsonResponse
+    {
+        $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
+        $response = new JsonResponse();
+        
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['action']) || empty($data['action'])) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => 'Action is required']);
+            return $response;
+        }
+
+        if (!isset($data['payload']) || empty($data['payload'])) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => 'Payload is required']);
+            return $response;
+        }
+
+        try {
+            $result = $this->serverScheduleService->createScheduleTask(
+                $server,
+                $this->getUser(),
+                $scheduleId,
+                $data['action'],
+                $data['payload'],
+                $data['time_offset'] ?? 0,
+                $data['continue_on_failure'] ?? false
+            );
+
+            $response->setData(['success' => true, 'task' => $result]);
+        } catch (\Exception $e) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => $e->getMessage()]);
+        }
+
+        return $response;
+    }
 }

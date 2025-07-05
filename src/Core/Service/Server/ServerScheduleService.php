@@ -162,4 +162,84 @@ class ServerScheduleService
 
         return $schedule->toArray();
     }
+
+    public function updateScheduleTask(
+        Server $server,
+        UserInterface $user,
+        int $scheduleId,
+        int $taskId,
+        string $action,
+        string $payload,
+        int $timeOffset = 0,
+        bool $continueOnFailure = false
+    ): array
+    {
+        $taskData = [
+            'action' => $action,
+            'payload' => $payload,
+            'time_offset' => $timeOffset,
+            'continue_on_failure' => $continueOnFailure,
+        ];
+
+        $result = $this->pterodactylClientService
+            ->getApi($user)
+            ->servers
+            ->http
+            ->post(sprintf('servers/%s/schedules/%d/tasks/%d', $server->getPterodactylServerIdentifier(), $scheduleId, $taskId), $taskData);
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::UPDATE_SCHEDULE_TASK,
+            [
+                'schedule_id' => $scheduleId,
+                'task_id' => $taskId,
+                'action' => $action,
+                'payload' => $payload,
+                'time_offset' => $timeOffset,
+                'continue_on_failure' => $continueOnFailure,
+            ]
+        );
+
+        return $result->toArray();
+    }
+
+    public function createScheduleTask(
+        Server $server,
+        UserInterface $user,
+        int $scheduleId,
+        string $action,
+        string $payload,
+        int $timeOffset = 0,
+        bool $continueOnFailure = false
+    ): array
+    {
+        $taskData = [
+            'action' => $action,
+            'payload' => $payload,
+            'time_offset' => $timeOffset,
+            'continue_on_failure' => $continueOnFailure,
+        ];
+
+        $result = $this->pterodactylClientService
+            ->getApi($user)
+            ->servers
+            ->http
+            ->post(sprintf('servers/%s/schedules/%d/tasks', $server->getPterodactylServerIdentifier(), $scheduleId), $taskData);
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::CREATE_SCHEDULE_TASK,
+            [
+                'schedule_id' => $scheduleId,
+                'action' => $action,
+                'payload' => $payload,
+                'time_offset' => $timeOffset,
+                'continue_on_failure' => $continueOnFailure,
+            ]
+        );
+
+        return $result->toArray();
+    }
 }

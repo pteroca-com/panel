@@ -110,6 +110,8 @@
         {% if hasServerPermission(serverData.serverPermissions, 'schedule.update') %}
             {% include 'panel/server/tabs/schedules/components/edit-schedule-modal.html.twig' %}
             {% include 'panel/server/tabs/schedules/components/edit-schedule-form-modal.html.twig' %}
+            {% include 'panel/server/tabs/schedules/components/edit-task-modal.html.twig' %}
+            {% include 'panel/server/tabs/schedules/components/add-task-modal.html.twig' %}
         {% endif %}
     </div>
 {% endblock %}
@@ -117,6 +119,15 @@
 {% block body_javascript %}
     <script>
         let currentSchedules = {{ serverData.serverSchedules|json_encode|raw }};
+        let currentScheduleData = null; // Przechowuje dane aktualnie wyświetlanego harmonogramu
+        
+        function getCurrentScheduleData() {
+            return currentScheduleData;
+        }
+        
+        function updateCurrentScheduleData(newScheduleData) {
+            currentScheduleData = newScheduleData;
+        }
         
         function addNewSchedule() {
             const modal = new bootstrap.Modal(document.getElementById('addScheduleModal'));
@@ -146,6 +157,9 @@
         }
         
         function showEditScheduleModal(scheduleData) {
+            // Zapisz dane harmonogramu do zmiennej globalnej
+            currentScheduleData = scheduleData;
+            
             // Ustaw ID harmonogramu
             document.getElementById('currentScheduleId').value = scheduleData.id;
             
@@ -249,13 +263,46 @@
         }
         
         function addNewTask() {
-            // TODO: Implementacja dodawania nowego tasku
-            alert('{{ 'pteroca.server.feature_coming_soon'|trans }}');
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            if (!scheduleId) {
+                alert('{{ 'pteroca.server.error_no_schedule_selected'|trans }}');
+                return;
+            }
+            
+            // Zamknij modal edycji harmonogramu
+            const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+            if (scheduleModal) {
+                scheduleModal.hide();
+            }
+            
+            // Otwórz modal dodawania zadania
+            openAddTaskModal(scheduleId);
         }
         
         function editTask(taskId) {
-            // TODO: Implementacja edycji tasku
-            alert('{{ 'pteroca.server.feature_coming_soon'|trans }}');
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            
+            // Znajdź dane zadania w aktualnie załadowanych danych
+            const currentScheduleData = getCurrentScheduleData();
+            if (!currentScheduleData || !currentScheduleData.relationships || !currentScheduleData.relationships.tasks) {
+                alert('{{ 'pteroca.server.error_loading_task_data'|trans }}');
+                return;
+            }
+            
+            const taskData = currentScheduleData.relationships.tasks.find(task => task.id == taskId);
+            if (!taskData) {
+                alert('{{ 'pteroca.server.task_not_found'|trans }}');
+                return;
+            }
+            
+            // Zamknij modal edycji harmonogramu
+            const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+            if (scheduleModal) {
+                scheduleModal.hide();
+            }
+            
+            // Otwórz modal edycji zadania
+            openEditTaskModal(taskId, scheduleId, taskData);
         }
         
         function deleteTask(taskId) {
