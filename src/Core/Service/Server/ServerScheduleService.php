@@ -242,4 +242,28 @@ class ServerScheduleService
 
         return $result->toArray();
     }
+
+    public function deleteScheduleTask(
+        Server $server,
+        UserInterface $user,
+        int $scheduleId,
+        int $taskId
+    ): void
+    {
+        $this->pterodactylClientService
+            ->getApi($user)
+            ->servers
+            ->http
+            ->delete(sprintf('servers/%s/schedules/%d/tasks/%d', $server->getPterodactylServerIdentifier(), $scheduleId, $taskId));
+
+        $this->serverLogService->logServerAction(
+            $user,
+            $server,
+            ServerLogActionEnum::DELETE_SCHEDULE_TASK,
+            [
+                'schedule_id' => $scheduleId,
+                'task_id' => $taskId,
+            ]
+        );
+    }
 }

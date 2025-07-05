@@ -224,4 +224,21 @@ class ServerScheduleController extends APIAbstractController
 
         return $response;
     }
+
+    #[Route('/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}', name: 'server_schedules_tasks_delete', methods: ['DELETE'])]
+    public function deleteScheduleTask(int $id, int $scheduleId, int $taskId): JsonResponse
+    {
+        $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
+        $response = new JsonResponse();
+
+        try {
+            $this->serverScheduleService->deleteScheduleTask($server, $this->getUser(), $scheduleId, $taskId);
+            $response->setData(['success' => true]);
+        } catch (\Exception $e) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => $e->getMessage()]);
+        }
+
+        return $response;
+    }
 }
