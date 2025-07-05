@@ -40,6 +40,9 @@ trait ProductEntityTrait
     #[ORM\Column(type: "integer")]
     private int $ports;
 
+    #[ORM\Column(type: "integer")]
+    private int $schedules = 10;
+
     #[ORM\Column(type: "json", nullable: true)]
     private array $nodes = [];
 
@@ -156,6 +159,17 @@ trait ProductEntityTrait
     public function setPorts(int $ports): self
     {
         $this->ports = $ports;
+        return $this;
+    }
+
+    public function getSchedules(): int
+    {
+        return $this->schedules;
+    }
+
+    public function setSchedules(int $schedules): self
+    {
+        $this->schedules = $schedules;
         return $this;
     }
 

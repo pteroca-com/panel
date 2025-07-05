@@ -38,6 +38,18 @@ class ServerScheduleService
         bool $onlyWhenOnline = true
     ): array
     {
+        // Sprawdź limit harmonogramów
+        $schedulesLimit = $server->getServerProduct()->getSchedules();
+        if ($schedulesLimit <= 0) {
+            throw new \Exception('Harmonogramy są wyłączone dla tego serwera.');
+        }
+
+        // Pobierz aktualną liczbę harmonogramów
+        $currentSchedules = $this->getAllSchedules($server, $user);
+        if (count($currentSchedules) >= $schedulesLimit) {
+            throw new \Exception(sprintf('Osiągnięto maksymalną liczbę harmonogramów (%d). Usuń istniejące harmonogramy, aby utworzyć nowe.', $schedulesLimit));
+        }
+
         $scheduleData = [
             'name' => $name,
             'day_of_week' => $cronExpression['day_of_week'],

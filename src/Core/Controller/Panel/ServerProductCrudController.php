@@ -331,6 +331,11 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.ports_hint'))
                 ->setColumns(4)
                 ->setDisabled($this->isServerOffline),
+            FormField::addRow(),
+            NumberField::new('schedules', $this->translator->trans('pteroca.crud.product.schedules'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.schedules_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
         ];
     }
 }

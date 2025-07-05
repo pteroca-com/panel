@@ -118,6 +118,10 @@ class ProductCrudController extends AbstractPanelController
             NumberField::new('ports', $this->translator->trans('pteroca.crud.product.ports'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.ports_hint'))
                 ->setColumns(4),
+            FormField::addRow(),
+            NumberField::new('schedules', $this->translator->trans('pteroca.crud.product.schedules'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.schedules_hint'))
+                ->setColumns(4),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
                 ->setIcon('fa fa-link'),
@@ -225,6 +229,7 @@ class ProductCrudController extends AbstractPanelController
             ->add('swap')
             ->add('backups')
             ->add('ports')
+            ->add('schedules')
             ->add('allowChangeEgg')
             ->add('createdAt')
             ->add('updatedAt')
