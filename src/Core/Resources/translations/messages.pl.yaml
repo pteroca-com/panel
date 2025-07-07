@@ -337,6 +337,7 @@ pteroca:
     delete_allocation_confirmation: 'Ta alokacja zostanie natychmiast usunięta z Twojego serwera. Czy chcesz kontynuować?'
     error_during_deleting_allocation: 'Wystąpił błąd podczas usuwania alokacji.'
     cannot_delete_primary_allocation: 'Nie można usunąć głównej alokacji.'
+    cannot_modify_yourself: 'Nie możesz modyfikować samego siebie.'
     extend_server_expires_on_demand: 'Twój serwer <strong>{{ productName }}</strong> jest obecnie ustawiony na wygaśnięcie w trybie <strong>na żądanie</strong>.'
     on_demand_billing_cycle: 'Cykl rozliczeniowy ({{ productPrice }} {{ internalCurrency }} / minuta) zostanie wstrzymany, gdy serwer jest wyłączony, a zasoby będą darmowe.'
     type: 'Typ'

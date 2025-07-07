@@ -27,7 +27,7 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
             ->http
             ->post(sprintf('servers/%s/settings/rename', $server->getPterodactylServerIdentifier()), [
                 'name' => substr($serverName, 0, 255),
-
+                'description' => substr($description ?? '', 0, 255),
             ]);
     }
 }

@@ -45,7 +45,12 @@
                                     {% endif %}
                                 </td>
                                 <td class="actions actions-as-dropdown text-center">
-                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) %}
+                                    {% set isCurrentUser = app.user.email == subuser.email %}
+                                    {% set isServerOwner = server.user.id == app.user.id %}
+                                    {% set isAdmin = is_granted('ROLE_ADMIN') %}
+                                    {% set canModifyThisUser = (isServerOwner or isAdmin) or not isCurrentUser %}
+                                    
+                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) and canModifyThisUser %}
                                     <div class="dropdown dropdown-actions">
                                         <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="icon">
@@ -78,6 +83,16 @@
                                                 {% endif %}
                                             </ul>
                                         </div>
+                                    </div>
+                                    {% elseif hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) and isCurrentUser %}
+                                    <div class="dropdown dropdown-actions">
+                                        <a class="dropdown-toggle dropdown-toggle-hidden-marker disabled" href="#" role="button" style="opacity: 0.5; cursor: not-allowed;" title="{{ 'pteroca.server.cannot_modify_yourself'|trans }}">
+                                            <span class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                </svg>
+                                            </span>
+                                        </a>
                                     </div>
                                     {% else %}
                                     <span class="text-muted">-</span>

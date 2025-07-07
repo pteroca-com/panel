@@ -105,6 +105,9 @@ class ServerUserService
             throw new \Exception(sprintf('User with email %s does not exist in the system.', $email));
         }
 
+        // Sprawdź, czy użytkownik może modyfikować tego subusera
+        $this->validateSubuserModification($server, $user, $email, 'modify permissions');
+
         $result = $this->pterodactylClientService
             ->getApi($user)
             ->http
@@ -142,6 +145,9 @@ class ServerUserService
         if (!$existingPterocaUser) {
             throw new \Exception(sprintf('User with email %s does not exist in the system.', $email));
         }
+
+        // Sprawdź, czy użytkownik może usunąć tego subusera
+        $this->validateSubuserModification($server, $user, $email, 'delete yourself from the server');
 
         $this->pterodactylClientService
             ->getApi($user)
@@ -191,6 +197,17 @@ class ServerUserService
             $serverSubuser->setUser($subuserEntity);
             $serverSubuser->setPermissions($permissions);
             $this->serverSubuserRepository->save($serverSubuser);
+        }
+    }
+
+    private function validateSubuserModification(Server $server, UserInterface $user, string $targetEmail, string $action): void
+    {
+        $isServerOwner = $server->getUser()->getId() === $user->getId();
+        $isAdmin = in_array('ROLE_ADMIN', $user->getRoles());
+        
+        if (!$isServerOwner && !$isAdmin && $user->getEmail() === $targetEmail) {
+            // TODO translations
+            throw new \Exception(sprintf('You cannot %s for yourself.', $action));
         }
     }
 }
