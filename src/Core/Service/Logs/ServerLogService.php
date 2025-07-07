@@ -63,6 +63,7 @@ class ServerLogService
 
         $allLogs = array_merge($pteroDtos, $dbDtos);
         usort($allLogs, fn (ServerLogDTO $a, ServerLogDTO $b) => $b->createdAt <=> $a->createdAt);
+        
 
         $paginatedLogs = array_slice($allLogs, $offset, $perPage);
 

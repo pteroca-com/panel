@@ -5,7 +5,6 @@ namespace App\Core\Service\Server;
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\ServerDetailsDTO;
 use App\Core\Entity\Server;
-use App\Core\Entity\ServerSubuser;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -57,12 +56,16 @@ class ServerService
     public function getServersWithAccess(UserInterface $user): array
     {
         $ownedServers = $this->serverRepository->getActiveServersByUser($user);
+        $ownedServerIds = array_map(fn(Server $server) => $server->getId(), $ownedServers);
 
         $subuserServers = [];
-        $subuser = $this->serverSubuserRepository->getSubusersByUser($user);
-        foreach ($subuser as $subuserServer) {
-            if ($subuserServer->getServer() instanceof ServerSubuser) {
-                $subuserServers[] = $subuserServer->getServer();
+        $subusers = $this->serverSubuserRepository->getSubusersByUser($user);
+        foreach ($subusers as $serverSubuser) {
+            $server = $serverSubuser->getServer();
+            if ($server instanceof Server && $server->getDeletedAt() === null) {
+                if (!in_array($server->getId(), $ownedServerIds)) {
+                    $subuserServers[] = $server;
+                }
             }
         }
 

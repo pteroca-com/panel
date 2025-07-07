@@ -361,7 +361,7 @@ pteroca:
     email_required: 'ईमेल आवश्यक है'
     error: 'त्रुटि'
     error_occurred: 'एक त्रुटि हुई'
-    user_created_successfully: 'उपयोगकर्ता सफलतापूर्वक बनाया गया'
+    user_created_successfully: 'उपयोगकर्ता सफलतापूर्वक जोड़ा गया'
     user_removed_successfully: 'उपयोगकर्ता सफलतापूर्वक हटाया गया'
     permissions_updated_successfully: 'अनुमतियां सफलतापूर्वक अपडेट की गईं'
     confirm_remove_user: 'क्या आप वाकई इस उपयोगकर्ता को हटाना चाहते हैं?'

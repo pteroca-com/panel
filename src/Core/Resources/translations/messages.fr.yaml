@@ -362,7 +362,7 @@ pteroca:
     email_required: 'L''email est requis'
     error: 'Erreur'
     error_occurred: 'Une erreur s''est produite'
-    user_created_successfully: 'Utilisateur créé avec succès'
+    user_created_successfully: 'Utilisateur ajouté avec succès'
     user_removed_successfully: 'Utilisateur supprimé avec succès'
     permissions_updated_successfully: 'Permissions mises à jour avec succès'
     confirm_remove_user: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?'

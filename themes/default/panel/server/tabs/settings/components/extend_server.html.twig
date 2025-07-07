@@ -35,12 +35,15 @@
                                 <div class="col-10">
                                     <label class="form-check-label" for="auto-renewal" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.server.auto_renewal_tooltip'|trans }}">
                                         {{ 'pteroca.server.enable_auto_renewal'|trans }}
+                                        {% if not isOwner %}
+                                            <span class="text-muted">({{ 'pteroca.cart_configuration.owner_only'|trans }})</span>
+                                        {% endif %}
                                         <i class="fa fa-question-circle"></i>
                                     </label>
                                 </div>
                                 <div class="col-2">
                                     <div class="form-check form-switch">
-                                        <input type="checkbox" class="form-check-input" autocomplete="off" id="auto-renewal" {% if server.isAutoRenewal %}checked{% endif %}>
+                                        <input type="checkbox" class="form-check-input" autocomplete="off" id="auto-renewal" {% if server.isAutoRenewal %}checked{% endif %} {% if not isOwner %}disabled{% endif %}>
                                     </div>
                                 </div>
                             </div>

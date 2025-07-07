@@ -180,6 +180,7 @@ pteroca:
     auto_renewal: 'Automatyczne odnawianie'
     enable: 'Włącz automatyczne odnawianie'
     disable: 'Wyłącz automatyczne odnawianie'
+    owner_only: 'tylko właściciel'
     description: 'Skonfiguruj swój serwer i przejdź do płatności'
   cart_topup:
     title: 'Doładuj swoje konto'
@@ -361,7 +362,7 @@ pteroca:
     email_required: 'Email jest wymagany'
     error: 'Błąd'
     error_occurred: 'Wystąpił błąd'
-    user_created_successfully: 'Użytkownik został pomyślnie utworzony'
+    user_created_successfully: 'Użytkownik został pomyślnie dodany'
     user_removed_successfully: 'Użytkownik został pomyślnie usunięty'
     permissions_updated_successfully: 'Uprawnienia zostały pomyślnie zaktualizowane'
     confirm_remove_user: 'Czy na pewno chcesz usunąć tego użytkownika?'

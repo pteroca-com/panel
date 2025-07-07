@@ -361,7 +361,7 @@ pteroca:
     email_required: 'Email richiesta'
     error: 'Errore'
     error_occurred: 'Si è verificato un errore'
-    user_created_successfully: 'Utente creato con successo'
+    user_created_successfully: 'Utente aggiunto con successo'
     user_removed_successfully: 'Utente rimosso con successo'
     permissions_updated_successfully: 'Permessi aggiornati con successo'
     confirm_remove_user: 'Sei sicuro di voler rimuovere questo utente?'

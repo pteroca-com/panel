@@ -3,23 +3,29 @@
 namespace App\Core\Controller\API;
 
 use App\Core\Enum\ServerLogActionEnum;
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\ServerLogService;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerConfiguration\ServerAutoRenewalService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationOptionService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationVariableService;
 use App\Core\Service\Server\ServerConfiguration\ServerReinstallationService;
+use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ServerConfigurationController extends APIAbstractController
 {
+    use InternalServerApiTrait;
+
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerLogService $serverLogService,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     #[Route('/panel/api/server/{id}/startup/variable', name: 'server_startup_variable_update', methods: ['POST'])]
@@ -29,9 +35,12 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
+        $server = $this->getServer($id, ServerPermissionEnum::STARTUP_UPDATE);
+        $variableData = $this->getValidatedRequestData($request);
+        
         $serverConfigurationVariableService->updateServerVariable(
             $server,
+            $this->getUser(),
             $variableData['key'],
             $variableData['value'],
         );
@@ -53,9 +62,15 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
+        $variableData = $this->getValidatedRequestData($request);
+        $permission = ($variableData['key'] === 'docker_image') 
+            ? ServerPermissionEnum::STARTUP_DOCKER_IMAGE 
+            : ServerPermissionEnum::STARTUP_UPDATE;
+        $server = $this->getServer($id, $permission);
+        
         $serverConfigurationOptionService->updateServerStartupOption(
             $server,
+            $this->getUser(),
             $variableData['key'],
             $variableData['value'],
         );
@@ -77,9 +92,12 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
+        $server = $this->getServer($id, ServerPermissionEnum::SETTINGS_RENAME);
+        $variableData = $this->getValidatedRequestData($request);
+        
         $serverConfigurationDetailsService->updateServerDetails(
             $server,
+            $this->getUser(),
             $variableData['key'],
             $variableData['value'] ?? null,
         );
@@ -101,8 +119,10 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
-        $serverReinstallationService->reinstallServer($server, $variableData['key']);
+        $server = $this->getServer($id, ServerPermissionEnum::SETTINGS_REINSTALL);
+        $variableData = $this->getValidatedRequestData($request);
+        
+        $serverReinstallationService->reinstallServer($server, $this->getUser(), $variableData['key']);
 
         $this->serverLogService->logServerAction(
             $this->getUser(),
@@ -121,30 +141,32 @@ class ServerConfigurationController extends APIAbstractController
         int $id,
     ): JsonResponse
     {
-        [$server, $variableData] = $this->extractValidatedServerVariableData($request, $id);
-        $serverAutoRenewalService->toggleAutoRenewal($server, $request->toArray()['value']);
+        $server = $this->serverRepository->find($id);
+        if (empty($server) || ($server->getUser() !== $this->getUser() && !$this->isGranted(UserRoleEnum::ROLE_ADMIN->name))) {
+            throw $this->createAccessDeniedException();
+        }
+        
+        $requestData = $request->toArray();
+        $serverAutoRenewalService->toggleAutoRenewal($server, $requestData['value']);
 
         $this->serverLogService->logServerAction(
             $this->getUser(),
             $server,
             ServerLogActionEnum::TOGGLE_AUTO_RENEWAL,
-            $variableData,
+            $requestData,
         );
 
         return new JsonResponse();
     }
 
-    private function extractValidatedServerVariableData(Request $request, int $serverId): array
+    private function getValidatedRequestData(Request $request): array
     {
-        $server = $this->serverRepository->find($serverId);
         $variableData = $request->toArray();
-        $isDataValid = isset($variableData['key']);
-        $hasPermission = $server->getUser() === $this->getUser() || $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
-
-        if (empty($server) || !$isDataValid || !$hasPermission) {
+        
+        if (!isset($variableData['key'])) {
             throw new \Exception('Invalid data');
         }
 
-        return [$server, $variableData];
+        return $variableData;
     }
 }

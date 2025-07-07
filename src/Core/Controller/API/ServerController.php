@@ -2,7 +2,6 @@
 
 namespace App\Core\Controller\API;
 
-use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -43,7 +42,7 @@ class ServerController extends APIAbstractController
     ): JsonResponse
     {
         $server = $this->getServer($id, ServerPermissionEnum::WEBSOCKET_CONNECT);
-        $websocket = $serverWebsocketService->getWebsocketToken($server);
+        $websocket = $serverWebsocketService->getWebsocketToken($server, $this->getUser());
 
         return new JsonResponse([
             'token' => $websocket?->getToken(),

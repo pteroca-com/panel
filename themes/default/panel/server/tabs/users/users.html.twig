@@ -207,11 +207,22 @@
         
         function removeUser(userUuid) {
             if (confirm('{{ 'pteroca.server.confirm_remove_user'|trans }}')) {
+                // Znajdź email użytkownika na podstawie UUID
+                const user = currentSubusers.find(u => u.uuid === userUuid);
+                if (!user || !user.email) {
+                    alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                    return;
+                }
+                
                 fetch('{{ path('server_users_delete', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
                     method: 'DELETE',
                     headers: {
+                        'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    },
+                    body: JSON.stringify({
+                        email: user.email
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -240,6 +251,13 @@
                 return;
             }
             
+            // Znajdź email użytkownika na podstawie UUID
+            const user = currentSubusers.find(u => u.uuid === userUuid);
+            if (!user || !user.email) {
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                return;
+            }
+            
             fetch('{{ path('server_users_update_permissions', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
                 method: 'POST',
                 headers: {
@@ -247,6 +265,7 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
+                    email: user.email,
                     permissions: permissions
                 })
             })

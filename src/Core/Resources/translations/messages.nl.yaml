@@ -331,7 +331,7 @@ pteroca:
     email_required: 'E-mail vereist'
     error: 'Fout'
     error_occurred: 'Er is een fout opgetreden'
-    user_created_successfully: 'Gebruiker succesvol aangemaakt'
+    user_created_successfully: 'Gebruiker succesvol toegevoegd'
     user_removed_successfully: 'Gebruiker succesvol verwijderd'
     permissions_updated_successfully: 'Machtigingen succesvol bijgewerkt'
     confirm_remove_user: 'Weet u zeker dat u deze gebruiker wilt verwijderen?'

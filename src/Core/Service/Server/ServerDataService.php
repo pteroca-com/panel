@@ -45,8 +45,9 @@ class ServerDataService
 
         try {
             $pterodactylClientApi = $this->pterodactylClientService
-                ->getApi($server->getUser());
-        } catch (UserDoesNotHaveClientApiKeyException) {
+                ->getApi($user);
+        } catch (UserDoesNotHaveClientApiKeyException $e) {
+            dd($e->getMessage());
             $pterodactylClientApi = null;
         }
 
@@ -136,22 +137,22 @@ class ServerDataService
         }
 
         return new ServerDataDTO(
-            $server,
-            $permissions,
-            $this->serverService->getServerDetails($server),
-            $pterodactylServer->toArray(),
-            $dockerImages ?? [],
-            $pterodactylClientServer?->toArray(),
-            $pterodactylClientAccount?->toArray(),
-            $productEggConfiguration,
-            $availableNestEggs ?? null,
-            $hasConfigurableOptions ?? [],
-            $hasConfigurableVariables ?? [],
-            new ServerVariableCollection($serverVariables ?? []),
-            $serverBackups ?? [],
-            $allocatedPorts ?? [],
-            $subusers ?? [],
-            $activityLogs ?? [],
+            server: $server,
+            serverPermissions: $permissions,
+            serverDetails: $this->serverService->getServerDetails($server),
+            pterodactylServer: $pterodactylServer->toArray(),
+            dockerImages: $dockerImages ?? [],
+            pterodactylClientServer: $pterodactylClientServer?->toArray(),
+            pterodactylClientAccount: $pterodactylClientAccount?->toArray(),
+            productEggConfiguration: $productEggConfiguration,
+            availableNestEggs: $availableNestEggs ?? null,
+            hasConfigurableOptions: $hasConfigurableOptions ?? false,
+            hasConfigurableVariables: $hasConfigurableVariables ?? false,
+            serverVariables: new ServerVariableCollection($serverVariables ?? []),
+            serverBackups: $serverBackups ?? [],
+            allocatedPorts: $allocatedPorts ?? [],
+            subusers: $subusers ?? [],
+            activityLogs: $activityLogs ?? [],
         );
     }
 

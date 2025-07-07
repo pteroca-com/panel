@@ -355,7 +355,7 @@ pteroca:
     email_required: 'E-Mail ist erforderlich'
     error: 'Fehler'
     error_occurred: 'Ein Fehler ist aufgetreten'
-    user_created_successfully: 'Benutzer erfolgreich erstellt'
+    user_created_successfully: 'Benutzer erfolgreich hinzugefügt'
     user_removed_successfully: 'Benutzer erfolgreich entfernt'
     permissions_updated_successfully: 'Berechtigungen erfolgreich aktualisiert'
     confirm_remove_user: 'Sind Sie sicher, dass Sie diesen Benutzer entfernen möchten?'
