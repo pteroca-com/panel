@@ -7,11 +7,13 @@ use App\Core\DTO\Collection\ServerVariableCollection;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
+use App\Core\Enum\SettingEnum;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\SettingService;
 use App\Core\Trait\ServerPermissionsTrait;
 use Exception;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
@@ -27,6 +29,7 @@ class ServerDataService
         private readonly ServerService $serverService,
         private readonly ServerVariableFactory $serverVariableFactory,
         private readonly ServerLogService $serverLogService,
+        private readonly SettingService $settingService,
     )
     {
     }
@@ -123,12 +126,19 @@ class ServerDataService
         }
 
         if ($permissions->hasPermission(ServerPermissionEnum::ACTIVITY_READ)) {
-            $pterodactylActivityLogs = $pterodactylClientApi->servers
-                ->http
-                ->get(sprintf(
-                    'servers/%s/activity',
-                    $server->getPterodactylServerIdentifier(),
-                ))->toArray();
+            $pterodactylActivityLogs = [];
+            
+            $showPterodactylLogs = (bool)$this->settingService->getSetting(SettingEnum::SHOW_PTERODACTYL_LOGS_IN_SERVER_ACTIVITY->value);
+            
+            if ($showPterodactylLogs) {
+                $pterodactylActivityLogs = $pterodactylClientApi->servers
+                    ->http
+                    ->get(sprintf(
+                        'servers/%s/activity',
+                        $server->getPterodactylServerIdentifier(),
+                    ))->toArray();
+            }
+            
             $activityLogs = $this->serverLogService->getServerLogsWithPagination(
                 $server,
                 $pterodactylActivityLogs,

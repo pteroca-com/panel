@@ -180,6 +180,7 @@ pteroca:
     auto_renewal: 'Renovación automática'
     enable: 'Habilitar renovación automática'
     disable: 'Deshabilitar renovación automática'
+    owner_only: 'solo propietario'
     description: 'Configura tu servidor y procede con el pago'
   cart_topup:
     title: 'Recarga tu cuenta'
@@ -336,6 +337,7 @@ pteroca:
     delete_allocation_confirmation: 'Esta asignación será eliminada inmediatamente de su servidor. ¿Está seguro de que desea continuar?'
     error_during_deleting_allocation: 'Se produjo un error al eliminar la asignación.'
     cannot_delete_primary_allocation: 'La asignación principal no puede ser eliminada.'
+    cannot_modify_yourself: 'No puedes modificarte a ti mismo.'
     extend_server_expires_on_demand: 'Su servidor <strong>{{ productName }}</strong> está actualmente configurado para funcionar <strong>bajo demanda</strong>.'
     on_demand_billing_cycle: 'El ciclo de facturación ({{ productPrice }} {{ internalCurrency }} / minuto) se pausará cuando el servidor esté fuera de línea, y los recursos serán gratuitos.'
     type: 'Tipo'
@@ -661,6 +663,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Número de días después de la fecha de suspensión del servidor antes de eliminar permanentemente los servidores suspendidos'
         pterodactyl_sso_enabled: 'Habilitar inicio de sesión de Single Sign-On con el panel de Pterodactyl (Se debe configurar la clave SSO)'
         pterodactyl_sso_secret: 'Clave secreta de inicio de sesión SSO de Pterodactyl'
+        show_pterodactyl_logs_in_server_activity: 'Mostrar registros de Pterodactyl en la actividad del servidor'
         current_theme: 'Tema actual del panel'
       template:
         name: 'Nombre de la plantilla'

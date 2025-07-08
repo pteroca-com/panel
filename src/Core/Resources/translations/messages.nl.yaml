@@ -306,6 +306,7 @@ pteroca:
     delete_allocation_confirmation: 'Deze allocatie wordt onmiddellijk van uw server verwijderd. Weet u zeker dat u wilt doorgaan?'
     error_during_deleting_allocation: 'Er is een fout opgetreden tijdens het verwijderen van de allocatie.'
     cannot_delete_primary_allocation: 'De primaire allocatie kan niet worden verwijderd.'
+    cannot_modify_yourself: 'U kunt uzelf niet wijzigen.'
     extend_server_expires_on_demand: 'Uw <strong>{{ productName }}</strong> server is momenteel ingesteld om te vervallen <strong>op aanvraag</strong>.'
     on_demand_billing_cycle: 'De facturatiecyclus ({{ productPrice }} {{ internalCurrency }} / minuut) wordt gepauzeerd wanneer de server offline is, en de bronnen zijn dan gratis.'
     type: 'Type'
@@ -453,6 +454,7 @@ pteroca:
     auto_renewal: 'Automatische verlenging'
     enable: 'Activeren'
     disable: 'Deactiveren'
+    owner_only: 'alleen eigenaar'
     description: 'Configureer uw server en ga door naar betaling'
   cart_topup:
     title: 'Vul je account aan'
@@ -649,6 +651,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Aantal dagen na de datum van opschorting van de server voordat opgeschorte servers permanent worden verwijderd'
         pterodactyl_sso_enabled: 'Single Sign-On login inschakelen met Pterodactyl Panel (SSO Secret moet zijn ingesteld)'
         pterodactyl_sso_secret: 'Pterodactyl SSO login geheime sleutel'
+        show_pterodactyl_logs_in_server_activity: 'Toon Pterodactyl logs in server activiteit'
         current_theme: 'Huidig thema van het paneel'
       template:
         name: 'Sjabloonnaam'

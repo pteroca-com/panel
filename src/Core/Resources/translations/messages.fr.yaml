@@ -177,10 +177,11 @@ pteroca:
     configuration: 'Configuration'
     server_name: 'Nom du serveur'
     period: 'Période'
-    order_summary: 'Récapitulatif de la commande'
+    order_summary: 'Résumé de la commande'
     auto_renewal: 'Renouvellement automatique'
     enable: 'Activer le renouvellement automatique'
     disable: 'Désactiver le renouvellement automatique'
+    owner_only: 'propriétaire uniquement'
     description: 'Configurez votre serveur et procédez au paiement'
   cart_topup:
     title: 'Recharger votre compte'
@@ -369,6 +370,7 @@ pteroca:
     user_does_not_exist: 'L''utilisateur avec cet email n''existe pas dans le système. L''utilisateur doit d''abord s''inscrire.'
     user_already_added: 'L''utilisateur avec cet email est déjà ajouté à ce serveur.'
     user_must_register_first: 'L''utilisateur doit d''abord s''inscrire dans le système avant d''être ajouté au serveur.'
+    cannot_modify_yourself: 'Vous ne pouvez pas vous modifier vous-même.'
     user_email: 'Email'
     user_permissions: 'Permissions'
     user_created: 'Créé le'
@@ -662,6 +664,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Nombre de jours après la date de suspension du serveur avant que les serveurs suspendus ne soient supprimés définitivement'
         pterodactyl_sso_enabled: 'Activer la connexion Single Sign-On avec le panneau Pterodactyl (Le secret SSO doit être défini)'
         pterodactyl_sso_secret: 'Clé secrète de connexion SSO de Pterodactyl'
+        show_pterodactyl_logs_in_server_activity: 'Afficher les journaux de Pterodactyl dans l''activité du serveur'
         current_theme: 'Thème actuel du panneau'
       template:
         name: 'Nom du modèle'

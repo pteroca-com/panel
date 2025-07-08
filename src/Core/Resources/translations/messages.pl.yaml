@@ -663,6 +663,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Liczba dni od daty zawieszenia serwera, po których zawieszone serwery zostaną trwale usunięte'
         pterodactyl_sso_enabled: 'Włącz logowanie Single Sign-On z panelem Pterodactyl (Sekret SSO musi być ustawiony)'
         pterodactyl_sso_secret: 'Sekretny klucz logowania SSO Pterodactyl'
+        show_pterodactyl_logs_in_server_activity: 'Wyświetlaj logi z Pterodactyla w aktywności serwera'
         current_theme: 'Aktualny motyw panelu'
       template:
         name: 'Nazwa szablonu'

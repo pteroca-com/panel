@@ -38,6 +38,7 @@ class ServerLogService
         $offset = ($currentPage - 1) * $perPage;
 
         $pteroDtos = [];
+
         if (!empty($pterodactylActivityLogs)) {
             $pteroDtos = array_map(fn ($log) => new ServerLogDTO(
                 null,
@@ -49,6 +50,7 @@ class ServerLogService
                 json_encode($log['attributes'])
             ), $pterodactylActivityLogs);
         }
+
 
         $dbLogs = $this->serverLogRepository->findBy(['server' => $server]);
         $dbDtos = array_map(fn (ServerLog $log) => new ServerLogDTO(
