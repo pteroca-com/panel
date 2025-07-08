@@ -16,9 +16,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -45,46 +48,81 @@ class UserCrudController extends AbstractPanelController
             $this->getParameter('avatar_directory'),
         );
 
-        return [
-            NumberField::new('id')
-                ->setDisabled(),
-            NumberField::new('pterodactylUserId', $this->translator->trans('pteroca.crud.user.pterodactyl_user_id'))
-                ->setDisabled(),
+        $fields = [];
+
+        if ($pageName !== Crud::PAGE_NEW) {
+            $fields[] = NumberField::new('id')
+                ->setDisabled()
+                ->setColumns(2);
+            $fields[] = NumberField::new('pterodactylUserId', $this->translator->trans('pteroca.crud.user.pterodactyl_user_id'))
+                ->setDisabled()
+                ->setColumns(2);
+            $fields[] = DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss')
+                ->setDisabled()
+                ->setColumns(2);
+            $fields[] = DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss')
+                ->setDisabled()
+                ->setColumns(2);
+            $fields[] = FormField::addRow();
+        }
+
+        $fields = array_merge($fields, [
             ImageField::new('avatarPath', $this->translator->trans('pteroca.crud.user.avatar'))
                 ->setBasePath($this->getParameter('avatar_base_path'))
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-                ->setRequired(false),
-            TextField::new('email', $this->translator->trans('pteroca.crud.user.email')),
+                ->setRequired(false)
+                ->setColumns(4),
             ChoiceField::new('roles', $this->translator->trans('pteroca.crud.user.roles'))
                 ->setChoices([
                     'User' => UserRoleEnum::ROLE_USER->name,
                     'Admin' => UserRoleEnum::ROLE_ADMIN->name,
                 ])
                 ->allowMultipleChoices(),
+            FormField::addRow(),
+            TextField::new('email', $this->translator->trans('pteroca.crud.user.email'))
+                ->setColumns(6),
             NumberField::new('balance', $this->translator->trans('pteroca.crud.user.balance'))
                 ->setNumDecimals(2)
                 ->setDecimalSeparator('.'),
-            TextField::new('plainPassword', $this->translator->trans('pteroca.crud.user.password'))
-                ->setFormTypeOption('attr', ['type' => 'password'])
-                ->onlyOnForms()
-                ->setRequired($pageName === Crud::PAGE_NEW)
-                ->setHelp($this->translator->trans('pteroca.crud.user.password_hint')),
+            FormField::addRow(),
             TextField::new('name', $this->translator->trans('pteroca.crud.user.name'))
-                ->setMaxLength(255),
+                ->setMaxLength(255)
+                ->setColumns(4),
             TextField::new('surname', $this->translator->trans('pteroca.crud.user.surname'))
-                ->setMaxLength(255),
+                ->setMaxLength(255)
+                ->setColumns(4),
+            FormField::addRow(),
             BooleanField::new('isVerified', $this->translator->trans('pteroca.crud.user.verified'))
-                ->hideOnIndex(),
+                ->hideOnIndex()
+                ->setColumns(2),
             BooleanField::new('isBlocked', $this->translator->trans('pteroca.crud.user.blocked'))
-                ->hideOnIndex(),
-            DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
-                ->setFormat('dd.MM.yyyy HH:mm:ss')
-                ->setDisabled(),
-            DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
-                ->setFormat('dd.MM.yyyy HH:mm:ss')
-                ->setDisabled(),
-        ];
+                ->hideOnIndex()
+                ->setColumns(2),
+            FormField::addRow(),
+            TextField::new('plainPassword', $this->translator->trans('pteroca.crud.user.password'))
+                ->setFormType(RepeatedType::class)
+                ->setFormTypeOptions([
+                    'type' => PasswordType::class,
+                    'first_options' => [
+                        'label' => $this->translator->trans('pteroca.crud.user.password'),
+                        'attr' => ['style' => 'max-width: 400px;'],
+                        'help' => $pageName === Crud::PAGE_EDIT ? $this->translator->trans('pteroca.crud.user.password_hint') : null,
+                    ],
+                    'second_options' => [
+                        'label' => $this->translator->trans('pteroca.crud.user.repeat_password'),
+                        'attr' => ['style' => 'max-width: 400px;'],
+                    ],
+                    'invalid_message' => $this->translator->trans('pteroca.crud.user.passwords_must_match'),
+                ])
+                ->onlyOnForms()
+                ->setRequired($pageName === Crud::PAGE_NEW),
+                FormField::addRow(),
+        ]);
+
+        return $fields;
     }
 
     public function configureActions(Actions $actions): Actions
