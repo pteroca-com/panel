@@ -69,6 +69,8 @@ pteroca:
     account_settings: 'Ustawienia konta'
     my_servers: 'Moje serwery'
     no_servers: 'Nie masz jeszcze żadnych serwerów.'
+    no_servers_description: 'Nie masz jeszcze żadnych serwerów.'
+    order_first_server: 'Zamów pierwszy serwer'
     last_activity: 'Ostatnia aktywność'
     custom_section: 'Dodatkowe informacje'
     action: 'Akcja'
