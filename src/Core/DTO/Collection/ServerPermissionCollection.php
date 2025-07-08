@@ -19,9 +19,6 @@ class ServerPermissionCollection
         $this->permissions = $permissions;
     }
 
-    /**
-     * Sprawdza czy kolekcja zawiera określone uprawnienie
-     */
     public function hasPermission(ServerPermissionEnum|string $permission): bool
     {
         if (is_string($permission)) {
@@ -36,8 +33,6 @@ class ServerPermissionCollection
     }
 
     /**
-     * Sprawdza czy kolekcja zawiera wszystkie z podanych uprawnień
-     * 
      * @param array<ServerPermissionEnum|string> $permissions
      */
     public function hasAllPermissions(array $permissions): bool
@@ -52,8 +47,6 @@ class ServerPermissionCollection
     }
 
     /**
-     * Sprawdza czy kolekcja zawiera którekolwiek z podanych uprawnień
-     * 
      * @param array<ServerPermissionEnum|string> $permissions
      */
     public function hasAnyPermission(array $permissions): bool
@@ -67,9 +60,6 @@ class ServerPermissionCollection
         return false;
     }
 
-    /**
-     * Sprawdza czy kolekcja zawiera uprawnienia do określonej kategorii
-     */
     public function hasPermissionInCategory(string $category): bool
     {
         $groups = ServerPermissionEnum::getPermissionGroups();
@@ -81,9 +71,6 @@ class ServerPermissionCollection
         return $this->hasAnyPermission($groups[$category]);
     }
     
-    /**
-     * Sprawdza czy kolekcja zawiera wszystkie uprawnienia z określonej kategorii
-     */
     public function hasAllPermissionsInCategory(string $category): bool
     {
         $groups = ServerPermissionEnum::getPermissionGroups();
@@ -96,8 +83,6 @@ class ServerPermissionCollection
     }
 
     /**
-     * Zwraca wszystkie uprawnienia w kolekcji
-     * 
      * @return ServerPermissionEnum[]
      */
     public function getPermissions(): array
@@ -105,9 +90,6 @@ class ServerPermissionCollection
         return $this->permissions;
     }
 
-    /**
-     * Dodaje uprawnienie do kolekcji
-     */
     public function addPermission(ServerPermissionEnum $permission): self
     {
         if (!in_array($permission, $this->permissions, true)) {
@@ -117,9 +99,6 @@ class ServerPermissionCollection
         return $this;
     }
 
-    /**
-     * Usuwa uprawnienie z kolekcji
-     */
     public function removePermission(ServerPermissionEnum $permission): self
     {
         $key = array_search($permission, $this->permissions, true);
@@ -132,8 +111,6 @@ class ServerPermissionCollection
     }
 
     /**
-     * Konwertuje kolekcję na tablicę stringów
-     * 
      * @return string[]
      */
     public function toArray(): array

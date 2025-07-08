@@ -60,11 +60,13 @@ class UserCrudController extends AbstractPanelController
             $fields[] = DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
                 ->setFormat('dd.MM.yyyy HH:mm:ss')
                 ->setDisabled()
-                ->setColumns(2);
+                ->setColumns(2)
+                ->hideOnIndex();
             $fields[] = DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
                 ->setFormat('dd.MM.yyyy HH:mm:ss')
                 ->setDisabled()
-                ->setColumns(2);
+                ->setColumns(2)
+                ->hideOnIndex();
             $fields[] = FormField::addRow();
         }
 
@@ -121,6 +123,13 @@ class UserCrudController extends AbstractPanelController
                 ->setRequired($pageName === Crud::PAGE_NEW),
                 FormField::addRow(),
         ]);
+
+        if ($pageName === Crud::PAGE_INDEX) {
+            $fields[] = DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss');
+            $fields[] = DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss');
+        }
 
         return $fields;
     }

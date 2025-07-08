@@ -98,14 +98,12 @@ class ServerUserService
         array $permissions
     ): array
     {
-        // Znajdź użytkownika po emailu (podobnie jak w addExistingUserToServer)
         $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
         
         if (!$existingPterocaUser) {
             throw new \Exception(sprintf('User with email %s does not exist in the system.', $email));
         }
 
-        // Sprawdź, czy użytkownik może modyfikować tego subusera
         $this->validateSubuserModification($server, $user, $email, 'modify permissions');
 
         $result = $this->pterodactylClientService
@@ -115,7 +113,6 @@ class ServerUserService
                 'permissions' => $permissions,
             ]);
 
-        // Użyj znalezionego użytkownika do synchronizacji
         $this->syncServerSubuser($server, $existingPterocaUser, $permissions);
 
         $this->serverLogService->logServerAction(
@@ -139,14 +136,12 @@ class ServerUserService
         string $email
     ): void
     {
-        // Znajdź użytkownika po emailu (podobnie jak w innych metodach)
         $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
         
         if (!$existingPterocaUser) {
             throw new \Exception(sprintf('User with email %s does not exist in the system.', $email));
         }
 
-        // Sprawdź, czy użytkownik może usunąć tego subusera
         $this->validateSubuserModification($server, $user, $email, 'delete yourself from the server');
 
         $this->pterodactylClientService
@@ -154,7 +149,6 @@ class ServerUserService
             ->http
             ->delete(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid));
 
-        // Użyj znalezionego użytkownika do usunięcia z lokalnej bazy danych
         $existingSubuser = $this->serverSubuserRepository->findSubuserByServerAndUser($server, $existingPterocaUser);
         if ($existingSubuser) {
             $this->serverSubuserRepository->delete($existingSubuser);

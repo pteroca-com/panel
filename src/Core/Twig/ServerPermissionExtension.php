@@ -19,17 +19,12 @@ class ServerPermissionExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * Sprawdza czy użytkownik ma określone uprawnienie
-     */
     public function hasServerPermission(ServerPermissionCollection $permissionCollection, string $permission): bool
     {
         return $permissionCollection->hasPermission($permission);
     }
 
     /**
-     * Sprawdza czy użytkownik ma wszystkie z podanych uprawnień
-     * 
      * @param string[] $permissions
      */
     public function hasAllServerPermissions(ServerPermissionCollection $permissionCollection, array $permissions): bool
@@ -38,8 +33,6 @@ class ServerPermissionExtension extends AbstractExtension
     }
 
     /**
-     * Sprawdza czy użytkownik ma którekolwiek z podanych uprawnień
-     * 
      * @param string[] $permissions
      */
     public function hasAnyServerPermission(ServerPermissionCollection $permissionCollection, array $permissions): bool
@@ -47,17 +40,11 @@ class ServerPermissionExtension extends AbstractExtension
         return $permissionCollection->hasAnyPermission($permissions);
     }
 
-    /**
-     * Sprawdza czy użytkownik ma uprawnienia do określonej kategorii
-     */
     public function hasServerPermissionInCategory(ServerPermissionCollection $permissionCollection, string $category): bool
     {
         return $permissionCollection->hasPermissionInCategory($category);
     }
 
-    /**
-     * Sprawdza czy użytkownik ma wszystkie uprawnienia z określonej kategorii
-     */
     public function hasAllServerPermissionsInCategory(ServerPermissionCollection $permissionCollection, string $category): bool
     {
         return $permissionCollection->hasAllPermissionsInCategory($category);

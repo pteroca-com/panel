@@ -4,22 +4,18 @@ namespace App\Core\Enum;
 
 enum ServerPermissionEnum: string
 {
-    // Control permissions
     case CONTROL_CONSOLE = 'control.console';
     case CONTROL_START = 'control.start';
     case CONTROL_STOP = 'control.stop';
     case CONTROL_RESTART = 'control.restart';
     
-    // User permissions
     case USER_READ = 'user.read';
     case USER_CREATE = 'user.create';
     case USER_UPDATE = 'user.update';
     case USER_DELETE = 'user.delete';
 
-    // Activity permissions
     case ACTIVITY_READ = 'activity.read';
     
-    // File permissions
     case FILE_CREATE = 'file.create';
     case FILE_READ = 'file.read';
     case FILE_READ_CONTENT = 'file.read-content';
@@ -28,47 +24,37 @@ enum ServerPermissionEnum: string
     case FILE_ARCHIVE = 'file.archive';
     case FILE_SFTP = 'file.sftp';
     
-    // Backup permissions
     case BACKUP_CREATE = 'backup.create';
     case BACKUP_READ = 'backup.read';
     case BACKUP_DELETE = 'backup.delete';
     case BACKUP_DOWNLOAD = 'backup.download';
     case BACKUP_RESTORE = 'backup.restore';
     
-    // Allocation permissions
     case ALLOCATION_READ = 'allocation.read';
     case ALLOCATION_CREATE = 'allocation.create';
     case ALLOCATION_UPDATE = 'allocation.update';
     case ALLOCATION_DELETE = 'allocation.delete';
     
-    // Startup permissions
     case STARTUP_READ = 'startup.read';
     case STARTUP_UPDATE = 'startup.update';
     case STARTUP_DOCKER_IMAGE = 'startup.docker-image';
     
-    // Database permissions
     case DATABASE_CREATE = 'database.create';
     case DATABASE_READ = 'database.read';
     case DATABASE_UPDATE = 'database.update';
     case DATABASE_DELETE = 'database.delete';
     case DATABASE_VIEW_PASSWORD = 'database.view_password';
     
-    // Schedule permissions
     case SCHEDULE_CREATE = 'schedule.create';
     case SCHEDULE_READ = 'schedule.read';
     case SCHEDULE_UPDATE = 'schedule.update';
     case SCHEDULE_DELETE = 'schedule.delete';
     
-    // Settings permissions
     case SETTINGS_RENAME = 'settings.rename';
     case SETTINGS_REINSTALL = 'settings.reinstall';
     
-    // Websocket permissions
     case WEBSOCKET_CONNECT = 'websocket.connect';
     
-    /**
-     * Grupuje uprawnienia według kategorii
-     */
     public static function getPermissionGroups(): array
     {
         return [
@@ -145,7 +131,7 @@ enum ServerPermissionEnum: string
             try {
                 $result[] = self::from($permission);
             } catch (\ValueError $e) {
-                // Ignoruj nieznane uprawnienia
+                // Ignore invalid permissions
             }
         }
         

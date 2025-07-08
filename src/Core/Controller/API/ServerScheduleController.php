@@ -33,7 +33,6 @@ class ServerScheduleController extends APIAbstractController
             return $response;
         }
 
-        // Walidacja pól cron
         $cronFields = ['minute', 'hour', 'day_of_month', 'month', 'day_of_week'];
         foreach ($cronFields as $field) {
             if (!isset($data[$field]) || $data[$field] === '') {
@@ -154,7 +153,7 @@ class ServerScheduleController extends APIAbstractController
 
         if (!isset($data['action']) || empty($data['action'])) {
             $response->setStatusCode(400);
-            $response->setData(['error' => 'Action is required']);
+            $response->setData(['error' => 'Action is required']); // TODO translate
             return $response;
         }
 

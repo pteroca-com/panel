@@ -108,6 +108,7 @@ class ProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.cpu_hint'))
                 ->setColumns(4),
             TextField::new('threads', $this->translator->trans('pteroca.crud.product.threads'))
+                ->hideOnIndex()
                 ->setHelp($this->translator->trans('pteroca.crud.product.threads_hint'))
                 ->setColumns(4)
                 ->setRequired(false),
@@ -123,6 +124,7 @@ class ProductCrudController extends AbstractPanelController
                 ->setColumns(4),
             FormField::addRow(),
             NumberField::new('schedules', $this->translator->trans('pteroca.crud.product.schedules'))
+                ->hideOnIndex()
                 ->setHelp($this->translator->trans('pteroca.crud.product.schedules_hint'))
                 ->setColumns(4),
 
@@ -233,6 +235,7 @@ class ProductCrudController extends AbstractPanelController
             ->add('backups')
             ->add('ports')
             ->add('schedules')
+            ->add('threads')
             ->add('allowChangeEgg')
             ->add('createdAt')
             ->add('updatedAt')
