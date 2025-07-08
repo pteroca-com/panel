@@ -304,6 +304,10 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.memory_hint'))
                 ->setColumns(4)
                 ->setDisabled($this->isServerOffline),
+            NumberField::new('swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
+                ->setHelp($this->translator->trans('pteroca.crud.product.swap_hint'))
+                ->setColumns(4)
+                ->setDisabled($this->isServerOffline),
             FormField::addRow(),
             NumberField::new('io', $this->translator->trans('pteroca.crud.product.io'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.io_hint'))
@@ -313,16 +317,16 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.cpu_hint'))
                 ->setColumns(4)
                 ->setDisabled($this->isServerOffline),
+            TextField::new('threads', $this->translator->trans('pteroca.crud.product.threads'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.threads_hint'))
+                ->setColumns(4)
+                ->setRequired(false)
+                ->setDisabled($this->isServerOffline),
             FormField::addRow(),
             NumberField::new('dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.db_count_hint'))
                 ->setColumns(4)
                 ->setDisabled($this->isServerOffline),
-            NumberField::new('swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
-                ->setHelp($this->translator->trans('pteroca.crud.product.swap_hint'))
-                ->setColumns(4)
-                ->setDisabled($this->isServerOffline),
-            FormField::addRow(),
             NumberField::new('backups', $this->translator->trans('pteroca.crud.product.backups'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.backups_hint'))
                 ->setColumns(4)
