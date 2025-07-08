@@ -6,6 +6,7 @@ use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Enum\SettingEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\Server\CreateServerService;
@@ -23,6 +24,7 @@ class CartController extends AbstractController
     public function __construct(
         private readonly StoreService $storeService,
         private readonly ServerRepository $serverRepository,
+        private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly TranslatorInterface $translator,
     ) {}
 
@@ -142,9 +144,11 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
+        $isOwner = $server->getUser() === $this->getUser();
 
         return $this->render('panel/cart/renew.html.twig', [
             'server' => $server,
+            'isOwner' => $isOwner,
         ]);
     }
 
@@ -207,10 +211,20 @@ class CartController extends AbstractController
         $serverId = $request->request->getInt('id') ?: $request->query->getInt('id');
         $server = $this->serverRepository->getActiveServer($serverId);
 
-        if (empty($server) || $server->getDeletedAt() || $server->getUser() !== $this->getUser()) {
+        if (empty($server) || $server->getDeletedAt()) {
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
         }
 
-        return $server;
+        $isOwner = $server->getUser() === $this->getUser();
+        if ($isOwner) {
+            return $server;
+        }
+
+        $subuser = $this->serverSubuserRepository->findSubuserByServerAndUser($server, $this->getUser());
+        if ($subuser) {
+            return $server;
+        }
+
+        throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
     }
 }

@@ -180,6 +180,7 @@ pteroca:
     auto_renewal: 'Rinnovo automatico'
     enable: 'Abilita rinnovo automatico'
     disable: 'Disabilita rinnovo automatico'
+    owner_only: 'solo proprietario'
     description: 'Configura il tuo server e procedi al pagamento'
   cart_topup:
     title: 'Ricarica il tuo conto'
@@ -336,6 +337,7 @@ pteroca:
     delete_allocation_confirmation: 'Questa allocazione verrà rimossa immediatamente dal tuo server. Vuoi continuare?'
     error_during_deleting_allocation: 'Si è verificato un errore durante l''eliminazione dell''allocazione.'
     cannot_delete_primary_allocation: 'Non è possibile eliminare l''allocazione primaria.'
+    cannot_modify_yourself: 'Non puoi modificare te stesso.'
     extend_server_expires_on_demand: 'Il tuo server <strong>{{ productName }}</strong> è attualmente impostato per scadere <strong>su richiesta</strong>.'
     on_demand_billing_cycle: 'Il ciclo di fatturazione ({{ productPrice }} {{ internalCurrency }} / minuto) verrà messo in pausa quando il server è offline e le risorse saranno gratuite.'
     type: 'Tipo'
@@ -434,7 +436,7 @@ pteroca:
     email_required: 'Email richiesta'
     error: 'Errore'
     error_occurred: 'Si è verificato un errore'
-    user_created_successfully: 'Utente creato con successo'
+    user_created_successfully: 'Utente aggiunto con successo'
     user_removed_successfully: 'Utente rimosso con successo'
     permissions_updated_successfully: 'Permessi aggiornati con successo'
     confirm_remove_user: 'Sei sicuro di voler rimuovere questo utente?'
@@ -736,6 +738,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Numero di giorni dopo la data di sospensione del server prima che i server sospesi vengano eliminati definitivamente'
         pterodactyl_sso_enabled: 'Abilita l''accesso Single Sign-On con il pannello Pterodactyl (Il segreto SSO deve essere impostato)'
         pterodactyl_sso_secret: 'Chiave segreta di accesso SSO di Pterodactyl'
+        show_pterodactyl_logs_in_server_activity: 'Mostra i log di Pterodactyl nell''attività del server'
         current_theme: 'Tema attuale del pannello'
       template:
         name: 'Nome del modello'

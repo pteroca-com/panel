@@ -193,14 +193,27 @@
                                     <label for="auto-renewal" class="form-label fw-semibold">
                                         <i class="fas fa-sync-alt me-2 text-info"></i>
                                         {{ 'pteroca.cart_configuration.auto_renewal'|trans }}
+                                        {% if not isOwner %}
+                                            <small class="text-muted">({{ 'pteroca.cart_configuration.owner_only'|trans }})</small>
+                                        {% endif %}
                                     </label>
-                                    <select id="auto-renewal" name="auto-renewal" class="form-select form-select-lg">
-                                        <option value="1">
-                                            {{ 'pteroca.cart_configuration.enable'|trans }}
+                                    <select id="auto-renewal" name="auto-renewal" class="form-select form-select-lg" {% if not isOwner %}disabled{% endif %}>
+                                        <option value="{{ server.autoRenewal ? '1' : '0' }}" selected>
+                                            {% if server.autoRenewal %}
+                                                {{ 'pteroca.cart_configuration.enable'|trans }}
+                                            {% else %}
+                                                {{ 'pteroca.cart_configuration.disable'|trans }}
+                                            {% endif %}
                                         </option>
-                                        <option value="0">
-                                            {{ 'pteroca.cart_configuration.disable'|trans }}
-                                        </option>
+                                        {% if isOwner %}
+                                            <option value="{{ server.autoRenewal ? '0' : '1' }}">
+                                                {% if server.autoRenewal %}
+                                                    {{ 'pteroca.cart_configuration.disable'|trans }}
+                                                {% else %}
+                                                    {{ 'pteroca.cart_configuration.enable'|trans }}
+                                                {% endif %}
+                                            </option>
+                                        {% endif %}
                                     </select>
                                 </div>
                             </div>

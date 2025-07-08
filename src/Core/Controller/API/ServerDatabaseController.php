@@ -59,7 +59,8 @@ class ServerDatabaseController extends APIAbstractController
                 $payload['name'],
                 $payload['connections_from'],
             );
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            // TODO log error
             $response->setStatusCode(400);
         }
 

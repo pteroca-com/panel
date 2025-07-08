@@ -176,6 +176,7 @@ pteroca:
     auto_renewal: 'Automatische Verlängerung'
     enable: 'Automatische Verlängerung aktivieren'
     disable: 'Automatische Verlängerung deaktivieren'
+    owner_only: 'nur Besitzer'
     description: 'Konfigurieren Sie Ihren Server und fahren Sie mit der Zahlung fort'
   cart_topup:
     title: 'Konto aufladen'
@@ -330,6 +331,7 @@ pteroca:
     delete_allocation_confirmation: 'Möchten Sie diese Zuweisung wirklich löschen?'
     error_during_deleting_allocation: 'Fehler beim Löschen der Zuweisung'
     cannot_delete_primary_allocation: 'Die primäre Zuweisung kann nicht gelöscht werden'
+    cannot_modify_yourself: 'Sie können sich nicht selbst ändern.'
     extend_server_expires_on_demand: 'Server läuft auf Abruf ab'
     on_demand_billing_cycle: 'Der Abrechnungszeitraum wird pausiert, wenn der Server offline ist'
     type: 'Typ'
@@ -428,7 +430,7 @@ pteroca:
     email_required: 'E-Mail ist erforderlich'
     error: 'Fehler'
     error_occurred: 'Ein Fehler ist aufgetreten'
-    user_created_successfully: 'Benutzer erfolgreich erstellt'
+    user_created_successfully: 'Benutzer erfolgreich hinzugefügt'
     user_removed_successfully: 'Benutzer erfolgreich entfernt'
     permissions_updated_successfully: 'Berechtigungen erfolgreich aktualisiert'
     confirm_remove_user: 'Sind Sie sicher, dass Sie diesen Benutzer entfernen möchten?'
@@ -730,6 +732,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Anzahl der Tage nach dem Datum der Suspendierung des Servers, bevor die suspendierten Server endgültig gelöscht werden'
         pterodactyl_sso_enabled: 'Single Sign-On Login mit Pterodactyl Panel aktivieren (SSO Secret muss gesetzt sein)'
         pterodactyl_sso_secret: 'Pterodactyl SSO Login Geheimschlüssel'
+        show_pterodactyl_logs_in_server_activity: 'Pterodactyl-Logs in der Serveraktivität anzeigen'
         current_theme: 'Aktuelles Theme des Panels'
       template:
         name: 'Vorlagenname'

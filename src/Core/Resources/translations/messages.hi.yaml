@@ -180,6 +180,7 @@ pteroca:
     auto_renewal: 'स्वचालित नवीनीकरण'
     enable: 'स्वचालित नवीनीकरण सक्षम करें'
     disable: 'स्वचालित नवीनीकरण अक्षम करें'
+    owner_only: 'केवल मालिक'
     description: 'अपने सर्वर को कॉन्फ़िगर करें और भुगतान के लिए आगे बढ़ें'
   cart_topup:
     title: 'अपना खाता रिचार्ज करें'
@@ -336,6 +337,7 @@ pteroca:
     delete_allocation_confirmation: 'यह एलोकेशन आपके सर्वर से तुरंत हटा दी जाएगी। क्या आप वाकई जारी रखना चाहते हैं?'
     error_during_deleting_allocation: 'एलोकेशन हटाते समय एक त्रुटि हुई।'
     cannot_delete_primary_allocation: 'मुख्य एलोकेशन को हटाया नहीं जा सकता।'
+    cannot_modify_yourself: 'आप स्वयं को संशोधित नहीं कर सकते।'
     extend_server_expires_on_demand: 'आपका <strong>{{ productName }}</strong> सर्वर वर्तमान में <strong>ऑन डिमांड</strong> समाप्त होने के लिए सेट है।'
     on_demand_billing_cycle: 'बिलिंग चक्र ({{ productPrice }} {{ internalCurrency }} / मिनट) तब रोक दिया जाएगा जब सर्वर ऑफ़लाइन हो, और संसाधन निःशुल्क होंगे।'
     type: 'टाइप'
@@ -434,7 +436,7 @@ pteroca:
     email_required: 'ईमेल आवश्यक है'
     error: 'त्रुटि'
     error_occurred: 'एक त्रुटि हुई'
-    user_created_successfully: 'उपयोगकर्ता सफलतापूर्वक बनाया गया'
+    user_created_successfully: 'उपयोगकर्ता सफलतापूर्वक जोड़ा गया'
     user_removed_successfully: 'उपयोगकर्ता सफलतापूर्वक हटाया गया'
     permissions_updated_successfully: 'अनुमतियां सफलतापूर्वक अपडेट की गईं'
     confirm_remove_user: 'क्या आप वाकई इस उपयोगकर्ता को हटाना चाहते हैं?'
@@ -736,6 +738,7 @@ pteroca:
         delete_suspended_servers_days_after: 'निलंबित सर्वरों को स्थायी रूप से हटाने से पहले सर्वर निलंबन तिथि के बाद के दिनों की संख्या'
         pterodactyl_sso_enabled: 'Pterodactyl पैनल के साथ सिंगल साइन-ऑन लॉगिन सक्षम करें (SSO गुप्त सेट किया जाना चाहिए)'
         pterodactyl_sso_secret: 'Pterodactyl SSO लॉगिन गुप्त कुंजी'
+        show_pterodactyl_logs_in_server_activity: 'सर्वर गतिविधि में Pterodactyl लॉग्स दिखाएं'
         current_theme: 'पैनल की वर्तमान थीम'
       template:
         name: 'टेम्पलेट का नाम'

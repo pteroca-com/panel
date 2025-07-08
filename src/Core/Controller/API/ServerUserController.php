@@ -111,11 +111,18 @@ class ServerUserController extends APIAbstractController
             return $response;
         }
 
+        if (!isset($data['email']) || empty($data['email'])) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => 'Email is required']);
+            return $response;
+        }
+
         try {
             $result = $this->serverUserService->updateSubuserPermissions(
                 $server,
                 $this->getUser(),
                 $userUuid,
+                $data['email'],
                 $data['permissions']
             );
             $response->setData($result);
@@ -128,13 +135,21 @@ class ServerUserController extends APIAbstractController
     }
 
     #[Route('/panel/api/server/{id}/users/{userUuid}/delete', name: 'server_users_delete', methods: ['DELETE'])]
-    public function deleteUser(int $id, string $userUuid): JsonResponse
+    public function deleteUser(int $id, string $userUuid, Request $request): JsonResponse
     {
         $server = $this->getServer($id, ServerPermissionEnum::USER_DELETE);
         $response = new JsonResponse();
 
+        $data = json_decode($request->getContent(), true);
+        
+        if (!isset($data['email']) || empty($data['email'])) {
+            $response->setStatusCode(400);
+            $response->setData(['error' => 'Email is required']);
+            return $response;
+        }
+
         try {
-            $this->serverUserService->deleteSubuser($server, $this->getUser(), $userUuid);
+            $this->serverUserService->deleteSubuser($server, $this->getUser(), $userUuid, $data['email']);
             $response->setData(['success' => true]);
         } catch (\Exception $e) {
             $response->setStatusCode(400);

@@ -7,11 +7,13 @@ use App\Core\DTO\Collection\ServerVariableCollection;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
+use App\Core\Enum\SettingEnum;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\SettingService;
 use App\Core\Trait\ServerPermissionsTrait;
 use Exception;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
@@ -27,6 +29,7 @@ class ServerDataService
         private readonly ServerService $serverService,
         private readonly ServerVariableFactory $serverVariableFactory,
         private readonly ServerLogService $serverLogService,
+        private readonly SettingService $settingService,
     )
     {
     }
@@ -45,8 +48,8 @@ class ServerDataService
 
         try {
             $pterodactylClientApi = $this->pterodactylClientService
-                ->getApi($server->getUser());
-        } catch (UserDoesNotHaveClientApiKeyException) {
+                ->getApi($user);
+        } catch (UserDoesNotHaveClientApiKeyException $e) {
             $pterodactylClientApi = null;
         }
 
@@ -122,12 +125,19 @@ class ServerDataService
         }
 
         if ($permissions->hasPermission(ServerPermissionEnum::ACTIVITY_READ)) {
-            $pterodactylActivityLogs = $pterodactylClientApi->servers
-                ->http
-                ->get(sprintf(
-                    'servers/%s/activity',
-                    $server->getPterodactylServerIdentifier(),
-                ))->toArray();
+            $pterodactylActivityLogs = [];
+
+            $showPterodactylLogs = (bool)$this->settingService->getSetting(SettingEnum::SHOW_PTERODACTYL_LOGS_IN_SERVER_ACTIVITY->value);
+
+            if ($showPterodactylLogs) {
+                $pterodactylActivityLogs = $pterodactylClientApi->servers
+                    ->http
+                    ->get(sprintf(
+                        'servers/%s/activity',
+                        $server->getPterodactylServerIdentifier(),
+                    ))->toArray();
+            }
+
             $activityLogs = $this->serverLogService->getServerLogsWithPagination(
                 $server,
                 $pterodactylActivityLogs,
@@ -151,23 +161,23 @@ class ServerDataService
         }
 
         return new ServerDataDTO(
-            $server,
-            $permissions,
-            $this->serverService->getServerDetails($server),
-            $pterodactylServer->toArray(),
-            $dockerImages ?? [],
-            $pterodactylClientServer?->toArray(),
-            $pterodactylClientAccount?->toArray(),
-            $productEggConfiguration,
-            $availableNestEggs ?? null,
-            $hasConfigurableOptions ?? false,
-            $hasConfigurableVariables ?? false,
-            new ServerVariableCollection($serverVariables ?? []),
-            $serverBackups ?? [],
-            $allocatedPorts ?? [],
-            $subusers ?? [],
-            $activityLogs ?? [],
-            $serverSchedules ?? [],
+            server: $server,
+            serverPermissions: $permissions,
+            serverDetails: $this->serverService->getServerDetails($server),
+            pterodactylServer: $pterodactylServer->toArray(),
+            dockerImages: $dockerImages ?? [],
+            pterodactylClientServer: $pterodactylClientServer?->toArray(),
+            pterodactylClientAccount: $pterodactylClientAccount?->toArray(),
+            productEggConfiguration: $productEggConfiguration,
+            availableNestEggs: $availableNestEggs ?? null,
+            hasConfigurableOptions: $hasConfigurableOptions ?? false,
+            hasConfigurableVariables: $hasConfigurableVariables ?? false,
+            serverVariables: new ServerVariableCollection($serverVariables ?? []),
+            serverBackups: $serverBackups ?? [],
+            allocatedPorts: $allocatedPorts ?? [],
+            subusers: $subusers ?? [],
+            activityLogs: $activityLogs ?? [],
+            serverSchedules: $serverSchedules ?? [],
         );
     }
 

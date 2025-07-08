@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
 use App\Core\DTO\ServerWebsocketDTO;
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
@@ -12,7 +13,7 @@ class ServerWebsocketService
         private readonly PterodactylClientService $pterodactylService,
     ) {}
 
-    public function getWebsocketToken(Server $server): ?ServerWebsocketDTO
+    public function getWebsocketToken(Server $server, UserInterface $user): ?ServerWebsocketDTO
     {
         if ($server->getIsSuspended()) {
             return null;
@@ -20,7 +21,7 @@ class ServerWebsocketService
 
         try {
             $websocketData = $this->pterodactylService
-                ->getApi($server->getUser())
+                ->getApi($user)
                 ->servers
                 ->websocket($server->getPterodactylServerIdentifier());
         } catch (\Exception $e) {

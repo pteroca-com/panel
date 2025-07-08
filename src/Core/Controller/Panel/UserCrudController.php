@@ -7,8 +7,7 @@ use App\Core\Entity\User;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
-use App\Core\Service\Pterodactyl\PterodactylService;
-use App\Core\Service\Pterodactyl\PterodactylUsernameService;
+use App\Core\Service\User\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -21,16 +20,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Exception;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly PterodactylService $pterodactylService,
-        private readonly PterodactylUsernameService $usernameService,
+        private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($panelCrudService);
@@ -135,22 +131,11 @@ class UserCrudController extends AbstractPanelController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof UserInterface) {
-            if ($plainPassword = $entityInstance->getPlainPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
-                $entityInstance->setPassword($hashedPassword);
-            }
-
             try {
-                $createdUser = $this->pterodactylService->getApi()->users->create([
-                    'email' => $entityInstance->getEmail(),
-                    'username' => $this->usernameService->generateUsername($entityInstance->getEmail()),
-                    'first_name' => $entityInstance->getName(),
-                    'last_name' => $entityInstance->getSurname(),
-                    'password' => $plainPassword,
-                ]);
-                $entityInstance->setPterodactylUserId($createdUser->id);
+                $this->userService->createUserWithPterodactylAccount($entityInstance, $entityInstance->getPlainPassword());
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
+                return;
             }
         }
 
@@ -160,31 +145,8 @@ class UserCrudController extends AbstractPanelController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof UserInterface) {
-            if ($plainPassword = $entityInstance->getPlainPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
-                $entityInstance->setPassword($hashedPassword);
-            }
-
             try {
-                $pterodactylAccount = $this->pterodactylService
-                    ->getApi()
-                    ->users
-                    ->get($entityInstance->getPterodactylUserId());
-                if (!empty($pterodactylAccount->username)) {
-                    $pterodactylAccountDetails = [
-                        'username' => $pterodactylAccount->username,
-                        'email' => $entityInstance->getEmail(),
-                        'first_name' => $entityInstance->getName(),
-                        'last_name' => $entityInstance->getSurname(),
-                    ];
-                    if ($plainPassword) {
-                        $pterodactylAccountDetails['password'] = $plainPassword;
-                    }
-                    $this->pterodactylService->getApi()->users->update(
-                        $entityInstance->getPterodactylUserId(),
-                        $pterodactylAccountDetails
-                    );
-                }
+                $this->userService->updateUserInPterodactyl($entityInstance, $entityInstance->getPlainPassword());
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
             }
@@ -197,7 +159,7 @@ class UserCrudController extends AbstractPanelController
     {
         if ($entityInstance instanceof UserInterface) {
             try {
-                $this->pterodactylService->getApi()->users->delete($entityInstance->getPterodactylUserId());
+                $this->userService->deleteUserFromPterodactyl($entityInstance);
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
             }

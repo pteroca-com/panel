@@ -45,7 +45,12 @@
                                     {% endif %}
                                 </td>
                                 <td class="actions actions-as-dropdown text-center">
-                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) %}
+                                    {% set isCurrentUser = app.user.email == subuser.email %}
+                                    {% set isServerOwner = server.user.id == app.user.id %}
+                                    {% set isAdmin = is_granted('ROLE_ADMIN') %}
+                                    {% set canModifyThisUser = (isServerOwner or isAdmin) or not isCurrentUser %}
+                                    
+                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) and canModifyThisUser %}
                                     <div class="dropdown dropdown-actions">
                                         <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="icon">
@@ -78,6 +83,16 @@
                                                 {% endif %}
                                             </ul>
                                         </div>
+                                    </div>
+                                    {% elseif hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) and isCurrentUser %}
+                                    <div class="dropdown dropdown-actions">
+                                        <a class="dropdown-toggle dropdown-toggle-hidden-marker disabled" href="#" role="button" style="opacity: 0.5; cursor: not-allowed;" title="{{ 'pteroca.server.cannot_modify_yourself'|trans }}">
+                                            <span class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                </svg>
+                                            </span>
+                                        </a>
                                     </div>
                                     {% else %}
                                     <span class="text-muted">-</span>
@@ -207,11 +222,22 @@
         
         function removeUser(userUuid) {
             if (confirm('{{ 'pteroca.server.confirm_remove_user'|trans }}')) {
+                // Znajdź email użytkownika na podstawie UUID
+                const user = currentSubusers.find(u => u.uuid === userUuid);
+                if (!user || !user.email) {
+                    alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                    return;
+                }
+                
                 fetch('{{ path('server_users_delete', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
                     method: 'DELETE',
                     headers: {
+                        'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    },
+                    body: JSON.stringify({
+                        email: user.email
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -240,6 +266,13 @@
                 return;
             }
             
+            // Znajdź email użytkownika na podstawie UUID
+            const user = currentSubusers.find(u => u.uuid === userUuid);
+            if (!user || !user.email) {
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                return;
+            }
+            
             fetch('{{ path('server_users_update_permissions', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
                 method: 'POST',
                 headers: {
@@ -247,6 +280,7 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
+                    email: user.email,
                     permissions: permissions
                 })
             })

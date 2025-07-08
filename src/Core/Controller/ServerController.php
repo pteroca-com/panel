@@ -56,6 +56,7 @@ class ServerController extends AbstractController
 
         $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
         $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
+        $isOwner = $server->getUser() === $this->getUser();
         if (empty($serverData->serverPermissions->toArray()) && !$isAdminView) {
             throw $this->createAccessDeniedException();
         }
@@ -64,6 +65,7 @@ class ServerController extends AbstractController
             'server' => $server,
             'serverData' => $serverData,
             'isAdminView' => $isAdminView,
+            'isOwner' => $isOwner,
         ]);
     }
 }

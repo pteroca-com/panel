@@ -180,6 +180,7 @@ pteroca:
     auto_renewal: 'Auto-renewal'
     enable: 'Enable auto-renewal'
     disable: 'Disable auto-renewal'
+    owner_only: 'owner only'
     description: 'Configure your server and proceed to payment'
   cart_topup:
     title: 'Top up your account'
@@ -342,6 +343,7 @@ pteroca:
     delete_allocation_confirmation: 'This allocation will be immediately removed from your server. Are you sure you want to continue?'
     error_during_deleting_allocation: 'An error occurred while deleting the allocation.'
     cannot_delete_primary_allocation: 'The primary allocation cannot be deleted.'
+    cannot_modify_yourself: 'You cannot modify yourself.'
     extend_server_expires_on_demand: 'Your <strong>{{ productName }}</strong> server is currently set to expire on <strong>on demand</strong>.'
     on_demand_billing_cycle: 'The billing cycle ({{ productPrice }} {{ internalCurrency }} / minute) will be paused when the server is offline, and resources will be free.'
     type: 'Type'
@@ -434,7 +436,7 @@ pteroca:
     email_required: 'Email is required'
     error: 'Error'
     error_occurred: 'An error occurred'
-    user_created_successfully: 'User created successfully'
+    user_created_successfully: 'User added successfully'
     user_removed_successfully: 'User removed successfully'
     permissions_updated_successfully: 'Permissions updated successfully'
     confirm_remove_user: 'Are you sure you want to remove this user?'
@@ -736,6 +738,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Number of days after the server suspension date before suspended servers are permanently deleted'
         pterodactyl_sso_enabled: 'Enable Single Sign-On Login with Pterodactyl Panel (SSO Secret must be set)'
         pterodactyl_sso_secret: 'Pterodactyl SSO Login Secret Key'
+        show_pterodactyl_logs_in_server_activity: 'Show Pterodactyl logs in server activity'
         current_theme: 'Current theme of the panel'
       template:
         name: 'Template name'

@@ -176,6 +176,7 @@ pteroca:
     auto_renewal: 'Автопродление'
     enable: 'Включить автопродление'
     disable: 'Отключить автопродление'
+    owner_only: 'только владелец'
     description: 'Настройте ваш сервер и произведите оплату'
   cart_topup:
     title: 'Пополнить аккаунт'
@@ -331,6 +332,7 @@ pteroca:
     delete_allocation_confirmation: 'Этот адрес будет немедленно удалён с вашего сервера. Вы уверены, что хотите продолжить?'
     error_during_deleting_allocation: 'Произошла ошибка при удалении адреса.'
     cannot_delete_primary_allocation: 'Невозможно удалить основной адрес.'
+    cannot_modify_yourself: 'Вы не можете изменить себя.'
     extend_server_expires_on_demand: 'Ваш сервер <strong>{{ productName }}</strong> в настоящее время настроен на истечение срока <strong>по требованию</strong>.'
     on_demand_billing_cycle: 'Цикл выставления счетов ({{ productPrice }} {{ internalCurrency }} / минута) будет приостановлен, когда сервер выключен, и ресурсы будут бесплатны.'
     type: 'Тип'
@@ -732,6 +734,7 @@ pteroca:
         pterodactyl_sso_enabled: 'Включить вход через Single Sign-On в панели Pterodactyl (необходимо установить секрет SSO)'
         pterodactyl_sso_secret: 'Секретный ключ для входа в Pterodactyl SSO'
         current_theme: 'Текущая тема панели'
+        show_pterodactyl_logs_in_server_activity: 'Показывать логи Pterodactyl в активности сервера'
       template:
         name: 'Название шаблона'
         description: 'Описание шаблона'
