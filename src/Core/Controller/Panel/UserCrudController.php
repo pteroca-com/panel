@@ -73,7 +73,7 @@ class UserCrudController extends AbstractPanelController
                 ->setFormTypeOption('attr', ['type' => 'password'])
                 ->onlyOnForms()
                 ->setRequired($pageName === Crud::PAGE_NEW)
-                ->setHelp($this->translator->trans('pteroca.crud.user.password_hint')),
+                ->setHelp($pageName === Crud::PAGE_EDIT ? $this->translator->trans('pteroca.crud.user.password_hint') : ''),
             TextField::new('name', $this->translator->trans('pteroca.crud.user.name'))
                 ->setMaxLength(255),
             TextField::new('surname', $this->translator->trans('pteroca.crud.user.surname'))
