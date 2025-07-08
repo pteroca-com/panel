@@ -90,16 +90,28 @@
             </div>
             {% if hasServerPermission(serverData.serverPermissions, 'backup.create') %}
             <div class="col-12 mb-3">
-                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createBackupModal" {% if server.serverProduct.backups <= serverData.serverBackups|length %}disabled{% endif %}>
+                {% set currentBackups = serverData.serverBackups|length %}
+                {% set backupLimit = serverData.pterodactylServer.feature_limits.backups %}
+                {% set canCreateBackup = currentBackups < backupLimit %}
+                <button type="button" class="btn btn-primary float-end{% if not canCreateBackup %} disabled{% endif %}" 
+                        data-bs-toggle="modal" data-bs-target="#createBackupModal" 
+                        {% if not canCreateBackup %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_backup'|trans }}
                 </button>
+                <div class="float-end me-3">
+                    <small class="text-muted">
+                        {{ 'pteroca.server.usage'|trans({ '{{ current }}': currentBackups, '{{ limit }}': backupLimit }) }}
+                    </small>
+                </div>
             </div>
             {% endif %}
         </div>
     </div>
 
-    {% if server.serverProduct.backups > serverData.serverBackups|length and hasServerPermission(serverData.serverPermissions, 'backup.create') %}
+    {% set currentBackups = serverData.serverBackups|length %}
+    {% set backupLimit = serverData.pterodactylServer.feature_limits.backups %}
+    {% if currentBackups < backupLimit and hasServerPermission(serverData.serverPermissions, 'backup.create') %}
         {% include 'panel/server/tabs/backups/components/create_backup_modal.html.twig' %}
     {% endif %}
 

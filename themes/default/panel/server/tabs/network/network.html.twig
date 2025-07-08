@@ -103,10 +103,20 @@
             </div>
             {% if hasServerPermission(serverData.serverPermissions, 'allocation.create') %}
             <div class="col-12 mb-3">
-                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createAllocationModal" {% if server.serverProduct.ports <= serverData.allocatedPorts|length %}disabled{% endif %}>
+                {% set currentAllocations = serverData.allocatedPorts|length %}
+                {% set allocationLimit = serverData.pterodactylServer.feature_limits.allocations %}
+                {% set canCreateAllocation = currentAllocations < allocationLimit %}
+                <button type="button" class="btn btn-primary float-end{% if not canCreateAllocation %} disabled{% endif %}" 
+                        data-bs-toggle="modal" data-bs-target="#createAllocationModal" 
+                        {% if not canCreateAllocation %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_allocation'|trans }}
                 </button>
+                <div class="float-end me-3">
+                    <small class="text-muted">
+                        {{ 'pteroca.server.usage'|trans({ '{{ current }}': currentAllocations, '{{ limit }}': allocationLimit }) }}
+                    </small>
+                </div>
             </div>
             {% endif %}
         </div>
@@ -123,7 +133,9 @@
     {% if serverData.allocatedPorts|length > 1 and hasServerPermission(serverData.serverPermissions, 'allocation.update') %}
         {% include 'panel/server/tabs/network/components/make_primary_allocation_modal.html.twig' %}
     {% endif %}
-    {% if server.serverProduct.ports > serverData.allocatedPorts|length and hasServerPermission(serverData.serverPermissions, 'allocation.create') %}
+    {% set currentAllocations = serverData.allocatedPorts|length %}
+    {% set allocationLimit = serverData.pterodactylServer.feature_limits.allocations %}
+    {% if currentAllocations < allocationLimit and hasServerPermission(serverData.serverPermissions, 'allocation.create') %}
         {% include 'panel/server/tabs/network/components/create_allocation_modal.html.twig' %}
     {% endif %}
 {% endblock %}

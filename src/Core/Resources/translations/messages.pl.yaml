@@ -361,6 +361,7 @@ pteroca:
     schedules: 'Harmonogramy'
     schedules_usage: 'Wykorzystanie: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'Osiągnięto maksymalną liczbę harmonogramów ({{ limit }}). Usuń istniejące harmonogramy, aby utworzyć nowe.'
+    usage: 'Wykorzystanie: {{ current }}/{{ limit }}'
     no_subusers: 'Brak subuserów dla tego serwera.'
     no_schedules: 'Brak harmonogramów dla tego serwera.'
     schedule_name: 'Nazwa harmonogramu'

@@ -80,16 +80,28 @@
             </div>
             {% if hasServerPermission(serverData.serverPermissions, 'database.create') %}
             <div class="col-12 mb-3">
-                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createDatabaseModal" {% if server.serverProduct.dbCount <= serverData.pterodactylServer.relationships.databases.toArray()|length %}disabled{% endif %}>
+                {% set currentDatabases = serverData.pterodactylServer.relationships.databases.toArray()|length %}
+                {% set databaseLimit = serverData.pterodactylServer.feature_limits.databases %}
+                {% set canCreateDatabase = currentDatabases < databaseLimit %}
+                <button type="button" class="btn btn-primary float-end{% if not canCreateDatabase %} disabled{% endif %}" 
+                        data-bs-toggle="modal" data-bs-target="#createDatabaseModal" 
+                        {% if not canCreateDatabase %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_database'|trans }}
                 </button>
+                <div class="float-end me-3">
+                    <small class="text-muted">
+                        {{ 'pteroca.server.usage'|trans({ '{{ current }}': currentDatabases, '{{ limit }}': databaseLimit }) }}
+                    </small>
+                </div>
             </div>
             {% endif %}
         </div>
     </div>
 
-    {% if server.serverProduct.dbCount > serverData.pterodactylServer.relationships.databases.toArray()|length and hasServerPermission(serverData.serverPermissions, 'database.create') %}
+    {% set currentDatabases = serverData.pterodactylServer.relationships.databases.toArray()|length %}
+    {% set databaseLimit = serverData.pterodactylServer.feature_limits.databases %}
+    {% if currentDatabases < databaseLimit and hasServerPermission(serverData.serverPermissions, 'database.create') %}
         {% include 'panel/server/tabs/databases/components/create_database_modal.html.twig' %}
     {% endif %}
 
