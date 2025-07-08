@@ -28,6 +28,9 @@ trait ProductEntityTrait
     #[ORM\Column(type: "integer")]
     private int $cpu;
 
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $threads = null;
+
     #[ORM\Column(type: "integer")]
     private int $dbCount;
 
@@ -115,6 +118,17 @@ trait ProductEntityTrait
     public function setCpu(int $cpu): self
     {
         $this->cpu = $cpu;
+        return $this;
+    }
+
+    public function getThreads(): ?string
+    {
+        return $this->threads;
+    }
+
+    public function setThreads(?string $threads): self
+    {
+        $this->threads = $threads;
         return $this;
     }
 
