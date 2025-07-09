@@ -1,0 +1,70 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: pteroca_mysql_dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pteroca
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data_dev:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pteroca_phpmyadmin_dev
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - db
+
+  web:
+    build: 
+      context: .
+      args:
+        APP_ENV: dev
+    container_name: pteroca_web_dev
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "mysql://user:password@db:3306/pteroca?serverVersion=8.0"
+      APP_ENV: dev
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    working_dir: /app
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...'
+        until php bin/console doctrine:query:sql 'SELECT 1' > /dev/null 2>&1; do
+          echo 'Database not ready yet, waiting...'
+          sleep 2
+        done
+        echo 'Database is ready, running migrations...'
+        php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+        echo 'Migrations completed successfully!'
+        echo 'Starting PHP development server...'
+        php -S 0.0.0.0:8000 -t public/
+      "
+    restart: unless-stopped
+    env_file:
+      - .env
+
+volumes:
+  db_data_dev:

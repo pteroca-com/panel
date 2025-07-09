@@ -1,0 +1,57 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: pteroca_mysql_prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pteroca
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  web:
+    build: 
+      context: .
+      args:
+        APP_ENV: prod
+    container_name: pteroca_web_prod
+    ports:
+      - "80:80"
+    environment:
+      DATABASE_URL: "mysql://user:password@db:3306/pteroca?serverVersion=8.0"
+      APP_ENV: prod
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    working_dir: /app
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...'
+        until php bin/console doctrine:query:sql 'SELECT 1' > /dev/null 2>&1; do
+          echo 'Database not ready yet, waiting...'
+          sleep 2
+        done
+        echo 'Database is ready, running migrations...'
+        php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+        echo 'Migrations completed successfully!'
+        echo 'Starting production server...'
+        /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+      "
+    restart: unless-stopped
+    env_file:
+      - .env
+
+volumes:
+  db_data_prod:
