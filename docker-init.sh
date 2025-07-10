@@ -2,6 +2,43 @@
 
 echo "🐳 Initializing Docker environment..."
 
+# Check if Docker is installed
+if ! command -v docker &> /dev/null; then
+    echo "❌ Error: Docker is not installed!"
+    echo ""
+    echo "Please install Docker first:"
+    echo "  - Ubuntu/Debian: https://docs.docker.com/engine/install/ubuntu/"
+    echo "  - CentOS/RHEL: https://docs.docker.com/engine/install/centos/"
+    echo "  - Windows: https://docs.docker.com/desktop/install/windows-install/"
+    echo "  - macOS: https://docs.docker.com/desktop/install/mac-install/"
+    echo ""
+    exit 1
+fi
+
+# Check if Docker Compose is installed
+if ! command -v docker-compose &> /dev/null; then
+    echo "❌ Error: Docker Compose is not installed!"
+    echo ""
+    echo "Please install Docker Compose first:"
+    echo "  - Linux: https://docs.docker.com/compose/install/"
+    echo "  - Windows/macOS: Usually included with Docker Desktop"
+    echo ""
+    exit 1
+fi
+
+# Check if Docker daemon is running
+if ! docker info &> /dev/null; then
+    echo "❌ Error: Docker daemon is not running!"
+    echo ""
+    echo "Please start Docker daemon first:"
+    echo "  - Linux: sudo systemctl start docker"
+    echo "  - Windows/macOS: Start Docker Desktop"
+    echo ""
+    exit 1
+fi
+
+echo "✅ Docker and Docker Compose are installed and running"
+
 # Parse command line arguments
 ENVIRONMENT=""
 for arg in "$@"; do
