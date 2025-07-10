@@ -166,6 +166,11 @@ else
 fi
 
 echo ""
+echo "⏰ Cron job status:"
+echo "   ✅ PteroCA cron job automatically configured"
+echo "   📋 Schedule: Every minute (billing, suspensions, etc.)"
+echo "   🔄 Command: php /app/bin/console app:cron-job-schedule"
+echo ""
 echo "🎯 Next steps to complete installation:"
 echo "   Option 1: Web wizard installer at http://localhost:$WEB_PORT/first-configuration"
 echo "   Option 2: CLI command: docker-compose -f $COMPOSE_FILE exec web php bin/console app:configure-system"

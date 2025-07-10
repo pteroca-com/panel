@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     default-mysql-client \
     nginx \
     supervisor \
+    cron \
     && docker-php-ext-install \
     pdo \
     pdo_mysql \
@@ -48,6 +49,11 @@ COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Configure PHP-FPM
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Setup PteroCA cron job
+RUN echo "* * * * * www-data php /app/bin/console app:cron-job-schedule >> /dev/null 2>&1" > /etc/cron.d/pteroca-cron \
+    && chmod 0644 /etc/cron.d/pteroca-cron \
+    && crontab -u www-data /etc/cron.d/pteroca-cron
 
 # Set permissions
 RUN chown -R www-data:www-data /app \
