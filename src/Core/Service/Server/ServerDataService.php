@@ -16,6 +16,7 @@ use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\ServerPermissionsTrait;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class ServerDataService
@@ -30,6 +31,7 @@ class ServerDataService
         private readonly ServerVariableFactory $serverVariableFactory,
         private readonly ServerLogService $serverLogService,
         private readonly SettingService $settingService,
+        private readonly LoggerInterface $logger,
     )
     {
     }
@@ -63,7 +65,12 @@ class ServerDataService
                     return $allocation->toArray();
                 }, $allocatedPorts);
             } catch (Exception $exception) {
-                // TODO log error
+                $this->logger->error('Failed to get allocated ports for server', [
+                    'server_id' => $server->getId(),
+                    'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                    'error' => $exception->getMessage(),
+                    'trace' => $exception->getTraceAsString()
+                ]);
             }
         }
 
@@ -84,7 +91,11 @@ class ServerDataService
             );
             $productEggConfiguration = $productEggsConfiguration[$pterodactylServer->get('egg')] ?? [];
         } catch (Exception $e) {
-            // TODO log error
+            $this->logger->error('Failed to decode product eggs configuration', [
+                'server_id' => $server->getId(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $productEggConfiguration = [];
         }
 
@@ -110,7 +121,12 @@ class ServerDataService
                     ->get(sprintf('servers/%s/backups', $server->getPterodactylServerIdentifier()))
                     ->toArray();
             } catch (Exception $exception) {
-                // TODO log error
+                $this->logger->error('Failed to get server backups', [
+                    'server_id' => $server->getId(),
+                    'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                    'error' => $exception->getMessage(),
+                    'trace' => $exception->getTraceAsString()
+                ]);
             }
         }
 
@@ -156,7 +172,12 @@ class ServerDataService
                     return $schedule->toArray();
                 }, $serverSchedules);
             } catch (Exception $exception) {
-                // TODO log error
+                $this->logger->error('Failed to get server schedules', [
+                    'server_id' => $server->getId(),
+                    'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                    'error' => $exception->getMessage(),
+                    'trace' => $exception->getTraceAsString()
+                ]);
             }
         }
 

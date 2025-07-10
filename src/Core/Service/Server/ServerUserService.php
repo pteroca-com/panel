@@ -11,6 +11,7 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerUserService
 {
@@ -20,6 +21,7 @@ class ServerUserService
         private readonly ServerLogService $serverLogService,
         private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly UserRepository $userRepository,
+        private readonly TranslatorInterface $translator,
     ) {}
 
     public function getAllSubusers(Server $server, UserInterface $user): array
@@ -46,13 +48,13 @@ class ServerUserService
             $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
 
             if (count($existingPterodactylUsers->toArray()) === 0 || !$existingPterocaUser) {
-                throw new \Exception(sprintf('User with email %s does not exist in the system. The user must register first.', $email));
+                throw new \Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
             }
 
             $currentSubusers = $this->getAllSubusers($server, $user);
             foreach ($currentSubusers['data'] ?? [] as $subuser) {
                 if (isset($subuser['attributes']['email']) && $subuser['attributes']['email'] === $email) {
-                    throw new \Exception(sprintf('User with email %s is already added to this server.', $email));
+                    throw new \Exception($this->translator->trans('pteroca.api.server_user.user_already_added', ['email' => $email]));
                 }
             }
 
@@ -75,15 +77,15 @@ class ServerUserService
 
             return $result->toArray();
 
-        } catch (\Exception $e) { // TODO translations
+        } catch (\Exception $e) {
             if (str_contains($e->getMessage(), 'No user found') ||
                 str_contains($e->getMessage(), 'does not exist')) {
-                throw new \Exception(sprintf('User with email %s does not exist in the system. The user must register first.', $email));
+                throw new \Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
             }
             
             if (str_contains($e->getMessage(), 'already assigned') ||
                 str_contains($e->getMessage(), 'already exists')) {
-                throw new \Exception(sprintf('User with email %s is already added to this server.', $email));
+                throw new \Exception($this->translator->trans('pteroca.api.server_user.user_already_added', ['email' => $email]));
             }
 
             throw $e;
@@ -101,10 +103,10 @@ class ServerUserService
         $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
         
         if (!$existingPterocaUser) {
-            throw new \Exception(sprintf('User with email %s does not exist in the system.', $email));
+            throw new \Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
         }
 
-        $this->validateSubuserModification($server, $user, $email, 'modify permissions');
+        $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.modify_permissions'));
 
         $result = $this->pterodactylClientService
             ->getApi($user)
@@ -139,10 +141,10 @@ class ServerUserService
         $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
         
         if (!$existingPterocaUser) {
-            throw new \Exception(sprintf('User with email %s does not exist in the system.', $email));
+            throw new \Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
         }
 
-        $this->validateSubuserModification($server, $user, $email, 'delete yourself from the server');
+        $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.delete_yourself_from_server'));
 
         $this->pterodactylClientService
             ->getApi($user)
@@ -200,8 +202,7 @@ class ServerUserService
         $isAdmin = in_array('ROLE_ADMIN', $user->getRoles());
         
         if (!$isServerOwner && !$isAdmin && $user->getEmail() === $targetEmail) {
-            // TODO translations
-            throw new \Exception(sprintf('You cannot %s for yourself.', $action));
+            throw new \Exception($this->translator->trans('pteroca.api.server_user.cannot_modify_yourself', ['action' => $action]));
         }
     }
 }

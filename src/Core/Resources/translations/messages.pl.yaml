@@ -875,6 +875,17 @@ pteroca:
   api:
     servers:
       not_found: 'Nie znaleziono serwera.'
+    schedule:
+      name_required: 'Nazwa harmonogramu jest wymagana.'
+      cron_field_required: 'Pole cron "{{ field }}" jest wymagane.'
+      action_required: 'Akcja jest wymagana.'
+      payload_required: 'Payload jest wymagany.'
+    server_user:
+      user_not_exist: 'Użytkownik o adresie email {{ email }} nie istnieje w systemie. Użytkownik musi się najpierw zarejestrować.'
+      user_already_added: 'Użytkownik o adresie email {{ email }} został już dodany do tego serwera.'
+      cannot_modify_yourself: 'Nie możesz wykonać tej akcji na sobie: {{ action }}.'
+      modify_permissions: 'modyfikować uprawnienia'
+      delete_yourself_from_server: 'usunąć siebie z serwera'
     voucher:
       not_found: 'Voucher nie znaleziony.'
       expired: 'Voucher wygasł.'

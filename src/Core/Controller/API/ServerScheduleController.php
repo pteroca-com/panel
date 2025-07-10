@@ -29,7 +29,7 @@ class ServerScheduleController extends APIAbstractController
         
         if (!isset($data['name']) || empty($data['name'])) {
             $response->setStatusCode(400);
-            $response->setData(['error' => 'Schedule name is required']);
+            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.name_required')]);
             return $response;
         }
 
@@ -37,7 +37,7 @@ class ServerScheduleController extends APIAbstractController
         foreach ($cronFields as $field) {
             if (!isset($data[$field]) || $data[$field] === '') {
                 $response->setStatusCode(400);
-                $response->setData(['error' => "Cron field '{$field}' is required"]);
+                $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.cron_field_required', ['field' => $field])]);
                 return $response;
             }
         }
@@ -153,13 +153,13 @@ class ServerScheduleController extends APIAbstractController
 
         if (!isset($data['action']) || empty($data['action'])) {
             $response->setStatusCode(400);
-            $response->setData(['error' => 'Action is required']); // TODO translate
+            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.action_required')]);
             return $response;
         }
 
         if (!isset($data['payload']) || empty($data['payload'])) {
             $response->setStatusCode(400);
-            $response->setData(['error' => 'Payload is required']);
+            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.payload_required')]);
             return $response;
         }
 
@@ -194,13 +194,13 @@ class ServerScheduleController extends APIAbstractController
 
         if (!isset($data['action']) || empty($data['action'])) {
             $response->setStatusCode(400);
-            $response->setData(['error' => 'Action is required']);
+            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.action_required')]);
             return $response;
         }
 
         if (!isset($data['payload']) || empty($data['payload'])) {
             $response->setStatusCode(400);
-            $response->setData(['error' => 'Payload is required']);
+            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.payload_required')]);
             return $response;
         }
 
