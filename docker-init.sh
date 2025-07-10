@@ -43,11 +43,17 @@ fi
 if [ "$ENVIRONMENT" = "dev" ]; then
     COMPOSE_FILE="docker-compose.yml"
     WEB_PORT="8000"
+    DB_PASSWORD="password"
+    DB_ROOT_PASSWORD="root"
     echo "🔧 Setting up DEVELOPMENT environment..."
 else
     COMPOSE_FILE="docker-compose.prod.yml"
     WEB_PORT="80"
+    # Generate secure passwords for production
+    DB_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
+    DB_ROOT_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
     echo "🔧 Setting up PRODUCTION environment..."
+    echo "🔐 Generated secure database passwords for production"
 fi
 
 # Check if .env file exists
@@ -57,10 +63,10 @@ if [ ! -f ".env" ]; then
     echo "⚠️  Remember to configure .env before running!"
 fi
 
-# Check if DATABASE_URL is configured
-if grep -q "DATABASE_URL=$" .env; then
-    echo "🔧 Configuring DATABASE_URL for Docker..."
-    sed -i 's/DATABASE_URL=.*/DATABASE_URL="mysql:\/\/user:password@db:3306\/pteroca?serverVersion=8.0"/' .env
+# Check if DATABASE_URL is configured and update with generated password
+if grep -q "DATABASE_URL=$" .env || grep -q "DATABASE_URL=.*password.*" .env; then
+    echo "🔧 Configuring DATABASE_URL for Docker with generated password..."
+    sed -i "s/DATABASE_URL=.*/DATABASE_URL=\"mysql:\/\/user:$DB_PASSWORD@db:3306\/pteroca?serverVersion=8.0\"/" .env
 fi
 
 # Check if APP_SECRET is empty and generate one if needed
@@ -79,6 +85,10 @@ echo "🚀 Starting environment..."
 if [ "$ENVIRONMENT" = "dev" ]; then
     docker-compose -f $COMPOSE_FILE up -d db phpmyadmin
 else
+    # Set environment variables for production
+    export MYSQL_PASSWORD=$DB_PASSWORD
+    export MYSQL_ROOT_PASSWORD=$DB_ROOT_PASSWORD
+    export DATABASE_URL="mysql://user:$DB_PASSWORD@db:3306/pteroca?serverVersion=8.0"
     docker-compose -f $COMPOSE_FILE up -d db
 fi
 
@@ -97,7 +107,7 @@ echo "🌐 Web application: http://localhost:$WEB_PORT"
 echo "🗄️  Database: localhost:3306"
 echo "   - Database: pteroca"
 echo "   - User: user"
-echo "   - Password: password"
+echo "   - Password: $DB_PASSWORD"
 echo "🌍 Timezone: inherited from host"
 echo ""
 echo "📝 Usage:"
@@ -109,9 +119,13 @@ if [ "$ENVIRONMENT" = "dev" ]; then
     echo "🧪 PHPMyAdmin: http://localhost:8080"
     echo "   - Server: db"
     echo "   - Username: user"
-    echo "   - Password: password"
+    echo "   - Password: $DB_PASSWORD"
 else
     echo "🔒 PHPMyAdmin disabled for production security"
+    echo ""
+    echo "⚠️  IMPORTANT: Save these database passwords securely!"
+    echo "🔐 Database User Password: $DB_PASSWORD"
+    echo "🔐 Database Root Password: $DB_ROOT_PASSWORD"
 fi
 
 echo ""

@@ -4,10 +4,10 @@ services:
     container_name: pteroca_mysql_prod
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: pteroca
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     ports:
       - "3306:3306"
     volumes:
@@ -26,7 +26,7 @@ services:
     ports:
       - "80:80"
     environment:
-      DATABASE_URL: "mysql://user:password@db:3306/pteroca?serverVersion=8.0"
+      DATABASE_URL: ${DATABASE_URL:-mysql://user:password@db:3306/pteroca?serverVersion=8.0}
       APP_ENV: prod
     depends_on:
       db:
