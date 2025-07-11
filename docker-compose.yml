@@ -27,6 +27,10 @@ services:
       PMA_HOST: db
       PMA_USER: root
       PMA_PASSWORD: root
+      # Increase upload limits for database imports
+      UPLOAD_LIMIT: 128M
+      MAX_EXECUTION_TIME: 300
+      MEMORY_LIMIT: 512M
     depends_on:
       - db
 

@@ -45,7 +45,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
                 ->servers
                 ->suspend($server->getPterodactylServerId());
 
-            // TODO dopicowac tego emaila
+            // TODO finish this mail
             $emailMessage = new SendEmailMessage(
                 $server->getUser()->getEmail(),
                 $this->translator->trans('pteroca.email.suspended.subject'),

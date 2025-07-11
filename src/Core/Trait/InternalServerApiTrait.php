@@ -19,7 +19,7 @@ trait InternalServerApiTrait
 
         $isOwner = $server->getUser() === $this->getUser();
         if ($isOwner) {
-            return $server; // TODO zwracac pterodactyl server, optymalizacja zapytan api itp.
+            return $server;
         }
 
         /** @var PterodactylServer $pterodactylServer */
