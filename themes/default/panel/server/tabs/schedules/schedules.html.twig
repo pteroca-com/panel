@@ -63,7 +63,7 @@
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 {% if hasServerPermission(serverData.serverPermissions, 'schedule.update') %}
                                                 <li>
-                                                    <a class="dropdown-item action-edit" href="#" data-action-name="edit" data-schedule-id="{{ schedule.id }}">
+                                                    <a class="dropdown-item action-edit" href="#" {% if not is_demo() %}data-action-name="edit" data-schedule-id="{{ schedule.id }}"{% endif %}>
                                                         <span class="action-label">
                                                             <i class="fas fa-edit"></i>
                                                             {{ 'pteroca.server.edit'|trans }}
@@ -73,7 +73,7 @@
                                                 {% endif %}
                                                 {% if hasServerPermission(serverData.serverPermissions, 'schedule.delete') %}
                                                 <li>
-                                                    <a class="dropdown-item action-delete" href="#" data-action-name="delete" data-schedule-id="{{ schedule.id }}">
+                                                    <a class="dropdown-item action-delete" href="#" {% if not is_demo() %}data-action-name="delete" data-schedule-id="{{ schedule.id }}"{% endif %}>
                                                         <span class="action-label text-danger">
                                                             <i class="fas fa-trash text-danger"></i>
                                                             {{ 'pteroca.server.delete'|trans }}
@@ -402,6 +402,11 @@
             document.querySelectorAll('#schedules .dropdown-actions .dropdown-menu .dropdown-item').forEach(function (element) {
                 element.addEventListener('click', function (event) {
                     event.preventDefault();
+
+                    {% if is_demo() %}
+                    alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
+                    return;
+                    {% endif %}
 
                     const anchorElement = event.target.closest('a');
                     const actionName = anchorElement.getAttribute('data-action-name');

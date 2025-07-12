@@ -51,7 +51,7 @@
                         if (data.error) {
                             submitButton.disabled = false
                             spinner.classList.add('d-none')
-                            alert('{{ 'pteroca.server.error'|trans }}: ' + data.error)
+                            alert('{{ 'pteroca.demo.limited_in_demo'|trans }}')
                         } else {
                             // Zamknij modal
                             const modal = bootstrap.Modal.getInstance(document.getElementById('deleteScheduleModal'))

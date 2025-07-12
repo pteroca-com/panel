@@ -6,6 +6,7 @@ use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerScheduleService;
+use App\Core\Trait\DisallowForDemoModeTrait;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ServerScheduleController extends APIAbstractController
 {
     use InternalServerApiTrait;
+    use DisallowForDemoModeTrait;
 
     public function __construct(
         private readonly ServerRepository $serverRepository,
@@ -26,6 +28,8 @@ class ServerScheduleController extends APIAbstractController
     #[Route('/panel/api/server/{id}/schedules/create', name: 'server_schedules_create', methods: ['POST'])]
     public function createSchedule(int $id, Request $request): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_CREATE);
         $response = new JsonResponse();
         
@@ -76,6 +80,8 @@ class ServerScheduleController extends APIAbstractController
     #[Route('/panel/api/server/{id}/schedules/{scheduleId}', name: 'server_schedules_update', methods: ['PUT'])]
     public function updateSchedule(int $id, int $scheduleId, Request $request): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
         $response = new JsonResponse();
         
@@ -116,6 +122,8 @@ class ServerScheduleController extends APIAbstractController
     #[Route('/panel/api/server/{id}/schedules/{scheduleId}/delete', name: 'server_schedules_delete', methods: ['DELETE'])]
     public function deleteSchedule(int $id, int $scheduleId): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_DELETE);
         $response = new JsonResponse();
 
@@ -150,6 +158,8 @@ class ServerScheduleController extends APIAbstractController
     #[Route('/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}', name: 'server_schedule_tasks_update', methods: ['PUT'])]
     public function updateScheduleTask(int $id, int $scheduleId, int $taskId, Request $request): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
         $response = new JsonResponse();
         
@@ -191,6 +201,8 @@ class ServerScheduleController extends APIAbstractController
     #[Route('/panel/api/server/{id}/schedules/{scheduleId}/tasks', name: 'server_schedule_tasks_create', methods: ['POST'])]
     public function createScheduleTask(int $id, int $scheduleId, Request $request): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
         $response = new JsonResponse();
         
@@ -231,6 +243,8 @@ class ServerScheduleController extends APIAbstractController
     #[Route('/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}', name: 'server_schedules_tasks_delete', methods: ['DELETE'])]
     public function deleteScheduleTask(int $id, int $scheduleId, int $taskId): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
         $response = new JsonResponse();
 

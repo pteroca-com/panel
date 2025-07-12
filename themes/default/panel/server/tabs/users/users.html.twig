@@ -63,7 +63,7 @@
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 {% if hasServerPermission(serverData.serverPermissions, 'user.update') %}
                                                 <li>
-                                                    <a class="dropdown-item action-edit" href="#" data-action-name="edit" data-user-uuid="{{ subuser.uuid }}">
+                                                    <a class="dropdown-item action-edit" href="#" {% if not is_demo() %}data-action-name="edit" data-user-uuid="{{ subuser.uuid }}"{% endif %}>
                                                         <span class="action-label">
                                                             <i class="fas fa-edit"></i>
                                                             {{ 'pteroca.server.edit'|trans }}
@@ -73,7 +73,7 @@
                                                 {% endif %}
                                                 {% if hasServerPermission(serverData.serverPermissions, 'user.delete') %}
                                                 <li>
-                                                    <a class="dropdown-item action-delete" href="#" data-action-name="delete" data-user-uuid="{{ subuser.uuid }}">
+                                                    <a class="dropdown-item action-delete" href="#" {% if not is_demo() %}data-action-name="delete" data-user-uuid="{{ subuser.uuid }}"{% endif %}>
                                                         <span class="action-label text-danger">
                                                             <i class="fas fa-trash text-danger"></i>
                                                             {{ 'pteroca.server.remove'|trans }}
@@ -169,7 +169,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                    alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
                 } else {
                     alert('{{ 'pteroca.server.user_created_successfully'|trans }}');
                     location.reload();
@@ -177,7 +177,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
             });
             
             // Zamknij modal
@@ -242,7 +242,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                        alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
                     } else {
                         alert('{{ 'pteroca.server.user_removed_successfully'|trans }}');
                         location.reload();
@@ -250,7 +250,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                    alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
                 });
             }
         }
@@ -287,7 +287,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                    alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
                 } else {
                     alert('{{ 'pteroca.server.permissions_updated_successfully'|trans }}');
                     location.reload();
@@ -295,7 +295,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
             });
             
             // Zamknij modal
@@ -333,6 +333,11 @@
             document.querySelectorAll('#users .dropdown-actions .dropdown-menu .dropdown-item').forEach(function (element) {
                 element.addEventListener('click', function (event) {
                     event.preventDefault();
+
+                    {% if is_demo() %}
+                    alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
+                    return;
+                    {% endif %}
 
                     const anchorElement = event.target.closest('a');
                     const actionName = anchorElement.getAttribute('data-action-name');

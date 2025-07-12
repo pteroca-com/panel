@@ -6,6 +6,7 @@ use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerUserService;
+use App\Core\Trait\DisallowForDemoModeTrait;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ServerUserController extends APIAbstractController
 {
     use InternalServerApiTrait;
+    use DisallowForDemoModeTrait;
 
     public function __construct(
         private readonly ServerRepository $serverRepository,
@@ -41,6 +43,8 @@ class ServerUserController extends APIAbstractController
     #[Route('/panel/api/server/{id}/users/create', name: 'server_users_create', methods: ['POST'])]
     public function createUser(int $id, Request $request): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::USER_CREATE);
         $response = new JsonResponse();
         
@@ -94,6 +98,8 @@ class ServerUserController extends APIAbstractController
     #[Route('/panel/api/server/{id}/users/{userUuid}/permissions', name: 'server_users_update_permissions', methods: ['POST'])]
     public function updateUserPermissions(int $id, string $userUuid, Request $request): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::USER_UPDATE);
         $response = new JsonResponse();
         
@@ -137,6 +143,8 @@ class ServerUserController extends APIAbstractController
     #[Route('/panel/api/server/{id}/users/{userUuid}/delete', name: 'server_users_delete', methods: ['DELETE'])]
     public function deleteUser(int $id, string $userUuid, Request $request): JsonResponse
     {
+        $this->disallowForDemoMode();
+
         $server = $this->getServer($id, ServerPermissionEnum::USER_DELETE);
         $response = new JsonResponse();
 

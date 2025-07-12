@@ -162,7 +162,7 @@ function saveNewSchedule() {
     .then(response => response.json())
     .then(data => {
         if (data.error) {
-            alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+            alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
         } else {
             alert('{{ 'pteroca.server.schedule_created_successfully'|trans }}');
             location.reload();
@@ -170,7 +170,7 @@ function saveNewSchedule() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('{{ 'pteroca.server.error_occurred'|trans }}');
+        alert('{{ 'pteroca.demo.limited_in_demo'|trans }}');
     });
     
     // Zamknij modal
