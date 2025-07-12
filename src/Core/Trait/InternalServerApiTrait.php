@@ -22,14 +22,15 @@ trait InternalServerApiTrait
             return $server;
         }
 
-        /** @var PterodactylServer $pterodactylServer */
-        $pterodactylServer = $this->pterodactylService
-            ->getApi()
-            ->servers
-            ->get($server->getPterodactylServerId(), [
-                'include' => ['subusers'],
-            ]);
-        if (empty($pterodactylServer)) {
+        try {
+            /** @var PterodactylServer $pterodactylServer */
+            $pterodactylServer = $this->pterodactylService
+                ->getApi()
+                ->servers
+                ->get($server->getPterodactylServerId() . '2', [
+                    'include' => ['subusers'],
+                ]);
+        } catch (\Exception) {
             throw $this->createNotFoundException();
         }
 

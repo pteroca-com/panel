@@ -4,11 +4,13 @@ namespace App\Core\Controller\API;
 
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerScheduleService;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerScheduleController extends APIAbstractController
 {
@@ -17,6 +19,8 @@ class ServerScheduleController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerScheduleService $serverScheduleService,
+        private readonly PterodactylService $pterodactylService,
+        private readonly TranslatorInterface $translator,
     ) {}
 
     #[Route('/panel/api/server/{id}/schedules/create', name: 'server_schedules_create', methods: ['POST'])]
@@ -27,7 +31,7 @@ class ServerScheduleController extends APIAbstractController
         
         $data = json_decode($request->getContent(), true);
         
-        if (!isset($data['name']) || empty($data['name'])) {
+        if (empty($data['name'])) {
             $response->setStatusCode(400);
             $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.name_required')]);
             return $response;
