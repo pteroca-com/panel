@@ -28,6 +28,9 @@ trait ProductEntityTrait
     #[ORM\Column(type: "integer")]
     private int $cpu;
 
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $threads = null;
+
     #[ORM\Column(type: "integer")]
     private int $dbCount;
 
@@ -39,6 +42,9 @@ trait ProductEntityTrait
 
     #[ORM\Column(type: "integer")]
     private int $ports;
+
+    #[ORM\Column(type: "integer")]
+    private int $schedules = 10;
 
     #[ORM\Column(type: "json", nullable: true)]
     private array $nodes = [];
@@ -115,6 +121,17 @@ trait ProductEntityTrait
         return $this;
     }
 
+    public function getThreads(): ?string
+    {
+        return $this->threads;
+    }
+
+    public function setThreads(?string $threads): self
+    {
+        $this->threads = $threads;
+        return $this;
+    }
+
     public function getDbCount(): int
     {
         return $this->dbCount;
@@ -156,6 +173,17 @@ trait ProductEntityTrait
     public function setPorts(int $ports): self
     {
         $this->ports = $ports;
+        return $this;
+    }
+
+    public function getSchedules(): int
+    {
+        return $this->schedules;
+    }
+
+    public function setSchedules(int $schedules): self
+    {
+        $this->schedules = $schedules;
         return $this;
     }
 

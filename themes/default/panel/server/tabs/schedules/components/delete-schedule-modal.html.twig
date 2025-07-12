@@ -1,0 +1,75 @@
+{% block main %}
+    {% if hasServerPermission(serverData.serverPermissions, 'schedule.delete') %}
+    <div class="modal fade" id="deleteScheduleModal" tabindex="-1" aria-labelledby="deleteScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteScheduleModalLabel">{{ 'pteroca.server.delete_schedule'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="delete-schedule-form">
+                    <input type="hidden" name="scheduleId" id="deleteScheduleId">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text">
+                                    <p>{{ 'pteroca.server.confirm_delete_schedule'|trans }}</p>
+                                    <p><strong id="schedule-delete-name"></strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.cancel'|trans }}</button>
+                        <button type="submit" class="btn btn-danger" id="delete-schedule-btn"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.delete'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#delete-schedule-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const form = event.target,
+                    formData = new FormData(form),
+                    endpointUrl = '{{ path('server_schedules_delete', { id: server.id, scheduleId: 'SCHEDULE_ID' }) }}'.replace('SCHEDULE_ID', formData.get('scheduleId')),
+                    submitButton = document.getElementById('delete-schedule-btn'),
+                    spinner = submitButton.querySelector('i')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+
+                sendRequest(endpointUrl, 'DELETE')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+                            alert('{{ 'pteroca.server.error'|trans }}: ' + data.error)
+                        } else {
+                            // Zamknij modal
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteScheduleModal'))
+                            modal.hide()
+                            
+                            // Pokaż komunikat o sukcesie
+                            alert('{{ 'pteroca.server.schedule_deleted_successfully'|trans }}')
+                            
+                            // Przeładuj stronę
+                            window.location.reload()
+                        }
+                    }).catch(error => {
+                        submitButton.disabled = false
+                        spinner.classList.add('d-none')
+                        console.error('Error:', error)
+                        alert('{{ 'pteroca.server.error_occurred'|trans }}')
+                    })
+            })
+        })
+    </script>
+{% endblock %}

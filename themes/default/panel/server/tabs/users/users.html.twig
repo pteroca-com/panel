@@ -1,0 +1,376 @@
+{% block main %}
+    <div class="tab-pane" id="users">
+        <div class="row pt-3">
+            <div class="col-12 mb-4">
+                {% if serverData.subusers|length == 0 %}
+                    <div class="alert alert-info col-6 offset-3" role="alert">
+                        <i class="fas fa-info-circle pe-1"></i>
+                        {{ 'pteroca.server.no_subusers'|trans }}
+                    </div>
+                {% else %}
+                    <table class="table datagrid text-center">
+                        <thead>
+                            <tr>
+                                <th class="pb-2">{{ 'pteroca.server.user_email'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.user_permissions'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.user_created'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for subuser in serverData.subusers %}
+                            <tr>
+                                <td>
+                                    <strong>{{ subuser.email }}</strong>
+                                    {% if subuser['2fa_enabled'] %}
+                                        <span class="badge bg-success ms-2">2FA</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if subuser.permissions is defined and subuser.permissions|length > 0 %}
+                                        <div class="permissions-list">
+                                            {% for permission in subuser.permissions %}
+                                                <span class="badge bg-secondary me-1 mb-1 text-white">{{ permission }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if subuser.created_at is defined %}
+                                        {{ subuser.created_at|date('Y-m-d H:i:s') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="actions actions-as-dropdown text-center">
+                                    {% set isCurrentUser = app.user.email == subuser.email %}
+                                    {% set isServerOwner = server.user.id == app.user.id %}
+                                    {% set isAdmin = is_granted('ROLE_ADMIN') %}
+                                    {% set canModifyThisUser = (isServerOwner or isAdmin) or not isCurrentUser %}
+                                    
+                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) and canModifyThisUser %}
+                                    <div class="dropdown dropdown-actions">
+                                        <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                </svg>
+                                            </span>
+                                        </a>
+                                        <div class="dropdown-overlay">
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {% if hasServerPermission(serverData.serverPermissions, 'user.update') %}
+                                                <li>
+                                                    <a class="dropdown-item action-edit" href="#" data-action-name="edit" data-user-uuid="{{ subuser.uuid }}">
+                                                        <span class="action-label">
+                                                            <i class="fas fa-edit"></i>
+                                                            {{ 'pteroca.server.edit'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                                {% if hasServerPermission(serverData.serverPermissions, 'user.delete') %}
+                                                <li>
+                                                    <a class="dropdown-item action-delete" href="#" data-action-name="delete" data-user-uuid="{{ subuser.uuid }}">
+                                                        <span class="action-label text-danger">
+                                                            <i class="fas fa-trash text-danger"></i>
+                                                            {{ 'pteroca.server.remove'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {% elseif hasAnyServerPermission(serverData.serverPermissions, ['user.update', 'user.delete']) and isCurrentUser %}
+                                    <div class="dropdown dropdown-actions">
+                                        <a class="dropdown-toggle dropdown-toggle-hidden-marker disabled" href="#" role="button" style="opacity: 0.5; cursor: not-allowed;" title="{{ 'pteroca.server.cannot_modify_yourself'|trans }}">
+                                            <span class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+            {% if hasServerPermission(serverData.serverPermissions, 'user.create') %}
+            <div class="col-12 mb-3">
+                <button type="button" class="btn btn-primary float-end" onclick="addNewUser()">
+                    <i class="fas fa-plus"></i>
+                    {{ 'pteroca.server.add_user'|trans }}
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if hasServerPermission(serverData.serverPermissions, 'user.update') %}
+            {% include 'panel/server/tabs/users/components/edit-user-modal.html.twig' %}
+        {% endif %}
+        {% if hasServerPermission(serverData.serverPermissions, 'user.create') %}
+            {% include 'panel/server/tabs/users/components/add-user-modal.html.twig' %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        let currentSubusers = {{ serverData.subusers|json_encode|raw }};
+        
+        function addNewUser() {
+            // Wyczyść formularz
+            document.getElementById('addUserForm').reset();
+            document.querySelectorAll('#addUserModal input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Pokaż modal
+            const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
+            modal.show();
+        }
+        
+        function saveNewUser() {
+            const form = document.getElementById('addUserForm');
+            const formData = new FormData(form);
+            const email = formData.get('email');
+            const permissions = formData.getAll('permissions[]');
+            
+            if (!email) {
+                alert('{{ 'pteroca.server.email_required'|trans }}');
+                return;
+            }
+            
+            if (permissions.length === 0) {
+                alert('{{ 'pteroca.server.at_least_one_permission_required'|trans }}');
+                return;
+            }
+            
+            fetch('{{ path('server_users_create', { id: server.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    permissions: permissions
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                } else {
+                    alert('{{ 'pteroca.server.user_created_successfully'|trans }}');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+            });
+            
+            // Zamknij modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+            modal.hide();
+        }
+        
+        function editUser(userUuid) {
+            // Znajdź użytkownika w danych
+            const user = currentSubusers.find(u => u.uuid === userUuid);
+            if (!user) {
+                alert('Nie znaleziono użytkownika');
+                return;
+            }
+            
+            // Ustaw email w tytule modala
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('editUserUuid').value = userUuid;
+            
+            // Wyczyść wszystkie checkboxy w modalu edycji
+            document.querySelectorAll('#editUserForm input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Zaznacz uprawnienia użytkownika
+            if (user.permissions && user.permissions.length > 0) {
+                user.permissions.forEach(permission => {
+                    const checkbox = document.querySelector(`#editUserForm input[value="${permission}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+            
+            // Aktualizuj checkboxy grup
+            updateGroupCheckboxes('#editUserForm');
+            
+            // Pokaż modal
+            const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            modal.show();
+        }
+        
+        function removeUser(userUuid) {
+            if (confirm('{{ 'pteroca.server.confirm_remove_user'|trans }}')) {
+                // Znajdź email użytkownika na podstawie UUID
+                const user = currentSubusers.find(u => u.uuid === userUuid);
+                if (!user || !user.email) {
+                    alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                    return;
+                }
+                
+                fetch('{{ path('server_users_delete', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        email: user.email
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                    } else {
+                        alert('{{ 'pteroca.server.user_removed_successfully'|trans }}');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                });
+            }
+        }
+        
+        function saveUserPermissions() {
+            const userUuid = document.getElementById('editUserUuid').value;
+            const form = document.getElementById('editUserForm');
+            const formData = new FormData(form);
+            const permissions = formData.getAll('permissions[]');
+            
+            if (permissions.length === 0) {
+                alert('{{ 'pteroca.server.at_least_one_permission_required'|trans }}');
+                return;
+            }
+            
+            // Znajdź email użytkownika na podstawie UUID
+            const user = currentSubusers.find(u => u.uuid === userUuid);
+            if (!user || !user.email) {
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+                return;
+            }
+            
+            fetch('{{ path('server_users_update_permissions', { id: server.id, userUuid: '__USER_UUID__' }) }}'.replace('__USER_UUID__', userUuid), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    email: user.email,
+                    permissions: permissions
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                } else {
+                    alert('{{ 'pteroca.server.permissions_updated_successfully'|trans }}');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+            });
+            
+            // Zamknij modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+            modal.hide();
+        }
+        
+        function updateGroupCheckboxes(formSelector = '') {
+            // Aktualizuj checkboxy grup na podstawie zaznaczonych uprawnień
+            const selector = formSelector ? `${formSelector} .group-checkbox` : '.group-checkbox';
+            document.querySelectorAll(selector).forEach(groupCheckbox => {
+                const group = groupCheckbox.dataset.group;
+                const permissionSelector = formSelector ? 
+                    `${formSelector} input[data-group="${group}"].permission-checkbox` : 
+                    `input[data-group="${group}"].permission-checkbox`;
+                const groupPermissions = document.querySelectorAll(permissionSelector);
+                const checkedPermissions = document.querySelectorAll(`${permissionSelector}:checked`);
+                
+                if (checkedPermissions.length === 0) {
+                    groupCheckbox.checked = false;
+                    groupCheckbox.indeterminate = false;
+                } else if (checkedPermissions.length === groupPermissions.length) {
+                    groupCheckbox.checked = true;
+                    groupCheckbox.indeterminate = false;
+                } else {
+                    groupCheckbox.checked = false;
+                    groupCheckbox.indeterminate = true;
+                }
+            });
+        }
+        
+        // Event listenery dla checkboxów grup
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obsługa dropdown actions
+            document.querySelectorAll('#users .dropdown-actions .dropdown-menu .dropdown-item').forEach(function (element) {
+                element.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const anchorElement = event.target.closest('a');
+                    const actionName = anchorElement.getAttribute('data-action-name');
+                    const userUuid = anchorElement.getAttribute('data-user-uuid');
+
+                    if (actionName === 'edit') {
+                        editUser(userUuid);
+                    } else if (actionName === 'delete') {
+                        removeUser(userUuid);
+                    }
+                });
+            });
+            
+            // Obsługa checkboxów grup
+            document.querySelectorAll('.group-checkbox').forEach(groupCheckbox => {
+                groupCheckbox.addEventListener('change', function() {
+                    const group = this.dataset.group;
+                    const form = this.closest('form');
+                    const formSelector = form ? `#${form.id}` : '';
+                    const permissionSelector = formSelector ? 
+                        `${formSelector} input[data-group="${group}"].permission-checkbox` : 
+                        `input[data-group="${group}"].permission-checkbox`;
+                    const groupPermissions = document.querySelectorAll(permissionSelector);
+                    
+                    groupPermissions.forEach(permission => {
+                        permission.checked = this.checked;
+                    });
+                });
+            });
+            
+            // Obsługa pojedynczych checkboxów uprawnień
+            document.querySelectorAll('.permission-checkbox').forEach(permissionCheckbox => {
+                permissionCheckbox.addEventListener('change', function() {
+                    const form = this.closest('form');
+                    const formSelector = form ? `#${form.id}` : '';
+                    updateGroupCheckboxes(formSelector);
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,382 @@
+<!-- Control permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.control'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="control">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.control_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="control.console" id="{{ idPrefix|default('') }}permission_control_console" data-group="control">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_control_console">
+                <strong>console</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.control_console_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="control.start" id="{{ idPrefix|default('') }}permission_control_start" data-group="control">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_control_start">
+                <strong>start</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.control_start_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="control.stop" id="{{ idPrefix|default('') }}permission_control_stop" data-group="control">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_control_stop">
+                <strong>stop</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.control_stop_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="control.restart" id="{{ idPrefix|default('') }}permission_control_restart" data-group="control">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_control_restart">
+                <strong>restart</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.control_restart_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- User permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.user'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="user">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.user_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="user.create" id="{{ idPrefix|default('') }}permission_user_create" data-group="user">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_user_create">
+                <strong>create</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.user_create_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="user.read" id="{{ idPrefix|default('') }}permission_user_read" data-group="user">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_user_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.user_read_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="user.update" id="{{ idPrefix|default('') }}permission_user_update" data-group="user">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_user_update">
+                <strong>update</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.user_update_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="user.delete" id="{{ idPrefix|default('') }}permission_user_delete" data-group="user">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_user_delete">
+                <strong>delete</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.user_delete_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- File permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.file'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="file">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.file_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="file.create" id="{{ idPrefix|default('') }}permission_file_create" data-group="file">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_file_create">
+                <strong>create</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.file_create_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="file.read" id="{{ idPrefix|default('') }}permission_file_read" data-group="file">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_file_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.file_read_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="file.read-content" id="{{ idPrefix|default('') }}permission_file_read_content" data-group="file">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_file_read_content">
+                <strong>read-content</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.file_read_content_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="file.update" id="{{ idPrefix|default('') }}permission_file_update" data-group="file">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_file_update">
+                <strong>update</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.file_update_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="file.delete" id="{{ idPrefix|default('') }}permission_file_delete" data-group="file">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_file_delete">
+                <strong>delete</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.file_delete_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="file.archive" id="{{ idPrefix|default('') }}permission_file_archive" data-group="file">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_file_archive">
+                <strong>archive</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.file_archive_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="file.sftp" id="{{ idPrefix|default('') }}permission_file_sftp" data-group="file">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_file_sftp">
+                <strong>sftp</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.file_sftp_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Backup permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.backup'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="backup">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.backup_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="backup.create" id="{{ idPrefix|default('') }}permission_backup_create" data-group="backup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_backup_create">
+                <strong>create</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.backup_create_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="backup.read" id="{{ idPrefix|default('') }}permission_backup_read" data-group="backup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_backup_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.backup_read_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="backup.delete" id="{{ idPrefix|default('') }}permission_backup_delete" data-group="backup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_backup_delete">
+                <strong>delete</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.backup_delete_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="backup.download" id="{{ idPrefix|default('') }}permission_backup_download" data-group="backup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_backup_download">
+                <strong>download</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.backup_download_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="backup.restore" id="{{ idPrefix|default('') }}permission_backup_restore" data-group="backup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_backup_restore">
+                <strong>restore</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.backup_restore_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Allocation permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.allocation'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="allocation">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.allocation_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="allocation.read" id="{{ idPrefix|default('') }}permission_allocation_read" data-group="allocation">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_allocation_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.allocation_read_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="allocation.create" id="{{ idPrefix|default('') }}permission_allocation_create" data-group="allocation">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_allocation_create">
+                <strong>create</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.allocation_create_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="allocation.update" id="{{ idPrefix|default('') }}permission_allocation_update" data-group="allocation">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_allocation_update">
+                <strong>update</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.allocation_update_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="allocation.delete" id="{{ idPrefix|default('') }}permission_allocation_delete" data-group="allocation">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_allocation_delete">
+                <strong>delete</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.allocation_delete_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Startup permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.startup'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="startup">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.startup_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="startup.read" id="{{ idPrefix|default('') }}permission_startup_read" data-group="startup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_startup_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.startup_read_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="startup.update" id="{{ idPrefix|default('') }}permission_startup_update" data-group="startup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_startup_update">
+                <strong>update</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.startup_update_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="startup.docker-image" id="{{ idPrefix|default('') }}permission_startup_docker_image" data-group="startup">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_startup_docker_image">
+                <strong>docker-image</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.startup_docker_image_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Database permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.database'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="database">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.database_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="database.create" id="{{ idPrefix|default('') }}permission_database_create" data-group="database">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_database_create">
+                <strong>create</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.database_create_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="database.read" id="{{ idPrefix|default('') }}permission_database_read" data-group="database">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_database_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.database_read_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="database.update" id="{{ idPrefix|default('') }}permission_database_update" data-group="database">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_database_update">
+                <strong>update</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.database_update_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="database.delete" id="{{ idPrefix|default('') }}permission_database_delete" data-group="database">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_database_delete">
+                <strong>delete</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.database_delete_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="database.view_password" id="{{ idPrefix|default('') }}permission_database_view_password" data-group="database">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_database_view_password">
+                <strong>view_password</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.database_view_password_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.schedule'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="schedule">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.schedule_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="schedule.create" id="{{ idPrefix|default('') }}permission_schedule_create" data-group="schedule">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_schedule_create">
+                <strong>create</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.schedule_create_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="schedule.read" id="{{ idPrefix|default('') }}permission_schedule_read" data-group="schedule">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_schedule_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.schedule_read_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="schedule.update" id="{{ idPrefix|default('') }}permission_schedule_update" data-group="schedule">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_schedule_update">
+                <strong>update</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.schedule_update_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="schedule.delete" id="{{ idPrefix|default('') }}permission_schedule_delete" data-group="schedule">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_schedule_delete">
+                <strong>delete</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.schedule_delete_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Settings permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.settings'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="settings">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.settings_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="settings.rename" id="{{ idPrefix|default('') }}permission_settings_rename" data-group="settings">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_settings_rename">
+                <strong>rename</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.settings_rename_desc'|trans }}</small>
+            </label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="settings.reinstall" id="{{ idPrefix|default('') }}permission_settings_reinstall" data-group="settings">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_settings_reinstall">
+                <strong>reinstall</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.settings_reinstall_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Activity permissions -->
+<div class="permission-group mb-4">
+    <div class="permission-header d-flex align-items-center mb-3">
+        <h6 class="mb-0 me-3">{{ 'pteroca.server.permissions.activity'|trans }}</h6>
+        <input type="checkbox" class="form-check-input group-checkbox" data-group="activity">
+    </div>
+    <p class="text-muted mb-3">{{ 'pteroca.server.permissions.activity_description'|trans }}</p>
+    <div class="permission-items">
+        <div class="form-check mb-2">
+            <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="activity.read" id="{{ idPrefix|default('') }}permission_activity_read" data-group="activity">
+            <label class="form-check-label" for="{{ idPrefix|default('') }}permission_activity_read">
+                <strong>read</strong><br>
+                <small class="text-muted">{{ 'pteroca.server.permissions.activity_read_desc'|trans }}</small>
+            </label>
+        </div>
+    </div>
+</div>

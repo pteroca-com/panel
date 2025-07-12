@@ -1,0 +1,101 @@
+{% block main %}
+    {% if hasServerPermission(serverData.serverPermissions, 'schedule.update') %}
+    <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteTaskModalLabel">{{ 'pteroca.server.delete_task'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'pteroca.server.close'|trans }}"></button>
+                </div>
+                <form method="post" id="delete-task-form">
+                    <input type="hidden" name="taskId" id="deleteTaskId">
+                    <input type="hidden" name="scheduleId" id="deleteTaskScheduleId">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="field-text">
+                                    <p>{{ 'pteroca.server.confirm_delete_task'|trans }}</p>
+                                    <div class="bg-light p-3 rounded">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i id="task-delete-icon" class="me-2"></i>
+                                            <strong id="task-delete-type"></strong>
+                                        </div>
+                                        <div class="bg-dark text-white p-2 rounded">
+                                            <code id="task-delete-payload"></code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.cancel'|trans }}</button>
+                        <button type="submit" class="btn btn-danger" id="delete-task-btn"><i class="fa-solid fa-circle-notch fa-spin d-none"></i> {{ 'pteroca.server.delete'|trans }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            // Event listener dla zamknięcia modala (anulowanie)
+            document.getElementById('deleteTaskModal').addEventListener('hidden.bs.modal', function () {
+                // Sprawdź czy modal został zamknięty bez usunięcia zadania
+                const currentScheduleId = document.getElementById('currentScheduleId').value
+                if (currentScheduleId) {
+                    // Otwórz ponownie modal edycji harmonogramu po krótkiej przerwie
+                    setTimeout(() => {
+                        editSchedule(currentScheduleId)
+                    }, 100)
+                }
+            })
+
+            document.querySelector('#delete-task-form').addEventListener('submit', function (event) {
+                event.preventDefault()
+
+                const form = event.target,
+                    formData = new FormData(form),
+                    taskId = formData.get('taskId'),
+                    scheduleId = formData.get('scheduleId'),
+                    endpointUrl = '{{ path('server_schedules_tasks_delete', { id: server.id, scheduleId: 'SCHEDULE_ID', taskId: 'TASK_ID' }) }}'.replace('SCHEDULE_ID', scheduleId).replace('TASK_ID', taskId),
+                    submitButton = document.getElementById('delete-task-btn'),
+                    spinner = submitButton.querySelector('i')
+
+                submitButton.disabled = true
+                spinner.classList.remove('d-none')
+
+                sendRequest(endpointUrl, 'DELETE')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            submitButton.disabled = false
+                            spinner.classList.add('d-none')
+                            alert('{{ 'pteroca.server.error'|trans }}: ' + data.error)
+                        } else {
+                            // Zamknij modal
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteTaskModal'))
+                            modal.hide()
+                            
+                            // Pokaż komunikat o sukcesie
+                            alert('{{ 'pteroca.server.task_deleted_successfully'|trans }}')
+                            
+                            // Odśwież widok harmonogramu - otwórz ponownie modal edycji harmonogramu
+                            const currentScheduleId = document.getElementById('currentScheduleId').value
+                            if (currentScheduleId) {
+                                editSchedule(currentScheduleId)
+                            }
+                        }
+                    }).catch(error => {
+                        submitButton.disabled = false
+                        spinner.classList.add('d-none')
+                        console.error('Error:', error)
+                        alert('{{ 'pteroca.server.error_occurred'|trans }}')
+                    })
+            })
+        })
+    </script>
+{% endblock %}

@@ -5,8 +5,8 @@ namespace App\Core\Controller;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
-use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Server\ServerDataService;
+use App\Core\Service\Server\ServerService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,7 +15,7 @@ class ServerController extends AbstractController
 {
     #[Route('/servers', name: 'servers')]
     public function servers(
-        ServerRepository $serverRepository,
+        ServerService $serverService,
     ): Response
     {
         $this->checkPermission();
@@ -26,7 +26,7 @@ class ServerController extends AbstractController
                 $server->imagePath = $imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath();
             }
             return $server;
-        }, $serverRepository->getActiveServersByUser($this->getUser()));
+        }, $serverService->getServersWithAccess($this->getUser()));
 
         return $this->render('panel/servers/servers.html.twig', [
             'servers' => $servers,
@@ -38,7 +38,6 @@ class ServerController extends AbstractController
         Request $request,
         ServerRepository $serverRepository,
         ServerDataService $serverDataService,
-        ServerLogService $serverLogService,
     ): Response
     {
         $this->checkPermission();
@@ -55,18 +54,18 @@ class ServerController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
         $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
-        if ($server->getUser() !== $this->getUser() && !$isAdminView) {
+        $isOwner = $server->getUser() === $this->getUser();
+        if (empty($serverData->serverPermissions->toArray()) && !$isAdminView) {
             throw $this->createAccessDeniedException();
         }
-
-        $serverData = $serverDataService->getServerData($server);
 
         return $this->render('panel/server/server.html.twig', [
             'server' => $server,
             'serverData' => $serverData,
             'isAdminView' => $isAdminView,
-            'serverLogs' => $serverLogService->getServerLogsWithPagination($server, $currentPage),
+            'isOwner' => $isOwner,
         ]);
     }
 }

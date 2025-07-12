@@ -3,65 +3,67 @@
         <div class="row pt-3">
             <div class="col-12 mb-4">
                 <table class="table datagrid text-center">
-                    <thead>
-                        <tr>
-                            <th class="pb-2">{{ 'pteroca.server.ip_address'|trans }}</th>
-                            <th class="pb-2">{{ 'pteroca.server.port'|trans }}</th>
-                            <th class="pb-2">{{ 'pteroca.server.notes'|trans }}</th>
-                            <th class="pb-2">{{ 'pteroca.server.type'|trans }}</th>
-                            <th class="pb-2">{{ 'pteroca.server.action'|trans }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for allocatedPort in serverData.allocatedPorts %}
-                        <tr>
-                            <td>
-                                {{ allocatedPort.ip }}
-                            </td>
-                            <td>
-                                {{ allocatedPort.port }}
-                            </td>
-                            <td>
-                                {% if allocatedPort.notes and allocatedPort.notes|length > 0 %}
-                                    {{ allocatedPort.notes }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge badge-{{ allocatedPort.is_default ? 'primary' : 'secondary' }}">
-                                    {% if allocatedPort.is_default %}
-                                        <i class="fas fa-check pe-1"></i>
+                        <thead>
+                            <tr>
+                                <th class="pb-2">{{ 'pteroca.server.ip_address'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.port'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.notes'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.type'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.action'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for allocatedPort in serverData.allocatedPorts %}
+                            <tr>
+                                <td>
+                                    {{ allocatedPort.ip }}
+                                </td>
+                                <td>
+                                    {{ allocatedPort.port }}
+                                </td>
+                                <td>
+                                    {% if allocatedPort.notes and allocatedPort.notes|length > 0 %}
+                                        {{ allocatedPort.notes }}
                                     {% else %}
-                                        <i class="fas fa-asterisk pe-1"></i>
+                                        -
                                     {% endif %}
-                                    {{ allocatedPort.is_default ? 'pteroca.server.primary'|trans : 'pteroca.server.secondary'|trans }}
-                                </span>
-                            </td>
-                            <td class="actions actions-as-dropdown text-center">
-                                <div class="dropdown dropdown-actions">
-                                    <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
-                                                </svg>
-                                            </span>
-                                    </a>
-                                    <div class="dropdown-overlay">
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            {% if allocatedPort.is_default == false %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ allocatedPort.is_default ? 'primary' : 'secondary' }}">
+                                        {% if allocatedPort.is_default %}
+                                            <i class="fas fa-check pe-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-asterisk pe-1"></i>
+                                        {% endif %}
+                                        {{ allocatedPort.is_default ? 'pteroca.server.primary'|trans : 'pteroca.server.secondary'|trans }}
+                                    </span>
+                                </td>
+                                <td class="actions actions-as-dropdown text-center">
+                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['allocation.update', 'allocation.delete']) %}
+                                    <div class="dropdown dropdown-actions">
+                                        <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span class="icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                    </svg>
+                                                </span>
+                                        </a>
+                                        <div class="dropdown-overlay">
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {% if allocatedPort.is_default == false and hasServerPermission(serverData.serverPermissions, 'allocation.update') %}
+                                                    <li>
+                                                        <a class="dropdown-item action-edit" href="#" {% if not is_demo() %}data-action-name="make-primary" data-bs-toggle="modal" data-bs-target="#makePrimaryAllocationModal" data-allocation-id="{{ allocatedPort.id }}"{% endif %}>
+                                                            <span class="action-label">
+                                                                <i class="fas fa-check"></i>
+                                                                {{ 'pteroca.server.make_primary'|trans }}
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if hasServerPermission(serverData.serverPermissions, 'allocation.update') %}
                                                 <li>
-                                                    <a class="dropdown-item action-edit" href="#" {% if not is_demo() %}data-action-name="make-primary" data-bs-toggle="modal" data-bs-target="#makePrimaryAllocationModal" data-allocation-id="{{ allocatedPort.id }}"{% endif %}>
-                                                        <span class="action-label">
-                                                            <i class="fas fa-check"></i>
-                                                            {{ 'pteroca.server.make_primary'|trans }}
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            <li>
-                                                <a class="dropdown-item action-edit" href="#"
-                                                {% if not is_demo() %}
+                                                    <a class="dropdown-item action-edit" href="#"
+                                                    {% if not is_demo() %}
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#editAllocationModal"
                                                     data-action-name="edit"
@@ -78,40 +80,64 @@
                                                     </span>
                                                 </a>
                                             </li>
-                                            <li>
-                                                <a class="dropdown-item action-edit" href="#" {% if not is_demo() %}data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteAllocationModal" data-allocation-id="{{ allocatedPort.id }}"{% endif %}>
-                                                    <span class="action-label text-danger">
-                                                        <i class="fas fa-trash text-danger"></i>
-                                                        {{ 'pteroca.server.delete'|trans }}
-                                                    </span>
-                                                </a>
-                                            </li>
-                                        </ul>
+                                            {% endif %}
+                                                {% if hasServerPermission(serverData.serverPermissions, 'allocation.delete') %}
+                                                <li>
+                                                    <a class="dropdown-item action-edit" href="#" {% if not is_demo() %}data-action-name="delete" data-bs-toggle="modal" data-bs-target="#deleteAllocationModal" data-allocation-id="{{ allocatedPort.id }}"{% endif %}>
+                                                        <span class="action-label text-danger">
+                                                            <i class="fas fa-trash text-danger"></i>
+                                                            {{ 'pteroca.server.delete'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
             </div>
+            {% if hasServerPermission(serverData.serverPermissions, 'allocation.create') %}
             <div class="col-12 mb-3">
-                <button type="button" class="btn btn-primary float-end" {% if not is_demo() %}data-bs-toggle="modal" data-bs-target="#createAllocationModal"{% endif%} {% if server.serverProduct.ports <= serverData.allocatedPorts|length %}disabled{% endif %}>
+                {% set currentAllocations = serverData.allocatedPorts|length %}
+                {% set allocationLimit = serverData.pterodactylServer.feature_limits.allocations %}
+                {% set canCreateAllocation = currentAllocations < allocationLimit %}
+                <button type="button" class="btn btn-primary float-end{% if not canCreateAllocation %} disabled{% endif %}"
+                        {% if not is_demo() %}data-bs-toggle="modal" data-bs-target="#createAllocationModal"{% endif %}
+                        {% if not canCreateAllocation %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_allocation'|trans }}
                 </button>
+                <div class="float-end me-3">
+                    <small class="text-muted">
+                        {{ 'pteroca.server.usage'|trans({ '{{ current }}': currentAllocations, '{{ limit }}': allocationLimit }) }}
+                    </small>
+                </div>
             </div>
+            {% endif %}
         </div>
     </div>
 
     {% if serverData.allocatedPorts|length > 0 %}
-        {% include 'panel/server/tabs/network/components/edit_allocation_modal.html.twig' %}
-        {% include 'panel/server/tabs/network/components/delete_allocation_modal.html.twig' %}
+        {% if hasServerPermission(serverData.serverPermissions, 'allocation.update') %}
+            {% include 'panel/server/tabs/network/components/edit_allocation_modal.html.twig' %}
+        {% endif %}
+        {% if hasServerPermission(serverData.serverPermissions, 'allocation.delete') %}
+            {% include 'panel/server/tabs/network/components/delete_allocation_modal.html.twig' %}
+        {% endif %}
     {% endif %}
-    {% if serverData.allocatedPorts|length > 1 %}
+    {% if serverData.allocatedPorts|length > 1 and hasServerPermission(serverData.serverPermissions, 'allocation.update') %}
         {% include 'panel/server/tabs/network/components/make_primary_allocation_modal.html.twig' %}
     {% endif %}
-    {% if server.serverProduct.ports > serverData.allocatedPorts|length %}
+    {% set currentAllocations = serverData.allocatedPorts|length %}
+    {% set allocationLimit = serverData.pterodactylServer.feature_limits.allocations %}
+    {% if currentAllocations < allocationLimit and hasServerPermission(serverData.serverPermissions, 'allocation.create') %}
         {% include 'panel/server/tabs/network/components/create_allocation_modal.html.twig' %}
     {% endif %}
 {% endblock %}

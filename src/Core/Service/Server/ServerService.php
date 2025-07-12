@@ -2,9 +2,11 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\UserInterface;
 use App\Core\DTO\ServerDetailsDTO;
 use App\Core\Entity\Server;
 use App\Core\Repository\ServerRepository;
+use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 
 class ServerService
@@ -12,6 +14,7 @@ class ServerService
     public function __construct(
         private readonly PterodactylService $pterodactylService,
         private readonly ServerRepository $serverRepository,
+        private readonly ServerSubuserRepository $serverSubuserRepository,
     ) {}
 
     public function getServerDetails(Server $server, ?object $pterodactylServer = null): ?ServerDetailsDTO
@@ -48,5 +51,24 @@ class ServerService
     {
         return $this->serverRepository
             ->findOneBy(['pterodactylServerIdentifier' => $pterodactylServerIdentifier]);
+    }
+
+    public function getServersWithAccess(UserInterface $user): array
+    {
+        $ownedServers = $this->serverRepository->getActiveServersByUser($user);
+        $ownedServerIds = array_map(fn(Server $server) => $server->getId(), $ownedServers);
+
+        $subuserServers = [];
+        $subusers = $this->serverSubuserRepository->getSubusersByUser($user);
+        foreach ($subusers as $serverSubuser) {
+            $server = $serverSubuser->getServer();
+            if ($server instanceof Server && $server->getDeletedAt() === null) {
+                if (!in_array($server->getId(), $ownedServerIds)) {
+                    $subuserServers[] = $server;
+                }
+            }
+        }
+
+        return array_merge($ownedServers, $subuserServers);
     }
 }

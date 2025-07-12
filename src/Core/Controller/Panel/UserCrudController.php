@@ -7,8 +7,7 @@ use App\Core\Entity\User;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
-use App\Core\Service\Pterodactyl\PterodactylService;
-use App\Core\Service\Pterodactyl\PterodactylUsernameService;
+use App\Core\Service\User\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -17,20 +16,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Exception;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly PterodactylService $pterodactylService,
-        private readonly PterodactylUsernameService $usernameService,
+        private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($panelCrudService);
@@ -49,46 +48,90 @@ class UserCrudController extends AbstractPanelController
             $this->getParameter('avatar_directory'),
         );
 
-        return [
-            NumberField::new('id')
-                ->setDisabled(),
-            NumberField::new('pterodactylUserId', $this->translator->trans('pteroca.crud.user.pterodactyl_user_id'))
-                ->setDisabled(),
+        $fields = [];
+
+        if ($pageName !== Crud::PAGE_NEW) {
+            $fields[] = NumberField::new('id')
+                ->setDisabled()
+                ->setColumns(2);
+            $fields[] = NumberField::new('pterodactylUserId', $this->translator->trans('pteroca.crud.user.pterodactyl_user_id'))
+                ->setDisabled()
+                ->setColumns(2);
+            $fields[] = DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss')
+                ->setDisabled()
+                ->setColumns(2)
+                ->hideOnIndex();
+            $fields[] = DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss')
+                ->setDisabled()
+                ->setColumns(2)
+                ->hideOnIndex();
+            $fields[] = FormField::addRow();
+        }
+
+        $fields = array_merge($fields, [
             ImageField::new('avatarPath', $this->translator->trans('pteroca.crud.user.avatar'))
                 ->setBasePath($this->getParameter('avatar_base_path'))
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-                ->setRequired(false),
-            TextField::new('email', $this->translator->trans('pteroca.crud.user.email')),
+                ->setRequired(false)
+                ->setColumns(4),
             ChoiceField::new('roles', $this->translator->trans('pteroca.crud.user.roles'))
                 ->setChoices([
                     'User' => UserRoleEnum::ROLE_USER->name,
                     'Admin' => UserRoleEnum::ROLE_ADMIN->name,
                 ])
                 ->allowMultipleChoices(),
+            FormField::addRow(),
+            TextField::new('email', $this->translator->trans('pteroca.crud.user.email'))
+                ->setColumns(6),
             NumberField::new('balance', $this->translator->trans('pteroca.crud.user.balance'))
                 ->setNumDecimals(2)
                 ->setDecimalSeparator('.'),
-            TextField::new('plainPassword', $this->translator->trans('pteroca.crud.user.password'))
-                ->setFormTypeOption('attr', ['type' => 'password'])
-                ->onlyOnForms()
-                ->setRequired($pageName === Crud::PAGE_NEW)
-                ->setHelp($this->translator->trans('pteroca.crud.user.password_hint')),
+            FormField::addRow(),
             TextField::new('name', $this->translator->trans('pteroca.crud.user.name'))
-                ->setMaxLength(255),
+                ->setMaxLength(255)
+                ->setColumns(4),
             TextField::new('surname', $this->translator->trans('pteroca.crud.user.surname'))
-                ->setMaxLength(255),
+                ->setMaxLength(255)
+                ->setColumns(4),
+            FormField::addRow(),
             BooleanField::new('isVerified', $this->translator->trans('pteroca.crud.user.verified'))
-                ->hideOnIndex(),
+                ->hideOnIndex()
+                ->setColumns(2),
             BooleanField::new('isBlocked', $this->translator->trans('pteroca.crud.user.blocked'))
-                ->hideOnIndex(),
-            DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
-                ->setFormat('dd.MM.yyyy HH:mm:ss')
-                ->setDisabled(),
-            DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
-                ->setFormat('dd.MM.yyyy HH:mm:ss')
-                ->setDisabled(),
-        ];
+                ->hideOnIndex()
+                ->setColumns(2),
+            FormField::addRow(),
+            TextField::new('plainPassword', $this->translator->trans('pteroca.crud.user.password'))
+                ->setFormType(RepeatedType::class)
+                ->setFormTypeOptions([
+                    'type' => PasswordType::class,
+                    'first_options' => [
+                        'label' => $this->translator->trans('pteroca.crud.user.password'),
+                        'attr' => ['style' => 'max-width: 400px;'],
+                        'help' => $pageName === Crud::PAGE_EDIT ? $this->translator->trans('pteroca.crud.user.password_hint') : null,
+                    ],
+                    'second_options' => [
+                        'label' => $this->translator->trans('pteroca.crud.user.repeat_password'),
+                        'attr' => ['style' => 'max-width: 400px;'],
+                    ],
+                    'invalid_message' => $this->translator->trans('pteroca.crud.user.passwords_must_match'),
+                ])
+                ->onlyOnForms()
+                ->setRequired($pageName === Crud::PAGE_NEW),
+                FormField::addRow(),
+        ]);
+
+        if ($pageName === Crud::PAGE_INDEX) {
+            $fields[] = DateField::new('createdAt', $this->translator->trans('pteroca.crud.user.created_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss');
+            $fields[] = DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss');
+        }
+
+        return $fields;
     }
 
     public function configureActions(Actions $actions): Actions
@@ -137,22 +180,11 @@ class UserCrudController extends AbstractPanelController
         $this->disallowForDemoMode();
 
         if ($entityInstance instanceof UserInterface) {
-            if ($plainPassword = $entityInstance->getPlainPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
-                $entityInstance->setPassword($hashedPassword);
-            }
-
             try {
-                $createdUser = $this->pterodactylService->getApi()->users->create([
-                    'email' => $entityInstance->getEmail(),
-                    'username' => $this->usernameService->generateUsername($entityInstance->getEmail()),
-                    'first_name' => $entityInstance->getName(),
-                    'last_name' => $entityInstance->getSurname(),
-                    'password' => $plainPassword,
-                ]);
-                $entityInstance->setPterodactylUserId($createdUser->id);
+                $this->userService->createUserWithPterodactylAccount($entityInstance, $entityInstance->getPlainPassword());
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
+                return;
             }
         }
 
@@ -164,31 +196,8 @@ class UserCrudController extends AbstractPanelController
         $this->disallowForDemoMode();
 
         if ($entityInstance instanceof UserInterface) {
-            if ($plainPassword = $entityInstance->getPlainPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
-                $entityInstance->setPassword($hashedPassword);
-            }
-
             try {
-                $pterodactylAccount = $this->pterodactylService
-                    ->getApi()
-                    ->users
-                    ->get($entityInstance->getPterodactylUserId());
-                if (!empty($pterodactylAccount->username)) {
-                    $pterodactylAccountDetails = [
-                        'username' => $pterodactylAccount->username,
-                        'email' => $entityInstance->getEmail(),
-                        'first_name' => $entityInstance->getName(),
-                        'last_name' => $entityInstance->getSurname(),
-                    ];
-                    if ($plainPassword) {
-                        $pterodactylAccountDetails['password'] = $plainPassword;
-                    }
-                    $this->pterodactylService->getApi()->users->update(
-                        $entityInstance->getPterodactylUserId(),
-                        $pterodactylAccountDetails
-                    );
-                }
+                $this->userService->updateUserInPterodactyl($entityInstance, $entityInstance->getPlainPassword());
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
             }
@@ -203,7 +212,7 @@ class UserCrudController extends AbstractPanelController
 
         if ($entityInstance instanceof UserInterface) {
             try {
-                $this->pterodactylService->getApi()->users->delete($entityInstance->getPterodactylUserId());
+                $this->userService->deleteUserFromPterodactyl($entityInstance);
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
             }

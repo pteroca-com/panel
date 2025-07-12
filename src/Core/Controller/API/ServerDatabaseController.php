@@ -2,10 +2,13 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerDatabaseService;
 use App\Core\Trait\DisallowForDemoModeTrait;
 use App\Core\Trait\InternalServerApiTrait;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,6 +21,8 @@ class ServerDatabaseController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerDatabaseService $serverDatabaseService,
+        private readonly PterodactylService $pterodactylService,
+        private readonly LoggerInterface $logger,
     ) {}
 
     #[Route('/panel/api/server/{id}/database/all', name: 'server_database_get_all', methods: ['GET'])]
@@ -27,7 +32,7 @@ class ServerDatabaseController extends APIAbstractController
     {
         $this->disallowForDemoMode();
 
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_READ);
         $response = new JsonResponse();
 
         try {
@@ -36,7 +41,13 @@ class ServerDatabaseController extends APIAbstractController
                 $this->getUser(),
             );
             $response->setData($pterodactylDatabases);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get all Pterodactyl databases', [
+                'server_id' => $id,
+                'user_id' => $this->getUser()->getId(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $response->setStatusCode(400);
         }
 
@@ -51,7 +62,7 @@ class ServerDatabaseController extends APIAbstractController
     {
         $this->disallowForDemoMode();
 
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_CREATE);
         $response = new JsonResponse();
         $payload = $request->request->all('Database');
 
@@ -62,7 +73,15 @@ class ServerDatabaseController extends APIAbstractController
                 $payload['name'],
                 $payload['connections_from'],
             );
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to create Pterodactyl database', [
+                'server_id' => $id,
+                'user_id' => $this->getUser()->getId(),
+                'database_name' => $payload['name'] ?? 'unknown',
+                'connections_from' => $payload['connections_from'] ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $response->setStatusCode(400);
         }
 
@@ -77,7 +96,7 @@ class ServerDatabaseController extends APIAbstractController
     {
         $this->disallowForDemoMode();
 
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_DELETE);
         $response = new JsonResponse();
 
         try {
@@ -86,7 +105,14 @@ class ServerDatabaseController extends APIAbstractController
                 $this->getUser(),
                 $databaseId,
             );
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to delete Pterodactyl database', [
+                'server_id' => $id,
+                'user_id' => $this->getUser()->getId(),
+                'database_id' => $databaseId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $response->setStatusCode(400);
         }
 
@@ -101,7 +127,7 @@ class ServerDatabaseController extends APIAbstractController
     {
         $this->disallowForDemoMode();
 
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::DATABASE_UPDATE);
         $response = new JsonResponse();
 
         try {
@@ -111,7 +137,14 @@ class ServerDatabaseController extends APIAbstractController
                 $databaseId,
             );
             $response->setData($changedDatabaseData);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to rotate Pterodactyl database password', [
+                'server_id' => $id,
+                'user_id' => $this->getUser()->getId(),
+                'database_id' => $databaseId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $response->setStatusCode(400);
         }
 

@@ -2,10 +2,11 @@
     <div class="tab-pane" id="activity">
         <div class="row pt-3">
             <div class="col-12 mb-3">
-                {% if serverLogs.items|length > 0 %}
+                {% if serverData.activityLogs.items|length > 0 %}
                     <table class="table table-striped">
                         <thead>
                         <tr>
+                            <th>{{ 'pteroca.server.source'|trans }}</th>
                             <th>{{ 'pteroca.server.action'|trans }}</th>
                             <th>{{ 'pteroca.server.details'|trans }}</th>
                             <th>{{ 'pteroca.server.user'|trans }}</th>
@@ -13,20 +14,28 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for log in serverLogs.items %}
+                        {% for log in serverData.activityLogs.items %}
+                            {% set logIndex = log.id is not null ? log.id : 'dto_' ~ loop.index0 ~ '_' ~ log.createdAt.timestamp %}
                             <tr>
+                                <td>
+                                    {% if log.sourceType.name == 'PTEROCA' %}
+                                        <span class="badge bg-primary text-white">PteroCA</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary text-white">Pterodactyl</span>
+                                    {% endif %}
+                                </td>
                                 <td>{{ ('pteroca.server_actions.' ~ log.actionId)|trans }}</td>
                                 <td>
-                                    <button id="toggle-btn-{{ log.id }}" class="btn btn-info" onclick="toggleDetails('{{ log.id }}')">
+                                    <button id="toggle-btn-{{ logIndex }}" class="btn btn-info" onclick="toggleDetails('{{ logIndex }}')">
                                         {{ 'pteroca.server.show_details'|trans }}
                                     </button>
-                                    <div id="log-details-{{ log.id }}" class="mt-3" style="display:none;">
+                                    <div id="log-details-{{ logIndex }}" class="mt-3" style="display:none;">
                                         <pre>{{ log.details|raw }}</pre>
                                     </div>
                                 </td>
                                 <td>
-                                    {% set isAdminLog = log.user.email != server.user.email and 'ROLE_ADMIN' in log.user.roles %}
-                                    {{ isAdminLog ? '<span class="badge bg-primary text-white">' ~ ('pteroca.server.admin'|trans) ~'</span>' : log.user.email }}
+                                    {% set isAdminLog = log.user.email is defined and log.user.email != server.user.email and 'ROLE_ADMIN' in log.user.roles %}
+                                    {{ isAdminLog ? '<span class="badge bg-primary text-white">' ~ ('pteroca.server.admin'|trans) ~'</span>' : (log.user.email ?? '') }}
                                 </td>
                                 <td>{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
                             </tr>
@@ -42,9 +51,9 @@
             </div>
 
             {% include 'panel/server/components/pagination.html.twig' with {
-                totalItems: serverLogs.totalItems,
-                currentPage: serverLogs.currentPage,
-                totalPages: serverLogs.totalPages,
+                totalItems: serverData.activityLogs.totalItems,
+                currentPage: serverData.activityLogs.currentPage,
+                totalPages: serverData.activityLogs.totalPages,
                 url: path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }),
                 anchor: '#activity'
             } %}
@@ -81,8 +90,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            {% for log in serverLogs.items %}
-            var logDetailsElement = document.getElementById('log-details-{{ log.id }}');
+            {% for log in serverData.activityLogs.items %}
+            {% set logIndex = log.id is not null ? log.id : 'dto_' ~ loop.index0 ~ '_' ~ log.createdAt.timestamp %}
+            var logDetailsElement = document.getElementById('log-details-{{ logIndex }}');
             if (logDetailsElement) {
                 logDetailsElement.innerText = formatJSON(logDetailsElement.innerText);
             }

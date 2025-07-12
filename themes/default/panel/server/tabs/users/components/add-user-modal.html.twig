@@ -1,0 +1,39 @@
+<!-- Modal dodawania użytkownika -->
+{% if hasServerPermission(serverData.serverPermissions, 'user.create') %}
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">{{ 'pteroca.server.create_new_subuser'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addUserForm" onsubmit="saveNewUser(); return false;">
+                <div class="modal-body">
+                    <!-- Email input section -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="newUserEmail" class="form-label">{{ 'pteroca.server.user_email'|trans }}</label>
+                                <input type="email" class="form-control" id="newUserEmail" name="email" required>
+                                <div class="form-text">{{ 'pteroca.server.enter_email_description'|trans }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Permissions section -->
+                    <div class="permissions-section">
+                        <h6 class="mb-3">{{ 'pteroca.server.user_permissions'|trans }}</h6>
+                        {% include 'panel/server/tabs/users/components/permissions-form.html.twig' with { idPrefix: 'add_' } %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.cancel'|trans }}</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> {{ 'pteroca.server.invite_user'|trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}

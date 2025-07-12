@@ -6,10 +6,12 @@
     <div class="tab-pane active" id="console">
         <div class="row">
             <div class="col-12 col-xl-9 mb-3">
+                {% if hasServerPermission(serverData.serverPermissions, 'websocket.connect') %}
                 <div class="row mb-5">
                     <div class="col-12">
                         <div id="terminal"></div>
                     </div>
+                    {% if hasServerPermission(serverData.serverPermissions, 'control.console') %}
                     <div class="col-12 mt-2">
                         <div class="row">
                             <div class="col-10 d-flex justify-content-center align-items-center">
@@ -20,7 +22,9 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
+                {% endif %}
                 <div class="row">
                     {% include 'panel/server/tabs/console/components/charts.html.twig' %}
                 </div>
@@ -34,14 +38,16 @@
     <script src="{{ template_asset('js/libraries/xterm.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            terminal.initializeTerminal();
-            {% if not server.isSuspended %}
-                terminal.getWebsocketToken()
-                    .then(data => {
-                        terminal.initializeWebsocket(data.token, data.socket);
-                    });
-            {% else %}
-                terminal.showSuspendedServerMessage();
+            {% if hasServerPermission(serverData.serverPermissions, 'websocket.connect') %}
+                terminal.initializeTerminal();
+                {% if not server.isSuspended %}
+                    terminal.getWebsocketToken()
+                        .then(data => {
+                            terminal.initializeWebsocket(data.token, data.socket);
+                        });
+                {% else %}
+                    terminal.showSuspendedServerMessage();
+                {% endif %}
             {% endif %}
         });
 

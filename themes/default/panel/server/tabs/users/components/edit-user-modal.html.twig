@@ -1,0 +1,32 @@
+<!-- Modal edycji użytkownika -->
+{% if hasServerPermission(serverData.serverPermissions, 'user.update') %}
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">
+                    {{ 'pteroca.server.modify_permissions_for'|trans }} <span id="userEmail"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editUserForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editUserUuid" name="userUuid">
+                    
+                    <!-- Permissions section -->
+                    <div class="permissions-section">
+                        <h6 class="mb-3">{{ 'pteroca.server.user_permissions'|trans }}</h6>
+                        {% include 'panel/server/tabs/users/components/permissions-form.html.twig' with { idPrefix: 'edit_' } %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.cancel'|trans }}</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUserPermissions()">
+                        <i class="fas fa-save"></i> {{ 'pteroca.server.save'|trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}

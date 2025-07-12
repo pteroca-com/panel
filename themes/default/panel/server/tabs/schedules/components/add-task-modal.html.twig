@@ -1,0 +1,184 @@
+<!-- Modal dodawania zadania do harmonogramu -->
+{% if hasServerPermission(serverData.serverPermissions, 'schedule.update') %}
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaskModalLabel">{{ 'pteroca.server.create_new_task'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addTaskForm" onsubmit="saveNewTask(); return false;">
+                <div class="modal-body">
+                    <!-- Action section -->
+                    <div class="mb-4">
+                        <label for="newTaskAction" class="form-label">{{ 'pteroca.server.action'|trans }}</label>
+                        <select class="form-select" id="newTaskAction" name="action" required>
+                            <option value="command">{{ 'pteroca.server.send_command'|trans }}</option>
+                            <option value="power">{{ 'pteroca.server.power_action'|trans }}</option>
+                            <option value="backup">{{ 'pteroca.server.create_backup'|trans }}</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Time offset section -->
+                    <div class="mb-4">
+                        <label for="newTaskTimeOffset" class="form-label">{{ 'pteroca.server.time_offset_seconds'|trans }}</label>
+                        <input type="number" class="form-control" id="newTaskTimeOffset" name="time_offset" value="0" min="0" required>
+                        <div class="form-text">{{ 'pteroca.server.time_offset_description'|trans }}</div>
+                    </div>
+                    
+                    <!-- Payload section -->
+                    <div class="mb-4">
+                        <label for="newTaskPayload" class="form-label">{{ 'pteroca.server.payload'|trans }}</label>
+                        <textarea class="form-control" id="newTaskPayload" name="payload" rows="6" required></textarea>
+                        <div class="form-text" id="newPayloadHelp">{{ 'pteroca.server.payload_command_description'|trans }}</div>
+                    </div>
+                    
+                    <!-- Continue on failure section -->
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="newTaskContinueOnFailure" name="continue_on_failure">
+                            <label class="form-check-label" for="newTaskContinueOnFailure">
+                                {{ 'pteroca.server.continue_on_failure'|trans }}
+                            </label>
+                            <div class="form-text">{{ 'pteroca.server.continue_on_failure_description'|trans }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.cancel'|trans }}</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> {{ 'pteroca.server.create_task'|trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden input do przechowywania ID harmonogramu -->
+<input type="hidden" id="addingTaskScheduleId" value="">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Zmiana typu akcji - aktualizacja opisu payload
+    document.getElementById('newTaskAction').addEventListener('change', function() {
+        const payloadHelp = document.getElementById('newPayloadHelp');
+        const payloadField = document.getElementById('newTaskPayload');
+        
+        switch(this.value) {
+            case 'command':
+                payloadHelp.textContent = '{{ 'pteroca.server.payload_command_description'|trans }}';
+                payloadField.placeholder = 'say Hello World!';
+                break;
+            case 'power':
+                payloadHelp.textContent = '{{ 'pteroca.server.payload_power_description'|trans }}';
+                payloadField.placeholder = 'start, stop, restart, kill';
+                break;
+            case 'backup':
+                payloadHelp.textContent = '{{ 'pteroca.server.payload_backup_description'|trans }}';
+                payloadField.placeholder = '';
+                break;
+            default:
+                payloadHelp.textContent = '{{ 'pteroca.server.payload_description'|trans }}';
+                payloadField.placeholder = '';
+        }
+    });
+    
+    // Event listener dla zamknięcia modala dodawania zadania
+    const addTaskModal = document.getElementById('addTaskModal');
+    addTaskModal.addEventListener('hidden.bs.modal', function () {
+        // Po zamknięciu modala dodawania zadania, otwórz z powrotem modal harmonogramu
+        setTimeout(function() {
+            reopenScheduleModal();
+        }, 100);
+    });
+});
+
+function openAddTaskModal(scheduleId) {
+    // Ustaw ID harmonogramu
+    document.getElementById('addingTaskScheduleId').value = scheduleId;
+    
+    // Wyczyść formularz
+    document.getElementById('newTaskAction').value = 'command';
+    document.getElementById('newTaskTimeOffset').value = 0;
+    document.getElementById('newTaskPayload').value = '';
+    document.getElementById('newTaskContinueOnFailure').checked = false;
+    
+    // Wywołaj event change żeby zaktualizować opis payload
+    document.getElementById('newTaskAction').dispatchEvent(new Event('change'));
+    
+    // Otwórz modal
+    const modal = new bootstrap.Modal(document.getElementById('addTaskModal'));
+    modal.show();
+}
+
+function saveNewTask() {
+    const form = document.getElementById('addTaskForm');
+    const formData = new FormData(form);
+    const scheduleId = document.getElementById('addingTaskScheduleId').value;
+    
+    const action = formData.get('action');
+    const timeOffset = parseInt(formData.get('time_offset')) || 0;
+    const payload = formData.get('payload');
+    const continueOnFailure = formData.get('continue_on_failure') === 'on';
+    
+    if (!action || !payload) {
+        alert('{{ 'pteroca.server.please_fill_required_fields'|trans }}');
+        return;
+    }
+    
+    fetch('{{ path('server_schedule_tasks_create', { id: server.id, scheduleId: '__SCHEDULE_ID__' }) }}'.replace('__SCHEDULE_ID__', scheduleId), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            action: action,
+            time_offset: timeOffset,
+            payload: payload,
+            continue_on_failure: continueOnFailure
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+        } else {
+            alert('{{ 'pteroca.server.task_created_successfully'|trans }}');
+            
+            // Pobierz zaktualizowane dane harmonogramu
+            fetch('{{ path('server_schedules_get', { id: server.id, scheduleId: '__SCHEDULE_ID__' }) }}'.replace('__SCHEDULE_ID__', scheduleId), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(updatedScheduleData => {
+                if (!updatedScheduleData.error) {
+                    // Zaktualizuj dane harmonogramu w pamięci
+                    if (typeof updateCurrentScheduleData === 'function') {
+                        updateCurrentScheduleData(updatedScheduleData);
+                    }
+                }
+                
+                // Zamknij modal - to automatycznie otworzy modal harmonogramu dzięki event listenerowi
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addTaskModal'));
+                modal.hide();
+            })
+            .catch(error => {
+                console.error('Error refreshing schedule data:', error);
+                // Zamknij modal nawet jeśli nie udało się odświeżyć danych
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addTaskModal'));
+                modal.hide();
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('{{ 'pteroca.server.error_occurred'|trans }}');
+    });
+}
+</script>
+{% endif %}

@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Server\ServerConfiguration;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -15,9 +16,9 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
         parent::__construct($this->pterodactylService);
     }
 
-    public function updateServerDetails(Server $server, string $serverName, ?string $serverDescription): void
+    public function updateServerDetails(Server $server, UserInterface $user, string $serverName, ?string $serverDescription): void
     {
-        $pterodactylClientApi = $this->pterodactylClientService->getApi($server->getUser());
+        $pterodactylClientApi = $this->pterodactylClientService->getApi($user);
         $pterodactylServer = $pterodactylClientApi->servers->get($server->getPterodactylServerIdentifier());
         $description = $serverDescription ?? $pterodactylServer->get('description');
 

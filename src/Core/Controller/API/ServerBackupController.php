@@ -2,7 +2,9 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerBackupService;
 use App\Core\Trait\DisallowForDemoModeTrait;
 use App\Core\Trait\InternalServerApiTrait;
@@ -21,6 +23,7 @@ class ServerBackupController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerBackupService $serverBackupService,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     #[Route('/panel/api/server/{id}/backup/create', name: 'server_backup_create', methods: ['POST'])]
@@ -31,7 +34,7 @@ class ServerBackupController extends APIAbstractController
     {
         $this->disallowForDemoMode();
 
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_CREATE);
         $response = new JsonResponse();
 
         try {
@@ -61,7 +64,7 @@ class ServerBackupController extends APIAbstractController
     {
         $this->disallowForDemoMode();
 
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_DOWNLOAD);
         $response = new JsonResponse();
 
         try {
@@ -86,7 +89,7 @@ class ServerBackupController extends APIAbstractController
     {
         $this->disallowForDemoMode();
 
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_DELETE);
         $response = new Response();
 
         try {
@@ -94,6 +97,35 @@ class ServerBackupController extends APIAbstractController
                 $server,
                 $this->getUser(),
                 $backupId,
+            );
+            $response->setStatusCode(204);
+        } catch (Exception $exception) {
+            $response->setStatusCode(400);
+        }
+
+        return $response;
+    }
+
+    #[Route('/panel/api/server/{id}/backup/{backupId}/restore', name: 'server_backup_restore', methods: ['POST'])]
+    public function restoreBackup(
+        int $id,
+        string $backupId,
+        Request $request,
+    ): Response
+    {
+        $this->disallowForDemoMode();
+
+        $server = $this->getServer($id, ServerPermissionEnum::BACKUP_RESTORE);
+        $response = new Response();
+
+        try {
+            $truncate = $request->request->getBoolean('truncate', false);
+
+            $this->serverBackupService->restoreBackup(
+                $server,
+                $this->getUser(),
+                $backupId,
+                $truncate,
             );
             $response->setStatusCode(204);
         } catch (Exception $exception) {
