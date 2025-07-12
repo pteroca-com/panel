@@ -35,7 +35,7 @@ Your star helps us reach more developers and improve the project faster.
 ### 🚀 Getting Started
 
 #### Installation
-You can install PteroCA in minutes using our [Automatic Installer](https://docs.pteroca.com/getting-started/installation/automatic-installation), or follow the [manual installation guide](https://docs.pteroca.com/getting-started/installation/manual-installation) for detailed setup instructions.
+You can install PteroCA in minutes using our [Automatic Installer](https://docs.pteroca.com/getting-started/installation/automatic-installation), quickly set up with [Docker Compose](https://docs.pteroca.com/getting-started/installation/installation-via-docker), or follow the [manual installation guide](https://docs.pteroca.com/getting-started/installation/manual-installation) for detailed setup instructions.
 
 #### Requirements
 To run PteroCA, make sure your server meets the following requirements:
