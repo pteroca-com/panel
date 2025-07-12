@@ -5,6 +5,7 @@ namespace App\Core\Controller;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Enum\SettingEnum;
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
@@ -215,7 +216,7 @@ class CartController extends AbstractController
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.product_not_found'));
         }
 
-        $isOwner = $server->getUser() === $this->getUser();
+        $isOwner = $server->getUser() === $this->getUser() || $this->isGranted(UserRoleEnum::ROLE_ADMIN->value);
         if ($isOwner) {
             return $server;
         }
