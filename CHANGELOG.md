@@ -2,6 +2,22 @@
 
 ---
 
+## [0.5.4] - 2025-07-13
+
+### Added
+- Added support for server subusers with permission management.
+- Added server schedule management, including per-product/server schedule limits.
+- Added CPU pinning support for both products and servers.
+- Added missing translations across the panel.
+- Added docker-compose.yml for both development and production environments to enable quick setup via a single command.
+
+### Changed
+- Improved the admin user management CRUD interface.
+- Improved logging of certain user actions.
+- Various minor performance and optimization improvements.
+
+---
+
 ## [0.5.3] - 2025-06-02
 
 ### Added
