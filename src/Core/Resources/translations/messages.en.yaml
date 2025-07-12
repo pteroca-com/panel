@@ -69,6 +69,8 @@ pteroca:
     account_settings: 'Account settings'
     my_servers: 'My servers'
     no_servers: 'You do not have any servers yet.'
+    no_servers_description: 'You do not have any servers yet.'
+    order_first_server: 'Order first server'
     last_activity: 'Last activity'
     custom_section: 'Additional information'
     action: 'Action'
@@ -361,6 +363,7 @@ pteroca:
     schedules: 'Schedules'
     schedules_usage: 'Usage: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'Maximum number of schedules reached ({{ limit }}). Delete existing schedules to create new ones.'
+    usage: 'Usage: {{ current }}/{{ limit }}'
     no_subusers: 'There are no subusers for this server yet.'
     no_schedules: 'There are no schedules for this server yet.'
     schedule_name: 'Schedule name'
@@ -583,6 +586,8 @@ pteroca:
       memory: 'RAM'
       io: 'IO'
       cpu: 'CPU'
+      threads: 'CPU threads'
+      threads_hint: 'Specific CPU threads this process can run on, or leave empty to allow all threads. Can be a single number or comma-separated list. Example: 0, 0-1,3 or 0,1,3,4.'
       db_count: 'Databases'
       swap: 'SWAP'
       backups: 'Backups'
@@ -871,6 +876,17 @@ pteroca:
   api:
     servers:
       not_found: 'Server not found.'
+    schedule:
+      name_required: 'Schedule name is required.'
+      cron_field_required: 'Cron field "{{ field }}" is required.'
+      action_required: 'Action is required.'
+      payload_required: 'Payload is required.'
+    server_user:
+      user_not_exist: 'User with email {{ email }} does not exist in the system. The user must register first.'
+      user_already_added: 'User with email {{ email }} is already added to this server.'
+      cannot_modify_yourself: 'You cannot perform this action on yourself: {{ action }}.'
+      modify_permissions: 'modify permissions'
+      delete_yourself_from_server: 'delete yourself from server'
     voucher:
       not_found: 'Voucher not found.'
       expired: 'Voucher has expired.'

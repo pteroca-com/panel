@@ -69,6 +69,8 @@ pteroca:
     account_settings: 'Kontoeinstellungen'
     my_servers: 'Meine Server'
     no_servers: 'Sie haben noch keine Server.'
+    no_servers_description: 'Sie haben noch keine Server.'
+    order_first_server: 'Ersten Server bestellen'
     last_activity: 'Letzte Aktivität'
     custom_section: 'Zusätzliche Informationen'
     action: 'Aktion'
@@ -361,6 +363,7 @@ pteroca:
     schedules: 'Zeitpläne'
     schedules_usage: 'Nutzung: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'Maximale Anzahl von Zeitplänen erreicht ({{ limit }}). Löschen Sie bestehende Zeitpläne, um neue zu erstellen.'
+    usage: 'Nutzung: {{ current }}/{{ limit }}'
     no_subusers: 'Es gibt noch keine Subbenutzer für diesen Server.'
     no_schedules: 'Es gibt noch keine Zeitpläne für diesen Server.'
     schedule_name: 'Zeitplanname'
@@ -583,6 +586,8 @@ pteroca:
       memory: 'RAM'
       io: 'IO'
       cpu: 'CPU'
+      threads: 'CPU-Threads'
+      threads_hint: 'Bestimmte CPU-Threads, auf denen dieser Prozess laufen kann, oder leer lassen, um alle Threads zu erlauben. Kann eine einzelne Zahl oder eine kommagetrennte Liste sein. Beispiel: 0, 0-1,3 oder 0,1,3,4.'
       db_count: 'Datenbanken'
       swap: 'SWAP'
       backups: 'Backups'
@@ -870,6 +875,17 @@ pteroca:
   api:
     servers:
       not_found: 'Server nicht gefunden.'
+    schedule:
+      name_required: 'Zeitplanname ist erforderlich.'
+      cron_field_required: 'Cron-Feld "{{ field }}" ist erforderlich.'
+      action_required: 'Aktion ist erforderlich.'
+      payload_required: 'Nutzlast ist erforderlich.'
+    server_user:
+      user_not_exist: 'Benutzer mit E-Mail {{ email }} existiert nicht im System. Der Benutzer muss sich zuerst registrieren.'
+      user_already_added: 'Benutzer mit E-Mail {{ email }} wurde bereits zu diesem Server hinzugefügt.'
+      cannot_modify_yourself: 'Sie können diese Aktion nicht an sich selbst ausführen: {{ action }}.'
+      modify_permissions: 'Berechtigungen ändern'
+      delete_yourself_from_server: 'sich selbst vom Server entfernen'
     voucher:
       not_found: 'Gutschein nicht gefunden.'
       expired: 'Gutschein ist abgelaufen.'

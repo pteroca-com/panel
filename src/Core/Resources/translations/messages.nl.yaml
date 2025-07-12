@@ -65,6 +65,8 @@ pteroca:
     account_settings: 'Account instellingen'
     my_servers: 'Mijn servers'
     no_servers: 'U heeft nog geen servers.'
+    no_servers_description: 'U heeft nog geen servers.'
+    order_first_server: 'Bestel uw eerste server'
     last_activity: 'Laatste activiteit'
     custom_section: 'Extra informatie'
     action: 'Acties'
@@ -329,6 +331,7 @@ pteroca:
     users: 'Gebruikers'
     schedules: 'Planningen'
     schedules_usage: 'Gebruik: {{ current }}/{{ limit }}'
+    usage: 'Gebruik: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'Maximumlimiet van planningen ({{ limit }}) bereikt. Verwijder bestaande planningen om nieuwe aan te maken.'
     no_subusers: 'Er zijn nog geen subgebruikers voor deze server.'
     no_schedules: 'Er zijn nog geen planningen voor deze server.'
@@ -572,6 +575,7 @@ pteroca:
       io: 'IO'
       cpu: 'Processor'
       db_count: 'Databases'
+      threads: 'CPU-threads'
       swap: 'SWAP'
       backups: 'Back-ups'
       ports: 'Poorten'
@@ -602,6 +606,7 @@ pteroca:
       memory_hint: 'De totale RAM limiet toegewezen aan deze server (in MB). De server kan deze geheugenlimiet niet overschrijden.'
       io_hint: 'Relatieve I/O-prioriteit voor de servercontainer. Hogere waarden betekent hogere prioriteit (standaard is 500).'
       cpu_hint: 'CPU limiet als percentage, waar 100% gelijk is aan een volledige CPU kern. Bijvoorbeeld, 200% is gelijk aan twee volledige CPU kern.'
+      threads_hint: 'Specifieke CPU-threads waarop dit proces kan draaien, of leeg laten om alle threads toe te staan. Dit kan een enkel getal zijn of een door komma''s gescheiden lijst. Bijvoorbeeld: 0, 0-1,3 of 0,1,3,4.'
       db_count_hint: 'Het maximale aantal databases dat deze server kan maken of gebruiken.'
       swap_hint: 'Hoeveelheid swap geheugen (in MB) toegewezen aan deze server. Zet op 0 om swap uit te schakelen.'
       backups_hint: 'Het maximale aantal back-ups dat kan worden opgeslagen voor deze server.'
@@ -858,6 +863,17 @@ pteroca:
   api:
     servers:
       not_found: 'Server niet gevonden.'
+    schedule:
+      name_required: 'Planningsnaam is verplicht.'
+      cron_field_required: 'Cron-veld "{{ field }}" is verplicht.'
+      action_required: 'Actie is verplicht.'
+      payload_required: 'Payload is verplicht.'
+    server_user:
+      user_not_exist: 'Gebruiker met e-mailadres {{ email }} bestaat niet in het systeem. De gebruiker moet zich eerst registreren.'
+      user_already_added: 'Gebruiker met e-mailadres {{ email }} is al toegevoegd aan deze server.'
+      cannot_modify_yourself: 'U kunt deze actie niet op uzelf uitvoeren: {{ action }}.'
+      modify_permissions: 'machtigingen wijzigen'
+      delete_yourself_from_server: 'uzelf van de server verwijderen'
     voucher:
       not_found: 'Voucher niet gevonden.'
       expired: 'Voucher is verlopen.'

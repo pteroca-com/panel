@@ -69,6 +69,8 @@ pteroca:
     account_settings: 'Configuración de la cuenta'
     my_servers: 'Mis servidores'
     no_servers: 'Aún no tienes servidores.'
+    no_servers_description: 'Aún no tienes servidores.'
+    order_first_server: 'Pedir primer servidor'
     last_activity: 'Última actividad'
     custom_section: 'Información adicional'
     action: 'Acción'
@@ -361,6 +363,7 @@ pteroca:
     schedules: 'Programaciones'
     schedules_usage: 'Uso: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'Se ha alcanzado el número máximo de programaciones ({{ limit }}). Elimine las programaciones existentes para crear nuevas.'
+    usage: 'Uso: {{ current }}/{{ limit }}'
     no_subusers: 'Este servidor aún no tiene subusuarios.'
     no_schedules: 'No hay programaciones para este servidor todavía.'
     schedule_name: 'Nombre de la programación'
@@ -583,6 +586,8 @@ pteroca:
       memory: 'RAM'
       io: 'IO'
       cpu: 'CPU'
+      threads: 'Hilos de CPU'
+      threads_hint: 'Hilos específicos de CPU en los que puede ejecutarse este proceso, o dejar vacío para permitir todos los hilos. Puede ser un número único o una lista separada por comas. Ejemplo: 0, 0-1,3 o 0,1,3,4.'
       db_count: 'Bases de datos'
       swap: 'SWAP'
       backups: 'Copias de seguridad'
@@ -870,6 +875,17 @@ pteroca:
   api:
     servers:
       not_found: 'Servidor no encontrado.'
+    schedule:
+      name_required: 'El nombre de la programación es obligatorio.'
+      cron_field_required: 'El campo cron "{{ field }}" es obligatorio.'
+      action_required: 'La acción es obligatoria.'
+      payload_required: 'La carga útil es obligatoria.'
+    server_user:
+      user_not_exist: 'El usuario con correo {{ email }} no existe en el sistema. El usuario debe registrarse primero.'
+      user_already_added: 'El usuario con correo {{ email }} ya ha sido añadido a este servidor.'
+      cannot_modify_yourself: 'No puedes realizar esta acción en ti mismo: {{ action }}.'
+      modify_permissions: 'modificar permisos'
+      delete_yourself_from_server: 'eliminarte del servidor'
     voucher:
       not_found: 'Cupón no encontrado.'
       expired: 'El cupón ha expirado.'

@@ -69,6 +69,8 @@ pteroca:
     account_settings: 'Impostazioni account'
     my_servers: 'I miei server'
     no_servers: 'Non hai ancora server.'
+    no_servers_description: 'Non hai ancora server.'
+    order_first_server: 'Ordina il primo server'
     last_activity: 'Ultima attività'
     custom_section: 'Informazioni aggiuntive'
     action: 'Azione'
@@ -360,6 +362,7 @@ pteroca:
     users: 'Utenti'
     schedules: 'Programmazioni'
     schedules_usage: 'Utilizzo: {{ current }}/{{ limit }}'
+    usage: 'Utilizzo: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'Limite massimo di programmazioni ({{ limit }}) raggiunto. Elimina le programmazioni esistenti per crearne di nuove.'
     no_subusers: 'Non ci sono ancora sottoutenti per questo server.'
     no_schedules: 'Non ci sono ancora programmazioni per questo server.'
@@ -584,6 +587,8 @@ pteroca:
       io: 'IO'
       cpu: 'CPU'
       db_count: 'Numero di basi di dati'
+      threads: 'Thread CPU'
+      threads_hint: 'Thread CPU specifici su cui questo processo può girare, o lascia vuoto per consentire tutti i thread. Può essere un singolo numero o un elenco separato da virgole. Esempio: 0, 0-1,3 o 0,1,3,4.'
       swap: 'SWAP'
       backups: 'Backup'
       ports: 'Porte'
@@ -870,6 +875,17 @@ pteroca:
   api:
     servers:
       not_found: 'Server non trovato.'
+    schedule:
+      name_required: 'Il nome della pianificazione è richiesto.'
+      cron_field_required: 'Il campo cron "{{ field }}" è richiesto.'
+      action_required: 'L''azione è richiesta.'
+      payload_required: 'Il payload è richiesto.'
+    server_user:
+      user_not_exist: 'L''utente con email {{ email }} non esiste nel sistema. L''utente deve prima registrarsi.'
+      user_already_added: 'L''utente con email {{ email }} è già stato aggiunto a questo server.'
+      cannot_modify_yourself: 'Non puoi eseguire questa azione su te stesso: {{ action }}.'
+      modify_permissions: 'modificare i permessi'
+      delete_yourself_from_server: 'rimuovere te stesso dal server'
     voucher:
       not_found: 'Voucher non trovato.'
       expired: 'Il voucher è scaduto.'
