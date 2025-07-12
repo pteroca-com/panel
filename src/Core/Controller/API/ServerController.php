@@ -44,9 +44,6 @@ class ServerController extends APIAbstractController
         $server = $this->getServer($id, ServerPermissionEnum::WEBSOCKET_CONNECT);
         $websocket = $serverWebsocketService->getWebsocketToken($server, $this->getUser());
 
-        return new JsonResponse([
-            'token' => $websocket?->getToken(),
-            'socket' => $websocket?->getSocket(),
-        ]);
+        return new JsonResponse($websocket->toArray());
     }
 }

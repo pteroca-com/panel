@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
     cron \
+    ca-certificates \
     && docker-php-ext-install \
     pdo \
     pdo_mysql \
@@ -20,7 +21,8 @@ RUN apt-get update && apt-get install -y \
     mbstring \
     opcache \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

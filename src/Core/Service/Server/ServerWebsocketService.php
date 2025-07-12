@@ -16,7 +16,7 @@ class ServerWebsocketService
     public function getWebsocketToken(Server $server, UserInterface $user): ?ServerWebsocketDTO
     {
         if ($server->getIsSuspended()) {
-            return null;
+            return new ServerWebsocketDTO();
         }
 
         try {
@@ -25,7 +25,8 @@ class ServerWebsocketService
                 ->servers
                 ->websocket($server->getPterodactylServerIdentifier());
         } catch (\Exception $e) {
-            return null;
+            // TODO log error
+            return new ServerWebsocketDTO();
         }
 
         return new ServerWebsocketDTO(

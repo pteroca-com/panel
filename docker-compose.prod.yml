@@ -16,6 +16,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+    env_file:
+      - .env
 
   web:
     build: 
@@ -28,6 +30,8 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL:-mysql://user:password@db:3306/pteroca?serverVersion=8.0}
       APP_ENV: prod
+      CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
     depends_on:
       db:
         condition: service_healthy

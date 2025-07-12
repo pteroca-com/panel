@@ -27,7 +27,7 @@ trait InternalServerApiTrait
             $pterodactylServer = $this->pterodactylService
                 ->getApi()
                 ->servers
-                ->get($server->getPterodactylServerId() . '2', [
+                ->get($server->getPterodactylServerId(), [ // TODO optimize
                     'include' => ['subusers'],
                 ]);
         } catch (\Exception) {
