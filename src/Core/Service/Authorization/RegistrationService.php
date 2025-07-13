@@ -7,13 +7,11 @@ use App\Core\DTO\Action\Result\RegisterUserActionResult;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\LogService;
-use App\Core\Service\Pterodactyl\PterodactylAccountService;
-use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
 use App\Core\Service\SettingService;
+use App\Core\Service\User\UserService;
 use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
@@ -22,7 +20,6 @@ use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationService
@@ -32,13 +29,11 @@ class RegistrationService
     private const JWT_ISSUER = 'pteroca';
 
     public function __construct(
-        private readonly UserPasswordHasherInterface $userPasswordHasher,
         private readonly UserRepository $userRepository,
         private readonly TranslatorInterface $translator,
         private readonly LogService $logService,
         private readonly SettingService $settingService,
-        private readonly PterodactylAccountService $pterodactylAccountService,
-        private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
+        private readonly UserService $userService,
         private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
     ) {
@@ -56,29 +51,16 @@ class RegistrationService
         bool $sendEmail = true
     ): RegisterUserActionResult
     {
+        $user->setIsVerified($isVerified);
+        $user->setRoles($roles);
+
         try {
-            $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $plainPassword);
+            $this->userService->createUserWithPterodactylAccount($user, $plainPassword);
         } catch (\Exception $exception) {
             return new RegisterUserActionResult(
                 success: false,
                 error: $exception->getMessage(),
             );
-        }
-
-        $user->setPassword($this->userPasswordHasher->hashPassword($user, $plainPassword));
-        $user->setIsVerified($isVerified);
-        $user->setRoles($roles);
-        $user->setPterodactylUserId($pterodactylAccount->id ?? null);
-
-        try {
-            $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
-            $user->setPterodactylUserApiKey($pterodactylClientApiKey);
-        } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
-            $this->pterodactylAccountService->deletePterodactylAccount($user);
-            $this->logger->error('Failed to create Pterodactyl client API key', [
-                'exception' => $exception,
-                'user' => $user,
-            ]);
         }
 
         $this->userRepository->save($user);

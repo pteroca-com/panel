@@ -23,6 +23,9 @@ interface ProductInterface
     public function getCpu(): int;
     public function setCpu(int $cpu): self;
 
+    public function getThreads(): ?string;
+    public function setThreads(?string $threads): self;
+
     public function getDbCount(): int;
     public function setDbCount(int $dbCount): self;
 

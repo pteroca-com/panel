@@ -1,0 +1,419 @@
+{% block main %}
+    <div class="tab-pane" id="schedules">
+        <div class="row pt-3">
+            <div class="col-12 mb-4">
+                {% if serverData.serverSchedules|length == 0 %}
+                    <div class="alert alert-info col-6 offset-3" role="alert">
+                        <i class="fas fa-info-circle pe-1"></i>
+                        {{ 'pteroca.server.no_schedules'|trans }}
+                    </div>
+                {% else %}
+                    <table class="table datagrid text-center">
+                        <thead>
+                            <tr>
+                                <th class="pb-2">{{ 'pteroca.server.schedule_name'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.schedule_cron'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.schedule_status'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.schedule_last_run'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.schedule_next_run'|trans }}</th>
+                                <th class="pb-2">{{ 'pteroca.server.actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for schedule in serverData.serverSchedules %}
+                            <tr>
+                                <td>
+                                    <strong>{{ schedule.name }}</strong>
+                                </td>
+                                <td>
+                                    <code class="text-muted">{{ schedule.cron.minute }} {{ schedule.cron.hour }} {{ schedule.cron.day_of_month }} {{ schedule.cron.month }} {{ schedule.cron.day_of_week }}</code>
+                                </td>
+                                <td>
+                                    {% if schedule.is_active %}
+                                        <span class="badge bg-success text-white">{{ 'pteroca.server.active'|trans }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary text-white">{{ 'pteroca.server.inactive'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if schedule.last_run_at %}
+                                        {{ schedule.last_run_at|date('Y-m-d H:i:s') }}
+                                    {% else %}
+                                        <span class="text-muted">{{ 'pteroca.server.never'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if schedule.next_run_at %}
+                                        {{ schedule.next_run_at|date('Y-m-d H:i:s') }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="actions actions-as-dropdown text-center">
+                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['schedule.update', 'schedule.delete']) %}
+                                    <div class="dropdown dropdown-actions">
+                                        <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                                </svg>
+                                            </span>
+                                        </a>
+                                        <div class="dropdown-overlay">
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {% if hasServerPermission(serverData.serverPermissions, 'schedule.update') %}
+                                                <li>
+                                                    <a class="dropdown-item action-edit" href="#" data-action-name="edit" data-schedule-id="{{ schedule.id }}">
+                                                        <span class="action-label">
+                                                            <i class="fas fa-edit"></i>
+                                                            {{ 'pteroca.server.edit'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                                {% if hasServerPermission(serverData.serverPermissions, 'schedule.delete') %}
+                                                <li>
+                                                    <a class="dropdown-item action-delete" href="#" data-action-name="delete" data-schedule-id="{{ schedule.id }}">
+                                                        <span class="action-label text-danger">
+                                                            <i class="fas fa-trash text-danger"></i>
+                                                            {{ 'pteroca.server.delete'|trans }}
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+            {% if hasServerPermission(serverData.serverPermissions, 'schedule.create') %}
+            <div class="col-12 mb-3">
+                {% set canCreateSchedule = serverData.serverSchedules|length < server.serverProduct.schedules %}
+                <button type="button" class="btn btn-primary float-end{% if not canCreateSchedule %} disabled{% endif %}" 
+                        onclick="{% if canCreateSchedule %}addNewSchedule(){% else %}showScheduleLimitMessage(){% endif %}"
+                        {% if not canCreateSchedule %}disabled{% endif %}>
+                    <i class="fas fa-plus"></i>
+                    {{ 'pteroca.server.add_schedule'|trans }}
+                </button>
+                <div class="float-end me-3">
+                    <small class="text-muted">
+                        {{ 'pteroca.server.schedules_usage'|trans({ '{{ current }}': serverData.serverSchedules|length, '{{ limit }}': server.serverProduct.schedules }) }}
+                    </small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if hasServerPermission(serverData.serverPermissions, 'schedule.create') %}
+            {% include 'panel/server/tabs/schedules/components/add-schedule-modal.html.twig' %}
+        {% endif %}
+        {% if hasServerPermission(serverData.serverPermissions, 'schedule.update') %}
+            {% include 'panel/server/tabs/schedules/components/edit-schedule-modal.html.twig' %}
+            {% include 'panel/server/tabs/schedules/components/edit-schedule-form-modal.html.twig' %}
+            {% include 'panel/server/tabs/schedules/components/edit-task-modal.html.twig' %}
+            {% include 'panel/server/tabs/schedules/components/add-task-modal.html.twig' %}
+            {% include 'panel/server/tabs/schedules/components/delete-task-modal.html.twig' %}
+        {% endif %}
+        {% if hasServerPermission(serverData.serverPermissions, 'schedule.delete') %}
+            {% include 'panel/server/tabs/schedules/components/delete-schedule-modal.html.twig' %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        let currentSchedules = {{ serverData.serverSchedules|json_encode|raw }};
+        let currentScheduleData = null; // Przechowuje dane aktualnie wyświetlanego harmonogramu
+        
+        function getCurrentScheduleData() {
+            return currentScheduleData;
+        }
+        
+        function updateCurrentScheduleData(newScheduleData) {
+            currentScheduleData = newScheduleData;
+        }
+        
+        function addNewSchedule() {
+            const modal = new bootstrap.Modal(document.getElementById('addScheduleModal'));
+            modal.show();
+        }
+        
+        function showScheduleLimitMessage() {
+            alert('{{ 'pteroca.server.schedule_limit_reached'|trans({ '{{ limit }}': server.serverProduct.schedules }) }}');
+        }
+        
+        function editSchedule(scheduleId) {
+            // Pobierz szczegóły harmonogramu z API (wraz z zadaniami)
+            fetch('{{ path('server_schedules_get', { id: server.id, scheduleId: '__SCHEDULE_ID__' }) }}'.replace('__SCHEDULE_ID__', scheduleId), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('{{ 'pteroca.server.error'|trans }}: ' + data.error);
+                } else {
+                    showEditScheduleModal(data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{{ 'pteroca.server.error_occurred'|trans }}');
+            });
+        }
+        
+        function showEditScheduleModal(scheduleData) {
+            // Zapisz dane harmonogramu do zmiennej globalnej
+            currentScheduleData = scheduleData;
+            
+            // Ustaw ID harmonogramu
+            document.getElementById('currentScheduleId').value = scheduleData.id;
+            
+            // Ustaw nazwę i status
+            document.getElementById('scheduleNameTitle').textContent = scheduleData.name;
+            const statusBadge = document.getElementById('scheduleStatusBadge');
+            if (scheduleData.is_active) {
+                statusBadge.textContent = '{{ 'pteroca.server.active'|trans }}';
+                statusBadge.className = 'badge ms-2 bg-success text-white';
+            } else {
+                statusBadge.textContent = '{{ 'pteroca.server.inactive'|trans }}';
+                statusBadge.className = 'badge ms-2 bg-secondary text-white';
+            }
+            
+            // Ustaw daty ostatniego i następnego uruchomienia
+            document.getElementById('scheduleLastRun').textContent = scheduleData.last_run_at ? 
+                new Date(scheduleData.last_run_at).toLocaleString('pl-PL') : '{{ 'pteroca.server.never'|trans }}';
+            document.getElementById('scheduleNextRun').textContent = scheduleData.next_run_at ? 
+                new Date(scheduleData.next_run_at).toLocaleString('pl-PL') : '-';
+            
+            // Ustaw wyrażenie cron
+            document.getElementById('cronMinute').textContent = scheduleData.cron.minute;
+            document.getElementById('cronHour').textContent = scheduleData.cron.hour;
+            document.getElementById('cronDayOfMonth').textContent = scheduleData.cron.day_of_month;
+            document.getElementById('cronMonth').textContent = scheduleData.cron.month;
+            document.getElementById('cronDayOfWeek').textContent = scheduleData.cron.day_of_week;
+            
+            // Załaduj taski z relationships
+            const tasks = scheduleData.relationships?.tasks || [];
+            loadScheduleTasks(tasks);
+            
+            // Pokaż modal
+            const modal = new bootstrap.Modal(document.getElementById('editScheduleModal'));
+            modal.show();
+        }
+        
+        function loadScheduleTasks(tasks) {
+            const tasksList = document.getElementById('scheduleTasksList');
+            const noTasksMessage = document.getElementById('noTasksMessage');
+            
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '';
+                noTasksMessage.style.display = 'block';
+                return;
+            }
+            
+            noTasksMessage.style.display = 'none';
+            
+            let tasksHtml = '';
+            tasks.forEach((task, index) => {
+                const taskTypeIcon = getTaskTypeIcon(task.action);
+                const taskTypeName = getTaskTypeName(task.action);
+                
+                tasksHtml += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="${taskTypeIcon} me-2"></i>
+                                        <strong>${taskTypeName}</strong>
+                                    </div>
+                                    <div class="bg-dark text-white p-2 rounded">
+                                        <code>${task.payload || '-'}</code>
+                                    </div>
+                                    ${task.time_offset ? `<small class="text-muted mt-1 d-block">{{ 'pteroca.server.time_offset'|trans }}: ${task.time_offset}s</small>` : ''}
+                                </div>
+                                <div class="ms-3">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="editTask(${task.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTask(${task.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            tasksList.innerHTML = tasksHtml;
+        }
+        
+        function getTaskTypeIcon(action) {
+            switch(action) {
+                case 'command': return 'fas fa-terminal';
+                case 'power': return 'fas fa-power-off';
+                case 'backup': return 'fas fa-save';
+                default: return 'fas fa-cog';
+            }
+        }
+        
+        function getTaskTypeName(action) {
+            switch(action) {
+                case 'command': return '{{ 'pteroca.server.send_command'|trans }}';
+                case 'power': return '{{ 'pteroca.server.power_action'|trans }}';
+                case 'backup': return '{{ 'pteroca.server.create_backup'|trans }}';
+                default: return action.toUpperCase();
+            }
+        }
+        
+        function addNewTask() {
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            if (!scheduleId) {
+                alert('{{ 'pteroca.server.error_no_schedule_selected'|trans }}');
+                return;
+            }
+            
+            // Zamknij modal edycji harmonogramu
+            const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+            if (scheduleModal) {
+                scheduleModal.hide();
+            }
+            
+            // Otwórz modal dodawania zadania
+            openAddTaskModal(scheduleId);
+        }
+        
+        function editTask(taskId) {
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            
+            // Znajdź dane zadania w aktualnie załadowanych danych
+            const currentScheduleData = getCurrentScheduleData();
+            if (!currentScheduleData || !currentScheduleData.relationships || !currentScheduleData.relationships.tasks) {
+                alert('{{ 'pteroca.server.error_loading_task_data'|trans }}');
+                return;
+            }
+            
+            const taskData = currentScheduleData.relationships.tasks.find(task => task.id == taskId);
+            if (!taskData) {
+                alert('{{ 'pteroca.server.task_not_found'|trans }}');
+                return;
+            }
+            
+            // Zamknij modal edycji harmonogramu
+            const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+            if (scheduleModal) {
+                scheduleModal.hide();
+            }
+            
+            // Otwórz modal edycji zadania
+            openEditTaskModal(taskId, scheduleId, taskData);
+        }
+        
+        function deleteTask(taskId) {
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            
+            // Znajdź dane zadania w aktualnie załadowanych danych
+            const currentScheduleData = getCurrentScheduleData();
+            if (!currentScheduleData || !currentScheduleData.relationships || !currentScheduleData.relationships.tasks) {
+                alert('{{ 'pteroca.server.error_loading_task_data'|trans }}');
+                return;
+            }
+            
+            const taskData = currentScheduleData.relationships.tasks.find(task => task.id == taskId);
+            if (!taskData) {
+                alert('{{ 'pteroca.server.task_not_found'|trans }}');
+                return;
+            }
+            
+            // Zamknij modal edycji harmonogramu
+            const scheduleModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+            if (scheduleModal) {
+                scheduleModal.hide();
+            }
+            
+            // Ustaw dane w modalu usuwania zadania
+            document.getElementById('deleteTaskId').value = taskId;
+            document.getElementById('deleteTaskScheduleId').value = scheduleId;
+            
+            // Ustaw ikonę i typ zadania
+            const taskIcon = getTaskTypeIcon(taskData.action);
+            const taskType = getTaskTypeName(taskData.action);
+            document.getElementById('task-delete-icon').className = taskIcon + ' me-2';
+            document.getElementById('task-delete-type').textContent = taskType;
+            document.getElementById('task-delete-payload').textContent = taskData.payload || '-';
+            
+            // Pokaż modal usuwania zadania
+            const modal = new bootstrap.Modal(document.getElementById('deleteTaskModal'));
+            modal.show();
+        }
+        
+        function editCurrentSchedule() {
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            if (scheduleId) {
+                // Zamknij modal szczegółów
+                const detailModal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+                detailModal.hide();
+                
+                // Otwórz modal formularza edycji
+                openEditScheduleForm(scheduleId);
+            }
+        }
+        
+        function deleteCurrentSchedule() {
+            const scheduleId = document.getElementById('currentScheduleId').value;
+            if (scheduleId) {
+                // Zamknij modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal'));
+                modal.hide();
+                
+                // Wywołaj funkcję usuwania
+                deleteSchedule(scheduleId);
+            }
+        }
+        
+        function deleteSchedule(scheduleId) {
+            // Znajdź dane harmonogramu
+            const schedule = currentSchedules.find(s => s.id == scheduleId);
+            if (schedule) {
+                // Ustaw dane w modalu
+                document.getElementById('schedule-delete-name').textContent = schedule.name;
+                document.getElementById('deleteScheduleId').value = scheduleId;
+                
+                // Pokaż modal
+                const modal = new bootstrap.Modal(document.getElementById('deleteScheduleModal'));
+                modal.show();
+            }
+        }
+        
+        // Event listenery dla dropdown actions
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('#schedules .dropdown-actions .dropdown-menu .dropdown-item').forEach(function (element) {
+                element.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const anchorElement = event.target.closest('a');
+                    const actionName = anchorElement.getAttribute('data-action-name');
+                    const scheduleId = anchorElement.getAttribute('data-schedule-id');
+
+                    if (actionName === 'edit') {
+                        editSchedule(scheduleId);
+                    } else if (actionName === 'delete') {
+                        deleteSchedule(scheduleId);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

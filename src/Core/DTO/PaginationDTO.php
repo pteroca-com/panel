@@ -12,4 +12,14 @@ class PaginationDTO
     )
     {
     }
+
+    public function toArray(): array
+    {
+        return [
+            'currentPage' => $this->currentPage,
+            'totalPages' => $this->totalPages,
+            'totalItems' => $this->totalItems,
+            'items' => $this->items,
+        ];
+    }
 }

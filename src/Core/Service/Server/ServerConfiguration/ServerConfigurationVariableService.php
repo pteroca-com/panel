@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Server\ServerConfiguration;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -19,6 +20,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
 
     public function updateServerVariable(
         Server $server,
+        UserInterface $user,
         string $variableKey,
         string $variableValue,
     ): void
@@ -28,7 +30,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         $this->validateVariable($server, $serverDetails, $serverVariable, $variableValue);
 
         $this->pterodactylClientService
-            ->getApi($server->getUser())
+            ->getApi($user)
             ->servers
             ->http
             ->put("servers/{$server->getPterodactylServerIdentifier()}/startup/variable", [], [

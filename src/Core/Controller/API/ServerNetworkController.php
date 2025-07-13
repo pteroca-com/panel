@@ -2,7 +2,9 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerNetworkService;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,12 +18,13 @@ class ServerNetworkController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerNetworkService $serverNetworkService,
+        private readonly PterodactylService $pterodactylService,
     ) {}
 
     #[Route('/panel/api/server/{id}/allocation/create', name: 'server_allocation_create', methods: ['POST'])]
     public function createAllocation(int $id): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::ALLOCATION_CREATE);
         $response = new JsonResponse();
 
         $createAllocationResult = $this->serverNetworkService->createAllocation(
@@ -45,7 +48,7 @@ class ServerNetworkController extends APIAbstractController
         int $allocationId,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::ALLOCATION_UPDATE);
         $response = new JsonResponse();
 
         $makePrimaryAllocationResult = $this->serverNetworkService->makePrimaryAllocation(
@@ -71,7 +74,7 @@ class ServerNetworkController extends APIAbstractController
         Request $request,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::ALLOCATION_UPDATE);
         $response = new JsonResponse();
 
         $editAllocationResult = $this->serverNetworkService->editAllocation(
@@ -97,7 +100,7 @@ class ServerNetworkController extends APIAbstractController
         int $allocationId,
     ): JsonResponse
     {
-        $server = $this->getServer($id);
+        $server = $this->getServer($id, ServerPermissionEnum::ALLOCATION_DELETE);
         $response = new JsonResponse();
 
         $deleteAllocationResult = $this->serverNetworkService->deleteAllocation(

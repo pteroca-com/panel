@@ -1,0 +1,81 @@
+<div class="modal fade" id="restoreBackupModal" tabindex="-1" aria-labelledby="restoreBackupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="restoreBackupModalLabel">{{ 'pteroca.server.restore_backup'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>{{ 'pteroca.server.restore_backup_confirmation'|trans }}</p>
+                <p><strong id="backup-restore-name"></strong></p>
+                
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="truncateFiles" name="truncate">
+                    <label class="form-check-label" for="truncateFiles">
+                        {{ 'pteroca.server.delete_all_files_before_restore'|trans }}
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.cancel'|trans }}</button>
+                <button type="button" class="btn btn-warning" id="confirmRestoreBackup">{{ 'pteroca.server.restore'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const confirmRestoreButton = document.querySelector('#confirmRestoreBackup');
+    
+    if (confirmRestoreButton) {
+        confirmRestoreButton.addEventListener('click', function () {
+            const backupId = this.getAttribute('data-backup-id');
+            const serverId = {{ server.id }};
+            
+            if (!backupId) {
+                return;
+            }
+            
+            // Disable button to prevent double clicks
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ 'pteroca.server.restore'|trans }}';
+            
+            const endpointUrl = '{{ path('server_backup_restore', { id: server.id, backupId: '__BACKUP_ID__' }) }}'.replace('__BACKUP_ID__', backupId);
+            const truncateFiles = document.getElementById('truncateFiles').checked;
+            
+            const requestData = {
+                truncate: truncateFiles
+            };
+            
+            sendRequest(endpointUrl, 'POST', requestData)
+                .then(response => {
+                    if (response.ok) {
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('restoreBackupModal'));
+                        modal.hide();
+                        
+                        // Show success message
+                        showToast('{{ 'pteroca.server.restore_backup'|trans }}', 'success');
+                        
+                        // Reload page after a short delay
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        throw new Error('{{ 'pteroca.server.error_during_restoring_backup'|trans }}');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('{{ 'pteroca.server.error_during_restoring_backup'|trans }}', 'error');
+                })
+                .finally(() => {
+                    // Re-enable button
+                    this.disabled = false;
+                    this.innerHTML = '{{ 'pteroca.server.restore'|trans }}';
+                });
+        });
+    }
+});
+</script>

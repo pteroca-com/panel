@@ -50,6 +50,7 @@ class ServerBuildService
             ?? $selectedEgg->get('docker_image');
         $startup = $productEggConfiguration[$eggId]['options']['startup']['value']
             ?? $selectedEgg->get('startup');
+        $threads = trim($product->getThreads() ?? '') !== '' ? $product->getThreads() : null;
 
         return [
             'name' => $serverName ?: $product->getName(),
@@ -64,7 +65,7 @@ class ServerBuildService
                 'disk' => $product->getDiskSpace(),
                 'io' => $product->getIo(),
                 'cpu' => $product->getCpu(),
-                'threads' => null, // TODO implement
+                'threads' => $threads,
             ],
             'feature_limits' => [
                 'databases' => $product->getDbCount(),
@@ -85,6 +86,7 @@ class ServerBuildService
             'swap' => $product->getSwap(),
             'io' => $product->getIo(),
             'cpu' => $product->getCpu(),
+            'threads' => $product->getThreads(),
             'disk' => $product->getDiskSpace(),
             'feature_limits' => [
                 'databases' => $product->getDbCount(),

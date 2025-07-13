@@ -24,6 +24,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\LogService;
+use App\Core\Service\Server\ServerService;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
 use App\Core\Service\Template\TemplateManager;
@@ -50,6 +51,7 @@ class DashboardController extends AbstractDashboardController
         private readonly LogService $logService,
         private readonly SystemVersionService $systemVersionService,
         private readonly TemplateManager $templateManager,
+        private readonly ServerService $serverService,
     ) {}
 
     #[Route('/panel', name: 'panel')]
@@ -59,7 +61,7 @@ class DashboardController extends AbstractDashboardController
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
 
         return $this->render('panel/dashboard/dashboard.html.twig', [
-            'servers' => $this->serverRepository->getActiveServersByUser($user),
+            'servers' => $this->serverService->getServersWithAccess($user),
             'user' => $user,
             'logs' => $this->logService->getLogsByUser($user, 5),
             'motdEnabled' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value),

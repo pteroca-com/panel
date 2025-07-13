@@ -34,6 +34,7 @@
                                 <td class="pt-4"><pre>{% if backup.checksum is defined %}{{ backup.checksum }}{% else %}-{% endif %}</pre></td>
                                 <td>{{ backup.created_at|date('Y-m-d H:i:s') }}</td>
                                 <td class="actions actions-as-dropdown">
+                                    {% if hasAnyServerPermission(serverData.serverPermissions, ['backup.download', 'backup.restore', 'backup.delete']) %}
                                     <div class="dropdown dropdown-actions">
                                         <a class="dropdown-toggle dropdown-toggle-hidden-marker" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="icon">
@@ -44,7 +45,7 @@
                                         </a>
                                         <div class="dropdown-overlay">
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                {% if backup.is_successful %}
+                                                {% if backup.is_successful and hasServerPermission(serverData.serverPermissions, 'backup.download') %}
                                                     <li>
                                                         <a class="dropdown-item action-edit" href="{{ path('server_backup_download', { id: server.id, backupId: backup.uuid }) }}" data-action-name="download">
                                                             <span class="action-label">
@@ -54,7 +55,17 @@
                                                         </a>
                                                     </li>
                                                 {% endif %}
-                                                {% if not backup.is_locked %}
+                                                {% if backup.is_successful and hasServerPermission(serverData.serverPermissions, 'backup.restore') %}
+                                                    <li>
+                                                        <a class="dropdown-item action-edit" href="#" data-action-name="restore" data-backup-name="{{ backup.name }}" data-backup-id="{{ backup.uuid }}" data-bs-toggle="modal" data-bs-target="#restoreBackupModal">
+                                                            <span class="action-label text-warning">
+                                                                <i class="fas fa-undo text-warning"></i>
+                                                                {{ 'pteroca.server.restore'|trans }}
+                                                            </span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if not backup.is_locked and hasServerPermission(serverData.serverPermissions, 'backup.delete') %}
                                                     <li>
                                                         <a class="dropdown-item action-edit" href="#" data-action-name="delete" data-backup-name="{{ backup.name }}" data-backup-size="{{ backup.bytes|format_bytes }}" data-backup-id="{{ backup.uuid }}" data-bs-toggle="modal" data-bs-target="#deleteBackupModal">
                                                             <span class="action-label">
@@ -67,6 +78,9 @@
                                             </ul>
                                         </div>
                                     </div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -74,21 +88,39 @@
                     </table>
                 {% endif %}
             </div>
+            {% if hasServerPermission(serverData.serverPermissions, 'backup.create') %}
             <div class="col-12 mb-3">
-                <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#createBackupModal" {% if server.serverProduct.backups <= serverData.serverBackups|length %}disabled{% endif %}>
+                {% set currentBackups = serverData.serverBackups|length %}
+                {% set backupLimit = serverData.pterodactylServer.feature_limits.backups %}
+                {% set canCreateBackup = currentBackups < backupLimit %}
+                <button type="button" class="btn btn-primary float-end{% if not canCreateBackup %} disabled{% endif %}" 
+                        data-bs-toggle="modal" data-bs-target="#createBackupModal" 
+                        {% if not canCreateBackup %}disabled{% endif %}>
                     <i class="fas fa-plus"></i>
                     {{ 'pteroca.server.create_backup'|trans }}
                 </button>
+                <div class="float-end me-3">
+                    <small class="text-muted">
+                        {{ 'pteroca.server.usage'|trans({ '{{ current }}': currentBackups, '{{ limit }}': backupLimit }) }}
+                    </small>
+                </div>
             </div>
+            {% endif %}
         </div>
     </div>
 
-    {% if server.serverProduct.backups > serverData.serverBackups|length %}
+    {% set currentBackups = serverData.serverBackups|length %}
+    {% set backupLimit = serverData.pterodactylServer.feature_limits.backups %}
+    {% if currentBackups < backupLimit and hasServerPermission(serverData.serverPermissions, 'backup.create') %}
         {% include 'panel/server/tabs/backups/components/create_backup_modal.html.twig' %}
     {% endif %}
 
-    {% if serverData.serverBackups|length > 0 %}
+    {% if serverData.serverBackups|length > 0 and hasServerPermission(serverData.serverPermissions, 'backup.delete') %}
         {% include 'panel/server/tabs/backups/components/delete_backup_modal.html.twig' %}
+    {% endif %}
+
+    {% if serverData.serverBackups|length > 0 and hasServerPermission(serverData.serverPermissions, 'backup.restore') %}
+        {% include 'panel/server/tabs/backups/components/restore_backup_modal.html.twig' %}
     {% endif %}
 {% endblock %}
 
@@ -101,28 +133,42 @@
 
                     const anchorElement = event.target.closest('a'),
                         actionName = anchorElement.getAttribute('data-action-name'),
-                        endpointUrl = anchorElement.getAttribute('href')
+                        endpointUrl = anchorElement.getAttribute('href'),
+                        backupName = anchorElement.getAttribute('data-backup-name'),
+                        backupId = anchorElement.getAttribute('data-backup-id')
 
                     if (actionName === 'delete') {
-                        const backupName = anchorElement.getAttribute('data-backup-name'),
-                            backupSize = anchorElement.getAttribute('data-backup-size'),
+                        const backupSize = anchorElement.getAttribute('data-backup-size'),
                             backupNameElement = document.querySelector('#backup-delete-name')
 
                         if (backupNameElement) {
                             backupNameElement.textContent = `${backupName} (${backupSize})`
-                            document.querySelector('#backupId').value = anchorElement.getAttribute('data-backup-id')
+                            document.querySelector('#backupId').value = backupId
                         }
 
                         return
                     }
 
-                    sendRequest(endpointUrl)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.url) {
-                                window.open(data.url, '_blank')
-                            }
-                        })
+                    if (actionName === 'restore') {
+                        const backupNameElement = document.querySelector('#backup-restore-name')
+
+                        if (backupNameElement) {
+                            backupNameElement.textContent = backupName
+                            document.querySelector('#confirmRestoreBackup').setAttribute('data-backup-id', backupId)
+                        }
+
+                        return
+                    }
+
+                    if (actionName === 'download') {
+                        sendRequest(endpointUrl)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.url) {
+                                    window.open(data.url, '_blank')
+                                }
+                            })
+                    }
                 })
             })
         })

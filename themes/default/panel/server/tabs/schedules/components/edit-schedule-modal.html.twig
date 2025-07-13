@@ -1,0 +1,101 @@
+<!-- Modal edycji harmonogramu -->
+<div class="modal fade" id="editScheduleModal" tabindex="-1" aria-labelledby="editScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editScheduleModalLabel">
+                    <span id="scheduleNameTitle"></span>
+                    <span id="scheduleStatusBadge" class="badge ms-2"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Informacje o harmonogramie -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ 'pteroca.server.schedule_info'|trans }}</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">{{ 'pteroca.server.schedule_last_run'|trans }}</small>
+                                        <div id="scheduleLastRun" class="fw-bold">-</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">{{ 'pteroca.server.schedule_next_run'|trans }}</small>
+                                        <div id="scheduleNextRun" class="fw-bold">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ 'pteroca.server.schedule_cron_expression'|trans }}</h6>
+                                <div class="row text-center g-2">
+                                    <div class="col">
+                                        <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">{{ 'pteroca.server.minute'|trans }}</small>
+                                        <div id="cronMinute" class="fw-bold bg-dark text-white p-2 rounded mt-1">*</div>
+                                    </div>
+                                    <div class="col">
+                                        <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">{{ 'pteroca.server.hour'|trans }}</small>
+                                        <div id="cronHour" class="fw-bold bg-dark text-white p-2 rounded mt-1">*</div>
+                                    </div>
+                                    <div class="col">
+                                        <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">{{ 'pteroca.server.day_of_month'|trans }}</small>
+                                        <div id="cronDayOfMonth" class="fw-bold bg-dark text-white p-2 rounded mt-1">*</div>
+                                    </div>
+                                    <div class="col">
+                                        <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">{{ 'pteroca.server.month'|trans }}</small>
+                                        <div id="cronMonth" class="fw-bold bg-dark text-white p-2 rounded mt-1">*</div>
+                                    </div>
+                                    <div class="col">
+                                        <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;">{{ 'pteroca.server.day_of_week'|trans }}</small>
+                                        <div id="cronDayOfWeek" class="fw-bold bg-dark text-white p-2 rounded mt-1">*</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista tasków -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-white">{{ 'pteroca.server.schedule_tasks'|trans }}</h6>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addNewTask()">
+                            <i class="fas fa-plus"></i>
+                            {{ 'pteroca.server.new_task'|trans }}
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="scheduleTasksList">
+                            <!-- Taski będą ładowane dynamicznie -->
+                        </div>
+                        <div id="noTasksMessage" class="text-center text-muted py-4" style="display: none;">
+                            <i class="fas fa-info-circle"></i>
+                            {{ 'pteroca.server.no_tasks_in_schedule'|trans }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="deleteCurrentSchedule()">
+                    <i class="fas fa-trash"></i>
+                    {{ 'pteroca.server.delete'|trans }}
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="editCurrentSchedule()">
+                    <i class="fas fa-edit"></i>
+                    {{ 'pteroca.server.edit'|trans }}
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {{ 'pteroca.server.close'|trans }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden input do przechowywania ID harmonogramu -->
+<input type="hidden" id="currentScheduleId" value="">

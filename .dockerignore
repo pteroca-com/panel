@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+.phpunit.result.cache
+var/cache/*
+var/log/*
+vendor/
+node_modules/
+.env.local
+.env.*.local
+README.md
+CHANGELOG.md
+phpunit.xml.dist
+phpstan.dist.neon
+junit.xml

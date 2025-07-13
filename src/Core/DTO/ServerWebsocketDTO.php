@@ -7,22 +7,22 @@ use App\Core\Entity\Server;
 class ServerWebsocketDTO
 {
     public function __construct(
-        private readonly string $token,
-        private readonly string $socket,
-        private readonly Server $server,
+        private readonly ?string $token = null,
+        private readonly ?string $socket = null,
+        private readonly ?Server $server = null,
     ) {}
 
-    public function getToken(): string
+    public function getToken(): ?string
     {
         return $this->token;
     }
 
-    public function getSocket(): string
+    public function getSocket(): ?string
     {
         return $this->socket;
     }
 
-    public function getServer(): Server
+    public function getServer(): ?Server
     {
         return $this->server;
     }
