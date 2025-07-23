@@ -988,6 +988,7 @@ pteroca:
     site_settings: "Configurações do site"
     site_url: "URL do site"
     site_url_help: "Insira a URL do seu site com o protocolo (http:// ou https://)."
+    admin_account_alert: "Forneça os detalhes para uma nova conta de administrador que será criada tanto no PteroCA quanto no Pterodactyl. Você não pode usar uma conta existente."
     site_title: "Título do site"
     site_title_help: "Insira o título do seu site."
     site_locale: "Idioma da interface"

@@ -69,8 +69,6 @@ pteroca:
     account_settings: 'Налаштування облікового запису'
     my_servers: 'Мої сервери'
     no_servers: 'У вас ще немає серверів.'
-    no_servers_description: 'У вас ще немає серверів.'
-    order_first_server: 'Замовте свій перший сервер'
     last_activity: 'Остання активність'
     custom_section: 'Додаткова інформація'
     action: 'Дія'
@@ -362,7 +360,6 @@ pteroca:
     users: 'Користувачі'
     schedules: 'Розклади'
     schedules_usage: 'Використання: {{ current }}/{{ limit }}'
-    usage: 'Використання: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'Досягнуто максимальну кількість розкладів ({{ limit }}). Видаліть існуючі розклади, щоб створити нові.'
     no_subusers: 'Для цього сервера ще немає підкористувачів.'
     no_schedules: 'Для цього сервера ще немає розкладів.'
@@ -587,7 +584,6 @@ pteroca:
       io: 'IO'
       cpu: 'CPU'
       db_count: 'Бази даних'
-      threads: 'Потоки CPU'
       swap: 'SWAP'
       backups: 'Резервні копії'
       ports: 'Порти'
@@ -618,7 +614,6 @@ pteroca:
       memory_hint: 'Загальний ліміт ОЗП, виділений для цього сервера (у МБ). Сервер не може перевищувати цей ліміт пам''яті.'
       io_hint: 'Відносний пріоритет вводу-виводу для контейнера сервера. Вищі значення означають вищий пріоритет (за замовчуванням 500).'
       cpu_hint: 'Ліміт ЦП у відсотках, де 100% дорівнює одному повному ядру ЦП. Наприклад, 200% дорівнює двом повним ядрам ЦП.'
-      threads_hint: 'Конкретні потоки CPU, на яких може працювати цей процес, або залиште порожнім для всіх потоків. Може бути одне число або список через кому. Приклад: 0, 0-1,3 або 0,1,3,4.'
       db_count_hint: 'Максимальна кількість баз даних, які цей сервер може створити або використовувати.'
       swap_hint: 'Кількість виділеної для цього сервера пам''яті підкачки (у МБ). Встановіть 0, щоб вимкнути підкачку.'
       backups_hint: 'Максимальна кількість резервних копій, які можуть бути збережені для цього сервера.'
@@ -875,17 +870,6 @@ pteroca:
   api:
     servers:
       not_found: 'Сервер не знайдено.'
-    schedule:
-      name_required: 'Потрібна назва розкладу.'
-      cron_field_required: 'Поле cron "{{ field }}" обов''язкове.'
-      action_required: 'Потрібна дія.'
-      payload_required: 'Потрібен payload.'
-    server_user:
-      user_not_exist: 'Користувач з email {{ email }} не існує в системі. Користувач повинен спочатку зареєструватися.'
-      user_already_added: 'Користувач з email {{ email }} вже доданий на цей сервер.'
-      cannot_modify_yourself: 'Ви не можете виконати цю дію над собою: {{ action }}.'
-      modify_permissions: 'змінити права'
-      delete_yourself_from_server: 'видалити себе з сервера'
     voucher:
       not_found: 'Ваучер не знайдено.'
       expired: 'Ваучер прострочений.'
@@ -994,7 +978,7 @@ pteroca:
     email_smtp_server: "SMTP сервер"
     email_smtp_server_help: "Введіть адресу SMTP сервера."
     email_smtp_port: "SMTP порт"
-    email_smtp_port_help: "Введіть порт SMTP сервера. Популярні порти: 587 (TLS), 465 (SSL)."
+    email_smtp_port_help: "Введіть порт SMTP сервера."
     email_smtp_username: "Ім'я користувача SMTP"
     email_smtp_username_help: "Введіть ім'я користувача SMTP."
     email_smtp_password: "Пароль SMTP"
@@ -1004,8 +988,8 @@ pteroca:
     pterodactyl_settings: "Налаштування Pterodactyl"
     pterodactyl_panel_url: "URL панелі Pterodactyl"
     pterodactyl_panel_url_help: "Введіть URL вашої панелі Pterodactyl з протоколом (http:// або https://)."
-    pterodactyl_panel_api_key: "API ключ додатку Pterodactyl"
-    pterodactyl_panel_api_key_help: "Введіть API ключ додатку вашої панелі Pterodactyl."
+    pterodactyl_panel_api_key: "API ключ панелі Pterodactyl"
+    pterodactyl_panel_api_key_help: "Введіть API ключ вашої панелі Pterodactyl."
     payment_settings: "Налаштування платежів"
     stripe_secret_key: "Секретний ключ Stripe"
     stripe_secret_key_help: "Введіть секретний ключ вашого облікового запису Stripe (необов'язково, можна встановити пізніше)."

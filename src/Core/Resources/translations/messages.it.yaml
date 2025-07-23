@@ -986,6 +986,7 @@ gipteroca:
     site_settings: "Impostazioni del sito"
     site_url: "URL del sito"
     site_url_help: "Inserisci l'URL del tuo sito con il protocollo (http:// o https://)."
+    admin_account_alert: "Fornisci i dettagli per un nuovo account amministratore che verrà creato sia in PteroCA che in Pterodactyl. Non puoi usare un account esistente."
     site_title: "Titolo del sito"
     site_title_help: "Inserisci il titolo del tuo sito."
     site_locale: "Lingua dell'interfaccia"

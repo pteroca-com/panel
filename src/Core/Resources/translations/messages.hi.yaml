@@ -362,7 +362,6 @@ pteroca:
     users: 'उपयोगकर्ता'
     schedules: 'शेड्यूल'
     schedules_usage: 'उपयोग: {{ current }}/{{ limit }}'
-    usage: 'उपयोग: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'अधिकतम शेड्यूल सीमा ({{ limit }}) पहुंच गई है। नए शेड्यूल बनाने के लिए मौजूदा शेड्यूल हटाएं।'
     no_subusers: 'इस सर्वर के लिए अभी तक कोई सबयूजर नहीं है।'
     no_schedules: 'इस सर्वर के लिए अभी तक कोई शेड्यूल नहीं है।'
@@ -994,7 +993,7 @@ pteroca:
     email_smtp_server: "SMTP सर्वर"
     email_smtp_server_help: "SMTP सर्वर का पता दर्ज करें।"
     email_smtp_port: "SMTP पोर्ट"
-    email_smtp_port_help: "SMTP सर्वर का पोर्ट दर्ज करें। सामान्य पोर्ट: 587 (TLS), 465 (SSL)।"
+    email_smtp_port_help: "SMTP सर्वर का पोर्ट दर्ज करें।"
     email_smtp_username: "SMTP उपयोगकर्ता नाम"
     email_smtp_username_help: "SMTP उपयोगकर्ता नाम दर्ज करें।"
     email_smtp_password: "SMTP पासवर्ड"
@@ -1004,8 +1003,8 @@ pteroca:
     pterodactyl_settings: "Pterodactyl सेटिंग्स"
     pterodactyl_panel_url: "Pterodactyl पैनल URL"
     pterodactyl_panel_url_help: "अपने Pterodactyl पैनल का URL प्रोटोकॉल (http:// या https://) के साथ दर्ज करें।"
-    pterodactyl_panel_api_key: "Pterodactyl Application API कुंजी"
-    pterodactyl_panel_api_key_help: "अपने Pterodactyl पैनल की Application API कुंजी दर्ज करें।"
+    pterodactyl_panel_api_key: "Pterodactyl पैनल API कुंजी"
+    pterodactyl_panel_api_key_help: "अपने Pterodactyl पैनल की API कुंजी दर्ज करें।"
     payment_settings: "भुगतान सेटिंग्स"
     stripe_secret_key: "Stripe सीक्रेट की"
     stripe_secret_key_help: "अपने Stripe खाते की सीक्रेट की दर्ज करें (वैकल्पिक, बाद में सेट किया जा सकता है)।"

@@ -1014,6 +1014,7 @@ pteroca:
     internal_currency_name: '内部货币名称'
     internal_currency_name_help: '输入内部货币的名称（如金币）。'
     create_admin_account: '创建管理员账户'
+    admin_account_alert: '请提供新管理员账户的详细信息，该账户将在 PteroCA 和 Pterodactyl 中创建。您不能使用现有账户。'
     admin_email: '管理员邮箱'
     admin_email_help: '输入管理员的电子邮件地址。'
     admin_password: '管理员密码'

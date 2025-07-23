@@ -1014,6 +1014,7 @@ pteroca:
     internal_currency_name: "Nazwa waluty wewnętrznej"
     internal_currency_name_help: "Wprowadź nazwę waluty wewnętrznej (np. monety)."
     create_admin_account: "Utwórz konto administratora"
+    admin_account_alert: "Podaj dane nowego konta administratora, które zostanie utworzone zarówno w PteroCA, jak i Pterodactyl. Nie możesz użyć istniejącego konta."
     admin_email: "E-mail administratora"
     admin_email_help: "Wprowadź adres e-mail administratora."
     admin_password: "Hasło administratora"

@@ -971,6 +971,7 @@ pteroca:
     site_settings: 'Site-instellingen'
     site_url: 'Website URL'
     site_url_help: 'Vul de URL van uw website in met het protocol (http:// of https://).'
+    admin_account_alert: 'Geef de gegevens op voor een nieuw beheerdersaccount dat zowel in PteroCA als in Pterodactyl wordt aangemaakt. U kunt geen bestaand account gebruiken.'
     site_title: 'Titel van website'
     site_title_help: 'Vul de titel van uw site in.'
     site_locale: 'Taal interface'

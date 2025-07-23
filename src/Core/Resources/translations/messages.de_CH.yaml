@@ -977,6 +977,7 @@ pteroca:
     start_configuration: 'Konfiguration starten'
     site_settings: 'Seiteneinstellungen'
     site_url: 'Website-URL'
+    admin_account_alert: 'Bitte geben Sie Details für ein neues Administrator-Konto an, das sowohl in PteroCA als auch in Pterodactyl erstellt wird. Sie können kein bestehendes Konto verwenden.'
     site_url_help: 'Geben Sie die URL Ihrer Website mit dem Protokoll ein (http:// oder https://).'
     site_title: 'Webseitentitel'
     site_title_help: 'Geben Sie den Titel Ihrer Website ein.'

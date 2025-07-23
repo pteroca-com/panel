@@ -1015,6 +1015,7 @@ pteroca:
     internal_currency_name: 'Internal Currency Name'
     internal_currency_name_help: 'Enter the internal currency name (eg. coins).'
     create_admin_account: 'Create Admin Account'
+    admin_account_alert: 'Please provide details for a new administrator account that will be created in both PteroCA and Pterodactyl. You cannot use an existing account.'
     admin_email: 'Admin Email'
     admin_email_help: 'Enter the email address of the administrator.'
     admin_password: 'Admin Password'
