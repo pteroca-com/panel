@@ -48,7 +48,7 @@ class SystemSettingConfiguratorHandler
     {
         if ($io->ask('Do you want to create user?', 'yes') === 'yes') {
             $io->section('User configuration');
-            $io->text('Please provide user credentials');
+            $io->text('Please provide details for a new administrator account that will be created in both PteroCA and Pterodactyl. You cannot use an existing account.');
 
             $email = $io->ask('User e-mail', '');
             $password = $io->ask('User password', '');
@@ -68,19 +68,19 @@ class SystemSettingConfiguratorHandler
             $settings = [
                 SettingEnum::STRIPE_SECRET_KEY->value => [
                     'value' => $io->ask(
-                        'Stripe Secret Key',
+                        'Stripe Secret Key (Enter your Stripe account secret key - optional, can be set later)',
                         $this->settingRepository->getSetting(SettingEnum::STRIPE_SECRET_KEY),
                     ),
                 ],
                 SettingEnum::CURRENCY_NAME->value => [
                     'value' => $io->ask(
-                        'Currency',
+                        'Currency (Enter the currency name for payments)',
                         $this->settingRepository->getSetting(SettingEnum::CURRENCY_NAME),
                     ),
                 ],
                 SettingEnum::INTERNAL_CURRENCY_NAME->value => [
                     'value' => $io->ask(
-                        'Internal Currency Name (balance)',
+                        'Internal Currency Name (Enter the internal currency name - e.g. coins)',
                         $this->settingRepository->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME),
                     ),
                 ],
@@ -98,13 +98,13 @@ class SystemSettingConfiguratorHandler
             $settings = [
                 SettingEnum::PTERODACTYL_PANEL_URL->value => [
                     'value' => $io->ask(
-                        'Pterodactyl Panel URL',
+                        'Pterodactyl Panel URL (Enter your Pterodactyl panel URL with protocol - http:// or https://)',
                         $this->settingRepository->getSetting(SettingEnum::PTERODACTYL_PANEL_URL),
                     ),
                 ],
                 SettingEnum::PTERODACTYL_API_KEY->value => [
                     'value' => $io->ask(
-                        'Pterodactyl Panel API Key',
+                        'Pterodactyl Panel Application API Key (Enter your Pterodactyl panel Application API key)',
                         $this->settingRepository->getSetting(SettingEnum::PTERODACTYL_API_KEY),
                     ),
                 ],
@@ -134,31 +134,31 @@ class SystemSettingConfiguratorHandler
             $settings = [
                 SettingEnum::EMAIL_SMTP_SERVER->value => [
                     'value' => $io->ask(
-                        'SMTP Server',
+                        'SMTP Server (Enter the SMTP server address)',
                         $this->settingRepository->getSetting(SettingEnum::EMAIL_SMTP_SERVER),
                     ),
                 ],
                 SettingEnum::EMAIL_SMTP_PORT->value => [
                     'value' => $io->ask(
-                        'SMTP Port',
+                        'SMTP Port (Enter the SMTP server port. Common ports: 587 (TLS), 465 (SSL))',
                         $this->settingRepository->getSetting(SettingEnum::EMAIL_SMTP_PORT),
                     ),
                 ],
                 SettingEnum::EMAIL_SMTP_USERNAME->value => [
                     'value' => $io->ask(
-                        'SMTP Username',
+                        'SMTP Username (Enter the SMTP username)',
                         $this->settingRepository->getSetting(SettingEnum::EMAIL_SMTP_USERNAME),
                     ),
                 ],
                 SettingEnum::EMAIL_SMTP_PASSWORD->value => [
                     'value' => $io->ask(
-                        'SMTP Password',
+                        'SMTP Password (Enter the SMTP password)',
                         $this->settingRepository->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD),
                     ),
                 ],
                 SettingEnum::EMAIL_SMTP_FROM->value => [
                     'value' => $io->ask(
-                        'SMTP From (E-mail)',
+                        'SMTP From (Enter the email address for sending emails)',
                         $this->settingRepository->getSetting(SettingEnum::EMAIL_SMTP_FROM),
                     ),
                 ],
@@ -190,19 +190,19 @@ class SystemSettingConfiguratorHandler
             $settings = [
                 SettingEnum::SITE_URL->value => [
                     'value' => $io->ask(
-                        'Site URL',
+                        'Site URL (Enter your website URL with protocol - http:// or https://)',
                         $this->settingRepository->getSetting(SettingEnum::SITE_URL),
                     ),
                 ],
                 SettingEnum::SITE_TITLE->value => [
                     'value' => $io->ask(
-                        'Site Title',
+                        'Site Title (Enter your website title)',
                         $this->settingRepository->getSetting(SettingEnum::SITE_TITLE),
                     ),
                 ],
                 SettingEnum::LOCALE->value => [
                     'value' => $io->ask(
-                        'Locale',
+                        'Locale (Select the language for the user interface)',
                         $this->settingRepository->getSetting(SettingEnum::LOCALE),
                     ),
                 ],
