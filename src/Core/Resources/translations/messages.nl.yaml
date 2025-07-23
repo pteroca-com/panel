@@ -979,7 +979,7 @@ pteroca:
     email_smtp_server: 'SMTP-server'
     email_smtp_server_help: 'Voer het SMTP-serveradres in.'
     email_smtp_port: 'SMTP poort'
-    email_smtp_port_help: 'Voer de SMTP-serverpoort in.'
+    email_smtp_port_help: 'Voer de SMTP-serverpoort in. Veelgebruikte poorten: 587 (TLS), 465 (SSL).'
     email_smtp_username: 'SMTP Gebruikersnaam'
     email_smtp_username_help: 'Vul de SMTP-gebruikersnaam in.'
     email_smtp_password: 'SMTP Wachtwoord'

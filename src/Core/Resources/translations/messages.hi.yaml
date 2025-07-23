@@ -994,7 +994,7 @@ pteroca:
     email_smtp_server: "SMTP सर्वर"
     email_smtp_server_help: "SMTP सर्वर का पता दर्ज करें।"
     email_smtp_port: "SMTP पोर्ट"
-    email_smtp_port_help: "SMTP सर्वर का पोर्ट दर्ज करें।"
+    email_smtp_port_help: "SMTP सर्वर का पोर्ट दर्ज करें। सामान्य पोर्ट: 587 (TLS), 465 (SSL)।"
     email_smtp_username: "SMTP उपयोगकर्ता नाम"
     email_smtp_username_help: "SMTP उपयोगकर्ता नाम दर्ज करें।"
     email_smtp_password: "SMTP पासवर्ड"

@@ -994,7 +994,7 @@ pteroca:
     email_smtp_server: "SMTP сервер"
     email_smtp_server_help: "Введіть адресу SMTP сервера."
     email_smtp_port: "SMTP порт"
-    email_smtp_port_help: "Введіть порт SMTP сервера."
+    email_smtp_port_help: "Введіть порт SMTP сервера. Популярні порти: 587 (TLS), 465 (SSL)."
     email_smtp_username: "Ім'я користувача SMTP"
     email_smtp_username_help: "Введіть ім'я користувача SMTP."
     email_smtp_password: "Пароль SMTP"

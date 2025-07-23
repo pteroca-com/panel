@@ -1,4 +1,4 @@
-pteroca:
+gipteroca:
   system:
     back: 'Torna al pannello'
     email_not_verified: 'Il tuo indirizzo e-mail non è stato ancora verificato. Controlla la tua casella di posta.'
@@ -994,7 +994,7 @@ pteroca:
     email_smtp_server: "Server SMTP"
     email_smtp_server_help: "Inserisci l'indirizzo del server SMTP."
     email_smtp_port: "Porta SMTP"
-    email_smtp_port_help: "Inserisci la porta del server SMTP."
+    email_smtp_port_help: "Inserisci la porta del server SMTP. Porte comuni: 587 (TLS), 465 (SSL)."
     email_smtp_username: "Nome utente SMTP"
     email_smtp_username_help: "Inserisci il nome utente SMTP."
     email_smtp_password: "Password SMTP"

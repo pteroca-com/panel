@@ -994,7 +994,7 @@ pteroca:
     email_smtp_server: 'SMTP 服务器'
     email_smtp_server_help: '输入 SMTP 服务器地址。'
     email_smtp_port: 'SMTP 端口'
-    email_smtp_port_help: '输入 SMTP 服务器端口。'
+    email_smtp_port_help: '输入 SMTP 服务器端口。常用端口：587 (TLS), 465 (SSL)。'
     email_smtp_username: 'SMTP 用户名'
     email_smtp_username_help: '输入 SMTP 用户名。'
     email_smtp_password: 'SMTP 密码'

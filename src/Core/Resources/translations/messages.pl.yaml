@@ -994,7 +994,7 @@ pteroca:
     email_smtp_server: "Serwer SMTP"
     email_smtp_server_help: "Wprowadź adres serwera SMTP."
     email_smtp_port: "Port SMTP"
-    email_smtp_port_help: "Wprowadź port serwera SMTP."
+    email_smtp_port_help: "Wprowadź port serwera SMTP. Popularne porty: 587 (TLS), 465 (SSL)."
     email_smtp_username: "Nazwa użytkownika SMTP"
     email_smtp_username_help: "Wprowadź nazwę użytkownika SMTP."
     email_smtp_password: "Hasło SMTP"
