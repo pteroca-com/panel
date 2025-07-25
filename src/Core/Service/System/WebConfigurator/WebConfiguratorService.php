@@ -16,6 +16,7 @@ class WebConfiguratorService
         private readonly LocaleService $localeService,
         private readonly EmailConnectionVerificationService $emailConnectionVerificationService,
         private readonly PterodactylConnectionVerificationService $pterodactylConnectionVerificationService,
+        private readonly UserValidationService $userValidationService,
         private readonly TranslatorInterface $translator,
         private readonly FinishConfigurationService $finishConfigurationService,
         private readonly SettingService $settingService,
@@ -57,6 +58,11 @@ class WebConfiguratorService
                 $data['email_smtp_password'],
                 $data['email_smtp_server'],
                 $data['email_smtp_port'],
+            ),
+            5 => $this->userValidationService->validateUserDoesNotExist(
+                $data['admin_email'],
+                $data['pterodactyl_panel_url'],
+                $data['pterodactyl_panel_api_key'],
             ),
             default => new ConfiguratorVerificationResult(true),
         };

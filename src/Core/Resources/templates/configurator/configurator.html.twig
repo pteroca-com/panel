@@ -118,12 +118,27 @@
                         } else {
                             return response.json().then(response => {
                                 submitButton.disabled = false
-                                if ([2, 3].includes(currentStep)) {
+                                if ([2, 3, 5].includes(currentStep)) {
                                     handleStepError(currentStep, response.message)
                                 } else {
                                     alert(response.message)
                                 }
+                            }).catch(() => {
+                                submitButton.disabled = false
+                                if ([2, 3, 5].includes(currentStep)) {
+                                    handleStepError(currentStep, '{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                                } else {
+                                    alert('{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                                }
                             })
+                        }
+                    })
+                    .catch(error => {
+                        submitButton.disabled = false
+                        if ([2, 3, 5].includes(currentStep)) {
+                            handleStepError(currentStep, '{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                        } else {
+                            alert('{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
                         }
                     })
             })
@@ -152,6 +167,22 @@
             const validateEndpointUrl = '{{ path('first_configuration_validate_step') }}',
                 form = document.querySelector('form[data-step="' + step + '"]'),
                 formData = new FormData(form)
+
+            // For step 5 (user validation), we also need Pterodactyl API data from step 2
+            if (step === 5) {
+                const pterodactylForm = document.querySelector('form[data-step="2"]')
+                if (pterodactylForm) {
+                    const pterodactylUrlInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_url"]')
+                    const pterodactylApiKeyInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_api_key"]')
+                    
+                    if (pterodactylUrlInput && pterodactylUrlInput.value) {
+                        formData.append('pterodactyl_panel_url', pterodactylUrlInput.value)
+                    }
+                    if (pterodactylApiKeyInput && pterodactylApiKeyInput.value) {
+                        formData.append('pterodactyl_panel_api_key', pterodactylApiKeyInput.value)
+                    }
+                }
+            }
 
             formData.append('step', step)
             formData.append('language', languageSelect.value)
@@ -207,6 +238,11 @@
                 case 3:
                     if (messageElement) {
                         messageElement.innerText = '{{ 'pteroca.first_configuration.messages.email_checking_smtp_connection'|trans }}'
+                    }
+                    break;
+                case 5:
+                    if (messageElement) {
+                        messageElement.innerText = '{{ 'pteroca.first_configuration.messages.user_checking_account_creation'|trans }}'
                     }
                     break;
             }
