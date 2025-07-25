@@ -363,6 +363,7 @@ pteroca:
     schedules: 'शेड्यूल'
     schedules_usage: 'उपयोग: {{ current }}/{{ limit }}'
     schedule_limit_reached: 'अधिकतम शेड्यूल सीमा ({{ limit }}) पहुंच गई है। नए शेड्यूल बनाने के लिए मौजूदा शेड्यूल हटाएं।'
+    usage: 'उपयोग: {{ current }}/{{ limit }}'
     no_subusers: 'इस सर्वर के लिए अभी तक कोई सबयूजर नहीं है।'
     no_schedules: 'इस सर्वर के लिए अभी तक कोई शेड्यूल नहीं है।'
     schedule_name: 'शेड्यूल नाम'
@@ -1013,6 +1014,7 @@ pteroca:
     internal_currency_name: "आंतरिक मुद्रा का नाम"
     internal_currency_name_help: "आंतरिक मुद्रा का नाम दर्ज करें (जैसे, सिक्के)।"
     create_admin_account: "एडमिन खाता बनाएँ"
+    admin_account_alert: 'कृपया नए एडमिन खाते के विवरण प्रदान करें, जो PteroCA और Pterodactyl दोनों में बनाया जाएगा। आप मौजूदा खाते का उपयोग नहीं कर सकते।'
     admin_email: "एडमिन ईमेल"
     admin_email_help: "एडमिन का ईमेल पता दर्ज करें।"
     admin_password: "एडमिन पासवर्ड"
@@ -1032,6 +1034,10 @@ pteroca:
       pterodactyl_api_connection_success: "Pterodactyl API से सफलतापूर्वक कनेक्ट हो गया।"
       email_checking_smtp_connection: "SMTP सर्वर कनेक्शन की जाँच की जा रही है..."
       email_smtp_connection_success: "SMTP सर्वर से सफलतापूर्वक कनेक्ट हो गया।"
+      user_already_exists_in_pterodactyl: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही Pterodactyl में मौजूद है। कृपया एक अलग ईमेल पता उपयोग करें।'
+      user_validation_success: 'उपयोगकर्ता सत्यापन सफल।'
+      user_checking_account_creation: 'जांच की जा रही है कि क्या खाता बनाया जा सकता है...'
+      validation_error: 'स्टेप को सत्यापित करते समय त्रुटि हुई। कृपया फिर से कोशिश करें।'
 
   error:
     404:

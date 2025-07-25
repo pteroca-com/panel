@@ -1010,6 +1010,10 @@ pteroca:
       pterodactyl_api_connection_success: "Успешно подключено к API Pterodactyl."
       email_checking_smtp_connection: "Проверка подключения к SMTP серверу..."
       email_smtp_connection_success: "Успешно подключено к SMTP серверу."
+      user_already_exists_in_pterodactyl: 'Пользователь с таким адресом электронной почты уже существует в Pterodactyl. Используйте другой адрес электронной почты.'
+      user_validation_success: 'Проверка пользователя прошла успешно.'
+      user_checking_account_creation: 'Проверка возможности создания аккаунта...'
+      validation_error: 'Произошла ошибка при проверке шага. Попробуйте еще раз.'
 
   error:
     404:

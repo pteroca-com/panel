@@ -1034,6 +1034,10 @@ pteroca:
       pterodactyl_api_connection_success: 'Conexión exitosa con la API de Pterodactyl.'
       email_checking_smtp_connection: 'Verificando la conexión con el servidor SMTP...'
       email_smtp_connection_success: 'Conexión exitosa con el servidor SMTP.'
+      user_already_exists_in_pterodactyl: 'Un usuario con esta dirección de correo electrónico ya existe en Pterodactyl. Por favor, utilice una dirección de correo electrónico diferente.'
+      user_validation_success: 'Validación de usuario exitosa.'
+      user_checking_account_creation: 'Verificando si la cuenta puede ser creada...'
+      validation_error: 'Ocurrió un error durante la validación del paso. Por favor, inténtelo de nuevo.'
 
   error:
     404:

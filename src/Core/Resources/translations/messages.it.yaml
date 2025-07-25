@@ -1,4 +1,4 @@
-gipteroca:
+pteroca:
   system:
     back: 'Torna al pannello'
     email_not_verified: 'Il tuo indirizzo e-mail non è stato ancora verificato. Controlla la tua casella di posta.'
@@ -1034,6 +1034,10 @@ gipteroca:
       pterodactyl_api_connection_success: "Connessione all'API di Pterodactyl avvenuta con successo."
       email_checking_smtp_connection: "Verifica della connessione al server SMTP in corso..."
       email_smtp_connection_success: "Connessione al server SMTP avvenuta con successo."
+      user_already_exists_in_pterodactyl: 'Un utente con questo indirizzo email esiste già in Pterodactyl. Si prega di utilizzare un indirizzo email diverso.'
+      user_validation_success: 'Validazione utente completata con successo.'
+      user_checking_account_creation: 'Controllo se l'\''account può essere creato...'
+      validation_error: 'Errore durante la validazione del passaggio. Riprova.'
 
   error:
     404:
