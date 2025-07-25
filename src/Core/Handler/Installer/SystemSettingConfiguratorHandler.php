@@ -9,6 +9,7 @@ use App\Core\Service\SettingService;
 use App\Core\Service\System\EnvironmentConfigurationService;
 use App\Core\Service\System\WebConfigurator\EmailConnectionVerificationService;
 use App\Core\Service\System\WebConfigurator\PterodactylConnectionVerificationService;
+use App\Core\Service\System\WebConfigurator\UserValidationService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SystemSettingConfiguratorHandler
@@ -21,6 +22,7 @@ class SystemSettingConfiguratorHandler
         private readonly EnvironmentConfigurationService $environmentConfigurationHandler,
         private readonly EmailConnectionVerificationService $emailConnectionVerificationService,
         private readonly PterodactylConnectionVerificationService $pterodactylConnectionVerificationService,
+        private readonly UserValidationService $userValidationService,
     ) {}
 
     public function configureSystemSettings(SymfonyStyle $io): void
@@ -52,6 +54,20 @@ class SystemSettingConfiguratorHandler
 
             $email = $io->ask('User e-mail', '');
             $password = $io->ask('User password', '');
+            
+            $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+            $pterodactylApiKey = $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value);
+            
+            if ($pterodactylUrl && $pterodactylApiKey) {
+                $userValidation = $this->userValidationService->validateUserDoesNotExist($email, $pterodactylUrl, $pterodactylApiKey);
+                
+                if (!$userValidation->isVerificationSuccessful) {
+                    $io->error($userValidation->message);
+                    $this->askForConfigureUser($io);
+                    return;
+                }
+            }
+            
             $isAdmin = $io->ask('Is user admin? (yes/no)', 'yes') === 'yes';
 
             $userRole = $isAdmin ? UserRoleEnum::ROLE_ADMIN : UserRoleEnum::ROLE_USER;

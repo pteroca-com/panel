@@ -19,23 +19,21 @@ class UserValidationService
         string $pterodactylPanelApiKey,
     ): ConfiguratorVerificationResult
     {
-        $pterodactylApi = new PterodactylApi($pterodactylPanelUrl, $pterodactylPanelApiKey);
-        $users = $pterodactylApi->users->paginate(1, ['filter[email]' => $adminEmail]);
-    
-        if (!empty($users->toArray())) {
-            return new ConfiguratorVerificationResult(
-                false,
-                $this->translator->trans('pteroca.first_configuration.messages.user_already_exists_in_pterodactyl'),
-            );
-        }
-
-        return new ConfiguratorVerificationResult(
-            true,
-            $this->translator->trans('pteroca.first_configuration.messages.user_validation_success'),
-        );
-
         try {
-           
+            $pterodactylApi = new PterodactylApi($pterodactylPanelUrl, $pterodactylPanelApiKey);
+            $users = $pterodactylApi->users->paginate(1, ['filter[email]' => $adminEmail]);
+        
+            if (!empty($users->toArray())) {
+                return new ConfiguratorVerificationResult(
+                    false,
+                    $this->translator->trans('pteroca.first_configuration.messages.user_already_exists_in_pterodactyl'),
+                );
+            }
+
+            return new ConfiguratorVerificationResult(
+                true,
+                $this->translator->trans('pteroca.first_configuration.messages.user_validation_success'),
+            );
         } catch (Exception) {
             return new ConfiguratorVerificationResult(
                 false,
