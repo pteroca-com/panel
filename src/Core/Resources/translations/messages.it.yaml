@@ -292,6 +292,9 @@ pteroca:
     console_token_expired: 'Il token della console è scaduto. Si prega di aggiornare la pagina.'
     console_connection_closed: 'La connessione alla console è stata chiusa.'
     console_connection_error: 'Si è verificato un errore durante la connessione alla console.'
+    server_installing: 'Il server è in fase di installazione'
+    server_installing_message: 'Il tuo server è attualmente in fase di installazione e sarà disponibile tra pochi minuti. Attendi il completamento del processo di installazione.'
+    server_installing_description: 'Il processo di installazione può richiedere diversi minuti a seconda del software selezionato e delle specifiche del server.'
     rules: 'Regole'
     data_validation_error: 'Errore durante la validazione. Si prega di controllare se tutte le regole sono rispettate.'
     enable_auto_renewal: 'Abilita il rinnovo automatico per questo server'
@@ -1036,7 +1039,7 @@ pteroca:
       email_smtp_connection_success: "Connessione al server SMTP avvenuta con successo."
       user_already_exists_in_pterodactyl: 'Un utente con questo indirizzo email esiste già in Pterodactyl. Si prega di utilizzare un indirizzo email diverso.'
       user_validation_success: 'Validazione utente completata con successo.'
-      user_checking_account_creation: 'Controllo se l'\''account può essere creato...'
+      user_checking_account_creation: 'Controllo se l''account può essere creato...'
       validation_error: 'Errore durante la validazione del passaggio. Riprova.'
 
   error:
