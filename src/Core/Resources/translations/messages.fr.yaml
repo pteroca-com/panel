@@ -79,6 +79,8 @@ pteroca:
     welcome_message: 'Votre centre de commande de serveurs'
     quick_actions: 'Actions rapides'
     browse_store: 'Parcourir la boutique'
+    no_servers_description: "Vous n'avez pas encore de serveurs. Commandez votre premier serveur pour commencer à l'utiliser."
+    order_first_server: "Commander votre premier serveur"
   recharge:
     recharge_balance: 'Recharger le solde'
     recharge: 'Recharger'
@@ -228,6 +230,12 @@ pteroca:
     status: 'Statut'
     actions: 'Actions'
     description: 'Gérez tous vos serveurs depuis cette page'
+    state:
+      running: 'En ligne'
+      stopped: 'Arrêté'
+      starting: 'Démarrage'
+      stopping: 'Arrêt en cours'
+      offline: 'Hors ligne'
 
   server:
     title: 'Gestion du serveur'
@@ -343,6 +351,7 @@ pteroca:
     cannot_delete_primary_allocation: 'L’allocation principale ne peut pas être supprimée.'
     extend_server_expires_on_demand: 'Votre serveur <strong>{{ productName }}</strong> est actuellement configuré pour expirer <strong>à la demande</strong>.'
     on_demand_billing_cycle: 'Le cycle de facturation ({{ productPrice }} {{ internalCurrency }} / minute) sera interrompu quand le serveur est hors ligne et les ressources seront gratuites.'
+    usage: "Utilisation"
     type: 'Type'
     primary: 'Principal'
     secondary: 'Secondaire'
@@ -625,6 +634,8 @@ pteroca:
       nodes_hint: 'Sélectionnez une ou plusieurs machines physiques ou virtuelles (nœuds) de votre configuration Pterodactyl.'
       nest_hint: 'Un Nest est une catégorie qui regroupe des Eggs liés. Choisissez un Nest pour charger ses Eggs.'
       eggs_hint: 'Les Eggs définissent des configurations de serveur spécifiques (jeux ou applications). Sélectionnez les Eggs que vous souhaitez que ce produit prenne en charge.'
+      threads: "Threads"
+      threads_hint: "Nombre de threads CPU alloués à ce serveur."
       pricing: 'Tarification'
       price_static_plan: 'Tarif fixe'
       price_static_plan_hint: 'Le prix du produit pour une période fixe que les utilisateurs peuvent sélectionner comme cycle de facturation.'
@@ -874,6 +885,17 @@ pteroca:
   api:
     servers:
       not_found: 'Serveur non trouvé.'
+    schedule:
+      name_required: 'Le nom de la planification est requis.'
+      cron_field_required: 'Le champ cron "{{ field }}" est requis.'
+      action_required: 'L’action est requise.'
+      payload_required: 'La charge utile est requise.'
+    server_user:
+      user_not_exist: "L'utilisateur avec l'email {{ email }} n'existe pas dans le système. L'utilisateur doit d'abord s'inscrire."
+      user_already_added: "L'utilisateur avec l'email {{ email }} est déjà ajouté à ce serveur."
+      cannot_modify_yourself: "Vous ne pouvez pas effectuer cette action sur vous-même : {{ action }}."
+      modify_permissions: 'modifier les permissions'
+      delete_yourself_from_server: 'vous supprimer du serveur'
     voucher:
       not_found: 'Bon non trouvé.'
       expired: 'Le bon a expiré.'
@@ -1002,6 +1024,7 @@ pteroca:
     internal_currency_name: 'Nom de la Monnaie Interne'
     internal_currency_name_help: 'Saisissez le nom de la monnaie interne (ex. pièces).'
     create_admin_account: 'Créer un Compte Administrateur'
+    admin_account_alert: 'Veuillez fournir les informations pour un nouveau compte administrateur qui sera créé à la fois dans PteroCA et Pterodactyl. Vous ne pouvez pas utiliser un compte existant.'
     admin_email: 'Courriel de l’Administrateur'
     admin_email_help: 'Saisissez l’adresse e-mail de l’administrateur.'
     admin_password: 'Mot de Passe Administrateur'
@@ -1025,6 +1048,7 @@ pteroca:
       user_validation_success: 'Validation de l''utilisateur réussie.'
       user_checking_account_creation: 'Vérification si le compte peut être créé...'
       validation_error: 'Une erreur s''est produite lors de la validation de l''étape. Veuillez réessayer.'
+      admin_account_alert: "N'oubliez pas de créer un compte administrateur sécurisé et de conserver vos identifiants en lieu sûr."
 
   error:
     404:

@@ -198,6 +198,12 @@ pteroca:
     status: 'Status'
     actions: 'Acties'
     description: 'Beheer uw servers, bekijk hun details en voer verschillende acties uit zoals verlenging, beheer en configuratie.'
+    state:
+      running: 'Online'
+      stopped: 'Gestopt'
+      starting: 'Opstarten'
+      stopping: 'Stoppen'
+      offline: 'Offline'
     
   server:
     title: 'Server beheer'

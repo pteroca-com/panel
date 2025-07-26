@@ -229,6 +229,12 @@ pteroca:
     status: 'Статус'
     actions: 'Дії'
     description: 'Керуйте всіма вашими серверами з цієї сторінки'
+    state:
+      running: 'Онлайн'
+      stopped: 'Зупинено'
+      starting: 'Запуск'
+      stopping: 'Зупинка'
+      offline: 'Офлайн'
 
   server:
     title: 'Управління сервером'

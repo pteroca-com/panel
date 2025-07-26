@@ -231,6 +231,12 @@ pteroca:
     status: 'Status'
     actions: 'Ações'
     description: 'Gerencie seus servidores, visualize seus detalhes e execute várias ações como renovação, gerenciamento e configuração.'
+    state:
+      running: 'Online'
+      stopped: 'Parado'
+      starting: 'Iniciando'
+      stopping: 'Parando'
+      offline: 'Offline'
 
   server:
     title: 'Gerenciamento do servidor'

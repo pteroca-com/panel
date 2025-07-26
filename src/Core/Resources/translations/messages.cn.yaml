@@ -229,6 +229,12 @@ pteroca:
     status: '状态'
     actions: '操作'
     description: '管理您的服务器，查看其详细信息并执行各种操作，如续订、管理和配置。'
+    state:
+      running: '在线'
+      stopped: '已停止'
+      starting: '启动中'
+      stopping: '停止中'
+      offline: '离线'
 
   server:
     title: '服务器管理'

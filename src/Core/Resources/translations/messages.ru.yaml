@@ -66,6 +66,8 @@ pteroca:
     account_settings: 'Настройки аккаунта'
     my_servers: 'Мои сервера'
     no_servers: 'У вас пока нет серверов.'
+    no_servers_description: 'У вас еще нет серверов. Закажите свой первый сервер, чтобы начать его использовать.'
+    order_first_server: 'Заказать первый сервер'
     last_activity: 'Последняя активность'
     custom_section: 'Дополнительная информация'
     action: 'Действия'
@@ -210,6 +212,12 @@ pteroca:
     ip_address: 'IP-адрес'
     ram_memory: 'ОЗУ'
     disk: 'Диск'
+    state:
+      running: 'Онлайн'
+      stopped: 'Остановлен'
+      starting: 'Запуск'
+      stopping: 'Остановка'
+      offline: 'Оффлайн'
     cpu: 'ЦПУ'
     databases: 'Базы данных'
     backups: 'Резервные копии'
@@ -338,6 +346,7 @@ pteroca:
     cannot_modify_yourself: 'Вы не можете изменить себя.'
     extend_server_expires_on_demand: 'Ваш сервер <strong>{{ productName }}</strong> в настоящее время настроен на истечение срока <strong>по требованию</strong>.'
     on_demand_billing_cycle: 'Цикл выставления счетов ({{ productPrice }} {{ internalCurrency }} / минута) будет приостановлен, когда сервер выключен, и ресурсы будут бесплатны.'
+    usage: 'Использование'
     type: 'Тип'
     primary: 'Основной'
     secondary: 'Второстепенный'
@@ -566,6 +575,8 @@ pteroca:
       category: 'Категория'
       categories: 'Категории'
     product:
+      threads: 'Потоки'
+      threads_hint: 'Количество выделенных потоков CPU для этого сервера.'
       details: 'Подробности о товаре'
       name: 'Название товара'
       description: 'Описание товара'
@@ -865,6 +876,17 @@ pteroca:
       my_account: 'Мой аккаунт'
       account_settings: 'Настройки аккаунта'
   api:
+    schedule:
+      name_required: 'Требуется имя расписания.'
+      cron_field_required: 'Поле cron "{{ field }}" обязательно.'
+      action_required: 'Требуется действие.'
+      payload_required: 'Требуется полезная нагрузка.'
+    server_user:
+      user_not_exist: 'Пользователь с email {{ email }} не существует в системе. Пользователь должен сначала зарегистрироваться.'
+      user_already_added: 'Пользователь с email {{ email }} уже добавлен на этот сервер.'
+      cannot_modify_yourself: 'Вы не можете выполнить это действие над собой: {{ action }}.'
+      modify_permissions: 'изменить разрешения'
+      delete_yourself_from_server: 'удалить себя с сервера'
     servers:
       not_found: 'Сервер не найден.'
     voucher:
@@ -994,6 +1016,7 @@ pteroca:
     internal_currency_name: "Название внутренней валюты"
     internal_currency_name_help: "Введите название внутренней валюты (например, монеты)."
     create_admin_account: "Создать учетную запись администратора"
+    admin_account_alert: 'Пожалуйста, укажите данные для новой учетной записи администратора, которая будет создана как в PteroCA, так и в Pterodactyl. Вы не можете использовать существующую учетную запись.'
     admin_email: "Email администратора"
     admin_email_help: "Введите адрес электронной почты администратора."
     admin_password: "Пароль администратора"

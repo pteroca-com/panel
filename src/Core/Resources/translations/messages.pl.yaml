@@ -229,6 +229,12 @@ pteroca:
     name: 'Nazwa'
     actions: 'Akcje'
     description: 'Zarządzaj swoimi serwerami, przeglądaj ich szczegóły i wykonuj różne akcje, takie jak przedłużanie, zarządzanie i konfiguracja.'
+    state:
+      running: 'Online'
+      stopped: 'Zatrzymany'
+      starting: 'Uruchamianie'
+      stopping: 'Zatrzymywanie'
+      offline: 'Offline'
 
   server:
     title: 'Zarządzanie serwerem'
