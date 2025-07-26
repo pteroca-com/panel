@@ -229,6 +229,12 @@ pteroca:
     status: 'Status'
     actions: 'Actions'
     description: 'Manage your servers, view their details and perform various actions such as extending, managing and configuration.'
+    state:
+      running: 'Online'
+      stopped: 'Stopped'
+      starting: 'Starting'
+      stopping: 'Stopping'
+      offline: 'Offline'
 
   server:
     title: 'Server management'

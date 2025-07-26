@@ -154,7 +154,9 @@
                     } else {
                         const targetElement = element.querySelector(`[data-${dataKey}]`);
                         if (targetElement) {
-                            if (targetElement.hasAttribute('data-unit')) {
+                            if (dataKey === 'state') {
+                                updateServerStateBadge(targetElement, value);
+                            } else if (targetElement.hasAttribute('data-unit')) {
                                 targetElement.textContent = `${value} ${targetElement.getAttribute('data-unit')}`;
                             } else {
                                 targetElement.textContent = value;
@@ -163,6 +165,21 @@
                         }
                     }
                 }
+            }
+
+            function updateServerStateBadge(element, state) {
+                const stateConfig = {
+                    'running': { class: 'badge-success', text: '{{ 'pteroca.servers.state.running'|trans }}' },
+                    'stopped': { class: 'badge-secondary', text: '{{ 'pteroca.servers.state.stopped'|trans }}' },
+                    'starting': { class: 'badge-warning', text: '{{ 'pteroca.servers.state.starting'|trans }}' },
+                    'stopping': { class: 'badge-warning', text: '{{ 'pteroca.servers.state.stopping'|trans }}' },
+                    'offline': { class: 'badge-danger', text: '{{ 'pteroca.servers.state.offline'|trans }}' }
+                };
+
+                const config = stateConfig[state] || { class: 'badge-secondary', text: state };
+                
+                element.className = `badge ${config.class}`;
+                element.textContent = config.text;
             }
         });
     </script>
