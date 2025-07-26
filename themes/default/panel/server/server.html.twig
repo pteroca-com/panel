@@ -36,34 +36,38 @@
         </div>
     {% endif %}
 
-    <div class="container mt-4">
-        {% include 'panel/server/tabs/navigation.html.twig' %}
-        <div class="tab-content">
-            {% include 'panel/server/tabs/console/console.html.twig' %}
-            {% if (serverData.hasConfigurableOptions or serverData.hasConfigurableVariables) and hasServerPermission(serverData.serverPermissions, 'startup.read') %}
-                {% include 'panel/server/tabs/startup/startup.html.twig' %}
-            {% endif %}
-            {% if server.serverProduct.dbCount and hasServerPermission(serverData.serverPermissions, 'database.read') %}
-                {% include 'panel/server/tabs/databases/databases.html.twig' %}
-            {% endif %}
-            {% if server.serverProduct.backups and hasServerPermission(serverData.serverPermissions, 'backup.read') %}
-                {% include 'panel/server/tabs/backups/backups.html.twig' %}
-            {% endif %}
-            {% if hasServerPermission(serverData.serverPermissions, 'allocation.read') %}
-                {% include 'panel/server/tabs/network/network.html.twig' %}
-            {% endif %}
-            {% if hasServerPermission(serverData.serverPermissions, 'user.read') %}
-                {% include 'panel/server/tabs/users/users.html.twig' %}
-            {% endif %}
-            {% if server.serverProduct.schedules > 0 and hasServerPermission(serverData.serverPermissions, 'schedule.read') %}
-                {% include 'panel/server/tabs/schedules/schedules.html.twig' %}
-            {% endif %}
-            {% include 'panel/server/tabs/settings/settings.html.twig' %}
-            {% if hasServerPermission(serverData.serverPermissions, 'activity.read') %}
-                {% include 'panel/server/tabs/activity/activity.html.twig' %}
-            {% endif %}
+    {% if serverData.isInstalling %}
+        {% include 'panel/server/server_installing.html.twig' %}
+    {% else %}
+        <div class="container mt-4">
+            {% include 'panel/server/tabs/navigation.html.twig' %}
+            <div class="tab-content">
+                {% include 'panel/server/tabs/console/console.html.twig' %}
+                {% if (serverData.hasConfigurableOptions or serverData.hasConfigurableVariables) and hasServerPermission(serverData.serverPermissions, 'startup.read') %}
+                    {% include 'panel/server/tabs/startup/startup.html.twig' %}
+                {% endif %}
+                {% if server.serverProduct.dbCount and hasServerPermission(serverData.serverPermissions, 'database.read') %}
+                    {% include 'panel/server/tabs/databases/databases.html.twig' %}
+                {% endif %}
+                {% if server.serverProduct.backups and hasServerPermission(serverData.serverPermissions, 'backup.read') %}
+                    {% include 'panel/server/tabs/backups/backups.html.twig' %}
+                {% endif %}
+                {% if hasServerPermission(serverData.serverPermissions, 'allocation.read') %}
+                    {% include 'panel/server/tabs/network/network.html.twig' %}
+                {% endif %}
+                {% if hasServerPermission(serverData.serverPermissions, 'user.read') %}
+                    {% include 'panel/server/tabs/users/users.html.twig' %}
+                {% endif %}
+                {% if server.serverProduct.schedules > 0 and hasServerPermission(serverData.serverPermissions, 'schedule.read') %}
+                    {% include 'panel/server/tabs/schedules/schedules.html.twig' %}
+                {% endif %}
+                {% include 'panel/server/tabs/settings/settings.html.twig' %}
+                {% if hasServerPermission(serverData.serverPermissions, 'activity.read') %}
+                    {% include 'panel/server/tabs/activity/activity.html.twig' %}
+                {% endif %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}
 
 {% block body_javascript %}
