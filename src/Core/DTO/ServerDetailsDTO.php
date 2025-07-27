@@ -2,6 +2,8 @@
 
 namespace App\Core\DTO;
 
+use App\Core\Enum\ServerStateEnum;
+
 readonly class ServerDetailsDTO
 {
     public function __construct(
@@ -12,6 +14,7 @@ readonly class ServerDetailsDTO
         public array $limits,
         public array $featureLimits,
         public array $egg,
+        public ?ServerStateEnum $state = null,
     ) {}
 
     public function toArray(): array
@@ -24,6 +27,7 @@ readonly class ServerDetailsDTO
             'limits' => $this->limits,
             'featureLimits' => $this->featureLimits,
             'egg' => $this->egg,
+            'state' => $this->state?->value,
         ];
     }
 }

@@ -229,6 +229,12 @@ pteroca:
     status: '状态'
     actions: '操作'
     description: '管理您的服务器，查看其详细信息并执行各种操作，如续订、管理和配置。'
+    state:
+      running: '在线'
+      stopped: '已停止'
+      starting: '启动中'
+      stopping: '停止中'
+      offline: '离线'
 
   server:
     title: '服务器管理'
@@ -292,6 +298,9 @@ pteroca:
     console_token_expired: '控制台令牌已过期。请刷新页面。'
     console_connection_closed: '控制台连接已关闭。'
     console_connection_error: '连接控制台时发生错误。'
+    server_installing: '服务器正在安装'
+    server_installing_message: '您的服务器正在安装，几分钟后即可使用。请耐心等待安装过程完成。'
+    server_installing_description: '安装过程可能需要几分钟，具体取决于所选软件和服务器规格。'
     enable_auto_renewal: '启用此服务器的自动续费'
     auto_renewal_tooltip: '如果启用，服务器将根据选定的周期自动续费。付款将从您的账户余额中扣除。'
     rules: '规则'
@@ -994,7 +1003,7 @@ pteroca:
     email_smtp_server: 'SMTP 服务器'
     email_smtp_server_help: '输入 SMTP 服务器地址。'
     email_smtp_port: 'SMTP 端口'
-    email_smtp_port_help: '输入 SMTP 服务器端口。'
+    email_smtp_port_help: '输入 SMTP 服务器端口。常用端口：587 (TLS), 465 (SSL)。'
     email_smtp_username: 'SMTP 用户名'
     email_smtp_username_help: '输入 SMTP 用户名。'
     email_smtp_password: 'SMTP 密码'
@@ -1004,8 +1013,8 @@ pteroca:
     pterodactyl_settings: 'Pterodactyl 设置'
     pterodactyl_panel_url: 'Pterodactyl 面板 URL'
     pterodactyl_panel_url_help: '输入您的 Pterodactyl 面板 URL，包含协议（http:// 或 https://）。'
-    pterodactyl_panel_api_key: 'Pterodactyl 面板 API 密钥'
-    pterodactyl_panel_api_key_help: '输入您的 Pterodactyl 面板 API 密钥。'
+    pterodactyl_panel_api_key: 'Pterodactyl Application API 密钥'
+    pterodactyl_panel_api_key_help: '输入您的 Pterodactyl 面板 Application API 密钥。'
     payment_settings: '支付设置'
     stripe_secret_key: 'Stripe 密钥'
     stripe_secret_key_help: '输入您的 Stripe 账户密钥（可选，稍后可设置）。'
@@ -1014,6 +1023,7 @@ pteroca:
     internal_currency_name: '内部货币名称'
     internal_currency_name_help: '输入内部货币的名称（如金币）。'
     create_admin_account: '创建管理员账户'
+    admin_account_alert: '请提供新管理员账户的详细信息，该账户将在 PteroCA 和 Pterodactyl 中创建。您不能使用现有账户。'
     admin_email: '管理员邮箱'
     admin_email_help: '输入管理员的电子邮件地址。'
     admin_password: '管理员密码'
@@ -1033,6 +1043,10 @@ pteroca:
       pterodactyl_api_connection_success: '成功连接到 Pterodactyl API。'
       email_checking_smtp_connection: '正在检查 SMTP 服务器连接...'
       email_smtp_connection_success: '成功连接到 SMTP 服务器。'
+      user_already_exists_in_pterodactyl: '此邮箱地址的用户已在 Pterodactyl 中存在。请使用其他邮箱地址。'
+      user_validation_success: '用户验证成功。'
+      user_checking_account_creation: '正在检查是否可以创建账户...'
+      validation_error: '验证步骤时发生错误。请重试。'
 
   error:
     404:

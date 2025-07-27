@@ -19,34 +19,34 @@ class ServerPermissionExtension extends AbstractExtension
         ];
     }
 
-    public function hasServerPermission(ServerPermissionCollection $permissionCollection, string $permission): bool
+    public function hasServerPermission(?ServerPermissionCollection $permissionCollection, string $permission): bool
     {
-        return $permissionCollection->hasPermission($permission);
+        return $permissionCollection?->hasPermission($permission) ?? false;
     }
 
     /**
      * @param string[] $permissions
      */
-    public function hasAllServerPermissions(ServerPermissionCollection $permissionCollection, array $permissions): bool
+    public function hasAllServerPermissions(?ServerPermissionCollection $permissionCollection, array $permissions): bool
     {
-        return $permissionCollection->hasAllPermissions($permissions);
+        return $permissionCollection?->hasAllPermissions($permissions) ?? false;
     }
 
     /**
      * @param string[] $permissions
      */
-    public function hasAnyServerPermission(ServerPermissionCollection $permissionCollection, array $permissions): bool
+    public function hasAnyServerPermission(?ServerPermissionCollection $permissionCollection, array $permissions): bool
     {
-        return $permissionCollection->hasAnyPermission($permissions);
+        return $permissionCollection?->hasAnyPermission($permissions) ?? false;
     }
 
-    public function hasServerPermissionInCategory(ServerPermissionCollection $permissionCollection, string $category): bool
+    public function hasServerPermissionInCategory(?ServerPermissionCollection $permissionCollection, string $category): bool
     {
-        return $permissionCollection->hasPermissionInCategory($category);
+        return $permissionCollection?->hasPermissionInCategory($category) ?? false;
     }
 
-    public function hasAllServerPermissionsInCategory(ServerPermissionCollection $permissionCollection, string $category): bool
+    public function hasAllServerPermissionsInCategory(?ServerPermissionCollection $permissionCollection, string $category): bool
     {
-        return $permissionCollection->hasAllPermissionsInCategory($category);
+        return $permissionCollection?->hasAllPermissionsInCategory($category) ?? false;
     }
 }

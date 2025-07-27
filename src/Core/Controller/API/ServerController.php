@@ -28,7 +28,7 @@ class ServerController extends APIAbstractController
     {
         $server = $this->getServer($id, ServerPermissionEnum::WEBSOCKET_CONNECT);
         $serverDetails = $this->serverService
-            ->getServerDetails($server)
+            ->getServerStateByClient($this->getUser(), $server)
             ?->toArray();
         unset($serverDetails['egg']);
 

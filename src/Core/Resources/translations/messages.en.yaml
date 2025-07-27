@@ -229,6 +229,12 @@ pteroca:
     status: 'Status'
     actions: 'Actions'
     description: 'Manage your servers, view their details and perform various actions such as extending, managing and configuration.'
+    state:
+      running: 'Online'
+      stopped: 'Stopped'
+      starting: 'Starting'
+      stopping: 'Stopping'
+      offline: 'Offline'
 
   server:
     title: 'Server management'
@@ -293,6 +299,9 @@ pteroca:
     console_token_expired: 'The console token has expired. Please refresh the page.'
     console_connection_closed: 'The console connection has been closed.'
     console_connection_error: 'An error occurred while connecting to the console.'
+    server_installing: 'Server is being installed'
+    server_installing_message: 'Your server is currently being installed and will be available in a few minutes. Please wait while the installation process completes.'
+    server_installing_description: 'The installation process may take several minutes depending on the selected software and server specifications.'
     rules: 'Rules'
     data_validation_error: 'Error during validation. Please check if all rules are met.'
     enable_auto_renewal: 'Enable auto-renewal for this server'
@@ -995,7 +1004,7 @@ pteroca:
     email_smtp_server: 'SMTP Server'
     email_smtp_server_help: 'Enter the SMTP server address.'
     email_smtp_port: 'SMTP Port'
-    email_smtp_port_help: 'Enter the SMTP server port.'
+    email_smtp_port_help: 'Enter the SMTP server port. Common ports: 587 (TLS), 465 (SSL).'
     email_smtp_username: 'SMTP Username'
     email_smtp_username_help: 'Enter the SMTP username.'
     email_smtp_password: 'SMTP Password'
@@ -1005,8 +1014,8 @@ pteroca:
     pterodactyl_settings: 'Pterodactyl Settings'
     pterodactyl_panel_url: 'Pterodactyl Panel URL'
     pterodactyl_panel_url_help: 'Enter the URL of your Pterodactyl panel with the protocol (http:// or https://).'
-    pterodactyl_panel_api_key: 'Pterodactyl Panel API Key'
-    pterodactyl_panel_api_key_help: 'Enter the API key of your Pterodactyl panel.'
+    pterodactyl_panel_api_key: 'Pterodactyl Application API Key'
+    pterodactyl_panel_api_key_help: 'Enter the Application API key of your Pterodactyl panel.'
     payment_settings: 'Payment Settings'
     stripe_secret_key: 'Stripe Secret Key'
     stripe_secret_key_help: 'Enter the secret key of your Stripe account (optional, may be set later).'
@@ -1015,6 +1024,7 @@ pteroca:
     internal_currency_name: 'Internal Currency Name'
     internal_currency_name_help: 'Enter the internal currency name (eg. coins).'
     create_admin_account: 'Create Admin Account'
+    admin_account_alert: 'Please provide details for a new administrator account that will be created in both PteroCA and Pterodactyl. You cannot use an existing account.'
     admin_email: 'Admin Email'
     admin_email_help: 'Enter the email address of the administrator.'
     admin_password: 'Admin Password'
@@ -1034,6 +1044,10 @@ pteroca:
       pterodactyl_api_connection_success: 'Successfully connected to the Pterodactyl API.'
       email_checking_smtp_connection: 'Checking the connection to the SMTP server...'
       email_smtp_connection_success: 'Successfully connected to the SMTP server.'
+      user_already_exists_in_pterodactyl: 'A user with this email address already exists in Pterodactyl. Please use a different email address.'
+      user_validation_success: 'User validation successful.'
+      user_checking_account_creation: 'Checking if account can be created...'
+      validation_error: 'An error occurred while validating the step. Please try again.'
 
   error:
     404:

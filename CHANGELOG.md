@@ -2,6 +2,18 @@
 
 ---
 
+## [0.5.5] - 2025-07-27
+
+### Added
+- Added server status indicators (e.g. online/offline) to the server list views.
+- Displayed informative messages when a server is currently installing or reinstalling.
+
+### Changed
+- Improved validation, error handling, and instructional messages in both the Web Installer and CLI installer.
+- Moved Categories and Products under a new collapsible Store section in the sidebar for improved navigation.
+
+---
+
 ## [0.5.4] - 2025-07-13
 
 ### Added

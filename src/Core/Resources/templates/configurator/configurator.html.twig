@@ -6,6 +6,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ template_asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block body %}
@@ -117,12 +118,27 @@
                         } else {
                             return response.json().then(response => {
                                 submitButton.disabled = false
-                                if ([2, 3].includes(currentStep)) {
+                                if ([2, 3, 5].includes(currentStep)) {
                                     handleStepError(currentStep, response.message)
                                 } else {
                                     alert(response.message)
                                 }
+                            }).catch(() => {
+                                submitButton.disabled = false
+                                if ([2, 3, 5].includes(currentStep)) {
+                                    handleStepError(currentStep, '{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                                } else {
+                                    alert('{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                                }
                             })
+                        }
+                    })
+                    .catch(error => {
+                        submitButton.disabled = false
+                        if ([2, 3, 5].includes(currentStep)) {
+                            handleStepError(currentStep, '{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                        } else {
+                            alert('{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
                         }
                     })
             })
@@ -151,6 +167,22 @@
             const validateEndpointUrl = '{{ path('first_configuration_validate_step') }}',
                 form = document.querySelector('form[data-step="' + step + '"]'),
                 formData = new FormData(form)
+
+            // For step 5 (user validation), we also need Pterodactyl API data from step 2
+            if (step === 5) {
+                const pterodactylForm = document.querySelector('form[data-step="2"]')
+                if (pterodactylForm) {
+                    const pterodactylUrlInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_url"]')
+                    const pterodactylApiKeyInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_api_key"]')
+                    
+                    if (pterodactylUrlInput && pterodactylUrlInput.value) {
+                        formData.append('pterodactyl_panel_url', pterodactylUrlInput.value)
+                    }
+                    if (pterodactylApiKeyInput && pterodactylApiKeyInput.value) {
+                        formData.append('pterodactyl_panel_api_key', pterodactylApiKeyInput.value)
+                    }
+                }
+            }
 
             formData.append('step', step)
             formData.append('language', languageSelect.value)
@@ -187,48 +219,92 @@
 
         function resetStepError(step) {
             const textError = document.querySelector(`.text-error[data-step="${step}"]`)
+            const messageElement = document.querySelector(`.step-message[data-step="${step}"]`)
+            const loadingIcon = document.querySelector(`.step-icon-loading[data-step="${step}"]`)
+            const successIcon = document.querySelector(`.step-icon-success[data-step="${step}"]`)
+            const errorIcon = document.querySelector(`.step-icon-error[data-step="${step}"]`)
 
             if (!textError) {
                 return
             }
 
+            // Reset message text
             switch (step) {
                 case 2:
-                    textError.innerText = '{{ 'pteroca.first_configuration.messages.pterodactyl_checking_api_connection'|trans }}'
+                    if (messageElement) {
+                        messageElement.innerText = '{{ 'pteroca.first_configuration.messages.pterodactyl_checking_api_connection'|trans }}'
+                    }
                     break;
                 case 3:
-                    textError.innerText = '{{ 'pteroca.first_configuration.messages.email_checking_smtp_connection'|trans }}'
+                    if (messageElement) {
+                        messageElement.innerText = '{{ 'pteroca.first_configuration.messages.email_checking_smtp_connection'|trans }}'
+                    }
+                    break;
+                case 5:
+                    if (messageElement) {
+                        messageElement.innerText = '{{ 'pteroca.first_configuration.messages.user_checking_account_creation'|trans }}'
+                    }
                     break;
             }
 
+            // Reset styles
             textError.classList.remove('text-danger')
             textError.classList.remove('text-success')
             textError.classList.add('text-secondary')
             textError.classList.remove('d-none')
+
+            // Show loading icon, hide others
+            if (loadingIcon) loadingIcon.classList.remove('d-none')
+            if (successIcon) successIcon.classList.add('d-none')
+            if (errorIcon) errorIcon.classList.add('d-none')
         }
 
         function handleStepError(step, error) {
             const textError = document.querySelector(`.text-error[data-step="${step}"]`)
+            const messageElement = document.querySelector(`.step-message[data-step="${step}"]`)
+            const loadingIcon = document.querySelector(`.step-icon-loading[data-step="${step}"]`)
+            const successIcon = document.querySelector(`.step-icon-success[data-step="${step}"]`)
+            const errorIcon = document.querySelector(`.step-icon-error[data-step="${step}"]`)
 
             if (!textError) {
                 return
             }
 
-            textError.innerText = error
+            // Update message and styles
+            if (messageElement) {
+                messageElement.innerText = error
+            }
             textError.classList.add('text-danger')
             textError.classList.remove('text-secondary')
+
+            // Show error icon, hide others
+            if (loadingIcon) loadingIcon.classList.add('d-none')
+            if (successIcon) successIcon.classList.add('d-none')
+            if (errorIcon) errorIcon.classList.remove('d-none')
         }
 
         function handleStepSuccess(step, message) {
             const textElement = document.querySelector(`.text-error[data-step="${step}"]`)
+            const messageElement = document.querySelector(`.step-message[data-step="${step}"]`)
+            const loadingIcon = document.querySelector(`.step-icon-loading[data-step="${step}"]`)
+            const successIcon = document.querySelector(`.step-icon-success[data-step="${step}"]`)
+            const errorIcon = document.querySelector(`.step-icon-error[data-step="${step}"]`)
 
             if (!textElement) {
                 return
             }
 
-            textElement.innerText = message
+            // Update message and styles
+            if (messageElement) {
+                messageElement.innerText = message
+            }
             textElement.classList.add('text-success')
             textElement.classList.remove('text-secondary')
+
+            // Show success icon, hide others
+            if (loadingIcon) loadingIcon.classList.add('d-none')
+            if (successIcon) successIcon.classList.remove('d-none')
+            if (errorIcon) errorIcon.classList.add('d-none')
         }
 
         setCurrentStep(currentStep)

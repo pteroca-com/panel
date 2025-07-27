@@ -5,17 +5,43 @@ namespace App\Core\Service\Server;
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\ServerDetailsDTO;
 use App\Core\Entity\Server;
+use App\Core\Enum\ServerStateEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
+use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 
 class ServerService
 {
     public function __construct(
         private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerRepository $serverRepository,
         private readonly ServerSubuserRepository $serverSubuserRepository,
     ) {}
+
+    public function getServerStateByClient(
+        UserInterface $user,
+        Server $server,
+    ): ?ServerDetailsDTO
+    {
+        $clientApi = $this->pterodactylClientService->getApi($user);
+        $pterodactylClientServerDetails = $clientApi->servers->http->get(
+            sprintf('servers/%s/resources', $server->getPterodactylServerIdentifier()),
+        );
+        $serverDetails = $this->getServerDetails($server);
+
+        return new ServerDetailsDTO(
+            identifier: $server->getPterodactylServerIdentifier(),
+            name: $serverDetails->name,
+            description: $serverDetails->description,
+            ip: $serverDetails->ip,
+            limits: $serverDetails->limits,
+            featureLimits: $serverDetails->featureLimits,
+            egg: $serverDetails->egg,
+            state: ServerStateEnum::tryFrom($pterodactylClientServerDetails->get('current_state')),
+        );
+    }
 
     public function getServerDetails(Server $server, ?object $pterodactylServer = null): ?ServerDetailsDTO
     {
