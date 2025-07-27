@@ -7,6 +7,7 @@ use App\Core\DTO\Collection\ServerVariableCollection;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
+use App\Core\Enum\ServerStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
@@ -45,7 +46,15 @@ class ServerDataService
             ->get($server->getPterodactylServerId(), [
                 'include' => ['variables', 'egg', 'databases', 'subusers'],
             ]);
-        
+
+        $isInstalling = $this->isServerInstalling($pterodactylServer);
+        if ($isInstalling) {
+            return new ServerDataDTO(
+                pterodactylServer: $pterodactylServer->toArray(),
+                isInstalling: true,
+            );
+        }
+
         $permissions = $this->getServerPermissions($pterodactylServer, $server, $user);
 
         try {
@@ -182,10 +191,11 @@ class ServerDataService
         }
 
         return new ServerDataDTO(
+            pterodactylServer: $pterodactylServer->toArray(),
+            isInstalling: $isInstalling,
             server: $server,
             serverPermissions: $permissions,
             serverDetails: $this->serverService->getServerDetails($server),
-            pterodactylServer: $pterodactylServer->toArray(),
             dockerImages: $dockerImages ?? [],
             pterodactylClientServer: $pterodactylClientServer?->toArray(),
             pterodactylClientAccount: $pterodactylClientAccount?->toArray(),
@@ -229,5 +239,12 @@ class ServerDataService
         }));
 
         return [$hasConfigurableOptions, $hasConfigurableVariables];
+    }
+
+    private function isServerInstalling(PterodactylServer $pterodactylServer): bool
+    {
+        $serverStatus = $pterodactylServer->get('status');
+
+        return $serverStatus === ServerStatusEnum::INSTALLING->value;
     }
 }

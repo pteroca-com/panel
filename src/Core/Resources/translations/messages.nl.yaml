@@ -198,6 +198,12 @@ pteroca:
     status: 'Status'
     actions: 'Acties'
     description: 'Beheer uw servers, bekijk hun details en voer verschillende acties uit zoals verlenging, beheer en configuratie.'
+    state:
+      running: 'Online'
+      stopped: 'Gestopt'
+      starting: 'Opstarten'
+      stopping: 'Stoppen'
+      offline: 'Offline'
     
   server:
     title: 'Server beheer'
@@ -259,6 +265,9 @@ pteroca:
     console_token_expired: 'De console-token is verlopen. Gelieve de pagina te vernieuwen.'
     console_connection_closed: 'De console verbinding is verbroken.'
     console_connection_error: 'Er is een fout opgetreden tijdens het verbinden met de console.'
+    server_installing: 'Server wordt geïnstalleerd'
+    server_installing_message: 'Uw server wordt momenteel geïnstalleerd en is over enkele minuten beschikbaar. Wacht alstublieft tot het installatieproces is voltooid.'
+    server_installing_description: 'Het installatieproces kan enkele minuten duren, afhankelijk van de geselecteerde software en serverspecificaties.'
     rules: 'Regels'
     data_validation_error: 'Fout tijdens validatie. Controleer of aan alle regels is voldaan.'
     enable_auto_renewal: 'Schakel automatische verlenging in voor deze server'
@@ -971,6 +980,7 @@ pteroca:
     site_settings: 'Site-instellingen'
     site_url: 'Website URL'
     site_url_help: 'Vul de URL van uw website in met het protocol (http:// of https://).'
+    admin_account_alert: 'Geef de gegevens op voor een nieuw beheerdersaccount dat zowel in PteroCA als in Pterodactyl wordt aangemaakt. U kunt geen bestaand account gebruiken.'
     site_title: 'Titel van website'
     site_title_help: 'Vul de titel van uw site in.'
     site_locale: 'Taal interface'
@@ -979,7 +989,7 @@ pteroca:
     email_smtp_server: 'SMTP-server'
     email_smtp_server_help: 'Voer het SMTP-serveradres in.'
     email_smtp_port: 'SMTP poort'
-    email_smtp_port_help: 'Voer de SMTP-serverpoort in.'
+    email_smtp_port_help: 'Voer de SMTP-serverpoort in. Veelgebruikte poorten: 587 (TLS), 465 (SSL).'
     email_smtp_username: 'SMTP Gebruikersnaam'
     email_smtp_username_help: 'Vul de SMTP-gebruikersnaam in.'
     email_smtp_password: 'SMTP Wachtwoord'
@@ -989,8 +999,8 @@ pteroca:
     pterodactyl_settings: 'Pterodactyl instellingen'
     pterodactyl_panel_url: 'Pterodactyl Panel URL'
     pterodactyl_panel_url_help: 'Vul de URL van uw Pterodactyl paneel in met het protocol (http:// of https://).'
-    pterodactyl_panel_api_key: 'Pterodactyl API sleutel'
-    pterodactyl_panel_api_key_help: 'Voer de API-sleutel in van uw Pterodactyl paneel.'
+    pterodactyl_panel_api_key: 'Pterodactyl Application API sleutel'
+    pterodactyl_panel_api_key_help: 'Voer de Application API sleutel in van uw Pterodactyl paneel.'
     payment_settings: 'Betalingsinstellingen'
     stripe_secret_key: 'Stripe Geheime Sleutel'
     stripe_secret_key_help: 'Voer de geheime sleutel van uw Stripe account in (optioneel, kan later ingesteld worden).'
@@ -1018,6 +1028,10 @@ pteroca:
       pterodactyl_api_connection_success: 'Met succes verbonden met de Pterodactyl API.'
       email_checking_smtp_connection: 'De verbinding met de SMTP-server controleren...'
       email_smtp_connection_success: 'Succesvol verbonden met de SMTP-server.'
+      user_already_exists_in_pterodactyl: 'Een gebruiker met dit e-mailadres bestaat al in Pterodactyl. Gebruik een ander e-mailadres.'
+      user_validation_success: 'Gebruikersvalidatie succesvol.'
+      user_checking_account_creation: 'Controleren of het account kan worden aangemaakt...'
+      validation_error: 'Er is een fout opgetreden bij het valideren van de stap. Probeer het opnieuw.'
 
   error:
     404:

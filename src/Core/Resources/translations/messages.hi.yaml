@@ -229,6 +229,12 @@ pteroca:
     status: 'स्थिति'
     actions: 'क्रियाएँ'
     description: 'अपने सर्वरों का प्रबंधन करें, उनके विवरण देखें और नवीनीकरण, प्रबंधन और कॉन्फ़िगरेशन जैसी विभिन्न क्रियाएं करें।'
+    state:
+      running: 'ऑनलाइन'
+      stopped: 'रुका हुआ'
+      starting: 'शुरू हो रहा है'
+      stopping: 'रोक रहा है'
+      offline: 'ऑफलाइन'
 
   server:
     title: 'सर्वर प्रबंधन'
@@ -292,6 +298,9 @@ pteroca:
     console_token_expired: 'कंसोल टोकन की अवधि समाप्त हो गई है। कृपया पृष्ठ को रीफ़्रेश करें।'
     console_connection_closed: 'कंसोल कनेक्शन बंद कर दिया गया।'
     console_connection_error: 'कंसोल से कनेक्ट करते समय त्रुटि हुई।'
+    server_installing: 'सर्वर स्थापित किया जा रहा है'
+    server_installing_message: 'आपका सर्वर वर्तमान में स्थापित किया जा रहा है और कुछ ही मिनटों में उपलब्ध होगा। कृपया स्थापना प्रक्रिया पूरी होने तक प्रतीक्षा करें।'
+    server_installing_description: 'स्थापना प्रक्रिया में चयनित सॉफ़्टवेयर और सर्वर विनिर्देशों के आधार पर कई मिनट लग सकते हैं।'
     rules: 'नियम'
     data_validation_error: 'मान्यता त्रुटि। कृपया जांचें कि सभी नियम पूरे हो रहे हैं या नहीं।'
     enable_auto_renewal: 'इस सर्वर के लिए स्वतः नवीनीकरण सक्षम करें'
@@ -1014,6 +1023,7 @@ pteroca:
     internal_currency_name: "आंतरिक मुद्रा का नाम"
     internal_currency_name_help: "आंतरिक मुद्रा का नाम दर्ज करें (जैसे, सिक्के)।"
     create_admin_account: "एडमिन खाता बनाएँ"
+    admin_account_alert: 'कृपया नए एडमिन खाते के विवरण प्रदान करें, जो PteroCA और Pterodactyl दोनों में बनाया जाएगा। आप मौजूदा खाते का उपयोग नहीं कर सकते।'
     admin_email: "एडमिन ईमेल"
     admin_email_help: "एडमिन का ईमेल पता दर्ज करें।"
     admin_password: "एडमिन पासवर्ड"
@@ -1033,6 +1043,10 @@ pteroca:
       pterodactyl_api_connection_success: "Pterodactyl API से सफलतापूर्वक कनेक्ट हो गया।"
       email_checking_smtp_connection: "SMTP सर्वर कनेक्शन की जाँच की जा रही है..."
       email_smtp_connection_success: "SMTP सर्वर से सफलतापूर्वक कनेक्ट हो गया।"
+      user_already_exists_in_pterodactyl: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही Pterodactyl में मौजूद है। कृपया एक अलग ईमेल पता उपयोग करें।'
+      user_validation_success: 'उपयोगकर्ता सत्यापन सफल।'
+      user_checking_account_creation: 'जांच की जा रही है कि क्या खाता बनाया जा सकता है...'
+      validation_error: 'स्टेप को सत्यापित करते समय त्रुटि हुई। कृपया फिर से कोशिश करें।'
 
   error:
     404:

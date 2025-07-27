@@ -233,6 +233,12 @@ pteroca:
     status: 'Stato'
     actions: 'Azioni'
     description: 'Gestisci i tuoi server, visualizza i loro dettagli ed esegui varie azioni come rinnovo, gestione e configurazione.'
+    state:
+      running: 'Online'
+      stopped: 'Fermato'
+      starting: 'Avvio in corso'
+      stopping: 'Arresto in corso'
+      offline: 'Offline'
 
   server:
     title: 'Gestione del server'
@@ -296,6 +302,9 @@ pteroca:
     console_token_expired: 'Il token della console è scaduto. Si prega di aggiornare la pagina.'
     console_connection_closed: 'La connessione alla console è stata chiusa.'
     console_connection_error: 'Si è verificato un errore durante la connessione alla console.'
+    server_installing: 'Il server è in fase di installazione'
+    server_installing_message: 'Il tuo server è attualmente in fase di installazione e sarà disponibile tra pochi minuti. Attendi il completamento del processo di installazione.'
+    server_installing_description: 'Il processo di installazione può richiedere diversi minuti a seconda del software selezionato e delle specifiche del server.'
     rules: 'Regole'
     data_validation_error: 'Errore durante la validazione. Si prega di controllare se tutte le regole sono rispettate.'
     enable_auto_renewal: 'Abilita il rinnovo automatico per questo server'
@@ -990,6 +999,7 @@ pteroca:
     site_settings: "Impostazioni del sito"
     site_url: "URL del sito"
     site_url_help: "Inserisci l'URL del tuo sito con il protocollo (http:// o https://)."
+    admin_account_alert: "Fornisci i dettagli per un nuovo account amministratore che verrà creato sia in PteroCA che in Pterodactyl. Non puoi usare un account esistente."
     site_title: "Titolo del sito"
     site_title_help: "Inserisci il titolo del tuo sito."
     site_locale: "Lingua dell'interfaccia"
@@ -998,7 +1008,7 @@ pteroca:
     email_smtp_server: "Server SMTP"
     email_smtp_server_help: "Inserisci l'indirizzo del server SMTP."
     email_smtp_port: "Porta SMTP"
-    email_smtp_port_help: "Inserisci la porta del server SMTP."
+    email_smtp_port_help: "Inserisci la porta del server SMTP. Porte comuni: 587 (TLS), 465 (SSL)."
     email_smtp_username: "Nome utente SMTP"
     email_smtp_username_help: "Inserisci il nome utente SMTP."
     email_smtp_password: "Password SMTP"
@@ -1008,8 +1018,8 @@ pteroca:
     pterodactyl_settings: "Impostazioni Pterodactyl"
     pterodactyl_panel_url: "URL del pannello Pterodactyl"
     pterodactyl_panel_url_help: "Inserisci l'URL del tuo pannello Pterodactyl con il protocollo (http:// o https://)."
-    pterodactyl_panel_api_key: "Chiave API del pannello Pterodactyl"
-    pterodactyl_panel_api_key_help: "Inserisci la chiave API del tuo pannello Pterodactyl."
+    pterodactyl_panel_api_key: "Chiave API Application di Pterodactyl"
+    pterodactyl_panel_api_key_help: "Inserisci la chiave API Application del tuo pannello Pterodactyl."
     payment_settings: "Impostazioni di pagamento"
     stripe_secret_key: "Chiave segreta Stripe"
     stripe_secret_key_help: "Inserisci la chiave segreta del tuo account Stripe (opzionale, può essere impostata in seguito)."
@@ -1037,6 +1047,10 @@ pteroca:
       pterodactyl_api_connection_success: "Connessione all'API di Pterodactyl avvenuta con successo."
       email_checking_smtp_connection: "Verifica della connessione al server SMTP in corso..."
       email_smtp_connection_success: "Connessione al server SMTP avvenuta con successo."
+      user_already_exists_in_pterodactyl: 'Un utente con questo indirizzo email esiste già in Pterodactyl. Si prega di utilizzare un indirizzo email diverso.'
+      user_validation_success: 'Validazione utente completata con successo.'
+      user_checking_account_creation: 'Controllo se l''account può essere creato...'
+      validation_error: 'Errore durante la validazione del passaggio. Riprova.'
 
   error:
     404:

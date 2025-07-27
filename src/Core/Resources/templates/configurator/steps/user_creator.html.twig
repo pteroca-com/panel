@@ -2,6 +2,9 @@
     <div class="configuration-subtitle mt-2">
         {{ 'pteroca.first_configuration.create_admin_account'|trans }}
     </div>
+    <div class="alert alert-info text-center mb-4">
+        {{ 'pteroca.first_configuration.admin_account_alert'|trans }}
+    </div>
     <form data-step="5">
         <div class="form-group">
             <label class="form-control-label required" for="admin_email">{{ 'pteroca.first_configuration.admin_email'|trans }}</label>
@@ -21,6 +24,13 @@
                     {{ 'pteroca.first_configuration.admin_password_help'|trans }}
                 </div>
             </div>
+        </div>
+
+        <div class="col-12 text-center text-secondary mb-4 text-error d-none" data-step="5">
+            <i class="fas fa-spinner fa-spin me-2 step-icon-loading" data-step="5"></i>
+            <i class="fas fa-check-circle me-2 step-icon-success d-none" data-step="5" style="color: #28a745;"></i>
+            <i class="fas fa-times-circle me-2 step-icon-error d-none" data-step="5" style="color: #dc3545;"></i>
+            <span class="step-message" data-step="5">{{ 'pteroca.first_configuration.messages.user_checking_account_creation'|trans }}</span>
         </div>
 
         <div class="form-group">

@@ -234,6 +234,12 @@ pteroca:
     status: 'Statut'
     actions: 'Actions'
     description: 'Gérez tous vos serveurs depuis cette page'
+    state:
+      running: 'En ligne'
+      stopped: 'Arrêté'
+      starting: 'Démarrage'
+      stopping: 'Arrêt en cours'
+      offline: 'Hors ligne'
 
   server:
     title: 'Gestion du serveur'
@@ -297,6 +303,9 @@ pteroca:
     console_token_expired: 'Le jeton de la console a expiré. Veuillez rafraîchir la page.'
     console_connection_closed: 'La connexion à la console a été fermée.'
     console_connection_error: 'Une erreur s''est produite lors de la connexion à la console.'
+    server_installing: 'Le serveur est en cours d''installation'
+    server_installing_message: 'Votre serveur est en cours d''installation et sera disponible dans quelques minutes. Veuillez patienter pendant la finalisation du processus.'
+    server_installing_description: 'Le processus d''installation peut prendre plusieurs minutes en fonction du logiciel sélectionné et des spécifications du serveur.'
     rules: 'Règles'
     data_validation_error: 'Erreur lors de la validation. Veuillez vérifier que toutes les règles sont respectées.'
     enable_auto_renewal: 'Activer le renouvellement automatique pour ce serveur'
@@ -346,6 +355,7 @@ pteroca:
     cannot_delete_primary_allocation: 'L’allocation principale ne peut pas être supprimée.'
     extend_server_expires_on_demand: 'Votre serveur <strong>{{ productName }}</strong> est actuellement configuré pour expirer <strong>à la demande</strong>.'
     on_demand_billing_cycle: 'Le cycle de facturation ({{ productPrice }} {{ internalCurrency }} / minute) sera interrompu quand le serveur est hors ligne et les ressources seront gratuites.'
+    usage: "Utilisation"
     type: 'Type'
     primary: 'Principal'
     secondary: 'Secondaire'
@@ -623,7 +633,6 @@ pteroca:
       memory_hint: 'La limite totale de RAM allouée à ce serveur (en Mo). Le serveur ne peut pas dépasser cette limite de mémoire.'
       io_hint: 'Priorité d''E/S relative pour le conteneur du serveur. Des valeurs plus élevées signifient une priorité plus élevée (la valeur par défaut est 500).'
       cpu_hint: 'Limite de CPU en pourcentage, où 100% équivaut à un cœur de CPU complet. Par exemple, 200% équivaut à deux cœurs de CPU complets.'
-      threads_hint: 'Threads CPU spécifiques sur lesquels ce processus peut s''exécuter, ou laissez vide pour autoriser tous les threads. Cela peut être un seul nombre ou une liste séparée par des virgules. Exemple : 0, 0-1,3 ou 0,1,3,4.'
       db_count_hint: 'Le nombre maximum de bases de données que ce serveur peut créer ou utiliser.'
       swap_hint: 'Quantité de mémoire swap (en Mo) allouée à ce serveur. Réglez sur 0 pour désactiver le swap.'
       backups_hint: 'Le nombre maximum de sauvegardes pouvant être stockées pour ce serveur.'
@@ -631,6 +640,8 @@ pteroca:
       nodes_hint: 'Sélectionnez une ou plusieurs machines physiques ou virtuelles (nœuds) de votre configuration Pterodactyl.'
       nest_hint: 'Un Nest est une catégorie qui regroupe des Eggs liés. Choisissez un Nest pour charger ses Eggs.'
       eggs_hint: 'Les Eggs définissent des configurations de serveur spécifiques (jeux ou applications). Sélectionnez les Eggs que vous souhaitez que ce produit prenne en charge.'
+      threads: "Threads"
+      threads_hint: "Nombre de threads CPU alloués à ce serveur."
       pricing: 'Tarification'
       price_static_plan: 'Tarif fixe'
       price_static_plan_hint: 'Le prix du produit pour une période fixe que les utilisateurs peuvent sélectionner comme cycle de facturation.'
@@ -1019,6 +1030,7 @@ pteroca:
     internal_currency_name: 'Nom de la Monnaie Interne'
     internal_currency_name_help: 'Saisissez le nom de la monnaie interne (ex. pièces).'
     create_admin_account: 'Créer un Compte Administrateur'
+    admin_account_alert: 'Veuillez fournir les informations pour un nouveau compte administrateur qui sera créé à la fois dans PteroCA et Pterodactyl. Vous ne pouvez pas utiliser un compte existant.'
     admin_email: 'Courriel de l’Administrateur'
     admin_email_help: 'Saisissez l’adresse e-mail de l’administrateur.'
     admin_password: 'Mot de Passe Administrateur'
@@ -1038,6 +1050,11 @@ pteroca:
       pterodactyl_api_connection_success: 'Connexion réussie à l’API Pterodactyl.'
       email_checking_smtp_connection: 'Vérification de la connexion au serveur SMTP...'
       email_smtp_connection_success: 'Connexion réussie au serveur SMTP.'
+      user_already_exists_in_pterodactyl: 'Un utilisateur avec cette adresse e-mail existe déjà dans Pterodactyl. Veuillez utiliser une adresse e-mail différente.'
+      user_validation_success: 'Validation de l''utilisateur réussie.'
+      user_checking_account_creation: 'Vérification si le compte peut être créé...'
+      validation_error: 'Une erreur s''est produite lors de la validation de l''étape. Veuillez réessayer.'
+      admin_account_alert: "N'oubliez pas de créer un compte administrateur sécurisé et de conserver vos identifiants en lieu sûr."
 
   error:
     404:

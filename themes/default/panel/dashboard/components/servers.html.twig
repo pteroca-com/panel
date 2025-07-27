@@ -29,6 +29,7 @@
                                         {% else %}
                                             <span class="badge badge-danger me-2">{{ 'pteroca.servers.suspended'|trans }}</span>
                                         {% endif %}
+                                        <span class="badge placeholder col-2 me-2" data-state></span>
                                         <small class="text-muted">
                                             <i class="fas fa-globe me-1"></i>
                                             <span class="placeholder col-4 rounded-1" data-ip></span>
@@ -92,7 +93,9 @@
                     } else {
                         const element = server.querySelector(`[data-${dataKey}]`);
                         if (element) {
-                            if (element.hasAttribute('data-unit')) {
+                            if (dataKey === 'state') {
+                                updateServerStateBadge(element, value);
+                            } else if (element.hasAttribute('data-unit')) {
                                 element.textContent = `${value} ${element.getAttribute('data-unit')}`;
                             } else {
                                 element.textContent = value;
@@ -101,6 +104,21 @@
                         }
                     }
                 }
+            }
+
+            function updateServerStateBadge(element, state) {
+                const stateConfig = {
+                    'running': { class: 'badge-success', text: '{{ 'pteroca.servers.state.running'|trans }}' },
+                    'stopped': { class: 'badge-secondary', text: '{{ 'pteroca.servers.state.stopped'|trans }}' },
+                    'starting': { class: 'badge-warning', text: '{{ 'pteroca.servers.state.starting'|trans }}' },
+                    'stopping': { class: 'badge-warning', text: '{{ 'pteroca.servers.state.stopping'|trans }}' },
+                    'offline': { class: 'badge-danger', text: '{{ 'pteroca.servers.state.offline'|trans }}' }
+                };
+
+                const config = stateConfig[state] || { class: 'badge-secondary', text: state };
+                
+                element.className = `badge ${config.class} me-2`;
+                element.textContent = config.text;
             }
         });
     </script>
