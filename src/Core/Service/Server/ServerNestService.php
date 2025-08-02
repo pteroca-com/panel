@@ -24,10 +24,15 @@ class ServerNestService
 
     public function getServerAvailableEggs(Server $server): array
     {
-        $nestEggs = $this->getNestEggs($server->getServerProduct()->getNest());
+        $serverProduct = $server->getServerProduct();
+        if (!$serverProduct) {
+            return [];
+        }
+        
+        $nestEggs = $this->getNestEggs($serverProduct->getNest());
 
-        return array_filter($nestEggs, function ($egg) use ($server) {
-            return in_array($egg->id, $server->getServerProduct()->getEggs());
+        return array_filter($nestEggs, function ($egg) use ($serverProduct) {
+            return in_array($egg->id, $serverProduct->getEggs());
         });
     }
 }

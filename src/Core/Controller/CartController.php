@@ -12,6 +12,7 @@ use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
+use App\Core\Service\Server\ServerConfiguration\ServerAutoRenewalService;
 use App\Core\Service\SettingService;
 use App\Core\Service\StoreService;
 use Exception;
@@ -40,12 +41,26 @@ class CartController extends AbstractController
             ? $request->request->all()
             : $request->query->all();
         $currency = $settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        $minAmount = (float) $settingService->getSetting(SettingEnum::RECHARGE_MIN_AMOUNT->value);
+        $maxAmount = (float) $settingService->getSetting(SettingEnum::RECHARGE_MAX_AMOUNT->value);
 
         if (
             empty($requestPayload['currency'])
             || empty($requestPayload['amount'])
             || strtolower($currency) !== strtolower($requestPayload['currency'])
         ) {
+            return $this->redirectToRoute('panel', [
+                'routeName' => 'recharge_balance',
+            ]);
+        }
+
+        $amount = (float) $requestPayload['amount'];
+        if ($amount < $minAmount || $amount > $maxAmount) {
+            $this->addFlash('danger', $this->translator->trans('pteroca.recharge.amount_out_of_range', [
+                '%min%' => $minAmount,
+                '%max%' => $maxAmount,
+                '%currency%' => $currency
+            ]));
             return $this->redirectToRoute('panel', [
                 'routeName' => 'recharge_balance',
             ]);
@@ -79,12 +94,17 @@ class CartController extends AbstractController
         $product = $this->getProductByRequest($request);
         $preparedEggs = $this->storeService->getProductEggs($product);
         $request = $request->query->all();
+        
+        // Check if user is eligible for free trial (first-time customer)
+        $userPurchasedServers = $this->serverRepository->findBy(['user' => $this->getUser()]);
+        $isEligibleForFreeTrial = empty($userPurchasedServers);
 
         return $this->render('panel/cart/configure.html.twig', [
             'product' => $product,
             'eggs' => $preparedEggs,
             'request' => $request,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
+            'isEligibleForFreeTrial' => $isEligibleForFreeTrial,
         ]);
     }
 
@@ -170,10 +190,15 @@ class CartController extends AbstractController
         }
 
         try {
+            $serverProduct = $server->getServerProduct();
+            if (!$serverProduct) {
+                throw new \Exception('Server product not found');
+            }
+            
             $this->storeService->validateBoughtProduct(
-                $server->getServerProduct(),
+                $serverProduct,
                 null,
-                $server->getServerProduct()->getSelectedPrice()->getId(),
+                $serverProduct->getSelectedPrice()->getId(),
                 $server,
             );
 
@@ -181,6 +206,7 @@ class CartController extends AbstractController
                 $server,
                 $this->getUser(),
                 $request->request->getString('voucher'),
+                $request->request->getBoolean('auto-renewal')
             );
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
@@ -191,6 +217,68 @@ class CartController extends AbstractController
                 $exception->getMessage()
             );
             $this->addFlash('danger', $flashMessage);
+        }
+
+        return $this->redirectToRoute('panel', ['routeName' => 'servers']);
+    }
+
+    #[Route('/cart/cancel', name: 'cart_cancel')]
+    public function cancelAutoRenewal(Request $request): Response
+    {
+        $server = $this->getServerByRequest($request);
+        $isOwner = $server->getUser() === $this->getUser();
+
+        if (!$isOwner && !$this->isGranted(UserRoleEnum::ROLE_ADMIN->value)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $this->render('panel/cart/cancel.html.twig', [
+            'server' => $server,
+            'isOwner' => $isOwner,
+        ]);
+    }
+
+    #[Route('/cart/cancel/confirm', name: 'cart_cancel_confirm', methods: ['POST'])]
+    public function confirmCancelAutoRenewal(
+        Request $request,
+        ServerAutoRenewalService $serverAutoRenewalService,
+    ): Response
+    {
+        $server = $this->getServerByRequest($request);
+        $isOwner = $server->getUser() === $this->getUser();
+
+        if (!$isOwner && !$this->isGranted(UserRoleEnum::ROLE_ADMIN->value)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        try {
+            $serverAutoRenewalService->toggleAutoRenewal($server, false);
+            $this->addFlash('success', $this->translator->trans('pteroca.servers.auto_renewal_disabled'));
+        } catch (Exception $exception) {
+            $this->addFlash('danger', $exception->getMessage());
+        }
+
+        return $this->redirectToRoute('panel', ['routeName' => 'servers']);
+    }
+
+    #[Route('/cart/reactivate', name: 'cart_reactivate', methods: ['POST'])]
+    public function reactivateAutoRenewal(
+        Request $request,
+        ServerAutoRenewalService $serverAutoRenewalService,
+    ): Response
+    {
+        $server = $this->getServerByRequest($request);
+        $isOwner = $server->getUser() === $this->getUser();
+
+        if (!$isOwner && !$this->isGranted(UserRoleEnum::ROLE_ADMIN->value)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        try {
+            $serverAutoRenewalService->toggleAutoRenewal($server, true);
+            $this->addFlash('success', $this->translator->trans('pteroca.servers.auto_renewal_enabled'));
+        } catch (Exception $exception) {
+            $this->addFlash('danger', $exception->getMessage());
         }
 
         return $this->redirectToRoute('panel', ['routeName' => 'servers']);

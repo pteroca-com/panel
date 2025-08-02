@@ -25,6 +25,15 @@ trait ProductPriceEntityTrait
     #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
     private float $price;
 
+    #[ORM\Column(type: "boolean")]
+    private bool $hasFreeTrial = false;
+
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $freeTrialValue = null;
+
+    #[ORM\Column(type: 'string', nullable: true, enumType: ProductPriceUnitEnum::class)]
+    private ?ProductPriceUnitEnum $freeTrialUnit = null;
+
     #[ORM\Column(type: "datetime", nullable: true)]
     private ?\DateTime $deletedAt = null;
 
@@ -77,6 +86,39 @@ trait ProductPriceEntityTrait
         return $this;
     }
 
+    public function hasFreeTrial(): bool
+    {
+        return $this->hasFreeTrial;
+    }
+
+    public function setHasFreeTrial(bool $hasFreeTrial): self
+    {
+        $this->hasFreeTrial = $hasFreeTrial;
+        return $this;
+    }
+
+    public function getFreeTrialValue(): ?int
+    {
+        return $this->freeTrialValue;
+    }
+
+    public function setFreeTrialValue(?int $value): self
+    {
+        $this->freeTrialValue = $value;
+        return $this;
+    }
+
+    public function getFreeTrialUnit(): ?ProductPriceUnitEnum
+    {
+        return $this->freeTrialUnit;
+    }
+
+    public function setFreeTrialUnit(?ProductPriceUnitEnum $unit): self
+    {
+        $this->freeTrialUnit = $unit;
+        return $this;
+    }
+
     public function getDeletedAt(): ?\DateTime
     {
         return $this->deletedAt;
@@ -95,11 +137,21 @@ trait ProductPriceEntityTrait
             ProductPriceTypeEnum::ON_DEMAND => 'minute(s)',
         };
 
+        $trial = '';
+        if ($this->hasFreeTrial && $this->freeTrialValue !== null && $this->freeTrialUnit !== null) {
+            $trial = sprintf(
+                ' (Free trial: %d %s)',
+                $this->freeTrialValue,
+                $this->freeTrialUnit->value
+            );
+        }
+
         return sprintf(
-            '%d %s: %.2f',
+            '%d %s: %.2f%s',
             $this->value,
             $unit,
             $this->price,
+            $trial
         );
     }
 }

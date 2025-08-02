@@ -32,6 +32,28 @@
             <input type="hidden" name="id" value="{{ product.id }}">
             <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="server_discount">
             
+            <!-- Free Trial Notice -->
+            {% set hasFreeTrial = false %}
+            {% for price in product.prices %}
+                {% if price.hasFreeTrial and price.freeTrialValue %}
+                    {% set hasFreeTrial = true %}
+                {% endif %}
+            {% endfor %}
+            
+            {% if hasFreeTrial and isEligibleForFreeTrial %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fas fa-gift me-3 text-info fs-4"></i>
+                            <div>
+                                <strong>{{ 'pteroca.store.free_trial_available'|trans }}</strong><br>
+                                <small>{{ 'pteroca.store.free_trial_first_time'|trans }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
             <div class="row g-4">
                 <!-- Product Configuration -->
                 <div class="col-lg-8">
@@ -153,8 +175,13 @@
                                     <select id="duration" name="duration" class="form-select form-select-lg">
                                         {% for price in product.prices %}
                                             {% if price.type.value == 'static' %}
-                                                <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if request.duration is defined and request.duration == price.id %}selected{% endif %}>
-                                                    {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}
+                                                <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" data-has-free-trial="{{ price.hasFreeTrial ? 'true' : 'false' }}" data-free-trial-value="{{ price.freeTrialValue ?: '' }}" data-free-trial-unit="{{ price.freeTrialUnit ? price.freeTrialUnit.value : '' }}" {% if request.duration is defined and request.duration == price.id %}selected{% endif %}>
+                                                    {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - 
+                                                    {% if price.hasFreeTrial and price.freeTrialValue and isEligibleForFreeTrial %}
+                                                        <span class="badge bg-success">{{ 'pteroca.store.free_trial_available'|trans }}</span> 
+                                                        {{ price.freeTrialValue }} {{ ('pteroca.product.' ~ price.freeTrialUnit.value)|trans }} free, then 
+                                                    {% endif %}
+                                                    {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}{% if price.hasFreeTrial and price.freeTrialValue and isEligibleForFreeTrial %}/{{ ('pteroca.product.' ~ price.unit.value)|trans }}{% endif %}
                                                 </option>
                                             {% elseif price.type.value == 'on_demand' %}
                                                 <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if request.duration is defined and request.duration == price.id %}selected{% endif %}>
@@ -268,6 +295,9 @@
                                 </div>
                             </div>
 
+                            <!-- Free Trial Message -->
+                            <div id="free-trial-message" class="mb-4" style="display: none;"></div>
+
                             <!-- Alerts -->
                             {% if not isProductAvailable %}
                                 <div class="alert alert-warning border-0 shadow-sm mb-3" role="alert">
@@ -307,7 +337,8 @@
             days: '{{ 'pteroca.product.days'|trans }}',
         },
             currentUserBalance = parseFloat('{{ app.user.balance }}'),
-            isProductAvailable = {{ isProductAvailable ? 'true' : 'false' }};
+            isProductAvailable = {{ isProductAvailable ? 'true' : 'false' }},
+            isEligibleForFreeTrial = {{ isEligibleForFreeTrial ? 'true' : 'false' }};
 
         document.addEventListener('DOMContentLoaded', function () {
             const durationSelect = document.getElementById('duration');
@@ -329,12 +360,22 @@
 
             let summaryPrice = productPrice
 
-            if (appliedDiscountValue && appliedDiscountValue.innerText) {
-                const discountValue = parseFloat(appliedDiscountValue.innerText);
-                if (!isNaN(discountValue)) {
-                    let discountPrice = summaryPrice * (discountValue / 100);
-                    document.querySelector('#applied-discount-amount').textContent = discountPrice.toFixed(2);
-                    summaryPrice -= discountPrice
+            // Check if this option has a free trial
+            const hasFreeTrial = selectedOption.dataset.hasFreeTrial === 'true'
+            const freeTrialValue = selectedOption.dataset.freeTrialValue
+            
+            if (hasFreeTrial && freeTrialValue && isEligibleForFreeTrial) {
+                // For free trial, the customer pays nothing initially
+                summaryPrice = 0
+            } else {
+                // Apply discounts for paid options
+                if (appliedDiscountValue && appliedDiscountValue.innerText) {
+                    const discountValue = parseFloat(appliedDiscountValue.innerText);
+                    if (!isNaN(discountValue)) {
+                        let discountPrice = summaryPrice * (discountValue / 100);
+                        document.querySelector('#applied-discount-amount').textContent = discountPrice.toFixed(2);
+                        summaryPrice -= discountPrice
+                    }
                 }
             }
 
@@ -378,6 +419,38 @@
             }
 
             document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ get_currency() }}`
+
+            // Show free trial message if applicable
+            const freeTrialMessage = document.querySelector('#free-trial-message')
+            if (hasFreeTrial && freeTrialValue && isEligibleForFreeTrial) {
+                if (freeTrialMessage) {
+                    const freeTrialUnit = selectedOption.dataset.freeTrialUnit
+                    const unitText = unitTranslations[freeTrialUnit] || freeTrialUnit
+                    
+                    freeTrialMessage.style.display = 'block'
+                    freeTrialMessage.innerHTML = `
+                        <div class="alert alert-success border-0 p-3 mb-0">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-gift me-3 text-success fs-4 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <h6 class="text-success mb-2"><strong>{{ 'pteroca.store.free_trial_available'|trans }}</strong></h6>
+                                    <ul class="list-unstyled mb-0 small">
+                                        <li class="mb-1"><i class="fas fa-check text-success me-2"></i><strong>{{ 'pteroca.store.free_trial_duration'|trans }}:</strong> ${freeTrialValue} ${unitText}</li>
+                                        <li class="mb-1"><i class="fas fa-credit-card text-warning me-2"></i><strong>{{ 'pteroca.store.free_trial_cost_now'|trans }}:</strong> FREE ({{ get_currency() }} 0.00)</li>
+                                        <li class="mb-1"><i class="fas fa-clock text-info me-2"></i><strong>{{ 'pteroca.store.free_trial_after_trial'|trans }}:</strong> ${productPrice.toFixed(2)} {{ get_currency() }}/${unitText}</li>
+                                        <li class="mb-1"><i class="fas fa-exclamation-triangle text-warning me-2"></i><strong>{{ 'pteroca.store.free_trial_important'|trans }}:</strong> {{ 'pteroca.store.free_trial_suspension_warning'|trans }}</li>
+                                        <li><i class="fas fa-sync text-primary me-2"></i>{{ 'pteroca.store.free_trial_auto_renewal'|trans }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            } else {
+                if (freeTrialMessage) {
+                    freeTrialMessage.style.display = 'none'
+                }
+            }
 
             const insufficientBalance = currentUserBalance < summaryPrice;
             document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);

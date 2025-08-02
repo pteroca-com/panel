@@ -39,7 +39,7 @@ class CreateServerService extends AbstractActionServerService
         UserRepository $userRepository,
         LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
+        parent::__construct($userRepository, $serverRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
     }
 
     public function createServer(
@@ -60,6 +60,17 @@ class CreateServerService extends AbstractActionServerService
             );
         }
 
+        // Check free trial eligibility BEFORE creating the server entity
+        /** @var ?ProductPrice $selectedPrice */
+        $selectedPrice = $product->getPrices()->filter(
+            fn(ProductPrice $price) => $price->getId() === $priceId
+        )->first() ?: null;
+        
+        $isFreeTrial = $selectedPrice && 
+                      $selectedPrice->hasFreeTrial() && 
+                      $selectedPrice->getFreeTrialValue() && 
+                      $this->isUserEligibleForFreeTrial($user);
+
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user);
 
         $createdEntityServer = $this->createEntityServer(
@@ -67,12 +78,26 @@ class CreateServerService extends AbstractActionServerService
             $user,
             $product,
             $priceId,
-            $autoRenewal
+            $autoRenewal,
+            $isFreeTrial
         );
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
+        
+        // Log for debugging
+        $this->logger->info('CreateServerService: Free trial check', [
+            'user' => $user->getId(),
+            'price' => $priceId,
+            'hasFreeTrial' => $selectedPrice ? $selectedPrice->hasFreeTrial() : false,
+            'freeTrialValue' => $selectedPrice ? $selectedPrice->getFreeTrialValue() : null,
+            'isEligible' => $this->isUserEligibleForFreeTrial($user),
+            'isFreeTrial' => $isFreeTrial,
+        ]);
+        
+        if (!$isFreeTrial) {
+            $this->updateUserBalance($user, $product, $priceId, $voucherCode);
+        }
 
-        $this->updateUserBalance($user, $product, $priceId, $voucherCode);
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
             $createdEntityServer,
@@ -126,7 +151,8 @@ class CreateServerService extends AbstractActionServerService
         UserInterface $user,
         Product $product,
         int $priceId,
-        bool $autoRenewal
+        bool $autoRenewal,
+        bool $isFreeTrial
     ): Server
     {
         /** @var ?ProductPrice $selectedPrice */
@@ -138,18 +164,30 @@ class CreateServerService extends AbstractActionServerService
             throw new \Exception($this->translator->trans('pteroca.store.price_not_found'));
         }
 
-        $datetimeModifier = sprintf(
-            '+%d %s',
-            $selectedPrice->getValue(),
-            $selectedPrice->getUnit()->value
-        );
+        if ($isFreeTrial) {
+            // Use free trial period instead of regular price period
+            $datetimeModifier = sprintf(
+                '+%d %s',
+                $selectedPrice->getFreeTrialValue(),
+                $selectedPrice->getFreeTrialUnit()->value
+            );
+        } else {
+            // Use regular price period
+            $datetimeModifier = sprintf(
+                '+%d %s',
+                $selectedPrice->getValue(),
+                $selectedPrice->getUnit()->value
+            );
+        }
+        
         $autoRenewalStatus = $autoRenewal || $selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND;
         $entityServer = (new Server())
             ->setPterodactylServerId($server->get('id'))
             ->setPterodactylServerIdentifier($server->get('identifier'))
             ->setUser($user)
             ->setExpiresAt(new \DateTime($datetimeModifier))
-            ->setAutoRenewal($autoRenewalStatus);
+            ->setAutoRenewal($autoRenewalStatus)
+            ->setIsOnFreeTrial($isFreeTrial);
 
         $this->serverRepository->save($entityServer);
 
@@ -194,5 +232,21 @@ class CreateServerService extends AbstractActionServerService
 
             $this->serverProductPriceRepository->save($serverProductPrice);
         }
+    }
+
+    /**
+     * Check if user is eligible for free trial
+     */
+    private function isUserEligibleForFreeTrial(UserInterface $user): bool
+    {
+        // Simple implementation: users who never purchased any server get free trial
+        $existingServers = $this->serverRepository->createQueryBuilder('s')
+            ->where('s.user = :user')
+            ->andWhere('s.deletedAt IS NULL')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+        
+        return empty($existingServers);
     }
 }

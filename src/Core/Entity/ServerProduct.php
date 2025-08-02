@@ -24,7 +24,7 @@ class ServerProduct implements ProductInterface
     #[ORM\JoinColumn(nullable: false)]
     private Server $server;
 
-    #[ORM\OneToOne(targetEntity: Product::class)]
+    #[ORM\ManyToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?Product $originalProduct;
 

@@ -43,6 +43,8 @@ class ServerRepository extends ServiceEntityRepository
     public function getServersToSuspend(\DateTime $expiresBefore): array
     {
         return $this->createQueryBuilder('s')
+            ->leftJoin('s.serverProduct', 'sp')
+            ->addSelect('sp')
             ->where('s.isSuspended = false')
             ->andWhere('s.expiresAt < :expiresBefore')
             ->andWhere('s.deletedAt IS NULL')
@@ -54,6 +56,8 @@ class ServerRepository extends ServiceEntityRepository
     public function getActiveServersByUser(UserInterface $user): array
     {
         return $this->createQueryBuilder('s')
+            ->leftJoin('s.serverProduct', 'sp')
+            ->addSelect('sp')
             ->where('s.user = :user')
             ->andWhere('s.isSuspended = false')
             ->andWhere('s.deletedAt IS NULL')
@@ -90,5 +94,34 @@ class ServerRepository extends ServiceEntityRepository
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Find servers by criteria with serverProduct relationship loaded
+     * 
+     * @param array $criteria
+     * @return Server[]
+     */
+    public function findByWithServerProduct(array $criteria): array
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->leftJoin('s.serverProduct', 'sp')
+            ->addSelect('sp');
+
+        foreach ($criteria as $field => $value) {
+            $qb->andWhere("s.$field = :$field")
+               ->setParameter($field, $value);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Find one server by criteria with serverProduct relationship loaded
+     */
+    public function findOneByWithServerProduct(array $criteria): ?Server
+    {
+        $results = $this->findByWithServerProduct($criteria);
+        return empty($results) ? null : $results[0];
     }
 }

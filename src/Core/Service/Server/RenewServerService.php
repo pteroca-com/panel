@@ -31,13 +31,14 @@ class RenewServerService extends AbstractActionServerService
         TranslatorInterface $translator,
         LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
+        parent::__construct($userRepository, $serverRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
     }
 
     public function renewServer(
         Server $server,
         UserInterface $user,
-        ?string $voucherCode = null
+        ?string $voucherCode = null,
+        ?bool $autoRenewal = null
     ): void
     {
         if (!empty($voucherCode)) {
@@ -56,7 +57,12 @@ class RenewServerService extends AbstractActionServerService
             $currentExpirationDate = clone $currentExpirationDate;
         }
 
-        $selectedPrice = $server->getServerProduct()->getSelectedPrice();
+        $serverProduct = $server->getServerProduct();
+        if (!$serverProduct) {
+            throw new \Exception('Server product not found');
+        }
+        
+        $selectedPrice = $serverProduct->getSelectedPrice();
         if ($selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND) {
             try {
                 $pterodactylClientApi = $this->pterodactylClientService
@@ -80,9 +86,19 @@ class RenewServerService extends AbstractActionServerService
             $server->setIsSuspended(false);
         }
 
+        // Clear free trial status since they're now paying for renewal
+        if ($server->isOnFreeTrial()) {
+            $server->setIsOnFreeTrial(false);
+        }
+
+        // Update auto-renewal setting if provided
+        if ($autoRenewal !== null) {
+            $server->setAutoRenewal($autoRenewal);
+        }
+
         $this->serverRepository->save($server);
         if ($chargeBalance) {
-            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode);
+            $this->updateUserBalance($user, $serverProduct, $selectedPrice->getId(), $voucherCode);
         }
 
         if ($currentTime->diff($server->getExpiresAt())->days >= 7) {

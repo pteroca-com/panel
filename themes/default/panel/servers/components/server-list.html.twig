@@ -33,11 +33,19 @@
                title="{{ 'pteroca.servers.manage_server'|trans }}">
                 <i class="fas fa-cogs fa-xs"></i>
             </a>
-            <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
-               class="btn btn-primary btn-sm"
-               title="{{ 'pteroca.servers.extend'|trans }}">
-                <i class="fas fa-sync fa-xs"></i>
-            </a>
+            {% if not server.autoRenewal %}
+                <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
+                   class="btn btn-secondary btn-sm"
+                   title="{{ 'pteroca.servers.extend'|trans }}">
+                    <i class="fas fa-sync fa-xs"></i>
+                </a>
+            {% else %}
+                <a href="{{ path('panel', { routeName: 'cart_cancel', id: server.id }) }}"
+                   class="btn btn-danger btn-sm"
+                   title="{{ 'pteroca.servers.cancel'|trans }}">
+                    <i class="fas fa-times fa-xs"></i>
+                </a>
+            {% endif %}
         </div>
     </td>
 </tr>

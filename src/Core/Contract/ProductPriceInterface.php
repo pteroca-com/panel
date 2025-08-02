@@ -21,6 +21,15 @@ interface ProductPriceInterface
     public function getPrice(): float;
     public function setPrice(float $price): self;
 
+    public function hasFreeTrial(): bool;
+    public function setHasFreeTrial(bool $hasFreeTrial): self;
+
+    public function getFreeTrialValue(): ?int;
+    public function setFreeTrialValue(?int $value): self;
+
+    public function getFreeTrialUnit(): ?ProductPriceUnitEnum;
+    public function setFreeTrialUnit(?ProductPriceUnitEnum $unit): self;
+
     public function getDeletedAt(): ?\DateTime;
     public function setDeletedAt(?\DateTime $deletedAt): self;
 

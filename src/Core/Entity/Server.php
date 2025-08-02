@@ -23,7 +23,7 @@ class Server
     private string $pterodactylServerIdentifier;
 
     #[ORM\OneToOne(targetEntity: ServerProduct::class, mappedBy: 'server', cascade: ['persist', 'remove'])]
-    private ServerProduct $serverProduct;
+    private ?ServerProduct $serverProduct = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -43,6 +43,9 @@ class Server
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $autoRenewal = false;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isOnFreeTrial = false;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -77,12 +80,12 @@ class Server
         return $this;
     }
 
-    public function getServerProduct(): ServerProduct
+    public function getServerProduct(): ?ServerProduct
     {
         return $this->serverProduct;
     }
 
-    public function setServerProduct(ServerProduct $serverProduct): self
+    public function setServerProduct(?ServerProduct $serverProduct): self
     {
         $this->serverProduct = $serverProduct;
         return $this;
@@ -148,6 +151,17 @@ class Server
     public function setAutoRenewal(bool $autoRenewal): self
     {
         $this->autoRenewal = $autoRenewal;
+        return $this;
+    }
+
+    public function isOnFreeTrial(): bool
+    {
+        return $this->isOnFreeTrial;
+    }
+
+    public function setIsOnFreeTrial(bool $isOnFreeTrial): self
+    {
+        $this->isOnFreeTrial = $isOnFreeTrial;
         return $this;
     }
 

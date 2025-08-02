@@ -49,7 +49,7 @@ class ServerController extends AbstractController
         }
 
         /** @var ?Server $server */
-        $server = current($serverRepository->findBy(['pterodactylServerIdentifier' => $serverId]));
+        $server = $serverRepository->findOneByWithServerProduct(['pterodactylServerIdentifier' => $serverId]);
         if (empty($server) || !empty($server->getDeletedAt())) {
             throw $this->createNotFoundException();
         }
