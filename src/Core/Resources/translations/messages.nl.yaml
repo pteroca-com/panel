@@ -105,6 +105,9 @@ pteroca:
     payment_is_not_configured: 'Betaling is niet geconfigureerd. Neem contact op met de beheerder.'
     recharge_description: 'Laad het saldo van uw account op'
     amount_hint: 'Voer het bedrag in dat u wilt opladen.'
+    amount_limits: 'Het bedrag moet tussen %min% %currency% en %max% %currency% liggen.'
+    amount_out_of_range: 'Het opwaarderingsbedrag moet tussen %min% en %max% %currency% liggen.'
+
     view_transaction_history: 'Bekijk transactiegeschiedenis'
     view_all_payments_description: 'Toont alle betalingen die op uw account zijn gedaan.'
   product:

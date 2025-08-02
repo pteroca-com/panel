@@ -109,6 +109,12 @@ pteroca:
     payment_is_not_configured: "Il sistema di pagamento non è configurato. Contatta l'amministratore."
     recharge_description: 'Ricarica il saldo del tuo account'
     amount_hint: 'Inserisci l''importo che desideri ricaricare.'
+    amount_limits: 'L'''importo deve essere tra %min% %currency% e %max% %currency%.'
+    amount_out_of_range: 'L'''importo di ricarica deve essere tra %min% e %max% %currency%.'
+
+    amount_limits: 'L'''importo deve essere tra %min% %currency% e %max% %currency%.'
+    amount_out_of_range: 'L'''importo di ricarica deve essere tra %min% e %max% %currency%.'
+
     view_transaction_history: 'Visualizza storico transazioni'
     view_all_payments_description: 'Mostra tutti i pagamenti effettuati sul tuo account.'
 
@@ -160,6 +166,26 @@ pteroca:
     product_not_available: 'Il prodotto non è più disponibile.'
     egg_not_found: 'Software non trovato.'
     not_enough_funds: 'Non hai fondi sufficienti sul tuo account.'
+    free_trial_available: 'Prova gratuita disponibile!'
+    free_trial_first_time: 'Inizia la tua prova gratuita - solo per i nuovi clienti'
+    free_trial_info: 'Questa è una prova gratuita. Il tuo server scadrà dopo il periodo di prova.'
+    free_trial_duration: 'Durata della prova'
+    free_trial_cost_now: 'Costo ora'
+    free_trial_after_trial: 'Dopo la prova'
+    free_trial_important: 'Importante'
+    free_trial_suspension_warning: 'Il server sarà sospeso se il saldo è insufficiente'
+    free_trial_auto_renewal: 'Rinnovo automatico consigliato per evitare interruzioni'
+
+    free_trial_available: 'Prova gratuita disponibile!'
+    free_trial_first_time: 'Inizia la tua prova gratuita - solo per i nuovi clienti'
+    free_trial_info: 'Questa è una prova gratuita. Il tuo server scadrà dopo il periodo di prova.'
+    free_trial_duration: 'Durata della prova'
+    free_trial_cost_now: 'Costo ora'
+    free_trial_after_trial: 'Dopo la prova'
+    free_trial_important: 'Importante'
+    free_trial_suspension_warning: 'Il server sarà sospeso se il saldo è insufficiente'
+    free_trial_auto_renewal: 'Rinnovo automatico consigliato per evitare interruzioni'
+
     successful_purchase: 'Server acquistato con successo.'
     error_during_creating_server: 'Errore durante la creazione del server'
     no_categories: 'Nessuna categoria è stata ancora aggiunta al negozio.'

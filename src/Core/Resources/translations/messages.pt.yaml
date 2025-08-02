@@ -109,6 +109,9 @@ pteroca:
     payment_is_not_configured: 'O sistema de pagamento não está configurado. Entre em contato com o administrador.'
     recharge_description: 'Recarregue o saldo da sua conta'
     amount_hint: 'Insira o valor que deseja recarregar.'
+    amount_limits: 'O valor deve estar entre %min% %currency% e %max% %currency%.'
+    amount_out_of_range: 'O valor de recarga deve estar entre %min% e %max% %currency%.'
+
     view_transaction_history: 'Ver histórico de transações'
     view_all_payments_description: 'Mostra todos os pagamentos feitos em sua conta.'
 
