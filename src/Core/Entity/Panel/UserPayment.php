@@ -5,7 +5,7 @@ namespace App\Core\Entity\Panel;
 use App\Core\Trait\PaymentEntityTrait;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Table(name: 'user_payment')]
+#[ORM\Table(name: 'payment')]
 #[ORM\Entity(repositoryClass: "App\Core\Repository\PaymentRepository")]
 #[ORM\HasLifecycleCallbacks]
 class UserPayment

@@ -20,9 +20,9 @@ final class Version20250731202312 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE user_payment (id INT AUTO_INCREMENT NOT NULL, session_id VARCHAR(255) NOT NULL, status VARCHAR(255) DEFAULT NULL, amount NUMERIC(10, 2) NOT NULL, currency VARCHAR(3) NOT NULL, balance_amount NUMERIC(10, 2) NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, used_voucher INT DEFAULT NULL, user_id INT NOT NULL, INDEX IDX_35259A0794458029 (used_voucher), INDEX IDX_35259A07A76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4');
-        $this->addSql('ALTER TABLE user_payment ADD CONSTRAINT FK_35259A0794458029 FOREIGN KEY (used_voucher) REFERENCES voucher (id)');
-        $this->addSql('ALTER TABLE user_payment ADD CONSTRAINT FK_35259A07A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
+//        $this->addSql('CREATE TABLE user_payment (id INT AUTO_INCREMENT NOT NULL, session_id VARCHAR(255) NOT NULL, status VARCHAR(255) DEFAULT NULL, amount NUMERIC(10, 2) NOT NULL, currency VARCHAR(3) NOT NULL, balance_amount NUMERIC(10, 2) NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, used_voucher INT DEFAULT NULL, user_id INT NOT NULL, INDEX IDX_35259A0794458029 (used_voucher), INDEX IDX_35259A07A76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4');
+//        $this->addSql('ALTER TABLE user_payment ADD CONSTRAINT FK_35259A0794458029 FOREIGN KEY (used_voucher) REFERENCES voucher (id)');
+//        $this->addSql('ALTER TABLE user_payment ADD CONSTRAINT FK_35259A07A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('DROP INDEX IDX_1F1B251A7D3656A4 ON log');
         $this->addSql('ALTER TABLE payment RENAME INDEX idx_6a2b8e0d4f34d596 TO IDX_6D28840D94458029');
         $this->addSql('ALTER TABLE product CHANGE eggs_configuration eggs_configuration VARCHAR(255) DEFAULT NULL, CHANGE allow_change_egg allow_change_egg TINYINT(1) NOT NULL, CHANGE schedules schedules INT NOT NULL');
@@ -49,9 +49,9 @@ final class Version20250731202312 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user_payment DROP FOREIGN KEY FK_35259A0794458029');
-        $this->addSql('ALTER TABLE user_payment DROP FOREIGN KEY FK_35259A07A76ED395');
-        $this->addSql('DROP TABLE user_payment');
+//        $this->addSql('ALTER TABLE user_payment DROP FOREIGN KEY FK_35259A0794458029');
+//        $this->addSql('ALTER TABLE user_payment DROP FOREIGN KEY FK_35259A07A76ED395');
+//        $this->addSql('DROP TABLE user_payment');
         $this->addSql('CREATE INDEX IDX_1F1B251A7D3656A4 ON log (created_at)');
         $this->addSql('ALTER TABLE payment RENAME INDEX idx_6d28840d94458029 TO IDX_6A2B8E0D4F34D596');
         $this->addSql('ALTER TABLE product CHANGE schedules schedules INT DEFAULT 10 NOT NULL, CHANGE eggs_configuration eggs_configuration LONGTEXT DEFAULT NULL, CHANGE allow_change_egg allow_change_egg TINYINT(1) DEFAULT 0 NOT NULL');
