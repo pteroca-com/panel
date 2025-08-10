@@ -1,6 +1,36 @@
-{# Custom Younglin main menu wrapper - customize this file to change items/structure #}
+{# Younglin custom main menu (own design) #}
 <nav class="younglin-menu">
-    <div class="younglin-menu-inner">
-        {{ include(ea.templatePath('main_menu')) }}
-    </div>
+  <div class="younglin-menu-inner">
+    <ul class="yl-menu-root">
+      {% for item in ea.mainMenu.items %}
+        {% if item.isMenuSection %}
+          <li class="yl-section">{{ item.label|trans }}</li>
+        {% else %}
+          {% set hasChildren = item.subItems is defined and item.subItems|length > 0 %}
+          {% set isActive = item.isSelected ?? false %}
+          <li class="yl-item {{ isActive ? 'active' }} {{ item.cssClass }}">
+            <a href="{{ item.linkUrl }}" target="{{ item.linkTarget }}" rel="{{ item.linkRel }}">
+              {% if item.icon is not empty %}<i class="fa fa-fw {{ item.icon }}"></i>{% endif %}
+              <span class="yl-label">{{ item.label|trans }}</span>
+              {% if hasChildren %}<i class="yl-caret fas fa-chevron-right"></i>{% endif %}
+            </a>
+
+            {% if hasChildren %}
+              <ul class="yl-submenu {{ (item.isExpanded ?? false) ? 'expanded' }}">
+                {% for child in item.subItems %}
+                  {% set childActive = child.isSelected ?? false %}
+                  <li class="yl-subitem {{ childActive ? 'active' }} {{ child.cssClass }}">
+                    <a href="{{ child.linkUrl }}" target="{{ child.linkTarget }}" rel="{{ child.linkRel }}">
+                      {% if child.icon is not empty %}<i class="fa fa-fw {{ child.icon }}"></i>{% endif %}
+                      <span class="yl-label">{{ child.label|trans }}</span>
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
 </nav>
