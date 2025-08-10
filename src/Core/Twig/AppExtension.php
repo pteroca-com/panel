@@ -43,6 +43,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
+            new TwigFunction('get_current_theme', [$this, 'getCurrentTheme']),
         ];
     }
 
@@ -172,4 +173,11 @@ class AppExtension extends AbstractExtension
     {
         return $this->templateManager->getCurrentTemplateOptions();
     }
+
+    public function getCurrentTheme(): string
+    {
+        return $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value) ?? 'default';
+    }
+
+    // getSidebarStyle() removed along with the SIDEBAR_STYLE setting
 }

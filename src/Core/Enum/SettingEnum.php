@@ -8,6 +8,7 @@ enum SettingEnum: string
     case SITE_TITLE = 'site_title';
     case LOGO = 'site_logo';
     case LOCALE = 'site_locale';
+    case BROWSER_LANGUAGE_SYNC = 'browser_language_sync';
     case SITE_FAVICON = 'site_favicon';
     case EMAIL_SMTP_SERVER = 'smtp_server';
     case EMAIL_SMTP_PORT = 'smtp_port';

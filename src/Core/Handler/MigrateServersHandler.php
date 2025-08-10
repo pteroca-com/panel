@@ -65,7 +65,7 @@ class MigrateServersHandler implements HandlerInterface
         $pterocaUsers = $this->getPterocaUsers();
 
         foreach ($pterodactylServers as $pterodactylServer) {
-            if ($this->isServerAlreadyExists($pterodactylServer->toArray(), $pterocaServers)) {
+            if ($this->isServerAlreadyExists($pterodactylServer, $pterocaServers)) {
                 $infoMessage = sprintf(
                     'Server %s #%s already exists in PteroCA, skipping...',
                     $pterodactylServer['name'],
@@ -90,7 +90,7 @@ class MigrateServersHandler implements HandlerInterface
                 continue;
             }
 
-            if ($this->isUserWantMigrateServer($pterodactylServer->toArray()) === false) {
+            if ($this->isUserWantMigrateServer($pterodactylServer) === false) {
                 $this->io->info(sprintf(
                     'Skipping server %s #%s...',
                     $pterodactylServer['name'],
@@ -109,12 +109,15 @@ class MigrateServersHandler implements HandlerInterface
             $price = $this->askForPrice();
 
             $this->migrateServer(
-                $pterodactylServer->toArray(),
+                $pterodactylServer,
                 $pterodactylServerOwner->get('email'),
                 $duration,
                 $price
             );
         }
+
+        // Reconcile: handle PteroCA servers missing in Pterodactyl
+        $this->reconcileMissingServers($pterodactylServers);
     }
 
     private function migrateServer(
@@ -255,7 +258,11 @@ class MigrateServersHandler implements HandlerInterface
         ]);
         $this->io->info(sprintf('Fetched %d servers from Pterodactyl', count($servers->toArray())));
 
-        return $servers->toArray();
+        // Normalize to plain arrays for downstream usage
+        return array_map(
+            fn($server) => $server->toArray(),
+            $servers->toArray()
+        );
     }
 
     private function getPterodactylUsers(): array
@@ -287,5 +294,60 @@ class MigrateServersHandler implements HandlerInterface
             ],
             $this->userRepository->findAll(),
         );
+    }
+
+    /**
+     * Reconciles servers that exist in PteroCA but no longer exist in Pterodactyl.
+     */
+    private function reconcileMissingServers(array $pterodactylServers): void
+    {
+        $this->io->section('Reconciling missing servers...');
+        $pterodactylIdentifiers = array_column($pterodactylServers, 'identifier');
+
+        $pterocaServerEntities = $this->serverRepository->findAll();
+        $missingServers = array_filter($pterocaServerEntities, function (Server $server) use ($pterodactylIdentifiers) {
+            // consider only non-deleted servers
+            if ($server->getDeletedAt() !== null) {
+                return false;
+            }
+
+            return !in_array($server->getPterodactylServerIdentifier(), $pterodactylIdentifiers, true);
+        });
+
+        if (empty($missingServers)) {
+            $this->io->info('No missing servers to reconcile.');
+            return;
+        }
+
+        foreach ($missingServers as $server) {
+            $this->io->warning(sprintf(
+                'Server %s (ID #%d) is missing in Pterodactyl.',
+                $server->getPterodactylServerIdentifier(),
+                $server->getId()
+            ));
+
+            $action = $this->io->choice(
+                'Choose reconciliation action',
+                ['soft-delete', 'suspend', 'skip'],
+                'soft-delete'
+            );
+
+            if ($action === 'soft-delete') {
+                $this->softDeleteServer($server);
+                $this->io->success(sprintf('Soft-deleted server %s.', $server->getPterodactylServerIdentifier()));
+            } elseif ($action === 'suspend') {
+                $server->setIsSuspended(true);
+                $this->serverRepository->save($server);
+                $this->io->success(sprintf('Suspended server %s.', $server->getPterodactylServerIdentifier()));
+            } else {
+                $this->io->note(sprintf('Skipped server %s.', $server->getPterodactylServerIdentifier()));
+            }
+        }
+    }
+
+    private function softDeleteServer(Server $server): void
+    {
+        $server->setDeletedAtValue();
+        $this->serverRepository->save($server);
     }
 }

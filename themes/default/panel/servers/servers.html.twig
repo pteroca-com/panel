@@ -35,22 +35,13 @@
 
         {% if servers|length > 0 %}
             <div id="cards-view">
-                {% set row = 1 %}
-                {% for server in servers %}
-                    {% if row == 1 %}
-                        <div class="row">
-                    {% endif %}
-                    <div class="col-12 col-lg-6 col-xl-4 mb-4">
-                        {% include 'panel/servers/components/server.html.twig' %}
-                    </div>
-                    {% if row % 3 == 0 %}
+                <div class="row">
+                    {% for server in servers %}
+                        <div class="col-12 col-md-6 col-xl-4 mb-4">
+                            {% include 'panel/servers/components/server.html.twig' %}
                         </div>
-                    {% endif %}
-                    {% set row = row + 1 %}
-                {% endfor %}
-                {% if row % 3 != 1 %}
-                    </div>
-                {% endif %}
+                    {% endfor %}
+                </div>
             </div>
 
             <div id="list-view" style="display: none;">

@@ -81,6 +81,7 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
                             'Auto' => ColorScheme::AUTO,
                         ])
                         ->setRequired(true);
+                    break;
             }
         }
 
@@ -91,6 +92,9 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
     {
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
         $hiddenSettings = [];
+
+        // Always hide legacy/removed settings
+        $hiddenSettings[] = 'sidebar_style';
 
         if (!$this->currentTemplateOptions->isSupportDarkMode()) {
             $hiddenSettings[] = SettingEnum::THEME_DISABLE_DARK_MODE->value;

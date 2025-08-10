@@ -1,0 +1,7 @@
+pteroca:
+  crud:
+    setting:
+      hints:
+        browser_language_sync: 'Sync interface language with browser (Accept-Language)'
+      # Help text resolved by the same key in controller if present
+      # Using the same index returns this as help text, otherwise it will fall back to empty
