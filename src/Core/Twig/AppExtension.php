@@ -43,6 +43,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
+            new TwigFunction('get_current_theme', [$this, 'getCurrentTheme']),
         ];
     }
 
@@ -171,5 +172,10 @@ class AppExtension extends AbstractExtension
     public function getCurrentTemplateOptions(): TemplateOptionsDTO
     {
         return $this->templateManager->getCurrentTemplateOptions();
+    }
+
+    public function getCurrentTheme(): string
+    {
+        return $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value) ?? 'default';
     }
 }
