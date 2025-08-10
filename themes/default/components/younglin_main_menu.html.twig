@@ -1,27 +1,45 @@
-{# Younglin custom main menu (own design) #}
+{# Younglin custom main menu (Tailwind styled) #}
 <nav class="younglin-menu">
   <div class="younglin-menu-inner">
-    <ul class="yl-menu-root">
+    <ul class="yl-menu-root space-y-2 p-3">
       {% for item in ea.mainMenu.items %}
         {% if item.isMenuSection %}
-          <li class="yl-section">{{ item.label|trans }}</li>
+          <li class="yl-section mt-6 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            {{ item.label|trans }}
+          </li>
         {% else %}
           {% set hasChildren = item.subItems is defined and item.subItems|length > 0 %}
           {% set isActive = item.isSelected ?? false %}
-          <li class="yl-item {{ isActive ? 'active' }} {{ item.cssClass }}">
-            <a href="{{ item.linkUrl }}" target="{{ item.linkTarget }}" rel="{{ item.linkRel }}">
-              {% if item.icon is not empty %}<i class="fa fa-fw {{ item.icon }}"></i>{% endif %}
-              <span class="yl-label">{{ item.label|trans }}</span>
-              {% if hasChildren %}<i class="yl-caret fas fa-chevron-right"></i>{% endif %}
+          <li class="yl-item {{ item.cssClass }}">
+            <a href="{{ item.linkUrl }}"
+               target="{{ item.linkTarget }}" rel="{{ item.linkRel }}"
+               class="group flex items-center gap-3 w-full rounded-xl px-3 py-2 transition
+                      {{ isActive ? 'bg-blue-600/20 text-white' : 'text-slate-200 hover:text-white hover:bg-white/5' }}">
+              {% if item.icon is not empty %}
+                <i class="fa fa-fw {{ item.icon }} text-lg opacity-80 group-hover:opacity-100"></i>
+              {% else %}
+                <span class="w-5 h-5 rounded bg-blue-500/30 ring-1 ring-blue-400/30"></span>
+              {% endif %}
+              <span class="yl-label flex-1 font-medium">{{ item.label|trans }}</span>
+              {% if hasChildren %}
+                <i class="yl-caret fas fa-chevron-right text-xs opacity-60 group-hover:opacity-100"></i>
+              {% endif %}
             </a>
 
             {% if hasChildren %}
-              <ul class="yl-submenu {{ (item.isExpanded ?? false) ? 'expanded' }}">
+              {% set expanded = (item.isExpanded ?? false) %}
+              <ul class="yl-submenu ml-10 mt-1 border-l border-white/10 pl-3 flex flex-col gap-1 {{ expanded ? '' : '' }}">
                 {% for child in item.subItems %}
                   {% set childActive = child.isSelected ?? false %}
-                  <li class="yl-subitem {{ childActive ? 'active' }} {{ child.cssClass }}">
-                    <a href="{{ child.linkUrl }}" target="{{ child.linkTarget }}" rel="{{ child.linkRel }}">
-                      {% if child.icon is not empty %}<i class="fa fa-fw {{ child.icon }}"></i>{% endif %}
+                  <li class="yl-subitem {{ child.cssClass }}">
+                    <a href="{{ child.linkUrl }}" target="{{ child.linkTarget }}" rel="{{ child.linkRel }}"
+                       class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition
+                              {{ childActive ? 'bg-blue-500/20 text-white' : 'text-slate-300 hover:text-white hover:bg-white/5' }}">
+                      {% if child.icon is not empty %}
+                        <i class="fa fa-fw {{ child.icon }} text-sm opacity-80"></i>
+                      {% else %}
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                      {% endif %}
                       <span class="yl-label">{{ child.label|trans }}</span>
                     </a>
                   </li>
