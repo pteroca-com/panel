@@ -36,7 +36,6 @@ enum SettingEnum: string
     case DEFAULT_THEME_DARK_LINK_HOVER_COLOR = 'theme_default_dark_link_hover_color';
     case THEME_DISABLE_DARK_MODE = 'theme_disable_dark_mode';
     case THEME_DEFAULT_MODE = 'theme_default_mode';
-    case SIDEBAR_STYLE = 'sidebar_style';
     case SHOW_PHPMYADMIN_URL = 'show_phpmyadmin_url';
     case PHPMYADMIN_URL = 'phpmyadmin_url';
     case CUSTOMER_MOTD_ENABLED = 'customer_motd_enabled';

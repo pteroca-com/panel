@@ -82,17 +82,6 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
                         ])
                         ->setRequired(true);
                     break;
-                case SettingEnum::SIDEBAR_STYLE->value:
-                    $valueFieldIndex = $this->findValueFieldIndexByName($fields);
-                    $fields[$valueFieldIndex] = ChoiceField::new('value', $this->translator->trans('pteroca.crud.setting.value'))
-                        ->setChoices([
-                            // Current implementation in use
-                            'Current' => 'current',
-                            // Placeholder for upcoming redesign
-                            'Younglin (preview)' => 'younglin',
-                        ])
-                        ->setRequired(true);
-                    break;
             }
         }
 

@@ -44,7 +44,6 @@ class AppExtension extends AbstractExtension
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
             new TwigFunction('get_current_theme', [$this, 'getCurrentTheme']),
-            new TwigFunction('get_sidebar_style', [$this, 'getSidebarStyle']),
         ];
     }
 
@@ -180,11 +179,5 @@ class AppExtension extends AbstractExtension
         return $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value) ?? 'default';
     }
 
-    public function getSidebarStyle(): string
-    {
-        $value = $this->settingService->getSetting(SettingEnum::SIDEBAR_STYLE->value) ?? 'current';
-        // Whitelist supported styles only; fallback to 'current' for any unknown value
-        $allowed = ['current'];
-        return in_array($value, $allowed, true) ? $value : 'current';
-    }
+    // getSidebarStyle() removed along with the SIDEBAR_STYLE setting
 }
