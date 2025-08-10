@@ -24,6 +24,9 @@
         {% if get_current_template_options().isSupportCustomColors() %}
             {% include 'components/theme_styles.html.twig' %}
         {% endif %}
+        {% if get_sidebar_style() == 'younglin' %}
+            <link rel="stylesheet" href="{{ asset('assets/theme/default/younglin-sidebar.css') }}">
+        {% endif %}
     {% endblock %}
 
     {% block configured_stylesheets %}

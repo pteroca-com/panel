@@ -1,0 +1,28 @@
+/* Younglin Sidebar custom styles */
+.younglin-sidebar {
+  background: linear-gradient(180deg, #111827 0%, #0b1220 100%);
+  color: #e5e7eb;
+}
+.younglin-sidebar .main-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.younglin-sidebar .logo-custom {
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #93c5fd;
+}
+.younglin-sidebar-inner .menu, .younglin-sidebar-inner .sidebar-menu {
+  padding: 8px 10px;
+}
+.younglin-sidebar-inner .menu li > a, .younglin-sidebar-inner .sidebar-menu li > a {
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.younglin-sidebar-inner .menu li > a:hover, .younglin-sidebar-inner .sidebar-menu li > a:hover {
+  background: rgba(59,130,246,0.15);
+}
+.younglin-sidebar-inner .menu li.active > a, .younglin-sidebar-inner .sidebar-menu li.active > a {
+  background: rgba(59,130,246,0.25);
+  color: #ffffff;
+}
