@@ -182,6 +182,9 @@ class AppExtension extends AbstractExtension
 
     public function getSidebarStyle(): string
     {
-        return $this->settingService->getSetting(SettingEnum::SIDEBAR_STYLE->value) ?? 'current';
+        $value = $this->settingService->getSetting(SettingEnum::SIDEBAR_STYLE->value) ?? 'current';
+        // Whitelist supported styles only; fallback to 'current' for any unknown value
+        $allowed = ['current'];
+        return in_array($value, $allowed, true) ? $value : 'current';
     }
 }

@@ -24,9 +24,6 @@
         {% if get_current_template_options().isSupportCustomColors() %}
             {% include 'components/theme_styles.html.twig' %}
         {% endif %}
-        {% if get_sidebar_style() == 'younglin' %}
-            <link rel="stylesheet" href="{{ asset('assets/theme/default/younglin-sidebar.css') }}">
-        {% endif %}
     {% endblock %}
 
     {% block configured_stylesheets %}
@@ -225,34 +222,30 @@
                 </div>
 
                 <div class="sidebar-wrapper">
-                    {% if get_sidebar_style() == 'younglin' %}
-                        {{ include('components/younglin_sidebar.html.twig') }}
-                    {% else %}
-                        <aside class="sidebar">
-                            {% block sidebar %}
-                                <header class="main-header">
-                                    {% block header %}
-                                        <nav class="navbar" role="navigation">
-                                            {% block header_navbar %}
-                                                <div id="header-logo">
-                                                    {% block header_logo %}
-                                                        <a class="logo" title="{{ ea.dashboardTitle|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
-                                                            <span class="logo-custom">{{ ea.dashboardTitle|raw }}</span>
-                                                            <span class="logo-compact"><i class="fas fa-home"></i></span>
-                                                        </a>
-                                                    {% endblock header_logo %}
-                                                </div>
-                                            {% endblock header_navbar %}
-                                        </nav>
-                                    {% endblock header %}
-                                </header>
+                    <aside class="sidebar">
+                        {% block sidebar %}
+                            <header class="main-header">
+                                {% block header %}
+                                    <nav class="navbar" role="navigation">
+                                        {% block header_navbar %}
+                                            <div id="header-logo">
+                                                {% block header_logo %}
+                                                    <a class="logo" title="{{ ea.dashboardTitle|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
+                                                        <span class="logo-custom">{{ ea.dashboardTitle|raw }}</span>
+                                                        <span class="logo-compact"><i class="fas fa-home"></i></span>
+                                                    </a>
+                                                {% endblock header_logo %}
+                                            </div>
+                                        {% endblock header_navbar %}
+                                    </nav>
+                                {% endblock header %}
+                            </header>
 
-                                {% block main_menu_wrapper %}
-                                    {{ include(ea.templatePath('main_menu')) }}
-                                {% endblock main_menu_wrapper %}
-                            {% endblock sidebar %}
-                        </aside>
-                    {% endif %}
+                            {% block main_menu_wrapper %}
+                                {{ include(ea.templatePath('main_menu')) }}
+                            {% endblock main_menu_wrapper %}
+                        {% endblock sidebar %}
+                    </aside>
 
                     <div id="sidebar-resizer-handler" class="resizer-handler resizer-handler-left"></div>
                 </div>
