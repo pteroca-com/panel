@@ -93,6 +93,9 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
         $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
         $hiddenSettings = [];
 
+        // Always hide legacy/removed settings
+        $hiddenSettings[] = 'sidebar_style';
+
         if (!$this->currentTemplateOptions->isSupportDarkMode()) {
             $hiddenSettings[] = SettingEnum::THEME_DISABLE_DARK_MODE->value;
             $hiddenSettings[] = SettingEnum::DEFAULT_THEME_DARK_PRIMARY_COLOR->value;
