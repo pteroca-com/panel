@@ -10,6 +10,8 @@ class UpdateSystemHandler implements HandlerInterface
 
     private bool $isStashed = false;
 
+    private ?string $stashRef = null;
+
     private SymfonyStyle $io;
 
     public function handle(): void
@@ -19,12 +21,27 @@ class UpdateSystemHandler implements HandlerInterface
         $this->checkIfComposerIsInstalled();
         $this->showWarningMessage();
 
+        $this->ensureNoUnmergedFiles();
+        if ($this->hasError) { return; }
+
         $this->stashGitChanges();
+        if ($this->hasError) { return; }
+
         $this->pullGitChanges();
+        if ($this->hasError) { return; }
+
         $this->applyStashedChanges();
+        if ($this->hasError) { return; }
+
         $this->composerInstall();
+        if ($this->hasError) { return; }
+
         $this->updateDatabase();
+        if ($this->hasError) { return; }
+
         $this->clearCache();
+        if ($this->hasError) { return; }
+
         $this->adjustFilePermissions();
     }
 
@@ -93,38 +110,97 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function stashGitChanges(): void
     {
-        exec('git stash', $output, $returnCode);
+        $statusOutput = [];
+        $statusCode = 0;
+        exec('git status --porcelain', $statusOutput, $statusCode);
+        $hasChanges = $statusCode === 0 && !empty(array_filter($statusOutput));
+
+        if (!$hasChanges) {
+            $this->isStashed = false;
+            $this->stashRef = null;
+            return;
+        }
+
+        $output = [];
+        $returnCode = 0;
+        $label = 'pteroca-update-' . date('Ymd-His');
+        exec(sprintf('git stash push -u -m %s', escapeshellarg($label)), $output, $returnCode);
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to stash changes.');
             return;
         }
 
-        $this->isStashed = true;
+        $stashCheck = [];
+        $stashCode = 0;
+        exec('git rev-parse -q --verify refs/stash', $stashCheck, $stashCode);
+        $this->isStashed = ($stashCode === 0);
+
+        if ($this->isStashed) {
+            $list = [];
+            $listCode = 0;
+            exec('git stash list --pretty=format:%gd:%s', $list, $listCode);
+            if ($listCode === 0 && !empty($list)) {
+                foreach ($list as $line) {
+                    $parts = explode(':', $line, 2);
+                    if (count($parts) === 2 && str_contains($parts[1], $label)) {
+                        $this->stashRef = trim($parts[0]);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private function pullGitChanges(): void
     {
-        exec('git pull origin main', $output, $returnCode);
+        exec('git fetch origin', $output, $returnCode);
+        if ($returnCode !== 0) {
+            $this->hasError = true;
+            $this->io->error('Failed to fetch changes from remote.');
+            $this->applyStashedChanges();
+            return;
+        }
+
+        exec('git pull --ff-only origin main', $output, $returnCode);
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to pull changes.');
             $this->applyStashedChanges();
+            return;
         }
     }
 
     private function applyStashedChanges(): void
     {
-        if ($this->isStashed) {
-            exec('git stash apply', $output, $returnCode);
-            if ($returnCode !== 0) {
-                $this->hasError = true;
-                $this->io->error('Failed to apply stashed changes.');
-                return;
-            }
-
-            $this->isStashed = false;
+        if (!$this->isStashed) {
+            return;
         }
+
+        $stashCheck = [];
+        $stashCode = 0;
+        exec('git rev-parse -q --verify refs/stash', $stashCheck, $stashCode);
+        if ($stashCode !== 0) {
+            $this->isStashed = false;
+            $this->stashRef = null;
+            return;
+        }
+
+        $output = [];
+        $returnCode = 0;
+        if ($this->stashRef) {
+            exec(sprintf('git stash pop %s', escapeshellarg($this->stashRef)), $output, $returnCode);
+        } else {
+            exec('git stash pop', $output, $returnCode);
+        }
+        if ($returnCode !== 0) {
+            $this->hasError = true;
+            $this->io->error('Failed to apply stashed changes.');
+            return;
+        }
+
+        $this->isStashed = false;
+        $this->stashRef = null;
     }
 
     private function composerInstall(): void
@@ -153,10 +229,16 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function clearCache(): void
     {
-        exec('php bin/console cache:clear', $output, $returnCode);
+        exec('php bin/console cache:clear --env=prod', $output, $returnCode);
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to clear cache.');
+            return;
+        }
+        exec('php bin/console cache:warmup --env=prod', $output, $returnCode);
+        if ($returnCode !== 0) {
+            $this->hasError = true;
+            $this->io->error('Failed to warmup cache.');
         }
     }
 
@@ -166,8 +248,13 @@ class UpdateSystemHandler implements HandlerInterface
             return;
         }
 
-        $directoryToCheck = \dirname(__DIR__, 3);
-        $directoryToCheck = escapeshellarg($directoryToCheck);
+        $root = \dirname(__DIR__, 3);
+        $paths = [];
+        if (is_dir($root . '/var')) { $paths[] = $root . '/var'; }
+        if (is_dir($root . '/public')) { $paths[] = $root . '/public'; }
+
+        if (empty($paths)) { return; }
+
         $candidateOwners = [
             'www-data:www-data',
             'nginx:nginx',
@@ -178,13 +265,28 @@ class UpdateSystemHandler implements HandlerInterface
             [$user, $group] = explode(':', $candidate);
 
             $exitCode = 0;
-            $output = [];
-            exec(sprintf('id -u %s 2>/dev/null', escapeshellarg($user)), $output, $exitCode);
-
+            $out = [];
+            exec(sprintf('id -u %s 2>/dev/null', escapeshellarg($user)), $out, $exitCode);
             if ($exitCode === 0) {
-                exec(sprintf('chown -R %s %s', escapeshellarg($candidate), $directoryToCheck));
+                foreach ($paths as $p) {
+                    $pEsc = escapeshellarg($p);
+                    exec(sprintf('chown -R %s %s', escapeshellarg($candidate), $pEsc));
+                    exec(sprintf('find %s -type d -exec chmod 775 {} \\;', $pEsc));
+                    exec(sprintf('find %s -type f -exec chmod 664 {} \\;', $pEsc));
+                }
                 return;
             }
+        }
+    }
+
+    private function ensureNoUnmergedFiles(): void
+    {
+        $out = [];
+        $code = 0;
+        exec('git diff --name-only --diff-filter=U', $out, $code);
+        if ($code === 0 && !empty(array_filter($out))) {
+            $this->hasError = true;
+            $this->io->error('Unmerged files detected. Please resolve merge conflicts and commit before running the updater.');
         }
     }
 }
