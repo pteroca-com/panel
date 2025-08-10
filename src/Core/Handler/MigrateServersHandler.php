@@ -258,7 +258,11 @@ class MigrateServersHandler implements HandlerInterface
         ]);
         $this->io->info(sprintf('Fetched %d servers from Pterodactyl', count($servers->toArray())));
 
-        return $servers->toArray();
+        // Normalize to plain arrays for downstream usage
+        return array_map(
+            fn($server) => $server->toArray(),
+            $servers->toArray()
+        );
     }
 
     private function getPterodactylUsers(): array
