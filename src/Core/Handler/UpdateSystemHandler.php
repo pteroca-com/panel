@@ -42,6 +42,9 @@ class UpdateSystemHandler implements HandlerInterface
         $this->clearCache();
         if ($this->hasError) { return; }
 
+        $this->clearLogs();
+        if ($this->hasError) { return; }
+
         $this->adjustFilePermissions();
     }
 
@@ -239,6 +242,35 @@ class UpdateSystemHandler implements HandlerInterface
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to warmup cache.');
+        }
+    }
+
+    private function clearLogs(): void
+    {
+        $root = \dirname(__DIR__, 3);
+        $logDirs = [];
+        if (is_dir($root . '/var/log')) { $logDirs[] = $root . '/var/log'; }
+        if (is_dir($root . '/var/logs')) { $logDirs[] = $root . '/var/logs'; }
+
+        foreach ($logDirs as $dir) {
+            try {
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::CHILD_FIRST
+                );
+                foreach ($iterator as $item) {
+                    if ($item->isFile() || $item->isLink()) {
+                        @unlink($item->getPathname());
+                    } elseif ($item->isDir()) {
+                        // Only remove nested empty directories under log dir, keep the root log dir
+                        @rmdir($item->getPathname());
+                    }
+                }
+            } catch (\Throwable $e) {
+                $this->hasError = true;
+                $this->io->error('Failed to clear logs.');
+                return;
+            }
         }
     }
 
