@@ -44,6 +44,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
             new TwigFunction('get_current_theme', [$this, 'getCurrentTheme']),
+            new TwigFunction('get_sidebar_style', [$this, 'getSidebarStyle']),
         ];
     }
 
@@ -177,5 +178,10 @@ class AppExtension extends AbstractExtension
     public function getCurrentTheme(): string
     {
         return $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value) ?? 'default';
+    }
+
+    public function getSidebarStyle(): string
+    {
+        return $this->settingService->getSetting(SettingEnum::SIDEBAR_STYLE->value) ?? 'current';
     }
 }

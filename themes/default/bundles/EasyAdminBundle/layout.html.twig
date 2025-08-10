@@ -222,7 +222,7 @@
                 </div>
 
                 <div class="sidebar-wrapper">
-                    {% if get_current_theme() == 'younglin' %}
+                    {% if get_sidebar_style() == 'younglin' %}
                         {{ include('components/younglin_sidebar.html.twig') }}
                     {% else %}
                         <aside class="sidebar">
