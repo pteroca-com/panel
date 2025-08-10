@@ -9,32 +9,20 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20250810181741 extends AbstractMigration
 {
-    private const NEW_SETTINGS = [
-        [
-            'name' => 'sidebar_style',
-            'value' => 'current',
-            'type' => 'string',
-            'context' => 'theme_settings',
-            'hierarchy' => 35,
-        ],
-    ];
-
     public function getDescription(): string
     {
-        return 'Add appearance setting to choose sidebar style (current vs. future younglin)';
+        return 'Remove sidebar_style appearance setting';
     }
 
     public function up(Schema $schema): void
     {
-        foreach (self::NEW_SETTINGS as $setting) {
-            $this->addSql('INSERT INTO setting (name, value, type, context, hierarchy) VALUES (:name, :value, :type, :context, :hierarchy)', $setting);
-        }
+        // Remove any existing sidebar_style setting
+        $this->addSql("DELETE FROM setting WHERE name = 'sidebar_style'");
     }
 
     public function down(Schema $schema): void
     {
-        foreach (self::NEW_SETTINGS as $setting) {
-            $this->addSql('DELETE FROM setting WHERE name = :name', $setting);
-        }
+        // Recreate the setting if the migration is rolled back (kept benign)
+        $this->addSql("INSERT INTO setting (name, value, type, context, hierarchy) VALUES ('sidebar_style', 'current', 'string', 'theme_settings', 35)");
     }
 }
