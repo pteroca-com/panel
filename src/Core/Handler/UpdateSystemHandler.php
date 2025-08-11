@@ -17,6 +17,7 @@ class UpdateSystemHandler implements HandlerInterface
         $this->checkPermissions();
         $this->checkIfGitIsInstalled();
         $this->checkIfComposerIsInstalled();
+        $this->assertNoUnmergedFiles();
         $this->showWarningMessage();
 
         $this->stashGitChanges();
@@ -212,6 +213,22 @@ class UpdateSystemHandler implements HandlerInterface
             if ($exitCode === 0) {
                 exec(sprintf('chown -R %s %s', escapeshellarg($candidate), $directoryToCheck));
                 return;
+            }
+        }
+    }
+
+    private function assertNoUnmergedFiles(): void
+    {
+        // Detect unresolved merge conflicts; abort early with guidance
+        $output = [];
+        $exit = 0;
+        exec('git ls-files -u | wc -l', $output, $exit);
+        if ($exit === 0) {
+            $count = (int)trim($output[0] ?? '0');
+            if ($count > 0) {
+                $this->hasError = true;
+                $this->io->error("Unmerged files detected in the repository. Please resolve merge conflicts before running the update.\nHint: git status, fix conflicts, git add ., git commit");
+                throw new \RuntimeException('Aborting update due to unmerged files.');
             }
         }
     }
