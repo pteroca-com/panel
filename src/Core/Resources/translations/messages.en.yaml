@@ -899,7 +899,8 @@ pteroca:
     voucher:
       not_found: 'Voucher not found.'
       expired: 'Voucher has expired.'
-      successfully_applied: 'Voucher successfully applied.'
+      successfully_applied: 'Voucher successfully applied! %amount% %currency% has been added to your account balance.'
+      successfully_applied_discount: 'Voucher successfully applied! You received a %discount_amount% %currency% discount on your order.'
       max_global_uses_reached: 'Maximum global uses reached.'
       already_used: 'Voucher has already been used.'
       only_for_new_accounts: 'Voucher is only for new accounts.'

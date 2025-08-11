@@ -9,6 +9,8 @@ use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\StoreService;
 use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -22,6 +24,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
         private RenewServerService $renewServerService,
         private TranslatorInterface $translator,
         private MessageBusInterface $messageBus,
+        private LoggerInterface $logger,
     ) {}
 
     public function handle(): void
@@ -68,7 +71,14 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
                 $server->getServerProduct()->getSelectedPrice()
             );
             $this->renewServerService->renewServer($server, $server->getUser());
-        } catch (Exception) {
+        } catch (Exception $e) {
+            $this->logger->warning('Failed to auto-renew server before suspension', [
+                'server_id' => $server->getId(),
+                'ptero_server_id' => $server->getPterodactylServerId(),
+                'user_id' => $server->getUser()?->getId(),
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+            ]);
             return false;
         }
 

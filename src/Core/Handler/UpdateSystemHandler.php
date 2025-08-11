@@ -17,6 +17,7 @@ class UpdateSystemHandler implements HandlerInterface
         $this->checkPermissions();
         $this->checkIfGitIsInstalled();
         $this->checkIfComposerIsInstalled();
+        $this->assertNoUnmergedFiles();
         $this->showWarningMessage();
 
         $this->stashGitChanges();
@@ -93,36 +94,64 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function stashGitChanges(): void
     {
-        exec('git stash', $output, $returnCode);
-        if ($returnCode !== 0) {
-            $this->hasError = true;
-            $this->io->error('Failed to stash changes.');
-            return;
-        }
+        // Stash only when there are local changes
+        exec('git diff --quiet || echo DIRTY', $output);
+        $hasLocalChanges = \in_array('DIRTY', $output, true);
+        $output = [];
 
-        $this->isStashed = true;
+        if ($hasLocalChanges) {
+            $this->io->writeln('Stashing local changes...');
+            exec('git stash push -u -m "pteroca-update-'.date('YmdHis').'"', $output, $returnCode);
+            if ($returnCode !== 0) {
+                $this->hasError = true;
+                $this->io->error('Failed to stash changes.');
+                return;
+            }
+            $this->isStashed = true;
+        } else {
+            $this->isStashed = false;
+        }
     }
 
     private function pullGitChanges(): void
     {
-        exec('git pull origin main', $output, $returnCode);
-        if ($returnCode !== 0) {
+        $this->io->writeln('Fetching latest changes from origin/main...');
+        exec('git fetch origin main', $fetchOutput, $fetchCode);
+        if ($fetchCode !== 0) {
             $this->hasError = true;
-            $this->io->error('Failed to pull changes.');
-            $this->applyStashedChanges();
+            $this->io->error('Failed to fetch changes from origin/main.');
+            return;
+        }
+
+        // Try fast-forward only merge first
+        $this->io->writeln('Attempting fast-forward merge...');
+        exec('git merge --ff-only origin/main', $ffOutput, $ffCode);
+        if ($ffCode === 0) {
+            $this->io->success('Repository updated (fast-forward).');
+            return;
+        }
+
+        // Fall back to a normal merge without fast-forward
+        $this->io->writeln('Fast-forward not possible. Attempting a no-ff merge...');
+        exec('git merge --no-ff origin/main', $mergeOutput, $mergeCode);
+        if ($mergeCode !== 0) {
+            $this->hasError = true;
+            $this->io->error("Merge failed. Please resolve conflicts manually and re-run the update.\nHint: git status, fix conflicts, then git add . && git commit");
+        } else {
+            $this->io->success('Repository updated via merge.');
         }
     }
 
     private function applyStashedChanges(): void
     {
         if ($this->isStashed) {
-            exec('git stash apply', $output, $returnCode);
+            $this->io->writeln('Restoring stashed changes...');
+            exec('git stash pop', $output, $returnCode);
             if ($returnCode !== 0) {
                 $this->hasError = true;
-                $this->io->error('Failed to apply stashed changes.');
+                $this->io->warning('Could not automatically re-apply stashed changes. You may need to resolve conflicts and apply them manually (stash kept).');
                 return;
             }
-
             $this->isStashed = false;
         }
     }
@@ -153,10 +182,19 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function clearCache(): void
     {
-        exec('php bin/console cache:clear', $output, $returnCode);
+        $this->io->writeln('Clearing application cache...');
+        exec('php bin/console cache:clear --no-warmup', $output, $returnCode);
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to clear cache.');
+            return;
+        }
+        
+        $this->io->writeln('Warming up cache...');
+        exec('php bin/console cache:warmup', $warmupOutput, $warmupCode);
+        if ($warmupCode !== 0) {
+            $this->hasError = true;
+            $this->io->error('Failed to warm up cache.');
         }
     }
 
@@ -184,6 +222,22 @@ class UpdateSystemHandler implements HandlerInterface
             if ($exitCode === 0) {
                 exec(sprintf('chown -R %s %s', escapeshellarg($candidate), $directoryToCheck));
                 return;
+            }
+        }
+    }
+
+    private function assertNoUnmergedFiles(): void
+    {
+        // Detect unresolved merge conflicts; abort early with guidance
+        $output = [];
+        $exit = 0;
+        exec('git ls-files -u | wc -l', $output, $exit);
+        if ($exit === 0) {
+            $count = (int)trim($output[0] ?? '0');
+            if ($count > 0) {
+                $this->hasError = true;
+                $this->io->error("Unmerged files detected in the repository. Please resolve merge conflicts before running the update.\nHint: git status, fix conflicts, git add ., git commit");
+                throw new \RuntimeException('Aborting update due to unmerged files.');
             }
         }
     }
