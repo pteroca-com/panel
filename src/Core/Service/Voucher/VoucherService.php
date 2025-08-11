@@ -189,17 +189,33 @@ class VoucherService
         
         return match ($voucher->getType()) {
             VoucherTypeEnum::BALANCE_TOPUP => $this->translator->trans('pteroca.api.voucher.successfully_applied', [
-                'amount' => number_format($voucher->getValue(), 2),
-                'currency' => $currency,
+                '%amount%' => number_format($voucher->getValue(), 2),
+                '%currency%' => $currency,
             ]),
-            VoucherTypeEnum::SERVER_DISCOUNT, VoucherTypeEnum::PAYMENT_DISCOUNT => $this->translator->trans('pteroca.api.voucher.successfully_applied_discount', [
-                'amount' => $voucher->getValue(),
-                'unit' => $voucher->getType() === VoucherTypeEnum::SERVER_DISCOUNT ? '%' : ' ' . $currency,
-            ]),
+            VoucherTypeEnum::SERVER_DISCOUNT, VoucherTypeEnum::PAYMENT_DISCOUNT => {
+                $discountAmount = $this->calculateDiscountAmount($voucher, $orderAmount);
+                return $this->translator->trans('pteroca.api.voucher.successfully_applied_discount', [
+                    '%discount_amount%' => number_format($discountAmount, 2),
+                    '%currency%' => $currency,
+                ]);
+            },
             default => $this->translator->trans('pteroca.api.voucher.successfully_applied', [
-                'amount' => number_format($voucher->getValue(), 2),
-                'currency' => $currency,
+                '%amount%' => number_format($voucher->getValue(), 2),
+                '%currency%' => $currency,
             ]),
+        };
+    }
+
+    private function calculateDiscountAmount(Voucher $voucher, ?float $orderAmount): float
+    {
+        if ($orderAmount === null) {
+            return 0.0;
+        }
+
+        return match ($voucher->getType()) {
+            VoucherTypeEnum::SERVER_DISCOUNT => ($orderAmount * $voucher->getValue()) / 100,
+            VoucherTypeEnum::PAYMENT_DISCOUNT => min($voucher->getValue(), $orderAmount),
+            default => 0.0,
         };
     }
 }
