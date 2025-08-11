@@ -19,14 +19,9 @@ class UpdateSystemHandler implements HandlerInterface
         $this->checkIfComposerIsInstalled();
         $this->showWarningMessage();
 
-        $this->io->section('Preparing workspace');
-        $this->io->text('Checking for local changes...');
-
         $this->stashGitChanges();
         $this->pullGitChanges();
         $this->applyStashedChanges();
-
-        $this->io->section('Installing and updating dependencies');
         $this->composerInstall();
         $this->updateDatabase();
         $this->clearCache();
@@ -61,15 +56,6 @@ class UpdateSystemHandler implements HandlerInterface
         if (!$this->io->confirm('Do you want to continue?')) {
             throw new \RuntimeException('Update process aborted.');
         }
-    }
-
-    private function hasWorkingTreeChanges(): bool
-    {
-        exec('git status --porcelain', $output, $code);
-        if ($code !== 0) {
-            return false;
-        }
-        return !empty($output);
     }
 
     private function checkIfGitIsInstalled(): void
@@ -107,13 +93,6 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function stashGitChanges(): void
     {
-        if (!$this->hasWorkingTreeChanges()) {
-            $this->io->text('No local changes detected. Skipping stash.');
-            $this->isStashed = false;
-            return;
-        }
-
-        $this->io->text('Stashing local changes...');
         $label = 'pteroca-auto-update-' . date('Ymd-His');
         exec(sprintf('git stash push -u -m %s', escapeshellarg($label)), $output, $returnCode);
         if ($returnCode !== 0) {
@@ -123,13 +102,11 @@ class UpdateSystemHandler implements HandlerInterface
         }
 
         $this->isStashed = true;
-        $this->io->success(sprintf('Local changes stashed as "%s".', $label));
     }
 
     private function pullGitChanges(): void
     {
-        $this->io->section('Updating source code from origin/main');
-        $this->io->text('Fetching latest changes from origin/main...');
+        // explains itself cuz idk whats wrong imma fetch origin first
         exec('git fetch origin main', $outputFetch, $codeFetch);
         if ($codeFetch !== 0) {
             $this->hasError = true;
@@ -138,12 +115,9 @@ class UpdateSystemHandler implements HandlerInterface
             return;
         }
 
-        $this->io->text('Attempting fast-forward merge...');
         exec('git merge --ff-only origin/main', $outputFf, $codeFf);
         if ($codeFf === 0) {
-            $this->io->success('Updated via fast-forward.');
-            $this->printCurrentVersion();
-            return;
+            return; 
         }
 
         $this->io->warning('Fast-forward not possible. Attempting a no-ff merge...');
@@ -151,11 +125,7 @@ class UpdateSystemHandler implements HandlerInterface
         if ($codeMerge !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to merge changes. Resolve merge conflicts and try again.');
-            return;
         }
-
-        $this->io->success('Merged changes successfully.');
-        $this->printCurrentVersion();
     }
 
     private function applyStashedChanges(): void
