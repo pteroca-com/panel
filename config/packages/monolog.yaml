@@ -3,11 +3,6 @@ monolog:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
         - app
 
-    processors:
-        - monolog.processor.uid
-        - monolog.processor.introspection
-        - monolog.processor.psr_log_message
-
 when@dev:
     monolog:
         handlers:
