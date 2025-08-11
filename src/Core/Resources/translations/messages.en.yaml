@@ -1043,6 +1043,8 @@ pteroca:
       missing_fields: 'Please fill in all required fields.'
       pterodactyl_checking_api_connection: 'Checking the connection to the Pterodactyl API...'
       pterodactyl_api_connection_success: 'Successfully connected to the Pterodactyl API.'
+      pterodactyl_addon_detected: 'PteroCA Pterodactyl Addon detected (v{{ version }}). You can continue.'
+      pterodactyl_addon_not_detected: 'PteroCA Pterodactyl Addon is not installed on your Pterodactyl panel. Please install it before continuing.'
       email_checking_smtp_connection: 'Checking the connection to the SMTP server...'
       email_smtp_connection_success: 'Successfully connected to the SMTP server.'
       user_already_exists_in_pterodactyl: 'A user with this email address already exists in Pterodactyl. Please use a different email address.'
