@@ -55,7 +55,7 @@ class VoucherService
                 $this->redeemVoucherForUser($voucher, $user);
             }
 
-            $successMessage = $this->translator->trans('pteroca.api.voucher.successfully_applied');
+            $successMessage = $this->generateSuccessMessage($voucher, $orderAmount);
 
             return RedeemVoucherActionResult::success(
                 $successMessage,
@@ -181,5 +181,25 @@ class VoucherService
         $updatedUserBalance = (float)$voucher->getValue() + $user->getBalance();
         $user->setBalance($updatedUserBalance);
         $this->userRepository->save($user);
+    }
+
+    private function generateSuccessMessage(Voucher $voucher, ?float $orderAmount): string
+    {
+        $currency = $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
+        
+        return match ($voucher->getType()) {
+            VoucherTypeEnum::BALANCE_TOPUP => $this->translator->trans('pteroca.api.voucher.successfully_applied', [
+                'amount' => number_format($voucher->getValue(), 2),
+                'currency' => $currency,
+            ]),
+            VoucherTypeEnum::SERVER_DISCOUNT, VoucherTypeEnum::PAYMENT_DISCOUNT => $this->translator->trans('pteroca.api.voucher.successfully_applied_discount', [
+                'amount' => $voucher->getValue(),
+                'unit' => $voucher->getType() === VoucherTypeEnum::SERVER_DISCOUNT ? '%' : ' ' . $currency,
+            ]),
+            default => $this->translator->trans('pteroca.api.voucher.successfully_applied', [
+                'amount' => number_format($voucher->getValue(), 2),
+                'currency' => $currency,
+            ]),
+        };
     }
 }
