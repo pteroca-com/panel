@@ -982,6 +982,7 @@ pteroca:
       support: 'Support'
       up_to_date: 'Up to date'
       update_available: 'Update available'
+      pteroca_plugin_not_detected: 'Not Detected'
 
   first_configuration:
     title: 'First Configuration'

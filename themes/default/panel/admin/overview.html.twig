@@ -220,6 +220,26 @@
                         <hr class="my-3">
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">PteroCA Pterodactyl Addon:</span>
+                                <div>
+                                    <span class="fw-bold" style="word-break: break-word; font-size: 0.9em; text-align: right;">
+                                        {% if systemInformation.pteroca_plugin.version %}
+                                            v{{ systemInformation.pteroca_plugin.version }}
+                                        {% else %}
+                                            <span class="text-muted">
+                                                <i class="fa-solid fa-question me-1"></i>{{ 'pteroca.admin.overview.pteroca_plugin_not_detected'|trans }}
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                    {% if systemInformation.pteroca_plugin.version %}
+                                        <span id="addon-version-result"></span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
                                 <span class="fw-semibold text-muted">Pterodactyl API:</span>
                                 <span class="{{ systemInformation.pterodactyl.status ? 'text-success' : 'text-danger' }} fw-semibold">
                                     {{ systemInformation.pterodactyl.status ? '<i class="fa-solid fa-check me-1"></i>OK' : '<i class="fa-solid fa-x me-1"></i>Error' }}
@@ -265,11 +285,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const currentVersion = '{{ get_app_version() }}',
-                pterocaVersionResult = document.getElementById('pteroca-version-result');
+                pterocaVersionResult = document.getElementById('pteroca-version-result'),
+                addonVersionResult = document.getElementById('addon-version-result'),
+                currentAddonVersion = '{{ systemInformation.pteroca_plugin.version ?? '' }}';
 
             fetch('{{ path('check_version') }}')
                 .then(response => response.json())
                 .then(data => {
+                    // Check PteroCA version
                     pterocaVersionResult.innerHTML = ' <i class="fa fa-x"></i> {{ 'pteroca.admin.overview.update_available'|trans }}';
                     pterocaVersionResult.classList.add('text-danger');
                     pterocaVersionResult.classList.remove('text-success');
@@ -281,6 +304,19 @@
                         pterocaVersionResult.innerHTML = ' <i class="fa fa-x"></i> {{ 'pteroca.admin.overview.update_available'|trans }}';
                         pterocaVersionResult.classList.add('text-danger');
                         pterocaVersionResult.classList.remove('text-success');
+                    }
+
+                    if (addonVersionResult && currentAddonVersion && data.pterodactylAddonVersion) {
+                        const latestAddonVersion = data.pterodactylAddonVersion.latestVersion.replace('v', '');
+                        if (compareVersions(currentAddonVersion, latestAddonVersion) >= 0) {
+                            addonVersionResult.innerHTML = ' <i class="fa fa-check"></i> {{ 'pteroca.admin.overview.up_to_date'|trans }}';
+                            addonVersionResult.classList.add('text-success');
+                            addonVersionResult.classList.remove('text-danger');
+                        } else {
+                            addonVersionResult.innerHTML = ' <i class="fa fa-x"></i> {{ 'pteroca.admin.overview.update_available'|trans }}';
+                            addonVersionResult.classList.add('text-danger');
+                            addonVersionResult.classList.remove('text-success');
+                        }
                     }
                 });
         });
