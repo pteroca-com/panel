@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class ExceptionLoggingSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        #[Autowire(service: 'monolog.logger.app')] private readonly LoggerInterface $logger,
+        private readonly LoggerInterface $logger,
         private readonly RequestStack $requestStack,
     ) {}
 

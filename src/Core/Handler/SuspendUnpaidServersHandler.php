@@ -24,7 +24,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
         private RenewServerService $renewServerService,
         private TranslatorInterface $translator,
         private MessageBusInterface $messageBus,
-        #[Autowire(service: 'monolog.logger.app')] private LoggerInterface $logger,
+        private LoggerInterface $logger,
     ) {}
 
     public function handle(): void
