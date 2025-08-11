@@ -187,23 +187,25 @@ class VoucherService
     {
         $currency = $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
         
-        return match ($voucher->getType()) {
-            VoucherTypeEnum::BALANCE_TOPUP => $this->translator->trans('pteroca.api.voucher.successfully_applied', [
+        if ($voucher->getType() === VoucherTypeEnum::BALANCE_TOPUP) {
+            return $this->translator->trans('pteroca.api.voucher.successfully_applied', [
                 '%amount%' => number_format($voucher->getValue(), 2),
                 '%currency%' => $currency,
-            ]),
-            VoucherTypeEnum::SERVER_DISCOUNT, VoucherTypeEnum::PAYMENT_DISCOUNT => {
-                $discountAmount = $this->calculateDiscountAmount($voucher, $orderAmount);
-                return $this->translator->trans('pteroca.api.voucher.successfully_applied_discount', [
-                    '%discount_amount%' => number_format($discountAmount, 2),
-                    '%currency%' => $currency,
-                ]);
-            },
-            default => $this->translator->trans('pteroca.api.voucher.successfully_applied', [
-                '%amount%' => number_format($voucher->getValue(), 2),
+            ]);
+        }
+        
+        if ($voucher->getType() === VoucherTypeEnum::SERVER_DISCOUNT || $voucher->getType() === VoucherTypeEnum::PAYMENT_DISCOUNT) {
+            $discountAmount = $this->calculateDiscountAmount($voucher, $orderAmount);
+            return $this->translator->trans('pteroca.api.voucher.successfully_applied_discount', [
+                '%discount_amount%' => number_format($discountAmount, 2),
                 '%currency%' => $currency,
-            ]),
-        };
+            ]);
+        }
+        
+        return $this->translator->trans('pteroca.api.voucher.successfully_applied', [
+            '%amount%' => number_format($voucher->getValue(), 2),
+            '%currency%' => $currency,
+        ]);
     }
 
     private function calculateDiscountAmount(Voucher $voucher, ?float $orderAmount): float
@@ -212,10 +214,14 @@ class VoucherService
             return 0.0;
         }
 
-        return match ($voucher->getType()) {
-            VoucherTypeEnum::SERVER_DISCOUNT => ($orderAmount * $voucher->getValue()) / 100,
-            VoucherTypeEnum::PAYMENT_DISCOUNT => min($voucher->getValue(), $orderAmount),
-            default => 0.0,
-        };
+        if ($voucher->getType() === VoucherTypeEnum::SERVER_DISCOUNT) {
+            return ($orderAmount * $voucher->getValue()) / 100;
+        }
+        
+        if ($voucher->getType() === VoucherTypeEnum::PAYMENT_DISCOUNT) {
+            return min($voucher->getValue(), $orderAmount);
+        }
+        
+        return 0.0;
     }
 }
