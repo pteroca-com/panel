@@ -93,7 +93,8 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function stashGitChanges(): void
     {
-        exec('git stash', $output, $returnCode);
+        $label = 'pteroca-auto-update-' . date('Ymd-His');
+        exec(sprintf('git stash push -u -m %s', escapeshellarg($label)), $output, $returnCode);
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to stash changes.');
@@ -130,10 +131,9 @@ class UpdateSystemHandler implements HandlerInterface
     private function applyStashedChanges(): void
     {
         if ($this->isStashed) {
-            exec('git stash apply', $output, $returnCode);
+            exec('git stash pop --index', $output, $returnCode);
             if ($returnCode !== 0) {
-                $this->hasError = true;
-                $this->io->error('Failed to apply stashed changes.');
+                $this->io->warning('Could not automatically re-apply stashed changes. They were kept in the stash. Run "git stash list" and "git stash pop" manually after resolving any file conflicts.');
                 return;
             }
 
