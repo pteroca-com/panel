@@ -981,6 +981,7 @@ pteroca:
       support: 'सहायता'
       up_to_date: 'अप टू डेट'
       update_available: 'अपडेट उपलब्ध'
+      pteroca_plugin_not_detected: 'पता नहीं चला'
 
   first_configuration:
     title: "प्रथम विन्यास"
@@ -1041,6 +1042,7 @@ pteroca:
       missing_fields: "कृपया सभी आवश्यक फ़ील्ड भरें।"
       pterodactyl_checking_api_connection: "Pterodactyl API कनेक्शन की जाँच की जा रही है..."
       pterodactyl_api_connection_success: "Pterodactyl API से सफलतापूर्वक कनेक्ट हो गया।"
+      pterodactyl_addon_not_detected: 'API कनेक्शन स्थापित हो गया है, लेकिन आपके Pterodactyl पैनल पर PteroCA Pterodactyl Addon इंस्टॉल नहीं है। कृपया जारी रखने से पहले इसे इंस्टॉल करें।'
       email_checking_smtp_connection: "SMTP सर्वर कनेक्शन की जाँच की जा रही है..."
       email_smtp_connection_success: "SMTP सर्वर से सफलतापूर्वक कनेक्ट हो गया।"
       user_already_exists_in_pterodactyl: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही Pterodactyl में मौजूद है। कृपया एक अलग ईमेल पता उपयोग करें।'

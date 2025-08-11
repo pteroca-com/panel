@@ -981,6 +981,7 @@ pteroca:
       support: 'Soporte'
       up_to_date: 'Actualizado'
       update_available: 'Actualización disponible'
+      pteroca_plugin_not_detected: 'No detectado'
 
   first_configuration:
     title: 'Primera Configuración'
@@ -1041,6 +1042,7 @@ pteroca:
       missing_fields: 'Por favor, complete todos los campos requeridos.'
       pterodactyl_checking_api_connection: 'Verificando la conexión con la API de Pterodactyl...'
       pterodactyl_api_connection_success: 'Conexión exitosa con la API de Pterodactyl.'
+      pterodactyl_addon_not_detected: 'Se ha establecido la conexión con la API, pero el complemento PteroCA Pterodactyl no está instalado en su panel de Pterodactyl. Por favor, instálelo antes de continuar.'
       email_checking_smtp_connection: 'Verificando la conexión con el servidor SMTP...'
       email_smtp_connection_success: 'Conexión exitosa con el servidor SMTP.'
       user_already_exists_in_pterodactyl: 'Un usuario con esta dirección de correo electrónico ya existe en Pterodactyl. Por favor, utilice una dirección de correo electrónico diferente.'
