@@ -105,11 +105,25 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function pullGitChanges(): void
     {
-        exec('git pull origin main', $output, $returnCode);
-        if ($returnCode !== 0) {
+        // explains itself cuz idk whats wrong imma fetch origin first
+        exec('git fetch origin main', $outputFetch, $codeFetch);
+        if ($codeFetch !== 0) {
             $this->hasError = true;
-            $this->io->error('Failed to pull changes.');
+            $this->io->error('Failed to fetch changes from origin.');
             $this->applyStashedChanges();
+            return;
+        }
+
+        exec('git merge --ff-only origin/main', $outputFf, $codeFf);
+        if ($codeFf === 0) {
+            return; 
+        }
+
+        $this->io->warning('Fast-forward not possible. Attempting a no-ff merge...');
+        exec('git merge --no-ff --no-edit origin/main', $outputMerge, $codeMerge);
+        if ($codeMerge !== 0) {
+            $this->hasError = true;
+            $this->io->error('Failed to merge changes. Resolve merge conflicts and try again.');
         }
     }
 
