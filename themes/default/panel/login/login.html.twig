@@ -1,6 +1,6 @@
 {% extends '@EasyAdmin/page/login_minimal.html.twig' %}
 
-{% block body_class 'min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100' %}
+{% block body_class 'page-login bg-light' %}
 {% block page_title %}{{ get_title() }} | {{ 'pteroca.login.title'|trans }}{% endblock %}
 
 {% block head_stylesheets %}
@@ -8,41 +8,6 @@
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     {% endif %}
     {{ parent() }}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                        'float': 'float 3s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
 {% endblock %}
 
@@ -58,53 +23,40 @@
     {% set _remember_me_label = remember_me_label is defined ? remember_me_label|trans : 'login_page.remember_me'|trans({}, 'EasyAdminBundle') %}
     {% set _sign_in_label = sign_in_label is defined ? sign_in_label|trans : 'login_page.sign_in'|trans({}, 'EasyAdminBundle') %}
 
-    <!-- Background decoration -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
-        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style="animation-delay: 2s;"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-indigo-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style="animation-delay: 4s;"></div>
-    </div>
-
-    <div class="min-h-screen flex items-center justify-center px-4 py-8 relative z-10">
-        <div class="w-full max-w-md animate-fade-in">
-            <!-- Logo Section -->
-            <div class="text-center mb-8">
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+        <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+            <!-- Logo Section - poza kartą -->
+            <div class="text-center mb-4">
                 {% block header_logo %}
-                    <div class="mb-6 animate-slide-up">
-                        <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 inline-block shadow-lg">
-                            <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="h-16 w-auto mx-auto filter drop-shadow-sm" />
-                        </div>
+                    <div class="mb-3">
+                        <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid" style="max-height: 80px;" />
                     </div>
                 {% endblock header_logo %}
             </div>
             
-            <!-- Login Card -->
-            <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden animate-slide-up" style="animation-delay: 0.1s;">
-                <div class="p-8">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
                     <!-- Title Section -->
-                    <div class="text-center mb-8">
-                        <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ 'pteroca.login.title'|trans }}</h1>
-                        <p class="text-gray-600 text-sm">{{ 'pteroca.login.subtitle'|trans }}</p>
-                        <div class="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
+                    <div class="text-center mb-4">
+                        <h1 class="h4 fw-bold text-dark mb-1">{{ 'pteroca.login.title'|trans }}</h1>
+                        <p class="text-muted small mb-0">{{ 'pteroca.login.subtitle'|trans }}</p>
                     </div>
 
                     <!-- Flash Messages -->
-                    <div class="mb-6">
-                        {% include '@EasyAdmin/flash_messages.html.twig' %}
-                    </div>
+                    {% include '@EasyAdmin/flash_messages.html.twig' %}
 
                     <!-- Error Message -->
                     {% if error|default(false) %}
-                        <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 mb-6 flex items-center animate-slide-up">
-                            <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
-                            <div class="text-sm">
+                        <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
                                 {{ error.messageKey|trans(error.messageData, 'security') }}
                             </div>
                         </div>
                     {% endif %}
 
                     <!-- Login Form -->
-                    <form method="post" action="{{ action|default('') }}" class="space-y-6">
+                    <form method="post" action="{{ action|default('') }}">
                         {% if csrf_token_intention|default(false) %}
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token(csrf_token_intention) }}">
                         {% endif %}
@@ -112,67 +64,58 @@
                         <input type="hidden" name="{{ target_path_parameter|default('_target_path') }}" value="/" />
 
                         <!-- Email Field -->
-                        <div class="space-y-2">
-                            <label for="username" class="block text-sm font-semibold text-gray-700">
-                                <i class="fas fa-envelope text-gray-400 mr-2"></i>
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-semibold">
+                                <i class="fas fa-envelope me-1 text-muted"></i>
                                 {{ 'pteroca.login.email_address'|trans }}
                             </label>
-                            <div class="relative">
-                                <input 
-                                    type="email" 
-                                    id="username" 
-                                    name="{{ username_parameter|default('_username') }}" 
-                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500" 
-                                    value="{{ last_username|default('') }}" 
-                                    placeholder="{{ 'pteroca.login.email_placeholder'|trans }}"
-                                    required 
-                                    autofocus 
-                                    autocomplete="username"
-                                >
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full opacity-0 transition-opacity duration-200" id="email-indicator"></div>
-                                </div>
-                            </div>
+                            <input 
+                                type="email" 
+                                id="username" 
+                                name="{{ username_parameter|default('_username') }}" 
+                                class="form-control form-control-lg" 
+                                value="{{ last_username|default('') }}" 
+                                placeholder="{{ 'pteroca.login.email_placeholder'|trans }}"
+                                required 
+                                autofocus 
+                                autocomplete="username"
+                            >
                         </div>
 
                         <!-- Password Field -->
-                        <div class="space-y-2">
-                            <label for="password" class="block text-sm font-semibold text-gray-700">
-                                <i class="fas fa-lock text-gray-400 mr-2"></i>
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">
+                                <i class="fas fa-lock me-1 text-muted"></i>
                                 {{ 'pteroca.login.password'|trans }}
                             </label>
-                            <div class="relative">
+                            <div class="input-group input-group-lg">
                                 <input 
                                     type="password" 
                                     id="password" 
                                     name="{{ password_parameter|default('_password') }}" 
-                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 pr-12" 
+                                    class="form-control form-control-lg" 
                                     placeholder="{{ 'pteroca.login.password_placeholder'|trans }}"
                                     required 
                                     autocomplete="current-password"
                                 >
-                                <button 
-                                    type="button"
-                                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition-colors duration-200" 
-                                    onclick="togglePassword()"
-                                >
+                                <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword()">
                                     <i class="fas fa-eye" id="togglePasswordIcon"></i>
-                                </button>
+                                </span>
                             </div>
                         </div>
 
                         <!-- Remember Me & Forgot Password -->
-                        <div class="flex items-center justify-between">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             {% if remember_me_enabled|default(false) %}
-                                <div class="flex items-center">
+                                <div class="form-check">
                                     <input 
-                                        type="checkbox"
+                                        class="form-check-input" 
+                                        type="checkbox" 
                                         id="remember_me" 
                                         name="{{ remember_me_parameter|default('_remember_me') }}" 
-                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-colors duration-200"
                                         {{ remember_me_checked|default(false) ? 'checked' }}
                                     >
-                                    <label for="remember_me" class="ml-2 text-sm text-gray-600 cursor-pointer">
+                                    <label class="form-check-label text-muted small" for="remember_me">
                                         {{ 'pteroca.login.remember_me'|trans }}
                                     </label>
                                 </div>
@@ -181,7 +124,7 @@
                             {% endif %}
 
                             {% if forgot_password_enabled|default(false) %}
-                                <a href="{{ forgot_password_path|default('#') }}" class="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200 font-medium">
+                                <a href="{{ forgot_password_path|default('#') }}" class="text-decoration-none small">
                                     {{ 'pteroca.login.forgot_password'|trans }}
                                 </a>
                             {% endif %}
@@ -189,24 +132,24 @@
 
                         <!-- reCAPTCHA -->
                         {% if get_captcha_site_key() %}
-                            <div class="flex justify-center">
+                            <div class="d-flex justify-content-center mb-3">
                                 <div class="g-recaptcha" data-sitekey="{{ get_captcha_site_key() }}"></div>
                             </div>
                         {% endif %}
 
                         <!-- Submit Button -->
-                        <div>
-                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl">
-                                <i class="fas fa-sign-in-alt mr-2"></i>
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg fw-semibold">
+                                <i class="fas fa-sign-in-alt me-2"></i>
                                 {{ 'pteroca.login.sign_in'|trans }}
                             </button>
                         </div>
                     </form>
 
                     <!-- Register Link -->
-                    <div class="text-center mt-8 pt-6 border-t border-gray-100">
-                        <p class="text-sm text-gray-600">
-                            <a href="{{ path('app_register') }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 font-medium">
+                    <div class="text-center">
+                        <p class="text-muted small mb-0">
+                            <a href="{{ path('app_register') }}" class="text-decoration-none">
                                 {{ 'pteroca.login.dont_have_account_yet'|trans }}
                             </a>
                         </p>
@@ -215,10 +158,10 @@
             </div>
 
             <!-- Footer -->
-            <div class="text-center mt-8 animate-slide-up" style="animation-delay: 0.2s;">
-                <p class="text-white text-sm drop-shadow-sm">
+            <div class="text-center mt-3">
+                <p class="text-white small mb-0">
                     Powered by 
-                    <a href="https://pteroca.com" target="_blank" class="text-white hover:text-blue-200 transition-colors duration-200 font-medium">
+                    <a href="https://pteroca.com" target="_blank" class="text-white text-decoration-none">
                         PteroCA v{{ get_app_version() }}
                     </a> 
                     &copy; {{ 'now'|date('Y') }}
@@ -227,9 +170,8 @@
         </div>
     </div>
 
-    <!-- Enhanced JavaScript -->
+    <!-- JavaScript for password toggle -->
     <script>
-        // Password toggle functionality
         function togglePassword() {
             const passwordField = document.getElementById('password');
             const toggleIcon = document.getElementById('togglePasswordIcon');
@@ -244,44 +186,6 @@
                 toggleIcon.classList.add('fa-eye');
             }
         }
-
-        // Email validation indicator
-        document.getElementById('username').addEventListener('input', function(e) {
-            const indicator = document.getElementById('email-indicator');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            
-            if (emailRegex.test(e.target.value)) {
-                indicator.classList.add('opacity-100');
-            } else {
-                indicator.classList.remove('opacity-100');
-            }
-        });
-
-        // Form validation enhancement
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing in...';
-            submitBtn.disabled = true;
-        });
-
-        // Focus enhancement
-        const inputs = document.querySelectorAll('input[type="email"], input[type="password"]');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.classList.add('ring-2', 'ring-blue-500');
-            });
-            
-            input.addEventListener('blur', function() {
-                this.parentElement.classList.remove('ring-2', 'ring-blue-500');
-            });
-        });
-
-        // Keyboard navigation enhancement
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && e.target.type === 'email') {
-                document.getElementById('password').focus();
-            }
-        });
     </script>
 
     <script src="{{ asset('login.js', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}"></script>
