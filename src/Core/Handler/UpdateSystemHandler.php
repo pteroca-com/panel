@@ -182,10 +182,19 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function clearCache(): void
     {
-        exec('php bin/console cache:clear', $output, $returnCode);
+        $this->io->writeln('Clearing application cache...');
+        exec('php bin/console cache:clear --no-warmup', $output, $returnCode);
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to clear cache.');
+            return;
+        }
+        
+        $this->io->writeln('Warming up cache...');
+        exec('php bin/console cache:warmup', $warmupOutput, $warmupCode);
+        if ($warmupCode !== 0) {
+            $this->hasError = true;
+            $this->io->error('Failed to warm up cache.');
         }
     }
 
