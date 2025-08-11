@@ -12,7 +12,7 @@ use Twig\Environment;
 
 class MailerService implements MailerServiceInterface
 {
-    private MailerInterface $mailer;
+    private ?MailerInterface $mailer = null;
 
     private string $from = '';
 
@@ -28,6 +28,11 @@ class MailerService implements MailerServiceInterface
     {
         if (empty($this->mailer)) {
             $this->setMailer();
+        }
+
+        // If mailer is still not set (missing SMTP settings), do not send
+        if (empty($this->mailer)) {
+            return;
         }
 
         if (empty($context['title'])) {
@@ -51,6 +56,12 @@ class MailerService implements MailerServiceInterface
         $smtpUsername = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_USERNAME->value);
         $smtpPassword = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD->value);
         $this->from = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_FROM->value);
+
+        // If any required SMTP setting is missing, do not set mailer
+        if (empty($smtpServer) || empty($smtpPort) || empty($smtpUsername) || empty($smtpPassword) || empty($this->from)) {
+            $this->mailer = null;
+            return;
+        }
 
         $customLogoPath = sprintf(
             '%s/uploads/settings/%s',

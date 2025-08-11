@@ -60,6 +60,9 @@ class ServerCrudController extends AbstractPanelController
             AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user')),
             BooleanField::new('autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
                 ->hideOnIndex(),
+            BooleanField::new('isOnFreeTrial', $this->translator->trans('pteroca.crud.server.is_on_free_trial'))
+                ->hideOnIndex()
+                ->setDisabled(),
 
             NumberField::new('serverProduct.diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
                 ->onlyOnIndex(),

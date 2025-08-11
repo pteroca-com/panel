@@ -109,6 +109,12 @@ pteroca:
     payment_is_not_configured: 'El sistema de pagos no está configurado. Contacta con el administrador.'
     recharge_description: 'Recarga el saldo de tu cuenta'
     amount_hint: 'Ingresa la cantidad que deseas recargar.'
+    amount_limits: 'La cantidad debe estar entre %min% %currency% y %max% %currency%.'
+    amount_out_of_range: 'La cantidad de recarga debe estar entre %min% y %max% %currency%.'
+
+    amount_limits: 'La cantidad debe estar entre %min% %currency% y %max% %currency%.'
+    amount_out_of_range: 'La cantidad de recarga debe estar entre %min% y %max% %currency%.'
+
     view_transaction_history: 'Ver historial de transacciones'
     view_all_payments_description: 'Muestra todos los pagos realizados en tu cuenta.'
 
@@ -160,6 +166,16 @@ pteroca:
     product_not_available: 'El producto ya no está disponible.'
     egg_not_found: 'Software no encontrado.'
     not_enough_funds: 'No tienes suficientes fondos en tu cuenta.'
+    free_trial_available: '¡Prueba gratuita disponible!'
+    free_trial_first_time: 'Comienza tu prueba gratuita - solo para nuevos clientes'
+    free_trial_info: 'Esta es una prueba gratuita. Tu servidor expirará después del período de prueba.'
+    free_trial_duration: 'Duración de la prueba'
+    free_trial_cost_now: 'Costo ahora'
+    free_trial_after_trial: 'Después de la prueba'
+    free_trial_important: 'Importante'
+    free_trial_suspension_warning: 'El servidor será suspendido si el saldo es insuficiente'
+    free_trial_auto_renewal: 'Se recomienda la renovación automática para evitar interrupciones'
+
     successful_purchase: 'El servidor se ha comprado con éxito.'
     error_during_creating_server: 'Error al crear el servidor'
     no_categories: 'Aún no se han añadido categorías a la tienda.'
@@ -235,6 +251,27 @@ pteroca:
       starting: 'Iniciando'
       stopping: 'Deteniendo'
       offline: 'Desconectado'
+    cancel: 'Cancelar'
+    reactivate: 'Reactivar'
+    cancel_auto_renewal: 'Cancelar renovación automática'
+    cancel_auto_renewal_description: 'Desactivar la renovación automática para tu suscripción de servidor.'
+    confirm_cancel_auto_renewal: 'Confirmar cancelación'
+    server_name: 'Nombre del servidor'
+    server_id: 'ID del servidor'
+    current_expiration: 'Expiración actual'
+    auto_renewal_status: 'Estado de renovación automática'
+    enabled: 'Habilitado'
+    disabled: 'Deshabilitado'
+    important_notice: 'Aviso importante'
+    cancel_warning_message: 'Al cancelar la renovación automática, tu servidor expirará en la fecha programada y ya no se renovará automáticamente. Puedes renovarlo manualmente o reactivar la renovación automática en cualquier momento antes de la expiración.'
+    server_will_expire_on: 'El servidor expirará el'
+    go_back: 'Volver'
+    confirm_cancel: 'Cancelar renovación automática'
+    confirm_cancel_message: '¿Estás seguro de que quieres cancelar la renovación automática para este servidor? Expirará en la fecha programada a menos que se renueve manualmente.'
+    confirm_reactivate_message: '¿Estás seguro de que quieres reactivar la renovación automática para este servidor?'
+    auto_renewal_disabled: 'La renovación automática ha sido deshabilitada exitosamente para tu servidor.'
+    auto_renewal_enabled: 'La renovación automática ha sido habilitada exitosamente para tu servidor.'
+
 
   server:
     title: 'Gestión del servidor'
@@ -665,6 +702,10 @@ pteroca:
       product_connections_note: 'Estos ajustes se aplicarán solo después de reinstalar el servidor o cambiar el software.'
       deleted_at: 'Eliminado en'
       show_archived: 'Mostrar archivados'
+      has_free_trial: 'Tiene prueba gratuita'
+      free_trial_value: 'Período de prueba gratuita'
+      free_trial_unit: 'Unidad de prueba gratuita'
+
     server:
       pterodactyl_server_id: 'ID del servidor Pterodactyl'
       pterodactyl_server_identifier: 'Identificador del servidor Pterodactyl'
@@ -673,6 +714,8 @@ pteroca:
       created_at: 'Creado el'
       expires_at: 'Expira el'
       is_suspended: 'Suspendido'
+      is_on_free_trial: 'En prueba gratuita'
+
       save: 'Guardar servidor'
       server: 'Servidor'
       servers: 'Servidores'
@@ -718,6 +761,9 @@ pteroca:
         pterodactyl_api_key: 'Clave API del panel de Pterodactyl'
         stripe_secret_key: 'Clave secreta de Stripe'
         stripe_payment_methods: 'Métodos de pago de Stripe (separados por comas)'
+        recharge_min_amount: 'Cantidad mínima de recarga'
+        recharge_max_amount: 'Cantidad máxima de recarga'
+
         internal_currency_name: 'Nombre de la moneda interna'
         currency_name: 'Nombre de la moneda'
         theme_default_primary_color: 'Color principal predeterminado'

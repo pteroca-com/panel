@@ -3,6 +3,7 @@
 namespace App\Core\Controller;
 
 use App\Core\Service\StoreService;
+use App\Core\Repository\ServerRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,6 +14,7 @@ class StoreController extends AbstractController
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly StoreService $storeService,
+        private readonly ServerRepository $serverRepository,
     ) {}
 
     #[Route('/store', name: 'store')]
@@ -55,10 +57,15 @@ class StoreController extends AbstractController
 
         $product = $this->storeService->prepareProduct($product);
         $preparedEggs = $this->storeService->getProductEggs($product);
+        
+        // Check if user is eligible for free trial (first-time customer)
+        $userPurchasedServers = $this->serverRepository->findBy(['user' => $this->getUser()]);
+        $isEligibleForFreeTrial = empty($userPurchasedServers);
 
         return $this->render('panel/store/product.html.twig', [
             'product' => $product,
             'eggs' => $preparedEggs,
+            'isEligibleForFreeTrial' => $isEligibleForFreeTrial,
         ]);
     }
 }

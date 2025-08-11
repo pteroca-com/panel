@@ -89,7 +89,7 @@ class ServerDataService
         $pterodactylClientAccount = $pterodactylClientApi
             ?->account
             ->details();
-        $productEggsConfiguration = $server->getServerProduct()->getEggsConfiguration();
+        $productEggsConfiguration = $server->getServerProduct()?->getEggsConfiguration();
 
         try {
             $productEggsConfiguration = json_decode(
@@ -108,7 +108,7 @@ class ServerDataService
             $productEggConfiguration = [];
         }
 
-        if ($server->getServerProduct()->getAllowChangeEgg() && $permissions->hasPermission(ServerPermissionEnum::SETTINGS_REINSTALL)) {
+        if ($server->getServerProduct()?->getAllowChangeEgg() && $permissions->hasPermission(ServerPermissionEnum::SETTINGS_REINSTALL)) {
             $availableNestEggs = $this->serverNestService->getServerAvailableEggs($server);
         }
 
@@ -122,7 +122,7 @@ class ServerDataService
                 ->createFromCollection($pterodactylServer->get('relationships')['variables']->all());
         }
 
-        if ($server->getServerProduct()->getBackups() && $permissions->hasPermission(ServerPermissionEnum::BACKUP_READ)) {
+        if ($server->getServerProduct()?->getBackups() && $permissions->hasPermission(ServerPermissionEnum::BACKUP_READ)) {
             try {
                 $serverBackups = $pterodactylClientApi
                     ->server_backups
@@ -214,7 +214,7 @@ class ServerDataService
 
     private function getServerConfigurableOptionsAndVariables(Server $server, int $currentEgg): array
     {
-        $productEggConfiguration = $server->getServerProduct()->getEggsConfiguration();
+        $productEggConfiguration = $server->getServerProduct()?->getEggsConfiguration();
         if (empty($productEggConfiguration)) {
             return [false, false];
         }

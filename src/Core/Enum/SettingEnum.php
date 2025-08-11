@@ -48,6 +48,8 @@ enum SettingEnum: string
     case TERMS_OF_SERVICE = 'terms_of_service';
     case DELETE_SUSPENDED_SERVERS_ENABLED = 'delete_suspended_servers_enabled';
     case DELETE_SUSPENDED_SERVERS_DAYS_AFTER = 'delete_suspended_servers_days_after';
+    case RECHARGE_MIN_AMOUNT = 'recharge_min_amount';
+    case RECHARGE_MAX_AMOUNT = 'recharge_max_amount';
     case CURRENT_THEME = 'current_theme';
     case IS_CONFIGURED = 'is_configured';
 }

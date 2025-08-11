@@ -38,7 +38,12 @@ class ServerScheduleService
         bool $onlyWhenOnline = true
     ): array
     {
-        $schedulesLimit = $server->getServerProduct()->getSchedules();
+        $serverProduct = $server->getServerProduct();
+        if (!$serverProduct) {
+            throw new \Exception('Server product not found.');
+        }
+        
+        $schedulesLimit = $serverProduct->getSchedules();
         if ($schedulesLimit <= 0) {
             throw new \Exception('Harmonogramy są wyłączone dla tego serwera.');
         }

@@ -106,6 +106,9 @@ pteroca:
     payment_is_not_configured: 'Оплата не настроена. Пожалуйста, свяжитесь с администратором.'
     recharge_description: 'Пополните баланс вашего аккаунта'
     amount_hint: 'Введите сумму, которую вы хотите пополнить.'
+    amount_limits: 'Сумма должна быть между %min% %currency% и %max% %currency%.'
+    amount_out_of_range: 'Сумма пополнения должна быть между %min% и %max% %currency%.'
+
     view_transaction_history: 'Посмотреть историю транзакций'
     view_all_payments_description: 'Показывает все платежи, совершенные на вашем аккаунте.'
   product:
@@ -156,6 +159,16 @@ pteroca:
     product_not_available: 'Товар больше не доступен.'
     egg_not_found: 'Яйцо не найдено.'
     not_enough_funds: 'На вашем счете недостаточно средств.'
+    free_trial_available: 'Доступна бесплатная пробная версия!'
+    free_trial_first_time: 'Начните бесплатную пробную версию - только для новых клиентов'
+    free_trial_info: 'Это бесплатная пробная версия. Ваш сервер истечет после пробного периода.'
+    free_trial_duration: 'Длительность пробной версии'
+    free_trial_cost_now: 'Стоимость сейчас'
+    free_trial_after_trial: 'После пробной версии'
+    free_trial_important: 'Важно'
+    free_trial_suspension_warning: 'Сервер будет приостановлен при недостаточном балансе'
+    free_trial_auto_renewal: 'Рекомендуется автопродление, чтобы избежать прерывания'
+
     successful_purchase: 'Сервер был успешно приобретен.'
     error_during_creating_server: 'Ошибка при создании сервера'
     no_categories: 'Категорий пока нет.'

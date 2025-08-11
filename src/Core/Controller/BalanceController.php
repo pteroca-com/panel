@@ -29,6 +29,12 @@ class BalanceController extends AbstractController
 
         $currency = $this->settingService
             ->getSetting(SettingEnum::CURRENCY_NAME->value);
+        
+        $minAmount = (float) $this->settingService
+            ->getSetting(SettingEnum::RECHARGE_MIN_AMOUNT->value);
+        
+        $maxAmount = (float) $this->settingService
+            ->getSetting(SettingEnum::RECHARGE_MAX_AMOUNT->value);
 
         $form = $this->createFormBuilder()
             ->add('amount', MoneyType::class, [
@@ -38,6 +44,10 @@ class BalanceController extends AbstractController
                     $this->translator->trans('pteroca.recharge.recharge_amount'),
                     $currency
                 ),
+                'attr' => [
+                    'min' => $minAmount,
+                    'max' => $maxAmount,
+                ],
             ])
             ->add('currency', HiddenType::class, [
                 'data' => $currency,
@@ -49,6 +59,9 @@ class BalanceController extends AbstractController
         return $this->render('panel/wallet/recharge.html.twig', [
             'form' => $form->createView(),
             'balance' => $this->getUser()->getBalance(),
+            'min_amount' => $minAmount,
+            'max_amount' => $maxAmount,
+            'currency' => $currency,
         ]);
     }
 

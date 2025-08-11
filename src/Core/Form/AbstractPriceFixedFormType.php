@@ -28,6 +28,24 @@ abstract class AbstractPriceFixedFormType extends AbstractType
                 'scale' => 2,
                 'required' => true,
             ])
-        ;
+            ->add('hasFreeTrial', ChoiceType::class, [
+                'label' => 'pteroca.crud.product.has_free_trial',
+                'choices' => [
+                    'Yes' => '1',
+                    'No' => '0',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'required' => true,
+            ])
+            ->add('freeTrialValue', IntegerType::class, [
+                'label' => 'pteroca.crud.product.free_trial_value',
+                'required' => false,
+            ])
+            ->add('freeTrialUnit', ChoiceType::class, [
+                'label' => 'pteroca.crud.product.free_trial_unit',
+                'choices' => ProductPriceUnitEnum::getChoices(),
+                'required' => true,
+            ]);
     }
 }

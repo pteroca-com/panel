@@ -109,6 +109,12 @@ pteroca:
     payment_is_not_configured: 'System płatności nie jest skonfigurowany. Skontaktuj się z administratorem.'
     recharge_description: 'Doładuj balans swojego konta'
     amount_hint: 'Wprowadź kwotę, którą chcesz doładować.'
+    amount_limits: 'Kwota musi być między %min% %currency% a %max% %currency%.'
+    amount_out_of_range: 'Kwota doładowania musi być między %min% a %max% %currency%.'
+
+    amount_limits: 'Kwota musi być między %min% %currency% a %max% %currency%.'
+    amount_out_of_range: 'Kwota doładowania musi być między %min% a %max% %currency%.'
+
     view_transaction_history: 'Zobacz historię transakcji'
     view_all_payments_description: 'Zobacz wszystkie płatności, które zostały dokonane na Twoim koncie.'
 
@@ -160,6 +166,16 @@ pteroca:
     product_not_available: 'Produkt nie jest już dostępny.'
     egg_not_found: 'Nie znaleziono oprogramowania.'
     not_enough_funds: 'Nie masz wystarczającej ilości środków na koncie.'
+    free_trial_available: 'Dostępna bezpłatna wersja próbna!'
+    free_trial_first_time: 'Rozpocznij bezpłatną wersję próbną - tylko dla nowych klientów'
+    free_trial_info: 'To jest bezpłatna wersja próbna. Twój serwer wygaśnie po okresie próbnym.'
+    free_trial_duration: 'Czas trwania wersji próbnej'
+    free_trial_cost_now: 'Koszt teraz'
+    free_trial_after_trial: 'Po wersji próbnej'
+    free_trial_important: 'Ważne'
+    free_trial_suspension_warning: 'Serwer zostanie zawieszony przy niewystarczającym saldzie'
+    free_trial_auto_renewal: 'Zalecane automatyczne odnawianie, aby uniknąć przerw'
+
     successful_purchase: 'Serwer został pomyślnie zakupiony.'
     error_during_creating_server: 'Błąd podczas tworzenia serwera'
     no_categories: 'Nie ma jeszcze żadnych kategorii dodanych do sklepu.'

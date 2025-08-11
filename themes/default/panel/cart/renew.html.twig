@@ -198,20 +198,12 @@
                                         {% endif %}
                                     </label>
                                     <select id="auto-renewal" name="auto-renewal" class="form-select form-select-lg" {% if not isOwner %}disabled{% endif %}>
-                                        <option value="{{ server.autoRenewal ? '1' : '0' }}" selected>
-                                            {% if server.autoRenewal %}
-                                                {{ 'pteroca.cart_configuration.enable'|trans }}
-                                            {% else %}
-                                                {{ 'pteroca.cart_configuration.disable'|trans }}
-                                            {% endif %}
+                                        <option value="1" selected>
+                                            {{ 'pteroca.cart_configuration.enable'|trans }}
                                         </option>
                                         {% if isOwner %}
-                                            <option value="{{ server.autoRenewal ? '0' : '1' }}">
-                                                {% if server.autoRenewal %}
-                                                    {{ 'pteroca.cart_configuration.disable'|trans }}
-                                                {% else %}
-                                                    {{ 'pteroca.cart_configuration.enable'|trans }}
-                                                {% endif %}
+                                            <option value="0">
+                                                {{ 'pteroca.cart_configuration.disable'|trans }}
                                             </option>
                                         {% endif %}
                                     </select>

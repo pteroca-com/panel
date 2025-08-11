@@ -68,6 +68,9 @@ class BoughtConfirmationEmailService
     ): void {
         $serverDetails = $this->serverService->getServerDetails($server);
         $product = $server->getServerProduct();
+        if (!$product) {
+            throw new \Exception('Server product not found');
+        }
         $selectedPrice = $product->getSelectedPrice();
 
         $emailMessage = new SendEmailMessage(

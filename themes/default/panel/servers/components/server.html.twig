@@ -119,11 +119,19 @@
                     </a>
                 </div>
                 <div class="col-6">
-                    <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
-                       class="btn btn-secondary w-100 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-sync me-2"></i>
-                        <span>{{ 'pteroca.servers.extend'|trans }}</span>
-                    </a>
+                    {% if not server.autoRenewal %}
+                        <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}"
+                           class="btn btn-secondary w-100 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-sync me-2"></i>
+                            <span>{{ 'pteroca.servers.extend'|trans }}</span>
+                        </a>
+                    {% else %}
+                        <a href="{{ path('panel', { routeName: 'cart_cancel', id: server.id }) }}"
+                           class="btn btn-danger w-100 d-flex align-items-center justify-content-center">
+                            <i class="fas fa-times me-2"></i>
+                            <span>{{ 'pteroca.servers.cancel'|trans }}</span>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
