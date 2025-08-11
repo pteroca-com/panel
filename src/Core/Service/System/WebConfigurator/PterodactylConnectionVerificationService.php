@@ -21,18 +21,18 @@ class PterodactylConnectionVerificationService
         try {
             $pterodactylApi = new PterodactylApi($pterodactylPanelUrl, $pterodactylPanelApiKey);
             $pterodactylApi->servers->paginate();
-
-            // Check if PteroCA addon is installed
-            $addonVersion = $this->checkPterocaAddon($pterodactylApi);
             
-            if ($addonVersion) {
+            if (!$this->checkPterocaAddon($pterodactylApi)) {
                 return new ConfiguratorVerificationResult(
-                    true,
-                    $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_addon_detected', ['version' => $addonVersion]),
+                    false,
+                    $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_addon_not_detected'),
                 );
-            } else {
-                throw new Exception('PteroCA addon not detected');
             }
+
+            return new ConfiguratorVerificationResult(
+                true,
+                $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_connection_success'),
+            );
         } catch (Exception) {
             return new ConfiguratorVerificationResult(
                 false,
