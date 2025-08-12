@@ -4,7 +4,9 @@ namespace App\Core\Service\Pterodactyl;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
+use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Enum\SettingEnum;
+use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\SettingService;
 use Exception;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -15,6 +17,7 @@ class ServerEulaService
         private readonly HttpClientInterface $httpClient,
         private readonly SettingService $settingService,
         private readonly PterodactylClientService $pterodactylClientService,
+        private readonly ServerLogService $serverLogService,
     ) {
     }
 
@@ -25,6 +28,8 @@ class ServerEulaService
 
             $api = $this->pterodactylClientService->getApi($user);
             $api->servers->power($server->getPterodactylServerIdentifier(), 'restart');
+
+            $this->serverLogService->logServerAction($user, $server, ServerLogActionEnum::ACCEPT_EULA);
 
             return ['success' => true];
         } catch (Exception $e) {

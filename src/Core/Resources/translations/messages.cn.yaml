@@ -583,6 +583,7 @@ pteroca:
     create_subuser: '创建了子用户'
     update_subuser: '更新了子用户'
     delete_subuser: '删除了子用户'
+    accept_eula: '已接受 Minecraft EULA'
 
   voucher:
     expired: '此优惠券已过期。'

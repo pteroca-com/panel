@@ -583,6 +583,7 @@ pteroca:
     create_subuser: 'Utworzono subusera'
     update_subuser: 'Zaktualizowano subusera'
     delete_subuser: 'Usunięto subusera'
+    accept_eula: 'Zaakceptowano Minecraft EULA'
 
   voucher:
     expired: 'Voucher wygasł.'

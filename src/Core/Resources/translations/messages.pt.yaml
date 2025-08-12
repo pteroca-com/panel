@@ -585,6 +585,7 @@ pteroca:
     create_subuser: 'Subusuário criado'
     update_subuser: 'Subusuário atualizado'
     delete_subuser: 'Subusuário excluído'
+    accept_eula: 'EULA do Minecraft aceita'
 
   voucher:
     expired: 'O vale expirou.'

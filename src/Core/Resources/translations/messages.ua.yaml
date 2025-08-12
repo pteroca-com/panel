@@ -583,6 +583,7 @@ pteroca:
     create_subuser: 'Підкористувача створено'
     update_subuser: 'Підкористувача оновлено'
     delete_subuser: 'Підкористувача видалено'
+    accept_eula: 'Прийнято EULA Minecraft'
 
   voucher:
     expired: 'Термін дії ваучера минув.'
