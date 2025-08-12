@@ -528,6 +528,26 @@ pteroca:
       activity: '活动'
       activity_description: '控制用户访问服务器活动日志的权限。'
       activity_read_desc: '允许用户查看服务器的活动日志。'
+    eula:
+      modal:
+        description: '您的Minecraft服务器在启动前需要接受最终用户许可协议（EULA）。'
+        content: |
+          接受EULA即表示您同意遵守Mojang Studios制定的条款和条件。
+        
+          关键点：
+          • 您不得分发我们制作的任何内容
+          • 您不得将我们制作的任何内容用于商业用途
+          • 您可以制作和分发模组，但前提是不包含我们的任何代码
+        
+          完整条款请访问：https://aka.ms/MinecraftEULA
+        accept: '接受EULA并启动服务器'
+        cancel: '取消'
+        processing: '处理中...'
+        required: '您必须接受EULA才能启动服务器。'
+        read_full: '阅读完整EULA'
+      alert:
+        success: 'EULA已成功接受。服务器正在重启。'
+        error: '接受EULA失败。'
 
   actions:
     login: '登录'

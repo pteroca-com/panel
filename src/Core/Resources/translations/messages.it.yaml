@@ -528,6 +528,26 @@ pteroca:
       activity: 'Attività'
       activity_description: 'Permessi che controllano l''accesso dell''utente ai log di attività del server.'
       activity_read_desc: 'Consente all''utente di visualizzare i log di attività per il server.'
+    eula:
+      modal:
+        description: 'Il tuo server Minecraft richiede l''accettazione dell''Accordo di Licenza con l''Utente Finale (EULA) prima di poter essere avviato.'
+        content: |
+          Accettando la EULA, accetti di rispettare i termini e le condizioni stabiliti da Mojang Studios.
+        
+          Punti chiave:
+          • Non puoi distribuire nulla di ciò che abbiamo creato
+          • Non puoi fare uso commerciale di nulla di ciò che abbiamo creato
+          • Puoi creare e distribuire mod, ma solo se non contengono alcun nostro codice
+        
+          Per i termini completi, visita: https://aka.ms/MinecraftEULA
+        accept: 'Accetta EULA e avvia il server'
+        cancel: 'Annulla'
+        processing: 'Elaborazione...'
+        required: 'Devi accettare la EULA per avviare il server.'
+        read_full: 'Leggi la EULA completa'
+      alert:
+        success: 'La EULA è stata accettata con successo. Il server si sta riavviando.'
+        error: 'Impossibile accettare la EULA.'
 
   actions:
     login: 'Login'
