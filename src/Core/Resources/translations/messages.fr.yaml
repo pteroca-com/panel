@@ -633,6 +633,14 @@ pteroca:
       save: 'Enregistrer le produit'
       product: 'Produit'
       products: 'Produits'
+      copy: 'Copier'
+      copy_success: 'Produit copié avec succès'
+      copy_modal:
+        title: 'Copier le produit'
+        description: 'Êtes-vous sûr de vouloir copier ce produit ?'
+        details: 'Un nouveau produit sera créé avec la même configuration. Vous pourrez le modifier ensuite.'
+        cancel: 'Annuler'
+        confirm: 'Copier le produit'
       egg_information: "Informations sur l'Egg"
       egg_options_you_can_edit: 'Vous pouvez modifier les options suivantes dans votre panneau Pterodactyl.'
       egg_variables: 'Variables'
