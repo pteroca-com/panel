@@ -686,6 +686,8 @@ pteroca:
       product_connections_note: 'The following settings will be applied only after reinstalling the server or changing the software.'
       deleted_at: 'Deleted at'
       show_archived: 'Show archived'
+      copy: 'Copy'
+      copy_success: 'Product copied successfully'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
