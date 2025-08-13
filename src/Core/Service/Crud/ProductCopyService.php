@@ -7,6 +7,7 @@ use App\Core\Repository\ProductRepository;
 use App\Core\Repository\ProductPriceRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use App\Core\Entity\ProductPrice;
 
 class ProductCopyService
 {
@@ -60,8 +61,8 @@ class ProductCopyService
         $this->productRepository->save($copiedProduct, true);
         
         foreach ($originalProduct->getPrices() as $originalPrice) {
-            $copiedPrice = new \App\Core\Entity\ProductPrice();
-            
+            $copiedPrice = new ProductPrice();
+
             $copiedPrice->setValue($originalPrice->getValue());
             $copiedPrice->setType($originalPrice->getType());
             $copiedPrice->setUnit($originalPrice->getUnit());
