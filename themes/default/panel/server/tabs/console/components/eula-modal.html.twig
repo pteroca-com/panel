@@ -1,0 +1,26 @@
+<!-- EULA Modal -->
+<div class="modal fade" id="eulaModal" tabindex="-1" aria-labelledby="eulaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eulaModalLabel">{{ 'pteroca.server.eula.modal.required'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>{{ 'pteroca.server.eula.modal.description'|trans }}</p>
+                <div class="alert alert-info">
+                    <strong>Minecraft EULA</strong>
+                    <br>
+                    {{ 'pteroca.server.eula.modal.content'|trans|nl2br }}
+                </div>
+                <p class="text-muted small text-right mt-2">
+                    <a href="https://aka.ms/MinecraftEULA" target="_blank">{{ 'pteroca.server.eula.modal.read_full'|trans }}</a>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.server.eula.modal.cancel'|trans }}</button>
+                <button type="button" class="btn btn-success" id="acceptEulaBtn">{{ 'pteroca.server.eula.modal.accept'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>

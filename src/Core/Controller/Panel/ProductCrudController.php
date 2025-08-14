@@ -9,6 +9,7 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Form\ProductPriceDynamicFormType;
 use App\Core\Form\ProductPriceFixedFormType;
 use App\Core\Service\Crud\PanelCrudService;
+use App\Core\Service\Crud\ProductCopyService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\ExperimentalFeatureMessageTrait;
@@ -18,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -29,6 +31,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -43,6 +47,8 @@ class ProductCrudController extends AbstractPanelController
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
+        private readonly ProductCopyService $productCopyService,
+        private readonly AdminUrlGenerator $adminUrlGenerator,
     ) {
         parent::__construct($panelCrudService);
     }
@@ -194,6 +200,11 @@ class ProductCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
+        $copyAction = Action::new('copyProduct', $this->translator->trans('pteroca.crud.product.copy'))
+            ->linkToCrudAction('copyProduct')
+            ->setCssClass('action-copy-product')
+            ->displayIf(fn (Product $entity) => empty($entity->getDeletedAt()));
+
         return $actions
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.product.add')))
@@ -201,6 +212,8 @@ class ProductCrudController extends AbstractPanelController
             ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => $action->displayIf(fn (Product $entity) => empty($entity->getDeletedAt())))
             ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => $action->displayIf(fn (Product $entity) => empty($entity->getDeletedAt())))
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $copyAction)
+            ->reorder(Crud::PAGE_INDEX, [Action::EDIT, Action::DETAIL, 'copyProduct', Action::DELETE])
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE);
     }
@@ -272,5 +285,23 @@ class ProductCrudController extends AbstractPanelController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    public function copyProduct(AdminContext $context): RedirectResponse
+    {
+        /** @var Product $originalProduct */
+        $originalProduct = $context->getEntity()->getInstance();
+        
+        $copiedProduct = $this->productCopyService->copyProduct($originalProduct);
+        
+        $this->addFlash('success', $this->translator->trans('pteroca.crud.product.copy_success'));
+        
+        $url = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::EDIT)
+            ->setEntityId($copiedProduct->getId())
+            ->generateUrl();
+            
+        return new RedirectResponse($url);
     }
 }
