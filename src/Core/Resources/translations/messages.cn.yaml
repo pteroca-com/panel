@@ -528,6 +528,26 @@ pteroca:
       activity: '活动'
       activity_description: '控制用户访问服务器活动日志的权限。'
       activity_read_desc: '允许用户查看服务器的活动日志。'
+    eula:
+      modal:
+        description: '您的Minecraft服务器在启动前需要接受最终用户许可协议（EULA）。'
+        content: |
+          接受EULA即表示您同意遵守Mojang Studios制定的条款和条件。
+        
+          关键点：
+          • 您不得分发我们制作的任何内容
+          • 您不得将我们制作的任何内容用于商业用途
+          • 您可以制作和分发模组，但前提是不包含我们的任何代码
+        
+          完整条款请访问：https://aka.ms/MinecraftEULA
+        accept: '接受EULA并启动服务器'
+        cancel: '取消'
+        processing: '处理中...'
+        required: '您必须接受EULA才能启动服务器。'
+        read_full: '阅读完整EULA'
+      alert:
+        success: 'EULA已成功接受。服务器正在重启。'
+        error: '接受EULA失败。'
 
   actions:
     login: '登录'
@@ -563,6 +583,7 @@ pteroca:
     create_subuser: '创建了子用户'
     update_subuser: '更新了子用户'
     delete_subuser: '删除了子用户'
+    accept_eula: '已接受 Minecraft EULA'
 
   voucher:
     expired: '此优惠券已过期。'
@@ -607,6 +628,14 @@ pteroca:
       nodes: '节点'
       nest: 'Nest'
       eggs: 'Eggs'
+      copy: '复制'
+      copy_success: '产品复制成功'
+      copy_modal:
+        title: '复制产品'
+        description: '您确定要复制此产品吗？'
+        details: '将创建一个具有相同配置的新产品。您可以稍后进行编辑。'
+        cancel: '取消'
+        confirm: '复制产品'
       created_at: '创建于'
       updated_at: '更新于'
       add: '添加产品'
@@ -981,6 +1010,7 @@ pteroca:
       support: '支持'
       up_to_date: '最新'
       update_available: '有可用更新'
+      pteroca_plugin_not_detected: '未检测到'
 
   first_configuration:
     title: '首次配置'
@@ -1041,6 +1071,7 @@ pteroca:
       missing_fields: '请填写所有必填字段。'
       pterodactyl_checking_api_connection: '正在检查 Pterodactyl API 连接...'
       pterodactyl_api_connection_success: '成功连接到 Pterodactyl API。'
+      pterodactyl_addon_not_detected: 'API 连接已建立，但您的 Pterodactyl 面板未安装 PteroCA Pterodactyl 插件。请在继续之前安装它。'
       email_checking_smtp_connection: '正在检查 SMTP 服务器连接...'
       email_smtp_connection_success: '成功连接到 SMTP 服务器。'
       user_already_exists_in_pterodactyl: '此邮箱地址的用户已在 Pterodactyl 中存在。请使用其他邮箱地址。'

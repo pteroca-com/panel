@@ -1,0 +1,54 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block content %}
+    {{ parent() }}
+    {% include 'panel/crud/product/components/copy-modal.html.twig' %}
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let copyActionUrl = '';
+            let productName = '';
+            
+            const copyButtons = document.querySelectorAll('.action-copy-product');
+            
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    copyActionUrl = this.href;
+                    
+                    const row = this.closest('tr');
+                    if (row) {
+                        const nameCell = row.querySelector('td:nth-child(2)');
+                        if (nameCell) {
+                            productName = nameCell.textContent.trim();
+                        }
+                    }
+                    
+                    const productNameDisplay = document.getElementById('productNameDisplay');
+                    if (productNameDisplay && productName) {
+                        productNameDisplay.textContent = `{{ 'pteroca.crud.product.product'|trans }}: ${productName}`;
+                    }
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('copyProductModal'));
+                    modal.show();
+                });
+            });
+            
+            const confirmCopyBtn = document.getElementById('confirmCopyBtn');
+            if (confirmCopyBtn) {
+                confirmCopyBtn.addEventListener('click', function() {
+                    if (copyActionUrl) {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('copyProductModal'));
+                        modal.hide();
+                        
+                        window.location.href = copyActionUrl;
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

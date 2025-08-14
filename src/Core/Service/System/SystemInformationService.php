@@ -34,6 +34,9 @@ readonly class SystemInformationService
             'pterodactyl' => [
                 'status' => $this->isPterodactylApiOnline(),
             ],
+            'pteroca_plugin' => [
+                'version' => $this->getPterocaPluginVersion(),
+            ],
         ];
     }
 
@@ -53,6 +56,17 @@ readonly class SystemInformationService
             return true;
         } catch (\Exception $exception) {
             return false;
+        }
+    }
+
+    private function getPterocaPluginVersion(): ?string
+    {
+        try {
+            $data = $this->pterodactylService->getApi()->http->get('pteroca/version');
+            
+            return $data['version'] ?? null;
+        } catch (\Exception $exception) {
+            return null;
         }
     }
 }

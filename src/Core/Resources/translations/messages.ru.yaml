@@ -523,6 +523,26 @@ pteroca:
       activity: 'Активность'
       activity_description: 'Разрешения, которые контролируют доступ пользователя к журналам активности сервера.'
       activity_read_desc: 'Позволяет пользователю просматривать журналы активности для сервера.'
+    eula:
+      modal:
+        description: 'Ваш сервер Minecraft требует принятия Лицензионного соглашения конечного пользователя (EULA) перед запуском.'
+        content: |
+          Принимая EULA, вы соглашаетесь соблюдать условия, установленные Mojang Studios.
+        
+          Основные положения:
+          • Вы не можете распространять ничего из того, что мы создали
+          • Вы не можете использовать ничего из того, что мы создали, в коммерческих целях
+          • Вы можете создавать и распространять моды, но только если они не содержат наш код
+        
+          Полные условия доступны по адресу: https://aka.ms/MinecraftEULA
+        accept: 'Принять EULA и запустить сервер'
+        cancel: 'Отмена'
+        processing: 'Обработка...'
+        required: 'Вы должны принять EULA, чтобы запустить сервер.'
+        read_full: 'Прочитать полную EULA'
+      alert:
+        success: 'EULA успешно принята. Сервер перезапускается.'
+        error: 'Не удалось принять EULA.'
 
   actions:
     login: 'Войти'
@@ -558,6 +578,7 @@ pteroca:
     create_subuser: 'Подпользователь создан'
     update_subuser: 'Подпользователь обновлен'
     delete_subuser: 'Подпользователь удален'
+    accept_eula: 'Принята EULA Minecraft'
 
   voucher:
     expired: 'Срок действия ваучера истек.'
@@ -606,6 +627,14 @@ pteroca:
       updated_at: 'Дата изменения'
       add: 'Добавить продукт'
       save: 'Сохранить продукт'
+      copy: 'Копировать'
+      copy_success: 'Продукт успешно скопирован'
+      copy_modal:
+        title: 'Копировать продукт'
+        description: 'Вы уверены, что хотите скопировать этот продукт?'
+        details: 'Будет создан новый продукт с той же конфигурацией. Вы сможете отредактировать его позже.'
+        cancel: 'Отмена'
+        confirm: 'Копировать продукт'
       product: 'Товар'
       products: 'Товары'
       egg_information: 'Информация о яйце'
@@ -974,6 +1003,7 @@ pteroca:
       support: 'Поддержка'
       up_to_date: 'Последняя версия'
       update_available: 'Имеется обновление'
+      pteroca_plugin_not_detected: 'Не обнаружен'
 
   first_configuration:
     title: "Первая настройка"
@@ -1034,6 +1064,7 @@ pteroca:
       missing_fields: "Пожалуйста, заполните все обязательные поля."
       pterodactyl_checking_api_connection: "Проверка подключения к API Pterodactyl..."
       pterodactyl_api_connection_success: "Успешно подключено к API Pterodactyl."
+      pterodactyl_addon_not_detected: 'Соединение с API установлено, но дополнение PteroCA Pterodactyl не установлено на вашей панели Pterodactyl. Пожалуйста, установите его перед продолжением.'
       email_checking_smtp_connection: "Проверка подключения к SMTP серверу..."
       email_smtp_connection_success: "Успешно подключено к SMTP серверу."
       user_already_exists_in_pterodactyl: 'Пользователь с таким адресом электронной почты уже существует в Pterodactyl. Используйте другой адрес электронной почты.'
