@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Service;
+namespace App\Core\Service\Sync;
 
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;

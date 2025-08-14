@@ -2,8 +2,8 @@
 
 namespace App\Core\Handler;
 
-use App\Core\Service\PterodactylSyncService;
-use App\Core\Service\PterodactylCleanupService;
+use App\Core\Service\Sync\PterodactylSyncService;
+use App\Core\Service\Sync\PterodactylCleanupService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SyncServersHandler implements HandlerInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Service;
+namespace App\Core\Service\Sync;
 
 use App\Core\Repository\ServerRepository;
 use Doctrine\ORM\EntityManagerInterface;
