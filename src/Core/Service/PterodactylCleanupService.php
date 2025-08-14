@@ -5,6 +5,7 @@ namespace App\Core\Service;
 use App\Core\Repository\ServerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class PterodactylCleanupService
 {
@@ -19,10 +20,11 @@ class PterodactylCleanupService
      * Usuwa (oznacza jako deleted_at) serwery z PteroCA, których nie ma w Pterodactylu
      * 
      * @param array $existingPterodactylServerIds Lista pterodactyl_server_id serwerów istniejących w Pterodactylu
+     * @param SymfonyStyle|null $io Obiekt do interakcji z użytkownikiem
      * @param bool $dryRun Jeśli true, nie zapisuje zmian do bazy danych
      * @return int Liczba usuniętych serwerów
      */
-    public function cleanupOrphanedServers(array $existingPterodactylServerIds, bool $dryRun = false): int
+    public function cleanupOrphanedServers(array $existingPterodactylServerIds, ?SymfonyStyle $io = null, bool $dryRun = false): int
     {
         $this->logger->info('Starting cleanup of orphaned servers in PteroCA', ['dry_run' => $dryRun]);
         
@@ -38,6 +40,18 @@ class PterodactylCleanupService
         $deletedCount = 0;
         
         foreach ($orphanedServers as $server) {
+            // Jeśli mamy obiekt IO, pytamy użytkownika czy chce usunąć serwer
+            if ($io && !$this->isUserWantDeleteServer($server, $io)) {
+                if ($io) {
+                    $io->info(sprintf(
+                        'Skipping server #%s (ID: %d)...',
+                        $server->getPterodactylServerIdentifier(),
+                        $server->getPterodactylServerId()
+                    ));
+                }
+                continue;
+            }
+            
             if (!$dryRun) {
                 $server->setDeletedAtValue();
             }
@@ -60,5 +74,16 @@ class PterodactylCleanupService
         $this->logger->info('Cleanup completed', ['deleted_servers_count' => $deletedCount]);
         
         return $deletedCount;
+    }
+    
+    private function isUserWantDeleteServer($server, SymfonyStyle $io): bool
+    {
+        $questionMessage = sprintf(
+            'Server #%s (ID: %d) was not found in Pterodactyl. Do you want to delete it from PteroCA?',
+            $server->getPterodactylServerIdentifier(),
+            $server->getPterodactylServerId()
+        );
+
+        return strtolower($io->ask($questionMessage, 'yes')) === 'yes';
     }
 }

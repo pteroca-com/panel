@@ -14,8 +14,6 @@ use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
-use App\Core\Service\PterodactylSyncService;
-use App\Core\Service\PterodactylCleanupService;
 use App\Core\Service\Server\ServerEggService;
 use App\Core\Service\SettingService;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -38,8 +36,6 @@ class MigrateServersHandler implements HandlerInterface
         private readonly UserRepository $userRepository,
         private readonly SettingService $settingService,
         private readonly ServerEggService $serverEggService,
-        private readonly PterodactylSyncService $syncService,
-        private readonly PterodactylCleanupService $cleanupService,
     )
     {
     }
@@ -67,9 +63,6 @@ class MigrateServersHandler implements HandlerInterface
             $this->io->info('Running in dry-run mode - no changes will be made');
         }
 
-        // Etap 1: Migracja serwerów (istniejąca logika)
-        $this->io->section('Phase 1: Interactive server migration from Pterodactyl to PteroCA');
-        
         $pterodactylServers = $this->getPterodactylServers();
         $pterodactylUsers = $this->getPterodactylUsers();
         $pterocaServers = $this->getPterocaServers();
@@ -131,18 +124,7 @@ class MigrateServersHandler implements HandlerInterface
             }
         }
 
-        // Etap 2: Cleanup osieroconych serwerów
-        $this->io->section('Phase 2: Cleaning up orphaned servers in PteroCA');
-        
-        $existingPterodactylServerIds = $this->syncService->getExistingPterodactylServerIds($this->limit);
-        $deletedServersCount = $this->cleanupService->cleanupOrphanedServers($existingPterodactylServerIds, $dryRun);
-        
-        $this->io->success(sprintf(
-            'Migration process completed. Found %d existing servers in Pterodactyl, %s %d orphaned servers in PteroCA.',
-            count($existingPterodactylServerIds),
-            $dryRun ? 'would delete' : 'deleted',
-            $deletedServersCount
-        ));
+        $this->io->success('Server migration completed.');
     }
 
     private function migrateServer(
