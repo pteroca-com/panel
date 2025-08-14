@@ -45,11 +45,9 @@ class SyncServersHandler implements HandlerInterface
             $this->io->info('Running in automatic mode - orphaned servers will be deleted automatically');
         }
 
-        // Pobierz listę istniejących serwerów z Pterodactyla
         $this->io->section('Fetching servers from Pterodactyl...');
         $existingPterodactylServerIds = $this->syncService->getExistingPterodactylServerIds($this->limit);
         
-        // Usuń osierocone serwery z PteroCA
         $this->io->section('Cleaning up orphaned servers in PteroCA...');
         $deletedServersCount = $this->cleanupService->cleanupOrphanedServers(
             $existingPterodactylServerIds, 

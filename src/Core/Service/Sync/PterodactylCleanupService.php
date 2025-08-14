@@ -16,14 +16,6 @@ class PterodactylCleanupService
     ) {
     }
 
-    /**
-     * Usuwa (oznacza jako deleted_at) serwery z PteroCA, których nie ma w Pterodactylu
-     * 
-     * @param array $existingPterodactylServerIds Lista pterodactyl_server_id serwerów istniejących w Pterodactylu
-     * @param SymfonyStyle|null $io Obiekt do interakcji z użytkownikiem
-     * @param bool $dryRun Jeśli true, nie zapisuje zmian do bazy danych
-     * @return int Liczba usuniętych serwerów
-     */
     public function cleanupOrphanedServers(array $existingPterodactylServerIds, ?SymfonyStyle $io = null, bool $dryRun = false): int
     {
         $this->logger->info('Starting cleanup of orphaned servers in PteroCA', ['dry_run' => $dryRun]);
@@ -33,14 +25,11 @@ class PterodactylCleanupService
             return 0;
         }
         
-        // Pobieramy serwery z PteroCA, które nie są usunięte
-        // ale których pterodactyl_server_id nie znajduje się w liście serwerów z Pterodactyla
         $orphanedServers = $this->serverRepository->findOrphanedServers($existingPterodactylServerIds);
         
         $deletedCount = 0;
         
         foreach ($orphanedServers as $server) {
-            // Jeśli mamy obiekt IO, pytamy użytkownika czy chce usunąć serwer
             if ($io && !$this->isUserWantDeleteServer($server, $io)) {
                 if ($io) {
                     $io->info(sprintf(

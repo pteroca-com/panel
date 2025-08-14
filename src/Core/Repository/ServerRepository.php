@@ -92,13 +92,6 @@ class ServerRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    /**
-     * Znajduje serwery w PteroCA, których pterodactyl_server_id nie znajduje się w podanej liście
-     * i które nie są jeszcze usunięte (deleted_at IS NULL)
-     * 
-     * @param array $existingPterodactylServerIds Lista pterodactyl_server_id istniejących w Pterodactylu
-     * @return Server[] Lista osieroconych serwerów
-     */
     public function findOrphanedServers(array $existingPterodactylServerIds): array
     {
         $queryBuilder = $this->createQueryBuilder('s')

@@ -15,12 +15,6 @@ class PterodactylSyncService
     ) {
     }
 
-    /**
-     * Pobiera istniejące serwery z Pterodactyla i zwraca listę ich ID
-     * 
-     * @param int $limit Limit serwerów do pobrania
-     * @return array Lista pterodactyl_server_id serwerów istniejących w Pterodactylu
-     */
     public function getExistingPterodactylServerIds(int $limit = 1000): array
     {
         $this->logger->info('Fetching existing servers from Pterodactyl');
