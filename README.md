@@ -14,15 +14,15 @@
 ![GitHub License](https://img.shields.io/github/license/pteroca-com/panel) ![GitHub Repo stars](https://img.shields.io/github/stars/pteroca-com/panel)
 
 **PteroCA** is a modern, open-source client area and management panel built for **hosting providers** using the Pterodactyl platform.
-It offers advanced billing, live server controls, and deep customization — all through a fast, multilingual, and user-friendly interface.
+It offers advanced billing, live server controls, and deep customization - all through a fast, multilingual, and user-friendly interface.
 
 ---
 
 ### ✨ Key Features
-- **Flexible Billing System:** Choose between static (time-based) or dynamic (usage-based) pricing. Set custom durations and prices per server — users pay only for what they need.
-- **User-Friendly Interface:** Intuitive dashboard with multilingual support — ready for users around the world.
-- **Live Server Management:** Manage your servers in real time — console, stats, databases, backups, ports, and more.
-- **Built for Flexibility:** PteroCA is designed to adapt — with extensive configuration options and a growing ecosystem of features.
+- **Flexible Billing System:** Choose between static (time-based) or dynamic (usage-based) pricing. Set custom durations and prices per server - users pay only for what they need.
+- **User-Friendly Interface:** Intuitive dashboard with multilingual support - ready for users around the world.
+- **Live Server Management:** Manage your servers in real time - console, stats, databases, backups, ports, and more.
+- **Built for Flexibility:** PteroCA is designed to adapt - with extensive configuration options and a growing ecosystem of features.
 
 ---
 
@@ -71,12 +71,29 @@ It helps the project grow and motivates continued development.
 
 ---
 
+### 💖 Sponsorship
+If you’d like to support the ongoing development of PteroCA, you can sponsor the project through:
+
+- [GitHub Sponsors](https://github.com/sponsors/pteroca-com)
+- [Buy Me a Coffee](https://www.buymeacoffee.com/pteroca)
+- [Ko-fi](https://ko-fi.com/pteroca)
+
+Your sponsorship helps us dedicate more time to improving the project, adding new features, and providing support.
+
+---
+
 ### 🗺️ Roadmap
-We are continuously working to improve PteroCA.com! Check out the [Roadmap Page](https://pteroca.com/roadmap) for more details.
+We are continuously working to improve PteroCA.com! 
+
+- **Official Roadmap Page:** [https://pteroca.com/roadmap](https://pteroca.com/roadmap)  
+- **Live Development Board:** [GitHub Projects Board](https://github.com/users/pteroca-com/projects/2) - see the current tasks, priorities, and development progress in real time.
 
 ---
 
 ### 🛠️ Contributing
+If you’d like to become an active contributor to the PteroCA codebase, join our [Discord Server](https://discord.gg/Gz5phhuZym) and let us know.  
+You’ll receive the **Developer** role, granting you access to exclusive development channels where we coordinate tasks, discuss new features, and review pull requests.
+
 We welcome contributions! Check out our [Contributing Guide](https://github.com/pteroca-com/panel/blob/main/CONTRIBUTING.md) to get started.
 
 Also, if you're interested in helping translate PteroCA.com into more languages, visit our [Crowdin page](https://crowdin.com/project/pteroca) to contribute.
