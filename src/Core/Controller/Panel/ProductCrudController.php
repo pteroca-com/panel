@@ -295,6 +295,8 @@ class ProductCrudController extends AbstractPanelController
 
     public function copyProduct(AdminContext $context): RedirectResponse
     {
+        $this->disallowForDemoMode();
+        
         /** @var Product $originalProduct */
         $originalProduct = $context->getEntity()->getInstance();
         
