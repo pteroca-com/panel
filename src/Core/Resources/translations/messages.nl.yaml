@@ -997,6 +997,7 @@ pteroca:
       support: 'Ondersteuning'
       up_to_date: 'Up-to-date'
       update_available: 'Update beschikbaar'
+      pteroca_plugin_not_detected: 'Niet gedetecteerd'
   first_configuration:
     title: 'Eerste configuratie'
     description: 'Deze pagina is slechts één keer na installatie beschikbaar. Vul de vereiste velden in om het paneel te configureren.'
@@ -1056,6 +1057,7 @@ pteroca:
       missing_fields: 'Vul alle verplichte velden in.'
       pterodactyl_checking_api_connection: 'Verbinding met de Pterodactyl API aan het controleren...'
       pterodactyl_api_connection_success: 'Met succes verbonden met de Pterodactyl API.'
+      pterodactyl_addon_not_detected: 'API-verbinding is tot stand gebracht, maar de PteroCA Pterodactyl Addon is niet geïnstalleerd op uw Pterodactyl paneel. Installeer deze voordat u verder gaat.'
       email_checking_smtp_connection: 'De verbinding met de SMTP-server controleren...'
       email_smtp_connection_success: 'Succesvol verbonden met de SMTP-server.'
       user_already_exists_in_pterodactyl: 'Een gebruiker met dit e-mailadres bestaat al in Pterodactyl. Gebruik een ander e-mailadres.'

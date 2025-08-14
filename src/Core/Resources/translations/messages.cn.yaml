@@ -1010,6 +1010,7 @@ pteroca:
       support: '支持'
       up_to_date: '最新'
       update_available: '有可用更新'
+      pteroca_plugin_not_detected: '未检测到'
 
   first_configuration:
     title: '首次配置'
@@ -1070,6 +1071,7 @@ pteroca:
       missing_fields: '请填写所有必填字段。'
       pterodactyl_checking_api_connection: '正在检查 Pterodactyl API 连接...'
       pterodactyl_api_connection_success: '成功连接到 Pterodactyl API。'
+      pterodactyl_addon_not_detected: 'API 连接已建立，但您的 Pterodactyl 面板未安装 PteroCA Pterodactyl 插件。请在继续之前安装它。'
       email_checking_smtp_connection: '正在检查 SMTP 服务器连接...'
       email_smtp_connection_success: '成功连接到 SMTP 服务器。'
       user_already_exists_in_pterodactyl: '此邮箱地址的用户已在 Pterodactyl 中存在。请使用其他邮箱地址。'
