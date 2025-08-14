@@ -91,4 +91,17 @@ class ServerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function findOrphanedServers(array $existingPterodactylServerIds): array
+    {
+        $queryBuilder = $this->createQueryBuilder('s')
+            ->where('s.deletedAt IS NULL');
+            
+        if (!empty($existingPterodactylServerIds)) {
+            $queryBuilder->andWhere('s.pterodactylServerId NOT IN (:existingIds)')
+                ->setParameter('existingIds', $existingPterodactylServerIds);
+        }
+        
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
