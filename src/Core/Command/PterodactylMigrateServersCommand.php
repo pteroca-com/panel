@@ -31,17 +31,27 @@ class PterodactylMigrateServersCommand extends Command
             InputOption::VALUE_OPTIONAL,
             'Limit the number of servers to migrate',
         );
+        $this->addOption(
+            'dry-run',
+            null,
+            InputOption::VALUE_NONE,
+            'Show what would be done without making changes'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $dryRun = $input->getOption('dry-run');
+        
+        if ($dryRun) {
+            $io->note('Running in dry-run mode - no changes will be made');
+        }
+        
         $this->migrateServersHandler
             ->setLimit($input->getOption('limit') ?: 100)
             ->setIo($io)
-            ->handle();
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+            ->handle($dryRun);
 
         return Command::SUCCESS;
     }

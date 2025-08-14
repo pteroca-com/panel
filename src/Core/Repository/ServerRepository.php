@@ -91,4 +91,24 @@ class ServerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * Znajduje serwery w PteroCA, których pterodactyl_server_id nie znajduje się w podanej liście
+     * i które nie są jeszcze usunięte (deleted_at IS NULL)
+     * 
+     * @param array $existingPterodactylServerIds Lista pterodactyl_server_id istniejących w Pterodactylu
+     * @return Server[] Lista osieroconych serwerów
+     */
+    public function findOrphanedServers(array $existingPterodactylServerIds): array
+    {
+        $queryBuilder = $this->createQueryBuilder('s')
+            ->where('s.deletedAt IS NULL');
+            
+        if (!empty($existingPterodactylServerIds)) {
+            $queryBuilder->andWhere('s.pterodactylServerId NOT IN (:existingIds)')
+                ->setParameter('existingIds', $existingPterodactylServerIds);
+        }
+        
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
