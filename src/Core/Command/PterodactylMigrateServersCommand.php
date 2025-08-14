@@ -12,7 +12,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'pterodactyl:migrate-servers',
-    description: 'Migrate servers from Pterodactyl to existing user accounts',
+    description: 'Migrate servers from Pterodactyl to existing user accounts in PteroCA',
 )]
 class PterodactylMigrateServersCommand extends Command
 {
