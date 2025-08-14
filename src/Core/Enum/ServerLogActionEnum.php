@@ -23,6 +23,7 @@ enum ServerLogActionEnum
    case CREATE_SUBUSER;
    case UPDATE_SUBUSER;
    case DELETE_SUBUSER;
+   case ACCEPT_EULA;
    case CREATE_SCHEDULE;
    case UPDATE_SCHEDULE;
    case DELETE_SCHEDULE;

@@ -497,6 +497,27 @@ pteroca:
       activity: 'Activiteit'
       activity_description: 'Machtigingen die de toegang van de gebruiker tot de activiteitenlogs van de server controleren.'
       activity_read_desc: 'Staat de gebruiker toe om de activiteitenlogs voor de server te bekijken.'
+    eula:
+      modal:
+        description: 'Je Minecraft-server vereist het accepteren van de Eindgebruikerslicentieovereenkomst (EULA) voordat deze kan worden gestart.'
+        content: |
+          Door de EULA te accepteren, ga je akkoord met de voorwaarden die zijn vastgesteld door Mojang Studios.
+        
+          Belangrijke punten:
+          • Je mag niets van ons verspreiden
+          • Je mag niets van ons commercieel gebruiken
+          • Je mag mods maken en verspreiden, zolang ze geen van onze code bevatten
+        
+          Voor de volledige voorwaarden, ga naar: https://aka.ms/MinecraftEULA
+        accept: 'EULA accepteren & Server starten'
+        cancel: 'Annuleren'
+        processing: 'Bezig...'
+        required: 'Je moet de EULA accepteren om de server te starten.'
+        read_full: 'Lees volledige EULA'
+      alert:
+        success: 'EULA is succesvol geaccepteerd. De server wordt opnieuw gestart.'
+        error: 'EULA kon niet worden geaccepteerd.'
+
   actions:
     login: 'Inloggen'
     logout: 'Uitloggen'
@@ -530,6 +551,7 @@ pteroca:
     create_subuser: 'Subgebruiker aangemaakt'
     update_subuser: 'Subgebruiker bijgewerkt'
     delete_subuser: 'Subgebruiker verwijderd'
+    accept_eula: 'Minecraft EULA geaccepteerd'
   cart_configuration:
     title: 'Configureer je server'
     configuration: 'Configuratie'
