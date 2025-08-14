@@ -1,0 +1,23 @@
+<!-- Copy Product Modal -->
+<div class="modal fade" id="copyProductModal" tabindex="-1" aria-labelledby="copyProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="copyProductModalLabel">{{ 'pteroca.crud.product.copy_modal.title'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>{{ 'pteroca.crud.product.copy_modal.description'|trans }}</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {{ 'pteroca.crud.product.copy_modal.details'|trans }}
+                </div>
+                <p class="text-muted fw-bold mt-4" id="productNameDisplay"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'pteroca.crud.product.copy_modal.cancel'|trans }}</button>
+                <button type="button" class="btn btn-primary" id="confirmCopyBtn">{{ 'pteroca.crud.product.copy_modal.confirm'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
