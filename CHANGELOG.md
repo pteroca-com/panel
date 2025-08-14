@@ -2,6 +2,23 @@
 
 ---
 
+## [0.5.6] - 2025-08-15
+
+### Added
+- Added ability to copy products in the admin panel.
+- Added EULA detection: when a server requires EULA acceptance after reinstallation, a modal with an Accept EULA button is displayed.
+- Added PteroCA Addon for Pterodactyl version check on the admin dashboard.
+- Added `pteroca:sync-servers` command to automatically remove servers no longer present in Pterodactyl.
+
+### Changed
+- Updated README.md file.
+- Slight upgrade to the update command with improved local change protection, better repository fetching, enhanced scenario handling, and clearer error messages.
+
+### Fixed
+- Fixed grid layout issue in the My Servers section.
+
+---
+
 ## [0.5.5] - 2025-07-27
 
 ### Added
