@@ -5,6 +5,7 @@ namespace App\Core\Controller\API;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\ServerEulaService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
 use App\Core\Trait\InternalServerApiTrait;
@@ -19,6 +20,7 @@ class ServerController extends APIAbstractController
         private readonly ServerService $serverService,
         private readonly ServerRepository $serverRepository,
         private readonly PterodactylService $pterodactylService,
+        private readonly ServerEulaService $serverEulaService,
     ) {}
 
     #[Route('/panel/api/server/{id}/details', name: 'server_details', methods: ['GET'])]
@@ -45,5 +47,18 @@ class ServerController extends APIAbstractController
         $websocket = $serverWebsocketService->getWebsocketToken($server, $this->getUser());
 
         return new JsonResponse($websocket->toArray());
+    }
+
+    #[Route('/panel/api/server/{id}/accept-eula', name: 'panel_server_accept_eula', methods: ['POST'])]
+    public function acceptEula(int $id): JsonResponse
+    {
+        $server = $this->getServer($id, ServerPermissionEnum::CONTROL_START);
+        
+        try {
+            $result = $this->serverEulaService->acceptServerEula($server, $this->getUser());
+            return new JsonResponse($result);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
     }
 }

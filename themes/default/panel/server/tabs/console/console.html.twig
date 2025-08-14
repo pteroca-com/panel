@@ -32,6 +32,8 @@
             {% include 'panel/server/tabs/console/components/stats.html.twig' %}
         </div>
     </div>
+
+    {% include 'panel/server/tabs/console/components/eula-modal.html.twig' %}
 {% endblock %}
 
 {% block body_javascript %}
@@ -55,6 +57,11 @@
             currentServerState: null,
             terminal: null,
             ws: null,
+            eulaModalShown: false,
+            eulaPatterns: [
+                /You need to agree to the EULA in order to run the server/i,
+                /Go to eula.txt for more info/i,
+            ],
             colors: {
                 red: "\x1b[38;2;248;113;133m",
                 green: "\x1b[38;2;134;239;172m",
@@ -91,7 +98,9 @@
                             break;
                         case 'console output':
                         case 'install output':
-                            terminal.terminal.write(eventData.args.join(' ') + '\r\n');
+                            const logLine = eventData.args.join(' ');
+                            terminal.terminal.write(logLine + '\r\n');
+                            terminal.checkForEulaRequirement(logLine);
                             break;
                         case 'status':
                             const serverStatus = eventData.args.join(' '),
@@ -217,7 +226,86 @@
             toggleKillButton(show = true) {
                 document.querySelector('#server-stop').parentElement.classList.toggle('d-none', show);
                 document.querySelector('#server-kill').parentElement.classList.toggle('d-none', !show);
+            },
+            checkForEulaRequirement(logLine) {
+                if (this.eulaModalShown) return;
+                
+                for (const pattern of this.eulaPatterns) {
+                    if (pattern.test(logLine)) {
+                        this.eulaModalShown = true;
+                        this.showEulaModal();
+                        break;
+                    }
+                }
+            },
+            showEulaModal() {
+                const modal = new bootstrap.Modal(document.getElementById('eulaModal'));
+                modal.show();
+            },
+            acceptEula() {
+                const btn = document.getElementById('acceptEulaBtn');
+                const originalText = btn.textContent;
+                
+                btn.disabled = true;
+                btn.textContent = '{{ "pteroca.server.eula.modal.processing"|trans }}...';
+                
+                fetch(`{{ path('panel_server_accept_eula', {'id': server.id}) }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('eulaModal')).hide();
+                        
+                        this.showAlert('{{ "pteroca.server.eula.alert.success"|trans }}', 'success');                        
+                        this.eulaModalShown = false;
+                    } else {
+                        this.showAlert('{{ "pteroca.server.eula.alert.error"|trans }}', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error accepting EULA:', error);
+                    this.showAlert('{{ "pteroca.server.eula.alert.error"|trans }}', 'danger');
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                });
+            },
+            showAlert(message, type) {
+                // Create alert element
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                // Insert at the top of console tab
+                const consoleTab = document.querySelector('#console');
+                consoleTab.insertBefore(alert, consoleTab.firstChild);
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 5000);
             }
         };
+
+        // EULA Modal event listener
+        document.addEventListener('DOMContentLoaded', function() {
+            const acceptEulaBtn = document.getElementById('acceptEulaBtn');
+            if (acceptEulaBtn) {
+                acceptEulaBtn.addEventListener('click', function() {
+                    terminal.acceptEula();
+                });
+            }
+        });
     </script>
 {% endblock %}

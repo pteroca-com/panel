@@ -93,7 +93,8 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function stashGitChanges(): void
     {
-        exec('git stash', $output, $returnCode);
+        $label = 'pteroca-auto-update-' . date('Ymd-His');
+        exec(sprintf('git stash push -u -m %s', escapeshellarg($label)), $output, $returnCode);
         if ($returnCode !== 0) {
             $this->hasError = true;
             $this->io->error('Failed to stash changes.');
@@ -105,21 +106,34 @@ class UpdateSystemHandler implements HandlerInterface
 
     private function pullGitChanges(): void
     {
-        exec('git pull origin main', $output, $returnCode);
-        if ($returnCode !== 0) {
+        // explains itself cuz idk whats wrong imma fetch origin first
+        exec('git fetch origin main', $outputFetch, $codeFetch);
+        if ($codeFetch !== 0) {
             $this->hasError = true;
-            $this->io->error('Failed to pull changes.');
+            $this->io->error('Failed to fetch changes from origin.');
             $this->applyStashedChanges();
+            return;
+        }
+
+        exec('git merge --ff-only origin/main', $outputFf, $codeFf);
+        if ($codeFf === 0) {
+            return; 
+        }
+
+        $this->io->warning('Fast-forward not possible. Attempting a no-ff merge...');
+        exec('git merge --no-ff --no-edit origin/main', $outputMerge, $codeMerge);
+        if ($codeMerge !== 0) {
+            $this->hasError = true;
+            $this->io->error('Failed to merge changes. Resolve merge conflicts and try again.');
         }
     }
 
     private function applyStashedChanges(): void
     {
         if ($this->isStashed) {
-            exec('git stash apply', $output, $returnCode);
+            exec('git stash pop --index', $output, $returnCode);
             if ($returnCode !== 0) {
-                $this->hasError = true;
-                $this->io->error('Failed to apply stashed changes.');
+                $this->io->warning('Could not automatically re-apply stashed changes. They were kept in the stash. Run "git stash list" and "git stash pop" manually after resolving any file conflicts.');
                 return;
             }
 

@@ -25,6 +25,11 @@ services:
       $categoriesBasePath: '%categories_base_path%'
       $productsBasePath: '%products_base_path%'
 
+  App\Core\Service\Crud\ProductCopyService:
+    arguments:
+      $productsDirectory: '%products_directory%'
+      $projectDir: '%kernel.project_dir%'
+
   App\Core\Service\Mailer\MailerService:
     arguments:
       $twig: '@twig'

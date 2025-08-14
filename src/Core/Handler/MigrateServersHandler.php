@@ -54,10 +54,14 @@ class MigrateServersHandler implements HandlerInterface
         return $this;
     }
 
-    public function handle(): void
+    public function handle(bool $dryRun = false): void
     {
         $this->io->title('Pterodactyl Server Migration');
         $this->pterodactylApi = $this->pterodactylService->getApi();
+
+        if ($dryRun) {
+            $this->io->info('Running in dry-run mode - no changes will be made');
+        }
 
         $pterodactylServers = $this->getPterodactylServers();
         $pterodactylUsers = $this->getPterodactylUsers();
@@ -108,13 +112,19 @@ class MigrateServersHandler implements HandlerInterface
             $duration = $this->askForDuration();
             $price = $this->askForPrice();
 
-            $this->migrateServer(
-                $pterodactylServer->toArray(),
-                $pterodactylServerOwner->get('email'),
-                $duration,
-                $price
-            );
+            if (!$dryRun) {
+                $this->migrateServer(
+                    $pterodactylServer->toArray(),
+                    $pterodactylServerOwner->get('email'),
+                    $duration,
+                    $price
+                );
+            } else {
+                $this->io->info('Dry run: Would migrate server but not saving changes');
+            }
         }
+
+        $this->io->success('Server migration completed.');
     }
 
     private function migrateServer(

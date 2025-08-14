@@ -532,6 +532,26 @@ pteroca:
       activity: 'Activity'
       activity_description: 'Permissions that control a user''s access to the server activity logs.'
       activity_read_desc: 'Allows a user to view the activity logs for the server.'
+    eula:
+      modal:
+        description: 'Your Minecraft server requires acceptance of the End User License Agreement (EULA) before it can start.'
+        content: |
+          By accepting the EULA, you agree to abide by the terms and conditions set forth by Mojang Studios.
+          
+          Key points:
+          • You may not distribute anything we've made
+          • You may not make commercial use of anything we've made
+          • You may make and distribute mods, but only if they don't contain any of our code
+          
+          For full terms, please visit: https://aka.ms/MinecraftEULA
+        accept: 'Accept EULA & Start Server'
+        cancel: 'Cancel'
+        processing: 'Processing...'
+        required: 'You must accept the EULA to start the server.'
+        read_full: 'Read full EULA'
+      alert:
+        success: 'EULA has been accepted successfully. The server is restarting.'
+        error: 'Failed to accept EULA.'
 
   actions:
     login: 'Login'
@@ -567,6 +587,7 @@ pteroca:
     create_subuser: 'Created subuser'
     update_subuser: 'Updated subuser'
     delete_subuser: 'Deleted subuser'
+    accept_eula: 'Accepted Minecraft EULA'
 
   voucher:
     expired: 'The voucher has expired.'
@@ -669,6 +690,14 @@ pteroca:
       product_connections_note: 'The following settings will be applied only after reinstalling the server or changing the software.'
       deleted_at: 'Deleted at'
       show_archived: 'Show archived'
+      copy: 'Copy'
+      copy_success: 'Product copied successfully'
+      copy_modal:
+        title: 'Copy Product'
+        description: 'Are you sure you want to copy this product?'
+        details: 'A new product will be created with the same configuration. You can edit it afterwards.'
+        cancel: 'Cancel'
+        confirm: 'Copy Product'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
@@ -986,6 +1015,7 @@ pteroca:
       support: 'Support'
       up_to_date: 'Up to date'
       update_available: 'Update available'
+      pteroca_plugin_not_detected: 'Not Detected'
 
   first_configuration:
     title: 'First Configuration'
@@ -1046,6 +1076,7 @@ pteroca:
       missing_fields: 'Please fill in all required fields.'
       pterodactyl_checking_api_connection: 'Checking the connection to the Pterodactyl API...'
       pterodactyl_api_connection_success: 'Successfully connected to the Pterodactyl API.'
+      pterodactyl_addon_not_detected: 'API Connection has been established, but PteroCA Pterodactyl Addon is not installed on your Pterodactyl panel. Please install it before continuing.'
       email_checking_smtp_connection: 'Checking the connection to the SMTP server...'
       email_smtp_connection_success: 'Successfully connected to the SMTP server.'
       user_already_exists_in_pterodactyl: 'A user with this email address already exists in Pterodactyl. Please use a different email address.'

@@ -497,6 +497,27 @@ pteroca:
       activity: 'Activiteit'
       activity_description: 'Machtigingen die de toegang van de gebruiker tot de activiteitenlogs van de server controleren.'
       activity_read_desc: 'Staat de gebruiker toe om de activiteitenlogs voor de server te bekijken.'
+    eula:
+      modal:
+        description: 'Je Minecraft-server vereist het accepteren van de Eindgebruikerslicentieovereenkomst (EULA) voordat deze kan worden gestart.'
+        content: |
+          Door de EULA te accepteren, ga je akkoord met de voorwaarden die zijn vastgesteld door Mojang Studios.
+        
+          Belangrijke punten:
+          • Je mag niets van ons verspreiden
+          • Je mag niets van ons commercieel gebruiken
+          • Je mag mods maken en verspreiden, zolang ze geen van onze code bevatten
+        
+          Voor de volledige voorwaarden, ga naar: https://aka.ms/MinecraftEULA
+        accept: 'EULA accepteren & Server starten'
+        cancel: 'Annuleren'
+        processing: 'Bezig...'
+        required: 'Je moet de EULA accepteren om de server te starten.'
+        read_full: 'Lees volledige EULA'
+      alert:
+        success: 'EULA is succesvol geaccepteerd. De server wordt opnieuw gestart.'
+        error: 'EULA kon niet worden geaccepteerd.'
+
   actions:
     login: 'Inloggen'
     logout: 'Uitloggen'
@@ -530,6 +551,7 @@ pteroca:
     create_subuser: 'Subgebruiker aangemaakt'
     update_subuser: 'Subgebruiker bijgewerkt'
     delete_subuser: 'Subgebruiker verwijderd'
+    accept_eula: 'Minecraft EULA geaccepteerd'
   cart_configuration:
     title: 'Configureer je server'
     configuration: 'Configuratie'
@@ -599,6 +621,14 @@ pteroca:
       add: 'Artikel toevoegen'
       save: 'Artikel opslaan'
       product: 'Artikel'
+      copy: 'Kopiëren'
+      copy_success: 'Product succesvol gekopieerd'
+      copy_modal:
+        title: 'Product kopiëren'
+        description: 'Weet u zeker dat u dit product wilt kopiëren?'
+        details: 'Er wordt een nieuw product aangemaakt met dezelfde configuratie. U kunt het daarna bewerken.'
+        cancel: 'Annuleren'
+        confirm: 'Product kopiëren'
       products: 'Artikelen'
       egg_information: 'Egg informatie'
       egg_options_you_can_edit: 'U kunt de volgende opties bewerken in uw Pterodactyl paneel.'
@@ -967,6 +997,7 @@ pteroca:
       support: 'Ondersteuning'
       up_to_date: 'Up-to-date'
       update_available: 'Update beschikbaar'
+      pteroca_plugin_not_detected: 'Niet gedetecteerd'
   first_configuration:
     title: 'Eerste configuratie'
     description: 'Deze pagina is slechts één keer na installatie beschikbaar. Vul de vereiste velden in om het paneel te configureren.'
@@ -1026,6 +1057,7 @@ pteroca:
       missing_fields: 'Vul alle verplichte velden in.'
       pterodactyl_checking_api_connection: 'Verbinding met de Pterodactyl API aan het controleren...'
       pterodactyl_api_connection_success: 'Met succes verbonden met de Pterodactyl API.'
+      pterodactyl_addon_not_detected: 'API-verbinding is tot stand gebracht, maar de PteroCA Pterodactyl Addon is niet geïnstalleerd op uw Pterodactyl paneel. Installeer deze voordat u verder gaat.'
       email_checking_smtp_connection: 'De verbinding met de SMTP-server controleren...'
       email_smtp_connection_success: 'Succesvol verbonden met de SMTP-server.'
       user_already_exists_in_pterodactyl: 'Een gebruiker met dit e-mailadres bestaat al in Pterodactyl. Gebruik een ander e-mailadres.'

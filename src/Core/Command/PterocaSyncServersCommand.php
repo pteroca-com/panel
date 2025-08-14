@@ -2,7 +2,7 @@
 
 namespace App\Core\Command;
 
-use App\Core\Handler\MigrateServersHandler;
+use App\Core\Handler\SyncServersHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,13 +11,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'pterodactyl:migrate-servers',
-    description: 'Migrate servers from Pterodactyl to existing user accounts in PteroCA',
+    name: 'pteroca:sync-servers',
+    description: 'Synchronize servers between Pterodactyl and PteroCA (cleanup orphaned servers)',
 )]
-class PterodactylMigrateServersCommand extends Command
+class PterocaSyncServersCommand extends Command
 {
     public function __construct(
-        private readonly MigrateServersHandler $migrateServersHandler,
+        private readonly SyncServersHandler $syncServersHandler,
     )
     {
         parent::__construct();
@@ -29,7 +29,7 @@ class PterodactylMigrateServersCommand extends Command
             'limit',
             null,
             InputOption::VALUE_OPTIONAL,
-            'Limit the number of servers to migrate',
+            'Limit the number of servers to check',
         );
         $this->addOption(
             'dry-run',
@@ -37,21 +37,32 @@ class PterodactylMigrateServersCommand extends Command
             InputOption::VALUE_NONE,
             'Show what would be done without making changes'
         );
+        $this->addOption(
+            'auto',
+            null,
+            InputOption::VALUE_NONE,
+            'Automatically delete orphaned servers without asking for confirmation (suitable for cron jobs)'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $dryRun = $input->getOption('dry-run');
+        $auto = $input->getOption('auto');
         
         if ($dryRun) {
             $io->note('Running in dry-run mode - no changes will be made');
         }
         
-        $this->migrateServersHandler
-            ->setLimit($input->getOption('limit') ?: 100)
+        if ($auto) {
+            $io->note('Running in automatic mode - orphaned servers will be deleted automatically');
+        }
+        
+        $this->syncServersHandler
+            ->setLimit($input->getOption('limit') ?: 1000)
             ->setIo($io)
-            ->handle($dryRun);
+            ->handle($dryRun, $auto);
 
         return Command::SUCCESS;
     }

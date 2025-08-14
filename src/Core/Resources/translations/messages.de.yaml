@@ -532,6 +532,26 @@ pteroca:
       activity: 'Aktivität'
       activity_description: 'Berechtigungen, die den Zugriff eines Benutzers auf die Server-Aktivitätsprotokolle kontrollieren.'
       activity_read_desc: 'Ermöglicht einem Benutzer, die Aktivitätsprotokolle für den Server anzuzeigen.'
+    eula:
+      modal:
+        description: 'Ihr Minecraft-Server erfordert die Zustimmung zur Endbenutzer-Lizenzvereinbarung (EULA), bevor er gestartet werden kann.'
+        content: |
+          Mit der Zustimmung zur EULA erklären Sie sich mit den von Mojang Studios festgelegten Bedingungen einverstanden.
+        
+          Wichtige Punkte:
+          • Sie dürfen nichts von uns weitergeben
+          • Sie dürfen nichts von uns kommerziell nutzen
+          • Sie dürfen Mods erstellen und weitergeben, solange sie keinen unserer Codes enthalten
+        
+          Die vollständigen Bedingungen finden Sie unter: https://aka.ms/MinecraftEULA
+        accept: 'EULA akzeptieren & Server starten'
+        cancel: 'Abbrechen'
+        processing: 'Verarbeitung...'
+        required: 'Sie müssen die EULA akzeptieren, um den Server zu starten.'
+        read_full: 'Vollständige EULA lesen'
+      alert:
+        success: 'EULA wurde erfolgreich akzeptiert. Der Server wird neu gestartet.'
+        error: 'EULA konnte nicht akzeptiert werden.'
 
   actions:
     login: 'Login'
@@ -567,6 +587,7 @@ pteroca:
     create_subuser: 'Subbenutzer erstellt'
     update_subuser: 'Subbenutzer aktualisiert'
     delete_subuser: 'Subbenutzer gelöscht'
+    accept_eula: 'Minecraft EULA akzeptiert'
 
   voucher:
     expired: 'Dieser Gutschein ist abgelaufen.'
@@ -611,6 +632,14 @@ pteroca:
       nodes: 'Knoten'
       nest: 'Nest'
       eggs: 'Eier'
+      copy: 'Kopieren'
+      copy_success: 'Produkt erfolgreich kopiert'
+      copy_modal:
+        title: 'Produkt kopieren'
+        description: 'Sind Sie sicher, dass Sie dieses Produkt kopieren möchten?'
+        details: 'Ein neues Produkt wird mit derselben Konfiguration erstellt. Sie können es anschließend bearbeiten.'
+        cancel: 'Abbrechen'
+        confirm: 'Produkt kopieren'
       created_at: 'Erstellt am'
       updated_at: 'Aktualisiert am'
       add: 'Produkt hinzufügen'
@@ -985,6 +1014,7 @@ pteroca:
       support: 'Support'
       up_to_date: 'Aktuell'
       update_available: 'Update verfügbar'
+      pteroca_plugin_not_detected: 'Nicht erkannt'
 
   first_configuration:
     title: 'Erste Konfiguration'
@@ -1045,6 +1075,7 @@ pteroca:
       missing_fields: 'Bitte füllen Sie alle erforderlichen Felder aus.'
       pterodactyl_checking_api_connection: 'Verbindung zur Pterodactyl-API wird überprüft...'
       pterodactyl_api_connection_success: 'Erfolgreich mit der Pterodactyl-API verbunden.'
+      pterodactyl_addon_not_detected: 'API-Verbindung wurde hergestellt, aber das PteroCA Pterodactyl Addon ist nicht auf Ihrem Pterodactyl Panel installiert. Bitte installieren Sie es, bevor Sie fortfahren.'
       email_checking_smtp_connection: 'Verbindung zum SMTP-Server wird überprüft...'
       email_smtp_connection_success: 'Erfolgreich mit dem SMTP-Server verbunden.'
       user_already_exists_in_pterodactyl: 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits in Pterodactyl. Bitte verwenden Sie eine andere E-Mail-Adresse.'

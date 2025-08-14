@@ -21,6 +21,13 @@ class PterodactylConnectionVerificationService
         try {
             $pterodactylApi = new PterodactylApi($pterodactylPanelUrl, $pterodactylPanelApiKey);
             $pterodactylApi->servers->paginate();
+            
+            if (!$this->checkPterocaAddon($pterodactylApi)) {
+                return new ConfiguratorVerificationResult(
+                    false,
+                    $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_addon_not_detected'),
+                );
+            }
 
             return new ConfiguratorVerificationResult(
                 true,
@@ -31,6 +38,16 @@ class PterodactylConnectionVerificationService
                 false,
                 $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_error'),
             );
+        }
+    }
+
+    private function checkPterocaAddon(PterodactylApi $pterodactylApi): ?string
+    {
+        try {
+            $data = $pterodactylApi->http->get('pteroca/version');
+            return $data['version'] ?? null;
+        } catch (Exception) {
+            return null;
         }
     }
 }

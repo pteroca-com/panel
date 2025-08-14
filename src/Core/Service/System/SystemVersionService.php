@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\System;
 
+use App\Core\DTO\PterodactylAddonVersionDTO;
 use App\Core\DTO\SystemVersionDTO;
 use DateTime;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -32,6 +33,13 @@ class SystemVersionService
     public function getVersionInformation(): SystemVersionDTO
     {
         $currentVersion = $this->getCurrentReleaseVersion();
+        $pterodactylAddonVersion = new PterodactylAddonVersionDTO(
+            latestVersion: $currentVersion['plugin']['version'],
+            zipUrl: $currentVersion['plugin']['zipball_url'],
+            tarUrl: $currentVersion['plugin']['tarball_url'],
+            changelog: $currentVersion['plugin']['changelog'],
+            releaseDate: new DateTime($currentVersion['plugin']['release_date']),
+        );
 
         return new SystemVersionDTO(
             currentVersion: sprintf('v%s', $this->currentVersion),
@@ -40,6 +48,7 @@ class SystemVersionService
             tarUrl: $currentVersion['tarball_url'],
             changelog: $currentVersion['changelog'],
             releaseDate: new DateTime($currentVersion['release_date']),
+            pterodactylAddonVersion: $pterodactylAddonVersion,
         );
     }
 
