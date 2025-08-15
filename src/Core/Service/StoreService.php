@@ -21,10 +21,10 @@ class StoreService
         private readonly CategoryRepository $categoryRepository,
         private readonly ProductRepository $productRepository,
         private readonly PterodactylService $pterodactylService,
-        private readonly ConfigurationFeeService $configurationFeeService,
         private readonly TranslatorInterface $translator,
         private readonly string $categoriesBasePath,
         private readonly string $productsBasePath,
+        private readonly ConfigurationFeeService $configurationFeeService,
     ) {}
 
     public function getCategories(): array
