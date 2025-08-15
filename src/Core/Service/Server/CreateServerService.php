@@ -62,6 +62,12 @@ class CreateServerService extends AbstractActionServerService
             );
         }
 
+        // Calculate configuration fee BEFORE creating/saving the server entity
+        // so that first-time purchase check is evaluated correctly.
+        $configurationFee = $this->configurationFeeService->shouldApplyConfigurationFee($user)
+            ? $this->configurationFeeService->getConfigurationFeeAmount()
+            : 0.0;
+
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user);
 
         $createdEntityServer = $this->createEntityServer(
@@ -74,10 +80,7 @@ class CreateServerService extends AbstractActionServerService
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
 
-        $configurationFee = $this->configurationFeeService->shouldApplyConfigurationFee($user) 
-            ? $this->configurationFeeService->getConfigurationFeeAmount() 
-            : 0.0;
-
+        // Deduct user balance AFTER successful creation
         $this->updateUserBalance($user, $product, $priceId, $voucherCode, $configurationFee);
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
