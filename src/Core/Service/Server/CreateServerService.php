@@ -15,6 +15,7 @@ use App\Core\Repository\ServerProductPriceRepository;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\ConfigurationFeeService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -35,6 +36,7 @@ class CreateServerService extends AbstractActionServerService
         private readonly ServerProductPriceRepository $serverProductPriceRepository,
         private readonly LogService $logService,
         private readonly VoucherPaymentService $voucherPaymentService,
+        private readonly ConfigurationFeeService $configurationFeeService,
         private readonly TranslatorInterface $translator,
         UserRepository $userRepository,
         LoggerInterface $logger,
@@ -72,7 +74,11 @@ class CreateServerService extends AbstractActionServerService
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
 
-        $this->updateUserBalance($user, $product, $priceId, $voucherCode);
+        $configurationFee = $this->configurationFeeService->shouldApplyConfigurationFee($user) 
+            ? $this->configurationFeeService->getConfigurationFeeAmount() 
+            : 0.0;
+
+        $this->updateUserBalance($user, $product, $priceId, $voucherCode, $configurationFee);
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
             $createdEntityServer,

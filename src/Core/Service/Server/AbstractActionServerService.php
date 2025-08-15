@@ -26,6 +26,7 @@ abstract class AbstractActionServerService
         ProductInterface $product,
         int $priceId,
         ?string $voucherCode = null,
+        float $configurationFee = 0.0,
     ): void
     {
         $price = $product->getPrices()->filter(
@@ -36,7 +37,7 @@ abstract class AbstractActionServerService
             throw new \InvalidArgumentException($this->translator->trans('pteroca.store.price_not_found'));
         }
 
-        $balancePaymentAmount = $price->getPrice();
+        $balancePaymentAmount = $price->getPrice() + $configurationFee;
         if (!empty($voucherCode)) {
             try {
                 $balancePaymentAmount = $this->voucherPaymentService->redeemPaymentVoucher(
