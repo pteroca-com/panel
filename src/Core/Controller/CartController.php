@@ -9,6 +9,7 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
+use App\Core\Service\ConfigurationFeeService;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
@@ -26,6 +27,7 @@ class CartController extends AbstractController
         private readonly StoreService $storeService,
         private readonly ServerRepository $serverRepository,
         private readonly ServerSubuserRepository $serverSubuserRepository,
+        private readonly ConfigurationFeeService $configurationFeeService,
         private readonly TranslatorInterface $translator,
     ) {}
 
@@ -85,6 +87,8 @@ class CartController extends AbstractController
             'eggs' => $preparedEggs,
             'request' => $request,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
+            'configurationFee' => $this->storeService->getConfigurationFeeForUser($this->getUser()),
+            'hasConfigurationFee' => $this->configurationFeeService->shouldApplyConfigurationFee($this->getUser()),
         ]);
     }
 

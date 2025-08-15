@@ -173,19 +173,31 @@ class ServerCrudController extends AbstractPanelController
             sprintf('serverProduct_%s', $action),
             $this->translator->trans(sprintf('pteroca.crud.server.server_product_%s', $action)),
         )->linkToUrl(
-            fn (Server $entity) => $this->generateUrl(
-                'panel',
-                [
-                    'crudAction' => $action,
-                    'crudControllerFqcn' => ServerProductCrudController::class,
-                    'entityId' => $entity->getServerProduct()->getId(),
-                ]
-            )
+            fn (Server $entity) => $entity->getServerProduct()
+                ? $this->generateUrl(
+                    'panel',
+                    [
+                        'crudAction' => $action,
+                        'crudControllerFqcn' => ServerProductCrudController::class,
+                        'entityId' => $entity->getServerProduct()->getId(),
+                    ]
+                )
+                // Fallback: if no related product, send to ServerProduct index to avoid fatal
+                : $this->generateUrl(
+                    'panel',
+                    [
+                        'crudAction' => Crud::PAGE_INDEX,
+                        'crudControllerFqcn' => ServerProductCrudController::class,
+                    ]
+                )
         )->displayIf(function (Server $entity) use ($action) {
+            // Hide action if entity is deleted or has no related product
+            if (null === $entity->getServerProduct()) {
+                return false;
+            }
             if ($action !== Action::DETAIL) {
                 return empty($entity->getDeletedAt());
             }
-
             return true;
         });
     }

@@ -10,6 +10,7 @@ use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
+use App\Core\Service\ConfigurationFeeService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -23,6 +24,7 @@ class StoreService
         private readonly TranslatorInterface $translator,
         private readonly string $categoriesBasePath,
         private readonly string $productsBasePath,
+        private readonly ConfigurationFeeService $configurationFeeService,
     ) {}
 
     public function getCategories(): array
@@ -152,8 +154,28 @@ class StoreService
 
     public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice): void
     {
-        if ($selectedPrice->getPrice() > $user->getBalance()) {
+        $totalPrice = $this->configurationFeeService->calculateTotalWithConfigurationFee(
+            $selectedPrice->getPrice(),
+            $user
+        );
+
+        if ($totalPrice > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
+    }
+
+    public function calculateTotalPrice(ProductPriceInterface $selectedPrice, UserInterface $user): float
+    {
+        return $this->configurationFeeService->calculateTotalWithConfigurationFee(
+            $selectedPrice->getPrice(),
+            $user
+        );
+    }
+
+    public function getConfigurationFeeForUser(UserInterface $user): float
+    {
+        return $this->configurationFeeService->shouldApplyConfigurationFee($user) 
+            ? $this->configurationFeeService->getConfigurationFeeAmount() 
+            : 0.0;
     }
 }

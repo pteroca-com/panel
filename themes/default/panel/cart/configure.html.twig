@@ -240,9 +240,26 @@
                                 </div>
                             </div>
 
+                            <!-- Configuration Fee Section -->
+                            {% if hasConfigurationFee %}
+                                <div class="mb-3" id="configuration-fee">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small class="text-info">{{ 'pteroca.product.configuration_fee'|trans }}</small>
+                                            <div class="small text-muted">
+                                                {{ 'pteroca.product.configuration_fee_hint'|trans }}
+                                                <i class="fa fa-question-circle-o ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ 'pteroca.product.configuration_fee_tooltip'|trans }}"></i>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="text-info">+{{ configurationFee|number_format(2, ',', ' ') }} {{ get_currency() }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
                             <!-- Discount Section -->
                             <div class="mb-3 d-none" id="applied-discount">
-                                <hr class="my-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <small class="text-success">{{ 'pteroca.product.discount'|trans }}</small>
@@ -307,7 +324,9 @@
             days: '{{ 'pteroca.product.days'|trans }}',
         },
             currentUserBalance = parseFloat('{{ app.user.balance }}'),
-            isProductAvailable = {{ isProductAvailable ? 'true' : 'false' }};
+            isProductAvailable = {{ isProductAvailable ? 'true' : 'false' }},
+            configurationFee = {{ hasConfigurationFee ? configurationFee : 0 }},
+            hasConfigurationFee = {{ hasConfigurationFee ? 'true' : 'false' }};
 
         document.addEventListener('DOMContentLoaded', function () {
             const durationSelect = document.getElementById('duration');
@@ -328,6 +347,11 @@
                 productPrice = parseFloat(selectedOption.dataset.price)
 
             let summaryPrice = productPrice
+
+            // Add configuration fee (one-time only)
+            if (hasConfigurationFee) {
+                summaryPrice += configurationFee;
+            }
 
             if (appliedDiscountValue && appliedDiscountValue.innerText) {
                 const discountValue = parseFloat(appliedDiscountValue.innerText);

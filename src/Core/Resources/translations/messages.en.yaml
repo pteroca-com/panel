@@ -148,6 +148,9 @@ pteroca:
     ports: 'Ports'
     discount: 'Discount'
     discount_hint: 'Discount will be applied only to the first billing cycle.'
+    configuration_fee: 'Configuration Fee'
+    configuration_fee_hint: 'One-time setup fee for first server purchase'
+    configuration_fee_tooltip: 'This fee is charged only once for your first server and will not be applied to renewals or future purchases.'
     product_order_details: 'Product details and ordering options'
     total: 'Total'
 
