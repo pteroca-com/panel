@@ -15,9 +15,9 @@ class ProductPrice implements ProductPriceInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?Product $product = null;
 
-    public function getProduct(): ?string
+    public function getProduct(): ?Product
     {
-        return $this->product?->getName();
+        return $this->product;
     }
 
     public function setProduct(?Product $product): self

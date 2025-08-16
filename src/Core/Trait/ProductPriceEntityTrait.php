@@ -93,6 +93,7 @@ trait ProductPriceEntityTrait
         $unit = match ($this->type) {
             ProductPriceTypeEnum::STATIC => 'day(s)',
             ProductPriceTypeEnum::ON_DEMAND => 'minute(s)',
+            ProductPriceTypeEnum::SLOT => 'slot(s)',
         };
 
         return sprintf(

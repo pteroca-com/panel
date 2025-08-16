@@ -100,6 +100,24 @@ class ServerProduct implements ProductInterface
         return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
     }
 
+    public function setSlotPrices(iterable $prices): self
+    {
+        foreach ($this->getSlotPrices() as $existingPrice) {
+            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new \DateTime());
+            }
+        }
+
+        $this->syncPrices($this->getSlotPrices(), $prices);
+
+        return $this;
+    }
+
+    public function getSlotPrices(): Collection
+    {
+        return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::SLOT);
+    }
+
     public function addPrice(ProductPriceInterface $price): self
     {
         if (!$this->prices->contains($price)) {

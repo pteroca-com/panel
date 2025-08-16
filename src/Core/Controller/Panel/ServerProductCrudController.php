@@ -8,6 +8,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Form\ServerProductPriceDynamicFormType;
 use App\Core\Form\ServerProductPriceFixedFormType;
+use App\Core\Form\ServerProductPriceSlotFormType;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
@@ -162,6 +163,15 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setColumns(6)
                 ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint') . $this->getExperimentalFeatureMessage())
                 ->setRequired(true)
+                ->setEntryIsComplex(),
+            CollectionField::new('slotPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_slot_plan'), $internalCurrency))
+                ->setEntryType(ServerProductPriceSlotFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_slot_plan_hint'))
+                ->setRequired(false)
                 ->setEntryIsComplex(),
         ];
 
