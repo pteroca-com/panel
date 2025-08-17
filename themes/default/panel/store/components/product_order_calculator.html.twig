@@ -11,9 +11,16 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const durationSelect = document.querySelector('#duration')
+            const slotQuantityInput = document.querySelector('#slots')
 
             durationSelect.addEventListener('change', calculateOrder)
             durationSelect.dispatchEvent(new Event('change'))
+
+            if (slotQuantityInput) {
+                slotQuantityInput.addEventListener('input', function() {
+                    durationSelect.dispatchEvent(new Event('change'))
+                })
+            }
         })
 
         function calculateOrder(event) {
@@ -21,6 +28,16 @@
             const value = parseFloat(selectedOption.dataset.value);
             const unit = selectedOption.dataset.unit;
             const price = parseFloat(selectedOption.dataset.price);
+            const type = selectedOption.dataset.type;
+
+            let finalPrice = price;
+            if (type === 'slot') {
+                const slotQuantityInput = document.querySelector('#slots');
+                if (slotQuantityInput) {
+                    const slotQuantity = parseInt(slotQuantityInput.value) || 1;
+                    finalPrice = price * slotQuantity;
+                }
+            }
 
             let totalMinutes;
 
@@ -54,8 +71,7 @@
                     return;
             }
 
-            const type = selectedOption.dataset.type,
-                isOnDemand = type === 'on_demand';
+            const isOnDemand = type === 'on_demand';
 
             const showPerDay = !isOnDemand && totalMinutes >= 60 * 24,
                 showPerWeek = !isOnDemand && totalMinutes >= 60 * 24 * 7,
@@ -65,7 +81,7 @@
             document.querySelector('div[data-type="perWeek"]').classList.toggle('d-none', !showPerWeek);
             document.querySelector('div[data-type="perMonth"]').classList.toggle('d-none', !showPerMonth);
 
-            const perMinute = price / totalMinutes;
+            const perMinute = finalPrice / totalMinutes;
             const perHour = perMinute * 60;
             const perDay = perHour * 24;
             const perWeek = perDay * 7;
@@ -84,7 +100,7 @@
             document.querySelector('div[data-type="perDay"] span').textContent = formatPrice(result.perDay);
             document.querySelector('div[data-type="perWeek"] span').textContent = formatPrice(result.perWeek);
             document.querySelector('div[data-type="perMonth"] span').textContent = formatPrice(result.perMonth);
-            document.querySelector('div[data-type="totalPrice"] span').textContent = formatPrice(price);
+            document.querySelector('div[data-type="totalPrice"] span').textContent = formatPrice(finalPrice);
         }
 
         function formatPrice(price) {
