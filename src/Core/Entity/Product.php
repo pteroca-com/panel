@@ -57,6 +57,9 @@ class Product implements ProductInterface
     #[ORM\Column(type: "datetime", nullable: true)]
     private ?DateTime $deletedAt = null;
 
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $configurationFee = null;
+
     public function __construct()
     {
         $this->prices = new ArrayCollection();
@@ -178,6 +181,17 @@ class Product implements ProductInterface
     public function getDeletedAt(): ?DateTime
     {
         return $this->deletedAt;
+    }
+
+    public function getConfigurationFee(): ?string
+    {
+        return $this->configurationFee;
+    }
+
+    public function setConfigurationFee(?string $configurationFee): self
+    {
+        $this->configurationFee = $configurationFee;
+        return $this;
     }
 
     public function setStaticPrices(iterable $prices): self
