@@ -328,11 +328,41 @@
     
     {% if hasSlotPrices %}
     <script>
+        const eggsConfiguration = {{ product.eggsConfiguration|raw }};
+        
         document.addEventListener('DOMContentLoaded', function() {
             const durationSelect = document.getElementById('duration');
             const slotSelection = document.getElementById('slot-selection');
             const slotsRange = document.getElementById('slots');
             const selectedSlotsDisplay = document.getElementById('selected-slots');
+            const eggSelect = document.getElementById('egg');
+            
+            // Update max slots based on selected egg
+            function updateMaxSlots() {
+                const selectedEggId = parseInt(eggSelect.value);
+                let maxSlots = 10; // default
+                
+                if (eggsConfiguration && eggsConfiguration[selectedEggId]) {
+                    const eggConfig = eggsConfiguration[selectedEggId];
+                    if (eggConfig.variables && typeof eggConfig.variables === 'object') {
+                        for (const variableId in eggConfig.variables) {
+                            const variable = eggConfig.variables[variableId];
+                            if (variable.slot_variable === 'on' && variable.value) {
+                                maxSlots = parseInt(variable.value);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                slotsRange.max = maxSlots;
+                slotsRange.nextElementSibling.textContent = maxSlots;
+                
+                if (parseInt(slotsRange.value) > maxSlots) {
+                    slotsRange.value = maxSlots;
+                    handleSlotsChange();
+                }
+            }
             
             // Handle duration selection change
             function handleDurationChange() {
@@ -341,6 +371,7 @@
                 
                 if (priceType === 'slot') {
                     slotSelection.style.display = 'block';
+                    updateMaxSlots();
                 } else {
                     slotSelection.style.display = 'none';
                 }
@@ -356,6 +387,11 @@
             // Initialize
             durationSelect.addEventListener('change', handleDurationChange);
             slotsRange.addEventListener('input', handleSlotsChange);
+            eggSelect.addEventListener('change', function() {
+                if (slotSelection.style.display !== 'none') {
+                    updateMaxSlots();
+                }
+            });
             
             // Initial check
             handleDurationChange();
