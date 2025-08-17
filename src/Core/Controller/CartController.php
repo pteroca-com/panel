@@ -80,11 +80,20 @@ class CartController extends AbstractController
         $preparedEggs = $this->storeService->getProductEggs($product);
         $request = $request->query->all();
 
+        $hasSlotPrices = false;
+        foreach ($product->getPrices() as $price) {
+            if ($price->getType()->value === 'slot') {
+                $hasSlotPrices = true;
+                break;
+            }
+        }
+
         return $this->render('panel/cart/configure.html.twig', [
             'product' => $product,
             'eggs' => $preparedEggs,
             'request' => $request,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
+            'hasSlotPrices' => $hasSlotPrices,
         ]);
     }
 

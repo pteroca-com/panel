@@ -160,6 +160,10 @@
                                                 <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if request.duration is defined and request.duration == price.id %}selected{% endif %}>
                                                     {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
                                                 </option>
+                                            {% elseif price.type.value == 'slot' %}
+                                                <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if request.duration is defined and request.duration == price.id %}selected{% endif %}>
+                                                    {{ 'pteroca.store.slot_pricing'|trans }} - {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.slot'|trans }}
+                                                </option>
                                             {% endif %}
                                         {% endfor %}
                                     </select>
@@ -183,6 +187,27 @@
                                         </div>
                                     {% endif %}
                                 </div>
+
+                                {% if hasSlotPrices %}
+                                <!-- Slot Selection Section -->
+                                <div class="col-md-12" id="slot-selection" style="display: none;">
+                                    <label for="slots" class="form-label fw-semibold">
+                                        <i class="fas fa-server me-2 text-primary"></i>
+                                        {{ 'pteroca.product.slots'|trans }}
+                                    </label>
+                                    <div class="bg-light rounded-3 p-3">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="me-3">1</span>
+                                            <input type="range" class="form-range flex-grow-1" id="slots" name="slots" min="1" max="32" value="1" step="1">
+                                            <span class="ms-3">32</span>
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="badge bg-secondary fs-6 text-white" id="selected-slots">1 {{ 'pteroca.product.slot'|trans }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
                                 <div class="col-md-6">
                                     <label for="server-name" class="form-label fw-semibold">
                                         <i class="fas fa-tag me-2 text-success"></i>
@@ -190,6 +215,7 @@
                                     </label>
                                     <input type="text" class="form-control form-control-lg" id="server-name" name="server-name" placeholder="{{ product.name }}">
                                 </div>
+
                                 <div class="col-md-6">
                                     <label for="auto-renewal" class="form-label fw-semibold">
                                         <i class="fas fa-sync-alt me-2 text-info"></i>
@@ -309,14 +335,87 @@
             currentUserBalance = parseFloat('{{ app.user.balance }}'),
             isProductAvailable = {{ isProductAvailable ? 'true' : 'false' }};
 
+        {% if hasSlotPrices %}
+        const eggsConfiguration = {{ product.eggsConfiguration|raw }};
+        {% endif %}
+
         document.addEventListener('DOMContentLoaded', function () {
             const durationSelect = document.getElementById('duration');
+            {% if hasSlotPrices %}
+            const slotSelection = document.getElementById('slot-selection');
+            const slotsRange = document.getElementById('slots');
+            const selectedSlotsDisplay = document.getElementById('selected-slots');
+            const eggSelect = document.getElementById('egg');
+            {% endif %}
 
             durationSelect.addEventListener('change', () => {
                 removeDiscountCode();
+                {% if hasSlotPrices %}
+                handleDurationChange();
+                {% endif %}
                 calculatePrice();
             });
             durationSelect.dispatchEvent(new Event('change'));
+
+            {% if hasSlotPrices %}
+            slotsRange.addEventListener('input', function() {
+                handleSlotsChange();
+                calculatePrice();
+            });
+
+            eggSelect.addEventListener('change', function() {
+                if (slotSelection.style.display !== 'none') {
+                    updateMaxSlots();
+                }
+            });
+
+            function updateMaxSlots() {
+                const selectedEggId = parseInt(eggSelect.value);
+                let maxSlots = 32;
+                
+                if (eggsConfiguration && eggsConfiguration[selectedEggId]) {
+                    const eggConfig = eggsConfiguration[selectedEggId];
+                    if (eggConfig.variables && typeof eggConfig.variables === 'object') {
+                        for (const variableId in eggConfig.variables) {
+                            const variable = eggConfig.variables[variableId];
+                            if (variable.slot_variable === 'on' && variable.value) {
+                                maxSlots = parseInt(variable.value);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                slotsRange.max = maxSlots;
+                slotsRange.nextElementSibling.textContent = maxSlots;
+                
+                if (parseInt(slotsRange.value) > maxSlots) {
+                    slotsRange.value = maxSlots;
+                    handleSlotsChange();
+                }
+            }
+
+            function handleDurationChange() {
+                const selectedOption = durationSelect.options[durationSelect.selectedIndex];
+                const priceType = selectedOption.getAttribute('data-type');
+                
+                if (priceType === 'slot') {
+                    slotSelection.style.display = 'block';
+                    updateMaxSlots();
+                } else {
+                    slotSelection.style.display = 'none';
+                }
+            }
+
+            function handleSlotsChange() {
+                const slotsCount = slotsRange.value;
+                const slotText = slotsCount === '1' ? '{{ 'pteroca.product.slot'|trans }}' : '{{ 'pteroca.product.slots'|trans }}';
+                selectedSlotsDisplay.textContent = `${slotsCount} ${slotText}`;
+            }
+
+            handleDurationChange();
+            handleSlotsChange();
+            {% endif %}
 
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
         })
@@ -324,8 +423,20 @@
         function calculatePrice() {
             const durationSelect = document.getElementById('duration'),
                 selectedOption = durationSelect.options[durationSelect.selectedIndex],
-                appliedDiscountValue = document.querySelector('#applied-discount-value'),
-                productPrice = parseFloat(selectedOption.dataset.price)
+                appliedDiscountValue = document.querySelector('#applied-discount-value');
+            
+            let productPrice = parseFloat(selectedOption.dataset.price);
+            
+            {% if hasSlotPrices %}
+            // Apply slot pricing calculation
+            if (selectedOption.dataset.type === 'slot') {
+                const slotsRange = document.getElementById('slots');
+                if (slotsRange) {
+                    const slotQuantity = parseInt(slotsRange.value) || 1;
+                    productPrice = productPrice * slotQuantity;
+                }
+            }
+            {% endif %}
 
             let summaryPrice = productPrice
 
@@ -338,8 +449,21 @@
                 }
             }
 
-            document.querySelector('#selected-duration').textContent = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`
-            document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`
+            const basePrice = parseFloat(selectedOption.dataset.price);
+            let durationText = '';
+            
+            if (selectedOption.dataset.type === 'slot') {
+                {% if hasSlotPrices %}
+                const slotsRange = document.getElementById('slots');
+                const slotQuantity = parseInt(slotsRange.value) || 1;
+                durationText = `{{ 'pteroca.store.slot_pricing'|trans }} - ${slotQuantity} ${slotQuantity === 1 ? '{{ 'pteroca.product.slot'|trans }}' : '{{ 'pteroca.product.slots'|trans }}'}`;
+                {% endif %}
+            } else {
+                durationText = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`;
+            }
+
+            document.querySelector('#selected-duration').textContent = durationText;
+            document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`;
 
             // Calculate and display dates for static pricing
             const datesElement = document.querySelector('#selected-dates');
