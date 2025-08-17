@@ -11,14 +11,11 @@ trait SlotVariableValidationTrait
         if (count($this->getSlotPrices()) > 0) {
             $eggsConfiguration = json_decode($this->getEggsConfiguration() ?? '{}', true);
             
-            // TODO checking if eggs configuration is set
-            
             if (!empty($eggsConfiguration)) {
                 foreach ($eggsConfiguration as $eggConfig) {
                     $hasSlotVariable = false;
                     
                     if (isset($eggConfig['variables'])) {
-                        //dd($eggConfig['variables']);
                         foreach ($eggConfig['variables'] as $variable) {
                             if (isset($variable['slot_variable']) && $variable['slot_variable'] === true) {
                                 $hasSlotVariable = true;

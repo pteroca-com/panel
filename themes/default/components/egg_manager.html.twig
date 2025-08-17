@@ -21,7 +21,9 @@
 
             const form = document.querySelector('form');
             if (form) {
-                form.addEventListener('submit', saveEggsConfigurationToHiddenField);
+                form.addEventListener('submit', function(e) {
+                    saveEggsConfigurationToHiddenField();
+                });
             }
 
             setTimeout(() => {
@@ -251,11 +253,11 @@
             if (options) {
                 return createSelect(value, eggId, options, name);
             }
-            return `<input type="text" value="${value}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control">`;
+            return `<input type="text" value="${value}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control" onchange="saveEggsConfigurationToHiddenField()">`;
         }
 
         function createCheckbox(checked, eggId, variableId, name) {
-            return `<input type="checkbox" class="form-check-input" name="${getInputName(eggId, variableId, name)}" ${checked ? 'checked' : ''}>`;
+            return `<input type="checkbox" class="form-check-input" name="${getInputName(eggId, variableId, name)}" ${checked ? 'checked' : ''} onchange="saveEggsConfigurationToHiddenField()">`;
         }
 
         function createSlotVariableCheckbox(checked, eggId, variableId, name, disabled = false) {
@@ -266,7 +268,7 @@
         }
 
         function createSelect(value, eggId, options, name) {
-            let select = `<select name="${getInputName(eggId, 'docker_image', name)}" class="form-control" style="font-size: 14px;">`;
+            let select = `<select name="${getInputName(eggId, 'docker_image', name)}" class="form-control" style="font-size: 14px;" onchange="saveEggsConfigurationToHiddenField()">`;
             for (const [key, option] of Object.entries(options)) {
                 select += `<option value="${option}" ${value === key ? 'selected' : ''}>${option}</option>`;
             }
@@ -385,6 +387,7 @@
             
             setTimeout(() => {
                 updateEggTabIndicators();
+                saveEggsConfigurationToHiddenField();
             }, 50);
         }
 
@@ -409,6 +412,9 @@
                     valueInput.setAttribute('data-slot-listener-added', 'true');
                     valueInput.addEventListener('input', function() {
                         updateSlotVariableCheckboxState(checkbox);
+                        setTimeout(() => {
+                            saveEggsConfigurationToHiddenField();
+                        }, 100);
                     });
                 }
             }
@@ -538,10 +544,31 @@
                     }
                     
                     if (input.type === 'checkbox') {
+                        // Zawsze zapisuj wartość checkbox, nawet jeśli jest disabled
                         eggsConfiguration[eggId][type][itemId][property] = input.checked;
                     } else {
                         eggsConfiguration[eggId][type][itemId][property] = input.value;
                     }
+                }
+            });
+
+            // Dodatkowo sprawdź czy wszystkie slot_variable checkboxy zostały uwzględnione
+            const slotVariableCheckboxes = document.querySelectorAll('input.slot-variable-checkbox');
+            slotVariableCheckboxes.forEach(checkbox => {
+                const nameMatch = checkbox.name.match(/eggs_configuration\[(\d+)\]\[(options|variables)\]\[([^\]]+)\]\[([^\]]+)\]/);
+                if (nameMatch) {
+                    const [, eggId, type, itemId, property] = nameMatch;
+                    
+                    if (!eggsConfiguration[eggId]) {
+                        eggsConfiguration[eggId] = { options: {}, variables: {} };
+                    }
+                    
+                    if (!eggsConfiguration[eggId][type][itemId]) {
+                        eggsConfiguration[eggId][type][itemId] = {};
+                    }
+                    
+                    // Wymuszenie zapisania wartości slot_variable, nawet dla disabled
+                    eggsConfiguration[eggId][type][itemId][property] = checkbox.checked;
                 }
             });
 
@@ -640,6 +667,7 @@
                     setTimeout(() => {
                         initializeSlotVariableCheckboxes();
                         updateEggTabIndicators();
+                        saveEggsConfigurationToHiddenField();
                     }, 100);
                 }
             });
