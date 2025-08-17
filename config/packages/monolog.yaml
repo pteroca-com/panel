@@ -45,40 +45,17 @@ when@test:
 when@prod:
     monolog:
         handlers:
-            # Buffer everything until an error occurs, then flush
             main:
                 type: fingers_crossed
                 action_level: error
-                handler: grouped
+                handler: nested
                 excluded_http_codes: [404, 405]
-                buffer_size: 50 # Prevent memory leaks
+                buffer_size: 50
 
-            # Grouped handler: write to file and stderr (for Docker/systemd)
-            grouped:
-                type: group
-                members: [nested, stderr]
-
-            # File log (ensure var/log is writable by PHP user)
             nested:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                formatter: monolog.formatter.json
-
-            # Fallback to stderr so 500s are visible even if file is not writable
-            stderr:
-                type: stream
-                path: "php://stderr"
-                level: error
-                formatter: monolog.formatter.json
-            
-            # Additionally, emit errors immediately to stderr (not buffered)
-            immediate_stderr:
-                type: stream
-                path: "php://stderr"
-                level: error
-                formatter: monolog.formatter.json
-                bubble: false
             console:
                 type: console
                 process_psr_3_messages: false

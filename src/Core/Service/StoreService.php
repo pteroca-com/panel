@@ -154,28 +154,25 @@ class StoreService
 
     public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice): void
     {
-        $totalPrice = $this->configurationFeeService->calculateTotalWithConfigurationFee(
-            $selectedPrice->getPrice(),
-            $user
-        );
+        // For renewals we don't apply configuration fee; keep legacy behavior for this path.
+        $totalPrice = (float) $selectedPrice->getPrice();
 
         if ($totalPrice > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
     }
 
-    public function calculateTotalPrice(ProductPriceInterface $selectedPrice, UserInterface $user): float
+    public function calculateTotalPrice(ProductPriceInterface $selectedPrice, Product $product, UserInterface $user): float
     {
-        return $this->configurationFeeService->calculateTotalWithConfigurationFee(
-            $selectedPrice->getPrice(),
+        return $this->configurationFeeService->calculateTotalWithConfigurationFeeForProduct(
+            (float) $selectedPrice->getPrice(),
+            $product,
             $user
         );
     }
 
-    public function getConfigurationFeeForUser(UserInterface $user): float
+    public function getConfigurationFeeForUser(Product $product, UserInterface $user): float
     {
-        return $this->configurationFeeService->shouldApplyConfigurationFee($user) 
-            ? $this->configurationFeeService->getConfigurationFeeAmount() 
-            : 0.0;
+        return $this->configurationFeeService->getConfigurationFeeAmountForProduct($product, $user);
     }
 }

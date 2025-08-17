@@ -62,11 +62,21 @@ class CreateServerService extends AbstractActionServerService
             );
         }
 
-        // Calculate configuration fee BEFORE creating/saving the server entity
-        // so that first-time purchase check is evaluated correctly.
-        $configurationFee = $this->configurationFeeService->shouldApplyConfigurationFee($user)
-            ? $this->configurationFeeService->getConfigurationFeeAmount()
-            : 0.0;
+        // Calculate configuration fee BEFORE creating/saving the server entity (first-time check)
+        $configurationFee = $this->configurationFeeService->getConfigurationFeeAmountForProduct($product, $user);
+
+        // Validate affordability before external API calls
+        /** @var ?ProductPrice $selectedPriceForValidation */
+        $selectedPriceForValidation = $product->getPrices()->filter(
+            fn(ProductPrice $price) => $price->getId() === $priceId
+        )->first() ?: null;
+        if (empty($selectedPriceForValidation)) {
+            throw new \Exception($this->translator->trans('pteroca.store.price_not_found'));
+        }
+        $totalCost = (float) $selectedPriceForValidation->getPrice() + (float) $configurationFee;
+        if ($user->getBalance() < $totalCost) {
+            throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
+        }
 
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user);
 
@@ -99,6 +109,8 @@ class CreateServerService extends AbstractActionServerService
                 'price' => $priceId,
                 'voucher' => $voucherCode,
                 'server' => $createdEntityServer,
+                'configurationFee' => $configurationFee,
+                'totalCost' => $totalCost,
             ],
         );
 

@@ -87,8 +87,8 @@ class CartController extends AbstractController
             'eggs' => $preparedEggs,
             'request' => $request,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
-            'configurationFee' => $this->storeService->getConfigurationFeeForUser($this->getUser()),
-            'hasConfigurationFee' => $this->configurationFeeService->shouldApplyConfigurationFee($this->getUser()),
+            'configurationFee' => $this->storeService->getConfigurationFeeForUser($product, $this->getUser()),
+            'hasConfigurationFee' => $this->configurationFeeService->shouldApplyConfigurationFee($product, $this->getUser()),
         ]);
     }
 
