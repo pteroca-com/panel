@@ -77,12 +77,16 @@
 
         function loadEggsData() {
             saveEggsConfigurationToHiddenField();
+
+            const eggSelector = document.querySelector('select.egg-selector');
+            const previousEggIds = loadedEggsConfigurations ? Object.keys(loadedEggsConfigurations).map(id => parseInt(id)) : [];
+            const currentEggIds = eggSelector.tomselect.getValue().map(value => parseInt(value));
+            
+            const newEggId = currentEggIds.find(id => !previousEggIds.includes(id));
             
             clearEggsData();
-            const eggSelector = document.querySelector('select.egg-selector');
-            const eggIds = eggSelector.tomselect.getValue().map(value => parseInt(value));
 
-            if (!eggIds.length) {
+            if (!currentEggIds.length) {
                 return;
             }
 
@@ -94,7 +98,7 @@
             const contentContainer = document.createElement('div');
             contentContainer.className = 'tab-content eggs-data-content';
 
-            eggIds.forEach((eggId, index) => {
+            currentEggIds.forEach((eggId, index) => {
                 const li = document.createElement('li'),
                     a = document.createElement('a'),
                     eggData = loadedEggs[eggId];
@@ -106,13 +110,15 @@
                 a.dataset.bsToggle = 'tab';
                 a.dataset.tab = 'tab';
                 a.className = 'nav-link';
-                if (index === 0) {
+                
+                if ((newEggId && eggId === newEggId) || (!newEggId && index === 0)) {
                     a.classList.add('active');
                 }
+                
                 li.appendChild(a);
                 ul.appendChild(li);
 
-                const tabContent = prepareEggTabContent(index, eggData);
+                const tabContent = prepareEggTabContent(index, eggData, (newEggId && eggId === newEggId) || (!newEggId && index === 0));
                 contentContainer.appendChild(tabContent);
             });
 
@@ -126,12 +132,12 @@
             }, 1000);
         }
 
-        function prepareEggTabContent(index, eggData) {
+        function prepareEggTabContent(index, eggData, isActive = false) {
             const tabContent = document.createElement('div');
             tabContent.id = 'tab_' + eggData.id;
             tabContent.className = 'tab-pane';
 
-            if (index === 0) {
+            if (isActive) {
                 tabContent.classList.add('active');
             }
 
@@ -639,19 +645,39 @@
                 });
                 
                 if (variablesHeader) {
-                    let nextElement = variablesHeader.nextElementSibling;
-                    if (nextElement && nextElement.tagName === 'TABLE') {
-                        nextElement.remove();
+                    let existingTable = variablesHeader.nextElementSibling;
+                    if (existingTable && existingTable.tagName === 'TABLE') {
+                        const hasSlotVariableColumn = existingTable.querySelector('th').textContent === loadedTranslations.egg_variable_slot_variable || 
+                                                    Array.from(existingTable.querySelectorAll('th')).some(th => th.textContent === loadedTranslations.egg_variable_slot_variable);
+                        
+                        const shouldHaveSlotColumn = hasSlotPrices();
+                        
+                        if ((hasSlotVariableColumn && !shouldHaveSlotColumn) || (!hasSlotVariableColumn && shouldHaveSlotColumn)) {
+                            existingTable.remove();
+                            
+                            const newTableHTML = generateVariablesTable(eggData?.relationships?.variables, true);
+                            variablesHeader.insertAdjacentHTML('afterend', newTableHTML);
+                            
+                            setTimeout(() => {
+                                initializeSlotVariableCheckboxes();
+                                updateEggTabIndicators();
+                                saveEggsConfigurationToHiddenField();
+                            }, 100);
+                        } else {
+                            setTimeout(() => {
+                                updateEggTabIndicators();
+                            }, 100);
+                        }
+                    } else {
+                        const newTableHTML = generateVariablesTable(eggData?.relationships?.variables, true);
+                        variablesHeader.insertAdjacentHTML('afterend', newTableHTML);
+                        
+                        setTimeout(() => {
+                            initializeSlotVariableCheckboxes();
+                            updateEggTabIndicators();
+                            saveEggsConfigurationToHiddenField();
+                        }, 100);
                     }
-                    
-                    const newTableHTML = generateVariablesTable(eggData?.relationships?.variables, true);
-                    variablesHeader.insertAdjacentHTML('afterend', newTableHTML);
-                    
-                    setTimeout(() => {
-                        initializeSlotVariableCheckboxes();
-                        updateEggTabIndicators();
-                        saveEggsConfigurationToHiddenField();
-                    }, 100);
                 }
             });
         }
