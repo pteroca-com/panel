@@ -171,7 +171,7 @@ class ServerProductCrudController extends AbstractPanelController
                 ->onlyOnForms()
                 ->setColumns(6)
                 ->setHelp($this->translator->trans('pteroca.crud.product.price_slot_plan_hint'))
-                ->setRequired(false)
+                ->setRequired(true)
                 ->setEntryIsComplex(),
         ];
 

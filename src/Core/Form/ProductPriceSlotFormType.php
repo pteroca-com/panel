@@ -7,7 +7,7 @@ use App\Core\Enum\ProductPriceTypeEnum;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProductPriceSlotFormType extends AbstractPriceFixedFormType
+class ProductPriceSlotFormType extends AbstractPriceSlotFormType
 {
     public function configureOptions(OptionsResolver $resolver)
     {
