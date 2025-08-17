@@ -456,7 +456,8 @@
                 {% if hasSlotPrices %}
                 const slotsRange = document.getElementById('slots');
                 const slotQuantity = parseInt(slotsRange.value) || 1;
-                durationText = `{{ 'pteroca.store.slot_pricing'|trans }} - ${slotQuantity} ${slotQuantity === 1 ? '{{ 'pteroca.product.slot'|trans }}' : '{{ 'pteroca.product.slots'|trans }}'}`;
+                const periodText = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`;
+                durationText = `${periodText} [${slotQuantity} ${slotQuantity === 1 ? '{{ 'pteroca.product.slot'|trans }}' : '{{ 'pteroca.product.slots'|trans }}'}]`;
                 {% endif %}
             } else {
                 durationText = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`;
