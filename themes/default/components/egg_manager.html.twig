@@ -76,6 +76,8 @@
         }
 
         function loadEggsData() {
+            saveEggsConfigurationToHiddenField();
+            
             clearEggsData();
             const eggSelector = document.querySelector('select.egg-selector');
             const eggIds = eggSelector.tomselect.getValue().map(value => parseInt(value));
@@ -459,10 +461,6 @@
         }
 
         function loadSavedEggsConfiguration() {
-            if (loadedEggsConfigurations !== null) {
-                return;
-            }
-
             let eggsConfigurationElement = document.querySelector('#Product_eggsConfiguration');
             if (!eggsConfigurationElement) {
                 eggsConfigurationElement = document.querySelector('#ServerProduct_eggsConfiguration');
@@ -480,17 +478,26 @@
                 eggsConfigurationsToLoad = null;
             }
             if (typeof eggsConfigurationsToLoad !== 'object' || eggsConfigurationsToLoad === null || Object.keys(eggsConfigurationsToLoad).length === 0) {
+                if (!loadedEggsConfigurations) {
+                    loadedEggsConfigurations = {};
+                }
                 return;
             }
+            
             loadedEggsConfigurations = eggsConfigurationsToLoad;
+            
             Object.entries(eggsConfigurationsToLoad).forEach(([eggId, configurations]) => {
                 const inputName = `eggs_configuration[${eggId}]`;
-                Object.entries(configurations.options).forEach(([name, value]) => {
-                    setConfigurationInputValue(inputName, 'options', name, value);
-                });
-                Object.entries(configurations.variables).forEach(([variableId, variable]) => {
-                    setConfigurationInputValue(inputName, 'variables', variableId, variable);
-                });
+                if (configurations.options) {
+                    Object.entries(configurations.options).forEach(([name, value]) => {
+                        setConfigurationInputValue(inputName, 'options', name, value);
+                    });
+                }
+                if (configurations.variables) {
+                    Object.entries(configurations.variables).forEach(([variableId, variable]) => {
+                        setConfigurationInputValue(inputName, 'variables', variableId, variable);
+                    });
+                }
             });
         }
 
