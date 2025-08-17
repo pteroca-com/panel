@@ -185,6 +185,12 @@ class ProductCrudController extends AbstractPanelController
                 ->setRequired(true)
                 ->setEntryIsComplex(),
 
+            NumberField::new('configurationFee', $this->translator->trans('pteroca.product.configuration_fee'))
+                ->setHelp($this->translator->trans('pteroca.product.configuration_fee_hint'))
+                ->setNumDecimals(2)
+                ->setRequired(false)
+                ->setColumns(6),
+
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
             DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.product.deleted_at'))->onlyOnDetail(),
