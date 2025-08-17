@@ -118,6 +118,7 @@
                 loadSavedEggsConfiguration();
                 initializeSlotVariableCheckboxes();
                 observeSlotPricesChanges();
+                updateEggTabIndicators();
             }, 1000);
         }
 
@@ -221,7 +222,6 @@
                 tr.appendChild(tdUserViewable);
                 tr.appendChild(tdUserEditable);
 
-                // Add Slot Variable column only for Variables section and if slot prices exist
                 if (isVariablesSection && hasSlotPrices()) {
                     const tdSlotVariable = document.createElement('td');
                     const isNumeric = isValueNumeric(value.default_value || '');
@@ -280,16 +280,81 @@
                 slotPricesContainer = document.querySelector('#ServerProduct_slotPrices');
             }
             
-            if (!slotPricesContainer) {
-                return false;
+            if (slotPricesContainer) {
+                const slotPriceItems = slotPricesContainer.querySelectorAll('.field-collection-item:not(.field-collection-item-action)');
+                if (slotPriceItems.length > 0) {
+                    return true;
+                }
             }
             
-            const slotPriceItems = slotPricesContainer.querySelectorAll('.field-collection-item:not(.field-collection-item-action)');
-            return slotPriceItems.length > 0;
+            const allElements = document.querySelectorAll('[id]');
+            for (let element of allElements) {
+                if (/^(Product|ServerProduct)_slotPrices_\d+$/.test(element.id)) {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
         function isValueNumeric(value) {
             return !isNaN(value) && !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        function hasEggSlotVariableSelected(eggId) {
+            const slotCheckboxes = document.querySelectorAll(`input.slot-variable-checkbox[data-egg-id="${eggId}"]:checked`);
+            return slotCheckboxes.length > 0;
+        }
+
+        function updateEggTabIndicators() {
+            const eggTabs = document.querySelectorAll('.nav-link[href^="#tab_"]');
+            eggTabs.forEach(tab => {
+                const eggId = tab.getAttribute('href').replace('#tab_', '');
+                
+                const existingIcon = tab.querySelector('.slot-warning-icon');
+                if (existingIcon) {
+                    existingIcon.remove();
+                }
+                
+                if (hasSlotPrices() && !hasEggSlotVariableSelected(eggId)) {
+                    const warningIcon = document.createElement('i');
+                    warningIcon.className = 'fas fa-exclamation-triangle text-danger ms-2 slot-warning-icon';
+                    warningIcon.title = loadedTranslations.slot_variable_not_configured_egg;
+                    tab.appendChild(warningIcon);
+                }
+            });
+            
+            updateMainTabIndicator();
+        }
+        
+        function updateMainTabIndicator() {
+            const productConnectionsTab = document.querySelector('#tablist-tab-product-connections');
+            if (!productConnectionsTab) {
+                return;
+            }
+            
+            const existingIcon = productConnectionsTab.querySelector('.slot-warning-icon');
+            if (existingIcon) {
+                existingIcon.remove();
+            }
+            
+            if (hasSlotPrices() && hasUnconfiguredSlotVariables()) {
+                const warningIcon = document.createElement('i');
+                warningIcon.className = 'fas fa-exclamation-triangle text-danger ms-2 slot-warning-icon';
+                warningIcon.title = 'Some eggs have unconfigured slot variables';
+                productConnectionsTab.appendChild(warningIcon);
+            }
+        }
+        
+        function hasUnconfiguredSlotVariables() {
+            const eggTabs = document.querySelectorAll('.nav-link[href^="#tab_"]');
+            for (let tab of eggTabs) {
+                const eggId = tab.getAttribute('href').replace('#tab_', '');
+                if (!hasEggSlotVariableSelected(eggId)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function handleSlotVariableChange(checkbox, eggId) {
@@ -317,6 +382,10 @@
                     userEditableCheckbox.disabled = false;
                 }
             }
+            
+            setTimeout(() => {
+                updateEggTabIndicators();
+            }, 50);
         }
 
         function updateSlotVariableCheckboxState(checkbox) {
@@ -487,52 +556,58 @@
         }
 
         function observeSlotPricesChanges() {
-            const productSlotPricesContainer = document.querySelector('#Product_slotPrices');
-            const serverProductSlotPricesContainer = document.querySelector('#ServerProduct_slotPrices');
-            
-            const observer = new MutationObserver(function(mutations) {
+            const globalObserver = new MutationObserver(function(mutations) {
                 let shouldUpdateTables = false;
                 
                 mutations.forEach(function(mutation) {
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach(function(node) {
-                            if (node.nodeType === Node.ELEMENT_NODE && 
-                                (node.classList.contains('field-collection-item') || 
-                                 node.querySelector && node.querySelector('.field-collection-item'))) {
-                                shouldUpdateTables = true;
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                if (node.id && /^(Product|ServerProduct)_slotPrices_\d+/.test(node.id)) {
+                                    shouldUpdateTables = true;
+                                }
+                                
+                                if (node.querySelector && node.querySelector('[id*="slotPrices"]')) {
+                                    shouldUpdateTables = true;
+                                }
+                                
+                                if (node.classList && node.classList.contains('field-collection-item')) {
+                                    const parentContainer = node.closest('#Product_slotPrices, #ServerProduct_slotPrices');
+                                    if (parentContainer) {
+                                        shouldUpdateTables = true;
+                                    }
+                                }
                             }
                         });
                         
                         mutation.removedNodes.forEach(function(node) {
-                            if (node.nodeType === Node.ELEMENT_NODE && 
-                                (node.classList.contains('field-collection-item') || 
-                                 node.querySelector && node.querySelector('.field-collection-item'))) {
-                                shouldUpdateTables = true;
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                if (node.id && /^(Product|ServerProduct)_slotPrices_\d+/.test(node.id)) {
+                                    console.log('Wykryto usunięcie slot price element:', node.id);
+                                    shouldUpdateTables = true;
+                                }
+                                
+                                if (node.classList && node.classList.contains('field-collection-item')) {
+                                    console.log('Wykryto usunięcie field-collection-item');
+                                    shouldUpdateTables = true;
+                                }
                             }
                         });
                     }
                 });
                 
                 if (shouldUpdateTables) {
+                    console.log('Aktualizuję tabele po wykryciu zmian slot prices');
                     setTimeout(() => {
                         updateAllVariablesTables();
-                    }, 100);
+                    }, 200);
                 }
             });
             
-            if (productSlotPricesContainer) {
-                observer.observe(productSlotPricesContainer, {
-                    childList: true,
-                    subtree: true
-                });
-            }
-            
-            if (serverProductSlotPricesContainer) {
-                observer.observe(serverProductSlotPricesContainer, {
-                    childList: true,
-                    subtree: true
-                });
-            }
+            globalObserver.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
         }
         
         function updateAllVariablesTables() {
@@ -564,6 +639,7 @@
                     
                     setTimeout(() => {
                         initializeSlotVariableCheckboxes();
+                        updateEggTabIndicators();
                     }, 100);
                 }
             });

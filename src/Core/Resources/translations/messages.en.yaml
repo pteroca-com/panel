@@ -645,6 +645,8 @@ pteroca:
       egg_variable_user_viewable: 'User viewable'
       egg_variable_user_editable: 'User editable'
       egg_variable_slot_variable: 'Slot variable'
+      slot_variable_not_configured_egg: 'Slot variable not configured for this egg'
+      slot_variables_unconfigured_eggs: 'Some eggs have unconfigured slot variables'
       egg_allow_change: 'Allow to change egg with reinstallation'
       disk_space_hint: 'The total amount of disk storage allocated for this server (in MB). For example, 10240 equals 10 GB.'
       memory_hint: 'The total RAM limit allocated to this server (in MB). The server cannot exceed this memory limit.'
