@@ -114,7 +114,11 @@
 
             eggSelector.parentElement.appendChild(container);
             eggSelector.parentElement.appendChild(contentContainer);
-            setTimeout(() => loadSavedEggsConfiguration(), 1000);
+            setTimeout(() => {
+                loadSavedEggsConfiguration();
+                initializeSlotVariableCheckboxes();
+                observeSlotPricesChanges();
+            }, 1000);
         }
 
         function prepareEggTabContent(index, eggData) {
@@ -150,12 +154,12 @@
                 }
             })
             tabContent.innerHTML += '<h5 class="mb-3 mt-4">' + loadedTranslations.variables + '</h5>';
-            tabContent.innerHTML += generateVariablesTable(eggData?.relationships?.variables)
+            tabContent.innerHTML += generateVariablesTable(eggData?.relationships?.variables, true)
 
             return tabContent;
         }
 
-        function generateVariablesTable(variables) {
+        function generateVariablesTable(variables, isVariablesSection = false) {
             if (variables === null || typeof variables === "undefined") {
                 return '';
             }
@@ -185,6 +189,13 @@
             tr.appendChild(thUserViewable);
             tr.appendChild(thUserEditable);
 
+            let thSlotVariable = null;
+            if (isVariablesSection && hasSlotPrices()) {
+                thSlotVariable = document.createElement('th');
+                thSlotVariable.textContent = loadedTranslations.egg_variable_slot_variable;
+                tr.appendChild(thSlotVariable);
+            }
+
             thead.appendChild(tr);
             table.appendChild(thead);
 
@@ -197,6 +208,7 @@
                     tdUserEditable = document.createElement('td');
 
                 tr.dataset.id = value.id;
+                tr.dataset.eggId = value.egg_id;
                 tdName.textContent = value.name;
                 tdDescription.textContent = value.description;
                 tdValue.innerHTML = createInput((value.default_value || ''), value.egg_id, value.id, value.options, 'value');
@@ -208,6 +220,14 @@
                 tr.appendChild(tdValue);
                 tr.appendChild(tdUserViewable);
                 tr.appendChild(tdUserEditable);
+
+                // Add Slot Variable column only for Variables section and if slot prices exist
+                if (isVariablesSection && hasSlotPrices()) {
+                    const tdSlotVariable = document.createElement('td');
+                    const isNumeric = isValueNumeric(value.default_value || '');
+                    tdSlotVariable.innerHTML = createSlotVariableCheckbox(false, value.egg_id, value.id, 'slot_variable', !isNumeric);
+                    tr.appendChild(tdSlotVariable);
+                }
 
                 tbody.appendChild(tr);
             }
@@ -238,6 +258,13 @@
             return `<input type="checkbox" class="form-check-input" name="${getInputName(eggId, variableId, name)}" ${checked ? 'checked' : ''}>`;
         }
 
+        function createSlotVariableCheckbox(checked, eggId, variableId, name, disabled = false) {
+            const checkboxId = `slot_var_${eggId}_${variableId}`;
+            const disabledAttr = disabled ? 'disabled' : '';
+            const onChangeHandler = disabled ? '' : `onchange="handleSlotVariableChange(this, '${eggId}')"`;
+            return `<input type="checkbox" class="form-check-input slot-variable-checkbox" id="${checkboxId}" name="${getInputName(eggId, variableId, name)}" ${checked ? 'checked' : ''} ${disabledAttr} ${onChangeHandler} data-egg-id="${eggId}" data-variable-id="${variableId}">`;
+        }
+
         function createSelect(value, eggId, options, name) {
             let select = `<select name="${getInputName(eggId, 'docker_image', name)}" class="form-control" style="font-size: 14px;">`;
             for (const [key, option] of Object.entries(options)) {
@@ -245,6 +272,86 @@
             }
             select += '</select>';
             return select;
+        }
+
+        function hasSlotPrices() {
+            let slotPricesContainer = document.querySelector('#Product_slotPrices');
+            if (!slotPricesContainer) {
+                slotPricesContainer = document.querySelector('#ServerProduct_slotPrices');
+            }
+            
+            if (!slotPricesContainer) {
+                return false;
+            }
+            
+            const slotPriceItems = slotPricesContainer.querySelectorAll('.field-collection-item:not(.field-collection-item-action)');
+            return slotPriceItems.length > 0;
+        }
+
+        function isValueNumeric(value) {
+            return !isNaN(value) && !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        function handleSlotVariableChange(checkbox, eggId) {
+            if (checkbox.checked) {
+                const otherSlotCheckboxes = document.querySelectorAll(`input.slot-variable-checkbox[data-egg-id="${eggId}"]:not(#${checkbox.id})`);
+                otherSlotCheckboxes.forEach(otherCheckbox => {
+                    otherCheckbox.checked = false;
+                    const otherRow = otherCheckbox.closest('tr');
+                    const otherUserEditableCheckbox = otherRow.querySelector('input[name*="user_editable"]');
+                    if (otherUserEditableCheckbox) {
+                        otherUserEditableCheckbox.disabled = false;
+                    }
+                });
+
+                const row = checkbox.closest('tr');
+                const userEditableCheckbox = row.querySelector('input[name*="user_editable"]');
+                if (userEditableCheckbox) {
+                    userEditableCheckbox.checked = false;
+                    userEditableCheckbox.disabled = true;
+                }
+            } else {
+                const row = checkbox.closest('tr');
+                const userEditableCheckbox = row.querySelector('input[name*="user_editable"]');
+                if (userEditableCheckbox) {
+                    userEditableCheckbox.disabled = false;
+                }
+            }
+        }
+
+        function updateSlotVariableCheckboxState(checkbox) {
+            const row = checkbox.closest('tr');
+            const valueInput = row.querySelector('input[name*="value"], select[name*="value"]');
+            
+            if (valueInput) {
+                const isNumeric = isValueNumeric(valueInput.value);
+                
+                if (!isNumeric && checkbox.checked) {
+                    checkbox.checked = false;
+                    const userEditableCheckbox = row.querySelector('input[name*="user_editable"]');
+                    if (userEditableCheckbox) {
+                        userEditableCheckbox.disabled = false;
+                    }
+                }
+                
+                checkbox.disabled = !isNumeric;
+                
+                if (!valueInput.hasAttribute('data-slot-listener-added')) {
+                    valueInput.setAttribute('data-slot-listener-added', 'true');
+                    valueInput.addEventListener('input', function() {
+                        updateSlotVariableCheckboxState(checkbox);
+                    });
+                }
+            }
+        }
+
+        function initializeSlotVariableCheckboxes() {
+            setTimeout(() => {
+                const slotCheckboxes = document.querySelectorAll('.slot-variable-checkbox');
+                slotCheckboxes.forEach(checkbox => {
+                    updateSlotVariableCheckboxState(checkbox);
+                });
+            }, 500);
         }
 
         function clearEggsData() {
@@ -281,7 +388,16 @@
                 return;
             }
 
-            const savedEggsConfigurations = document.querySelector('#Product_eggsConfiguration').value;
+            let eggsConfigurationElement = document.querySelector('#Product_eggsConfiguration');
+            if (!eggsConfigurationElement) {
+                eggsConfigurationElement = document.querySelector('#ServerProduct_eggsConfiguration');
+            }
+            
+            if (!eggsConfigurationElement) {
+                return;
+            }
+
+            const savedEggsConfigurations = eggsConfigurationElement.value;
             let eggsConfigurationsToLoad;
             try {
                 eggsConfigurationsToLoad = JSON.parse(savedEggsConfigurations);
@@ -307,7 +423,8 @@
             const valueInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
                 selectInput = document.querySelector(`select[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
                 viewableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_viewable]"]`),
-                editableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_editable]"]`);
+                editableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_editable]"]`),
+                slotVariableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][slot_variable]"]`);
             
             if (valueInput) {
                 valueInput.value = value.value;
@@ -320,6 +437,17 @@
             }
             if (editableInput) {
                 editableInput.checked = value.user_editable || false;
+            }
+            if (slotVariableInput) {
+                slotVariableInput.checked = value.slot_variable || false;
+                
+                if (value.slot_variable) {
+                    if (editableInput) {
+                        editableInput.disabled = true;
+                    }
+                }
+                
+                updateSlotVariableCheckboxState(slotVariableInput);
             }
         }
 
@@ -348,10 +476,97 @@
                 }
             });
 
-            const hiddenField = document.querySelector('#Product_eggsConfiguration');
+            let hiddenField = document.querySelector('#Product_eggsConfiguration');
+            if (!hiddenField) {
+                hiddenField = document.querySelector('#ServerProduct_eggsConfiguration');
+            }
+            
             if (hiddenField && Object.keys(eggsConfiguration).length > 0) {
                 hiddenField.value = JSON.stringify(eggsConfiguration);
             }
+        }
+
+        function observeSlotPricesChanges() {
+            const productSlotPricesContainer = document.querySelector('#Product_slotPrices');
+            const serverProductSlotPricesContainer = document.querySelector('#ServerProduct_slotPrices');
+            
+            const observer = new MutationObserver(function(mutations) {
+                let shouldUpdateTables = false;
+                
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE && 
+                                (node.classList.contains('field-collection-item') || 
+                                 node.querySelector && node.querySelector('.field-collection-item'))) {
+                                shouldUpdateTables = true;
+                            }
+                        });
+                        
+                        mutation.removedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE && 
+                                (node.classList.contains('field-collection-item') || 
+                                 node.querySelector && node.querySelector('.field-collection-item'))) {
+                                shouldUpdateTables = true;
+                            }
+                        });
+                    }
+                });
+                
+                if (shouldUpdateTables) {
+                    setTimeout(() => {
+                        updateAllVariablesTables();
+                    }, 100);
+                }
+            });
+            
+            if (productSlotPricesContainer) {
+                observer.observe(productSlotPricesContainer, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+            
+            if (serverProductSlotPricesContainer) {
+                observer.observe(serverProductSlotPricesContainer, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+        
+        function updateAllVariablesTables() {
+            const eggTabs = document.querySelectorAll('.tab-pane');
+            
+            eggTabs.forEach(tabPane => {
+                const eggId = parseInt(tabPane.id.replace('tab_', ''));
+                const eggData = loadedEggs[eggId];
+                
+                if (!eggData) return;
+                
+                const variablesHeaders = tabPane.querySelectorAll('h5');
+                let variablesHeader = null;
+                
+                variablesHeaders.forEach(header => {
+                    if (header.textContent === loadedTranslations.variables) {
+                        variablesHeader = header;
+                    }
+                });
+                
+                if (variablesHeader) {
+                    let nextElement = variablesHeader.nextElementSibling;
+                    if (nextElement && nextElement.tagName === 'TABLE') {
+                        nextElement.remove();
+                    }
+                    
+                    const newTableHTML = generateVariablesTable(eggData?.relationships?.variables, true);
+                    variablesHeader.insertAdjacentHTML('afterend', newTableHTML);
+                    
+                    setTimeout(() => {
+                        initializeSlotVariableCheckboxes();
+                    }, 100);
+                }
+            });
         }
 
         function restoreFormValuesAfterValidationError() {

@@ -86,6 +86,7 @@ class ServerEggService
             'egg_variable_value' => $this->translator->trans('pteroca.crud.product.egg_variable_value'),
             'egg_variable_user_viewable' => $this->translator->trans('pteroca.crud.product.egg_variable_user_viewable'),
             'egg_variable_user_editable' => $this->translator->trans('pteroca.crud.product.egg_variable_user_editable'),
+            'egg_variable_slot_variable' => $this->translator->trans('pteroca.crud.product.egg_variable_slot_variable'),
         ];
     }
 }
