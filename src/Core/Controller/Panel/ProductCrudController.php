@@ -185,6 +185,8 @@ class ProductCrudController extends AbstractPanelController
                 ->setRequired(true)
                 ->setEntryIsComplex(),
 
+            FormField::addTab('Fees')
+                ->setIcon('fa fa-coins'),
             NumberField::new('configurationFee', $this->translator->trans('pteroca.product.configuration_fee'))
                 ->setHelp($this->translator->trans('pteroca.product.configuration_fee_hint'))
                 ->setNumDecimals(2)
