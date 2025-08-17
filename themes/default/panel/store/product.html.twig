@@ -191,6 +191,10 @@
                                             <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
                                                 {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
                                             </option>
+                                        {% elseif price.type.value == 'slot' %}
+                                            <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
+                                                {{ 'pteroca.store.slot_pricing'|trans }} - {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.slot'|trans }}
+                                            </option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>

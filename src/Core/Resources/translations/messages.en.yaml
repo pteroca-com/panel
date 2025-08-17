@@ -150,6 +150,7 @@ pteroca:
     discount_hint: 'Discount will be applied only to the first billing cycle.'
     product_order_details: 'Product details and ordering options'
     total: 'Total'
+    slot: 'slot'
 
   store:
     title: 'Store'
@@ -173,6 +174,8 @@ pteroca:
     no_products_title: 'No products'
     shop_is_empty: 'Shop is empty'
     no_products_and_categories: 'There are no products or categories in the store yet.'
+    slot_pricing: 'Per slot'
+    slot_based_pricing: 'Slot-based pricing'
   cart_configuration:
     title: 'Configure your server'
     configuration: 'Configuration'
