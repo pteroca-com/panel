@@ -135,35 +135,6 @@ class ProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.schedules_hint'))
                 ->setColumns(4),
 
-            FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
-                ->setIcon('fa fa-link'),
-            ChoiceField::new('nodes', $this->translator->trans('pteroca.crud.product.nodes'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.nodes_hint'))
-                ->setChoices(fn () => $this->getNodesChoices())
-                ->allowMultipleChoices()
-                ->setRequired(true)
-                ->onlyOnForms()
-                ->setColumns(6),
-            ChoiceField::new('nest', $this->translator->trans('pteroca.crud.product.nest'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.nest_hint'))
-                ->setChoices(fn () => $nests)
-                ->onlyOnForms()
-                ->setRequired(true)
-                ->setFormTypeOption('attr', ['class' => 'nest-selector'])
-                ->setColumns(6),
-            HiddenField::new('eggsConfiguration')->onlyOnForms(),
-            BooleanField::new('allowChangeEgg', $this->translator->trans('pteroca.crud.product.egg_allow_change'))
-                ->setRequired(false)
-                ->hideOnIndex(),
-            ChoiceField::new('eggs', $this->translator->trans('pteroca.crud.product.eggs'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.eggs_hint'))
-                ->setChoices(fn() => $this->getEggsChoices($nests))
-                ->allowMultipleChoices()
-                ->onlyOnForms()
-                ->setRequired(true)
-                ->setFormTypeOption('attr', ['class' => 'egg-selector'])
-                ->setColumns(12),
-
             FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
                 ->setIcon('fa fa-money'),
             CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
@@ -194,6 +165,35 @@ class ProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.price_slot_plan_hint'))
                 ->setRequired(true)
                 ->setEntryIsComplex(),
+
+            FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
+                ->setIcon('fa fa-link'),
+            ChoiceField::new('nodes', $this->translator->trans('pteroca.crud.product.nodes'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.nodes_hint'))
+                ->setChoices(fn () => $this->getNodesChoices())
+                ->allowMultipleChoices()
+                ->setRequired(true)
+                ->onlyOnForms()
+                ->setColumns(6),
+            ChoiceField::new('nest', $this->translator->trans('pteroca.crud.product.nest'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.nest_hint'))
+                ->setChoices(fn () => $nests)
+                ->onlyOnForms()
+                ->setRequired(true)
+                ->setFormTypeOption('attr', ['class' => 'nest-selector'])
+                ->setColumns(6),
+            HiddenField::new('eggsConfiguration')->onlyOnForms(),
+            BooleanField::new('allowChangeEgg', $this->translator->trans('pteroca.crud.product.egg_allow_change'))
+                ->setRequired(false)
+                ->hideOnIndex(),
+            ChoiceField::new('eggs', $this->translator->trans('pteroca.crud.product.eggs'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.eggs_hint'))
+                ->setChoices(fn() => $this->getEggsChoices($nests))
+                ->allowMultipleChoices()
+                ->onlyOnForms()
+                ->setRequired(true)
+                ->setFormTypeOption('attr', ['class' => 'egg-selector'])
+                ->setColumns(12),
 
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
