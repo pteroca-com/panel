@@ -7,6 +7,7 @@ use App\Core\Contract\ProductPriceInterface;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use App\Core\Trait\ProductEntityTrait;
+use App\Core\Trait\SlotVariableValidationTrait;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,6 +20,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class ServerProduct implements ProductInterface
 {
     use ProductEntityTrait;
+    use SlotVariableValidationTrait;
 
     #[ORM\OneToOne(targetEntity: Server::class, inversedBy: 'serverProduct')]
     #[ORM\JoinColumn(nullable: false)]
@@ -163,6 +165,8 @@ class ServerProduct implements ProductInterface
                 ->atPath('prices')
                 ->addViolation();
         }
+
+        $this->validateSlotVariablesConfiguration($context);
     }
 
     public function __toString(): string

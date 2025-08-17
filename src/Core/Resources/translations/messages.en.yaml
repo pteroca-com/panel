@@ -688,6 +688,7 @@ pteroca:
       at_least_one_price_required: 'At least one price is required.'
       at_least_one_selected_price_required: 'At least one selected price is required.'
       only_one_selected_price_allowed: 'Only one selected price is allowed.'
+      slot_variable_required_for_slot_prices: 'All eggs must have a slot variable configured when slot prices are defined.'
       product_connections_note: 'The following settings will be applied only after reinstalling the server or changing the software.'
       deleted_at: 'Deleted at'
       show_archived: 'Show archived'

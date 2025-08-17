@@ -7,6 +7,7 @@ use App\Core\Contract\ProductPriceInterface;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use App\Core\Trait\ProductEntityTrait;
+use App\Core\Trait\SlotVariableValidationTrait;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Product implements ProductInterface
 {
     use ProductEntityTrait;
+    use SlotVariableValidationTrait;
 
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $description = null;
@@ -264,6 +266,8 @@ class Product implements ProductInterface
                 ->atPath('prices')
                 ->addViolation();
         }
+
+        $this->validateSlotVariablesConfiguration($context);
     }
 
     public function __toString(): string
