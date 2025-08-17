@@ -544,31 +544,10 @@
                     }
                     
                     if (input.type === 'checkbox') {
-                        // Zawsze zapisuj wartość checkbox, nawet jeśli jest disabled
                         eggsConfiguration[eggId][type][itemId][property] = input.checked;
                     } else {
                         eggsConfiguration[eggId][type][itemId][property] = input.value;
                     }
-                }
-            });
-
-            // Dodatkowo sprawdź czy wszystkie slot_variable checkboxy zostały uwzględnione
-            const slotVariableCheckboxes = document.querySelectorAll('input.slot-variable-checkbox');
-            slotVariableCheckboxes.forEach(checkbox => {
-                const nameMatch = checkbox.name.match(/eggs_configuration\[(\d+)\]\[(options|variables)\]\[([^\]]+)\]\[([^\]]+)\]/);
-                if (nameMatch) {
-                    const [, eggId, type, itemId, property] = nameMatch;
-                    
-                    if (!eggsConfiguration[eggId]) {
-                        eggsConfiguration[eggId] = { options: {}, variables: {} };
-                    }
-                    
-                    if (!eggsConfiguration[eggId][type][itemId]) {
-                        eggsConfiguration[eggId][type][itemId] = {};
-                    }
-                    
-                    // Wymuszenie zapisania wartości slot_variable, nawet dla disabled
-                    eggsConfiguration[eggId][type][itemId][property] = checkbox.checked;
                 }
             });
 
@@ -610,12 +589,10 @@
                         mutation.removedNodes.forEach(function(node) {
                             if (node.nodeType === Node.ELEMENT_NODE) {
                                 if (node.id && /^(Product|ServerProduct)_slotPrices_\d+/.test(node.id)) {
-                                    console.log('Wykryto usunięcie slot price element:', node.id);
                                     shouldUpdateTables = true;
                                 }
                                 
                                 if (node.classList && node.classList.contains('field-collection-item')) {
-                                    console.log('Wykryto usunięcie field-collection-item');
                                     shouldUpdateTables = true;
                                 }
                             }
@@ -624,7 +601,6 @@
                 });
                 
                 if (shouldUpdateTables) {
-                    console.log('Aktualizuję tabele po wykryciu zmian slot prices');
                     setTimeout(() => {
                         updateAllVariablesTables();
                     }, 200);
