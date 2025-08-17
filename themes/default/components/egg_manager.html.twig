@@ -341,7 +341,7 @@
             if (hasSlotPrices() && hasUnconfiguredSlotVariables()) {
                 const warningIcon = document.createElement('i');
                 warningIcon.className = 'fas fa-exclamation-triangle text-danger ms-2 slot-warning-icon';
-                warningIcon.title = 'Some eggs have unconfigured slot variables';
+                warningIcon.title = loadedTranslations.slot_variables_unconfigured_eggs;
                 productConnectionsTab.appendChild(warningIcon);
             }
         }
