@@ -187,11 +187,15 @@ class ProductCrudController extends AbstractPanelController
 
             FormField::addTab('Fees')
                 ->setIcon('fa fa-coins'),
-            NumberField::new('configurationFee', $this->translator->trans('pteroca.product.configuration_fee'))
+            NumberField::new('configurationFee', 'Conf. fee')
                 ->setHelp($this->translator->trans('pteroca.product.configuration_fee_hint'))
                 ->setNumDecimals(2)
                 ->setRequired(false)
-                ->setColumns(6),
+                ->setColumns(6)
+                ->setTextAlign('right')
+                ->formatValue(function ($value) {
+                    return $value === null ? '' : $value;
+                }),
 
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
@@ -247,6 +251,7 @@ class ProductCrudController extends AbstractPanelController
             ->add('description')
             ->add('isActive')
             ->add('category')
+            ->add('configurationFee')
             ->add('diskSpace')
             ->add('memory')
             ->add('io')
