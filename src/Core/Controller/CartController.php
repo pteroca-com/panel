@@ -94,6 +94,7 @@ class CartController extends AbstractController
             'request' => $request,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
             'hasSlotPrices' => $hasSlotPrices,
+            'initialSlots' => $request['slots'] ?? null,
         ]);
     }
 

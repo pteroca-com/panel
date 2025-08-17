@@ -346,6 +346,26 @@
             const slotsRange = document.getElementById('slots');
             const selectedSlotsDisplay = document.getElementById('selected-slots');
             const eggSelect = document.getElementById('egg');
+            
+            {% if initialSlots %}
+            const initialSlots = {{ initialSlots }};
+            if (initialSlots && slotsRange) {
+                const slotOptions = Array.from(durationSelect.options).filter(option => 
+                    option.getAttribute('data-type') === 'slot'
+                );
+                if (slotOptions.length > 0) {
+                    durationSelect.value = slotOptions[0].value;
+                    slotSelection.style.display = 'block';
+                    
+                    updateMaxSlots();
+                    
+                    const maxSlots = parseInt(slotsRange.max);
+                    const finalSlots = Math.min(initialSlots, maxSlots);
+                    slotsRange.value = finalSlots;
+                    handleSlotsChange();
+                }
+            }
+            {% endif %}
             {% endif %}
 
             durationSelect.addEventListener('change', () => {
