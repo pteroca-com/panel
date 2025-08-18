@@ -23,6 +23,7 @@ class ServerBuildService
         UserInterface $user,
         int $eggId,
         string $serverName = '',
+        ?int $slots = null,
     ): array
     {
         $selectedEgg = $this->pterodactylService->getApi()->nest_eggs->get(
@@ -58,7 +59,7 @@ class ServerBuildService
             'egg' => $selectedEgg->get('id'),
             'docker_image' => $dockerImage,
             'startup' => $startup,
-            'environment' => $this->prepareEnvironmentVariables($selectedEgg, $productEggConfiguration),
+            'environment' => $this->prepareEnvironmentVariables($selectedEgg, $productEggConfiguration, $slots),
             'limits' => [
                 'memory' => $product->getMemory(),
                 'swap' => $product->getSwap(),
@@ -133,7 +134,7 @@ class ServerBuildService
         ];
     }
 
-    private function prepareEnvironmentVariables(PterodactylEgg $egg, array $productEggConfiguration): array
+    private function prepareEnvironmentVariables(PterodactylEgg $egg, array $productEggConfiguration, ?int $slots = null): array
     {
         $environmentVariables = [];
 
@@ -142,9 +143,14 @@ class ServerBuildService
         }
 
         foreach ($egg->get('relationships')['variables']->data as $variable) {
-            $variableToSet = $productEggConfiguration[$egg->get('id')]['variables'][$variable->get('id')]['value']
-                ?? $variable->default_value;
-            $environmentVariables[$variable->env_variable] = $variableToSet;
+            $variableFromProduct = $productEggConfiguration[$egg->get('id')]['variables'][$variable->get('id')] ?? null;
+            $valueToSet = $variableFromProduct['value'] ?? $variable->default_value;
+
+            if ($slots !== null && !empty($variableFromProduct['slot_variable']) && $variableFromProduct['slot_variable'] === 'on') {
+                $valueToSet = $slots;
+            }
+
+            $environmentVariables[$variable->env_variable] = $valueToSet;
         }
 
         return $environmentVariables;

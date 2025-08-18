@@ -26,6 +26,7 @@ abstract class AbstractActionServerService
         ProductInterface $product,
         int $priceId,
         ?string $voucherCode = null,
+        ?int $slots = null
     ): void
     {
         $price = $product->getPrices()->filter(
@@ -37,6 +38,11 @@ abstract class AbstractActionServerService
         }
 
         $balancePaymentAmount = $price->getPrice();
+        
+        if ($price->getType()->value === 'slot' && $slots !== null && $slots > 0) {
+            $balancePaymentAmount = $balancePaymentAmount * $slots;
+        }
+        
         if (!empty($voucherCode)) {
             try {
                 $balancePaymentAmount = $this->voucherPaymentService->redeemPaymentVoucher(

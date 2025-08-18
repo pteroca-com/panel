@@ -177,6 +177,8 @@ pteroca:
     no_products_and_categories: 'There are no products or categories in the store yet.'
     slot_pricing: 'Per slot'
     slot_based_pricing: 'Slot-based pricing'
+    invalid_slots_number: 'Invalid number of slots'
+    slots_exceed_maximum: 'Number of slots exceeds maximum allowed value (%max%)'
   cart_configuration:
     title: 'Configure your server'
     configuration: 'Configuration'

@@ -136,7 +136,8 @@ class StoreService
         ProductInterface $product,
         ?int $eggId,
         int $priceId,
-        ?Server $server = null
+        ?Server $server = null,
+        ?int $slots = null
     ): void
     {
         if (empty($server) && (empty($eggId) || !in_array($eggId, $product->getEggs()))) {
@@ -147,6 +148,40 @@ class StoreService
         $price = array_filter($productPrices, fn($price) => $price->getId() === $priceId);
         if (empty($price)) {
             throw new NotFoundHttpException($this->translator->trans('pteroca.store.price_not_found'));
+        }
+
+        $selectedPrice = current($price);
+        if ($selectedPrice->getType()->value === 'slot') {
+            if (empty($slots) || $slots < 1) {
+                throw new NotFoundHttpException($this->translator->trans('pteroca.store.invalid_slots_number'));
+            }
+
+            if (!empty($eggId)) {
+                $eggsConfigurationJson = $product->getEggsConfiguration();
+                $maxSlots = 32; // default value
+                
+                if ($eggsConfigurationJson) {
+                    try {
+                        $eggsConfiguration = json_decode($eggsConfigurationJson, true, 512, JSON_THROW_ON_ERROR);
+                        if (isset($eggsConfiguration[$eggId]['variables'])) {
+                            foreach ($eggsConfiguration[$eggId]['variables'] as $variable) {
+                                if (isset($variable['slot_variable']) && $variable['slot_variable'] === 'on' && !empty($variable['value'])) {
+                                    $maxSlots = (int) $variable['value'];
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (\JsonException) {
+                        // If JSON is invalid, use default maxSlots
+                    }
+                }
+
+                if ($slots > $maxSlots) {
+                    throw new NotFoundHttpException(
+                        $this->translator->trans('pteroca.store.slots_exceed_maximum', ['max' => $maxSlots])
+                    );
+                }
+            }
         }
     }
 

@@ -50,6 +50,7 @@ class CreateServerService extends AbstractActionServerService
         bool $autoRenewal,
         UserInterface $user,
         ?string $voucherCode = null,
+        ?int $slots = null,
     ): Server
     {
         if (!empty($voucherCode)) {
@@ -60,7 +61,7 @@ class CreateServerService extends AbstractActionServerService
             );
         }
 
-        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user);
+        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user, $slots);
 
         $createdEntityServer = $this->createEntityServer(
             $createdPterodactylServer,
@@ -72,7 +73,7 @@ class CreateServerService extends AbstractActionServerService
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
 
-        $this->updateUserBalance($user, $product, $priceId, $voucherCode);
+        $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots);
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
             $createdEntityServer,
@@ -100,12 +101,13 @@ class CreateServerService extends AbstractActionServerService
         Product $product,
         int $eggId,
         string $serverName,
-        UserInterface $user
+        UserInterface $user,
+        ?int $slots = null
     ): PterodactylServer
     {
         try {
             $preparedServerBuild = $this->serverBuildService
-                ->prepareServerBuild($product, $user, $eggId, $serverName);
+                ->prepareServerBuild($product, $user, $eggId, $serverName, $slots);
 
             return $this->pterodactylService
                 ->getApi()

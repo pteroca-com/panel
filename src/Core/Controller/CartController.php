@@ -118,12 +118,15 @@ class CartController extends AbstractController
         $priceId = $request->request->getInt('duration');
         $serverName = $request->request->getString('server-name');
         $autoRenewal = $request->request->getBoolean('auto-renewal');
+        $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
 
         try {
             $this->storeService->validateBoughtProduct(
                 $product,
                 $eggId,
-                $priceId
+                $priceId,
+                null,
+                $slots
             );
 
             $createServerService->createServer(
@@ -134,6 +137,7 @@ class CartController extends AbstractController
                 $autoRenewal,
                 $this->getUser(),
                 $request->request->getString('voucher'),
+                $slots
             );
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));

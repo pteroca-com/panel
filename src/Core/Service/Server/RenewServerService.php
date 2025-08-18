@@ -82,7 +82,7 @@ class RenewServerService extends AbstractActionServerService
 
         $this->serverRepository->save($server);
         if ($chargeBalance) {
-            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode);
+            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, null);
         }
 
         if ($currentTime->diff($server->getExpiresAt())->days >= 7) {
