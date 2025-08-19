@@ -189,22 +189,13 @@
                                 </div>
 
                                 {% if hasSlotPrices %}
-                                <!-- Slot Selection Section -->
-                                <div class="col-md-12" id="slot-selection" style="display: none;">
-                                    <label for="slots" class="form-label fw-semibold">
-                                        <i class="fas fa-server me-2 text-primary"></i>
-                                        {{ 'pteroca.product.slots'|trans }}
-                                    </label>
-                                    <div class="bg-light rounded-3 p-3">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span class="me-3">1</span>
-                                            <input type="range" class="form-range flex-grow-1" id="slots" name="slots" min="1" max="32" value="1" step="1">
-                                            <span class="ms-3">32</span>
-                                        </div>
-                                        <div class="text-center">
-                                            <span class="badge bg-secondary fs-6 text-white" id="selected-slots">1 {{ 'pteroca.product.slot'|trans }}</span>
-                                        </div>
-                                    </div>
+                                <div class="col-md-12">
+                                    {% include 'components/slot_selector.html.twig' with {
+                                        'initialValue': 1,
+                                        'maxValue': 32,
+                                        'minValue': 1,
+                                        'showBadge': true
+                                    } %}
                                 </div>
                                 {% endif %}
 
@@ -408,12 +399,17 @@
                     }
                 }
                 
+                // Get current value before updating max
+                const currentSlotValue = parseInt(slotsRange.value);
+                
+                // Update max slots for the range input
                 slotsRange.max = maxSlots;
                 slotsRange.nextElementSibling.textContent = maxSlots;
                 
-                if (parseInt(slotsRange.value) > maxSlots) {
+                // If current value exceeds new maximum, adjust it to the new maximum
+                if (currentSlotValue > maxSlots) {
                     slotsRange.value = maxSlots;
-                    handleSlotsChange();
+                    handleSlotsChange(); // Update the display text
                 }
             }
 
