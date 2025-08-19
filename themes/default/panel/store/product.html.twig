@@ -390,6 +390,8 @@
             eggSelect.addEventListener('change', function() {
                 if (slotSelection.style.display !== 'none') {
                     updateMaxSlots();
+                    // Trigger price recalculation after slot maximum changes
+                    durationSelect.dispatchEvent(new Event('change'));
                 }
             });
             
