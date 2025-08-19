@@ -207,26 +207,6 @@
                                 {% endif %}
                             {% endfor %}
 
-                            {% if hasSlotPrices %}
-                            <!-- Slot Selection Section -->
-                            <div class="mb-4" id="slot-selection" style="display: none;">
-                                <label for="slots" class="form-label fw-semibold">
-                                    <i class="fas fa-server me-2 text-primary"></i>
-                                    {{ 'pteroca.product.slots'|trans }}
-                                </label>
-                                <div class="bg-light rounded-3 p-3">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span class="me-3">1</span>
-                                        <input type="range" class="form-range flex-grow-1" id="slots" name="slots" min="1" max="32" value="1" step="1">
-                                        <span class="ms-3">32</span>
-                                    </div>
-                                    <div class="text-center">
-                                        <span class="badge bg-secondary fs-6 text-white" id="selected-slots">1 {{ 'pteroca.product.slot'|trans }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-
                             <div class="mb-4">
                                 <label for="egg" class="form-label fw-semibold">
                                     <i class="fas fa-cog me-2 text-warning"></i>
@@ -244,6 +224,16 @@
                                     </div>
                                 {% endif %}
                             </div>
+
+                            
+                            {% if hasSlotPrices %}
+                            {% include 'components/slot_selector.html.twig' with {
+                                'initialValue': 1,
+                                'maxValue': 32,
+                                'minValue': 1,
+                                'showBadge': true
+                            } %}
+                            {% endif %}
 
                             <!-- Price Calculation -->
                             <div class="mb-4">
