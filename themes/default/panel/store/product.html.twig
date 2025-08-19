@@ -345,12 +345,18 @@
                     }
                 }
                 
+                // Get current value before updating max
+                const currentSlotValue = parseInt(slotsRange.value);
+                
+                // Update max slots for the range input
                 slotsRange.max = maxSlots;
                 slotsRange.nextElementSibling.textContent = maxSlots;
                 
-                if (parseInt(slotsRange.value) > maxSlots) {
+                // If current value exceeds new maximum, adjust it to the new maximum
+                if (currentSlotValue > maxSlots) {
                     slotsRange.value = maxSlots;
-                    handleSlotsChange();
+                    handleSlotsChange(); // Update the display text
+                    console.log(`Slot value adjusted from ${currentSlotValue} to ${maxSlots} due to egg change`);
                 }
             }
             
