@@ -4,6 +4,7 @@ namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
+use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
     {
         $serverDetails = $this->getServerDetails($server, ['variables']);
         $serverVariable = $this->getServerVariable($serverDetails, $variableKey);
-        $this->validateVariable($server, $serverDetails, $serverVariable, $variableValue);
+        $this->validateVariable($server, $serverDetails, $serverVariable, $variableValue, $user);
 
         $this->pterodactylClientService
             ->getApi($user)
@@ -53,8 +54,12 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         return $foundVariable['attributes'];
     }
 
-    private function isVariableEditableForUser(Server $server, array $serverDetails, array $serverVariable): bool
+    private function isVariableEditableForUser(Server $server, array $serverDetails, array $serverVariable, UserInterface $user): bool
     {
+        if (in_array(UserRoleEnum::ROLE_ADMIN->value, $user->getRoles())) {
+            return true;
+        }
+
         if ($serverVariable['user_editable'] === false) {
             return false;
         }
@@ -75,9 +80,9 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         return $variableProductEggConfiguration->user_editable ?? false;
     }
 
-    private function validateVariable(Server $server, array $serverDetails, array $serverVariable, string $variableValue): void
+    private function validateVariable(Server $server, array $serverDetails, array $serverVariable, string $variableValue, UserInterface $user): void
     {
-        if (!$this->isVariableEditableForUser($server, $serverDetails, $serverVariable)) {
+        if (!$this->isVariableEditableForUser($server, $serverDetails, $serverVariable, $user)) {
             throw new \Exception('Variable is not editable for user');
         }
 
