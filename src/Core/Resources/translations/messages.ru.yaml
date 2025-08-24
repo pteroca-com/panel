@@ -251,6 +251,7 @@ pteroca:
     disk: 'Диск'
     network_inbound: 'Входящий поток'
     network_outbound: 'Выходящий поток'
+    software: 'Программное обеспечение'
     command: 'Команда'
     startup_command: 'Команда запуска'
     docker_image: 'Docker Образ'
