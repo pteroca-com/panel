@@ -87,11 +87,19 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         }
 
         $variableValueRules = $serverVariable['rules'];
+        $rules = explode('|', $variableValueRules);
+        
+        if (in_array('boolean', $rules)) {
+            if (!in_array($variableValue, ['0', '1', 'true', 'false', ''])) {
+                throw new \Exception('Variable value is invalid');
+            }
+            return;
+        }
+
         $ruleMap = [
             'required' => Assert\NotBlank::class,
             'string' => Assert\Type::class,
             'numeric' => Assert\Type::class,
-            'boolean' => Assert\Type::class,
             'email' => Assert\Email::class,
             'url' => Assert\Url::class,
             'ip' => Assert\Ip::class,
@@ -100,7 +108,6 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
             'range' => Assert\Range::class,
         ];
 
-        $rules = explode('|', $variableValueRules);
         $constraints = [];
 
         foreach ($rules as $rule) {
@@ -111,18 +118,20 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
 
             if (isset($ruleMap[$rule])) {
                 $constraints[] = match ($rule) {
-                    'string', 'numeric', 'boolean' => new $ruleMap[$rule](['type' => $rule]),
+                    'string', 'numeric' => new $ruleMap[$rule](['type' => $rule]),
                     'regex' => new $ruleMap[$rule](['pattern' => $partedRules[1] ?? '']),
                     default => new $ruleMap[$rule]([]),
                 };
             }
         }
 
-        $validator = Validation::createValidator();
-        $violations = $validator->validate($variableValue, $constraints);
+        if (!empty($constraints)) {
+            $validator = Validation::createValidator();
+            $violations = $validator->validate($variableValue, $constraints);
 
-        if (count($violations) > 0) {
-            throw new \Exception('Variable value is invalid');
+            if (count($violations) > 0) {
+                throw new \Exception('Variable value is invalid');
+            }
         }
     }
 }
