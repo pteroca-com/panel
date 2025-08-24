@@ -256,6 +256,7 @@ pteroca:
     disk: 'Disk'
     network_inbound: 'Network inbound'
     network_outbound: 'Network outbound'
+    software: 'Software'
     command: 'Command'
     startup_command: 'Startup command'
     docker_image: 'Docker image'
