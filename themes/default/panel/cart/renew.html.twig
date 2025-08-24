@@ -185,10 +185,25 @@
                                                 <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if server.serverProduct.selectedPrice.id == price.id %}selected{% endif %}>
                                                     {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
                                                 </option>
+                                            {% elseif price.type.value == 'slot' %}
+                                                <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if server.serverProduct.selectedPrice.id == price.id %}selected{% endif %}>
+                                                    {{ 'pteroca.store.slot_pricing'|trans }} - {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.slot'|trans }}
+                                                </option>
                                             {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
+                                {% if hasSlotPrices %}
+                                <div class="col-md-6">
+                                    <label for="server-slots" class="form-label fw-semibold">
+                                        <i class="fas fa-layer-group me-2 text-warning"></i>
+                                        {{ 'pteroca.product.slots'|trans }}
+                                    </label>
+                                    <input type="number" class="form-control form-control-lg" id="server-slots" name="server-slots" 
+                                           value="{{ serverSlots|default(1) }}" readonly readonly>
+                                </div>
+                                {% endif %}
+
                                 <div class="col-md-6">
                                     <label for="auto-renewal" class="form-label fw-semibold">
                                         <i class="fas fa-sync-alt me-2 text-info"></i>
@@ -331,9 +346,22 @@
         function calculatePrice() {
             const durationSelect = document.getElementById('duration'),
                 selectedOption = durationSelect.options[durationSelect.selectedIndex],
-                appliedDiscountValue = document.querySelector('#applied-discount-value'),
-                productPrice = parseFloat(selectedOption.dataset.price)
+                appliedDiscountValue = document.querySelector('#applied-discount-value');
+            
+            let productPrice = parseFloat(selectedOption.dataset.price);
+            
+            {% if hasSlotPrices %}
+            // Apply slot pricing calculation for renew (current server slots)
+            if (selectedOption.dataset.type === 'slot') {
+                const serverSlots = {{ serverSlots|default(1) }};
+                productPrice = productPrice * serverSlots;
+            }
+            {% endif %}
 
+            updatePriceDisplay(productPrice, selectedOption, appliedDiscountValue);
+        }
+
+        function updatePriceDisplay(productPrice, selectedOption, appliedDiscountValue) {
             let summaryPrice = productPrice;
 
             if (appliedDiscountValue && appliedDiscountValue.innerText) {
@@ -345,8 +373,19 @@
                 }
             }
 
-            document.querySelector('#selected-duration').textContent = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`
-            document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`
+            let durationText = '';
+            if (selectedOption.dataset.type === 'slot') {
+                {% if hasSlotPrices %}
+                const serverSlots = {{ serverSlots|default(1) }};
+                const periodText = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`;
+                durationText = `${periodText} [${serverSlots} ${serverSlots === 1 ? '{{ 'pteroca.product.slot'|trans }}' : '{{ 'pteroca.product.slots'|trans }}'}]`;
+                {% endif %}
+            } else {
+                durationText = `${selectedOption.dataset.value} ${unitTranslations[selectedOption.dataset.unit]}`;
+            }
+
+            document.querySelector('#selected-duration').textContent = durationText;
+            document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`;
 
             // Calculate and display dates for static pricing
             const datesElement = document.querySelector('#selected-dates');

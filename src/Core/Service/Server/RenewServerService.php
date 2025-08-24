@@ -27,6 +27,7 @@ class RenewServerService extends AbstractActionServerService
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
         private readonly LogService $logService,
         private readonly VoucherPaymentService $voucherPaymentService,
+        private readonly ServerSlotPricingService $serverSlotPricingService,
         UserRepository $userRepository,
         TranslatorInterface $translator,
         LoggerInterface $logger,
@@ -37,7 +38,8 @@ class RenewServerService extends AbstractActionServerService
     public function renewServer(
         Server $server,
         UserInterface $user,
-        ?string $voucherCode = null
+        ?string $voucherCode = null,
+        ?int $slots = null
     ): void
     {
         if (!empty($voucherCode)) {
@@ -57,6 +59,11 @@ class RenewServerService extends AbstractActionServerService
         }
 
         $selectedPrice = $server->getServerProduct()->getSelectedPrice();
+        
+        if ($slots === null && $selectedPrice->getType()->value === 'slot') {
+            $slots = $this->serverSlotPricingService->getServerSlots($server);
+        }
+        
         if ($selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND) {
             try {
                 $pterodactylClientApi = $this->pterodactylClientService
@@ -82,7 +89,7 @@ class RenewServerService extends AbstractActionServerService
 
         $this->serverRepository->save($server);
         if ($chargeBalance) {
-            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, null);
+            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, $slots);
         }
 
         if ($currentTime->diff($server->getExpiresAt())->days >= 7) {

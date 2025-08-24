@@ -7,6 +7,7 @@ use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\RenewServerService;
+use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\StoreService;
 use Exception;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -20,6 +21,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
         private PterodactylService $pterodactylService,
         private StoreService $storeService,
         private RenewServerService $renewServerService,
+        private ServerSlotPricingService $serverSlotPricingService,
         private TranslatorInterface $translator,
         private MessageBusInterface $messageBus,
     ) {}
@@ -63,11 +65,19 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
         }
 
         try {
+            $selectedPrice = $server->getServerProduct()->getSelectedPrice();
+            $slots = null;
+            
+            if ($selectedPrice->getType()->value === 'slot') {
+                $slots = $this->serverSlotPricingService->getServerSlots($server);
+            }
+            
             $this->storeService->validateUserBalanceByPrice(
                 $server->getUser(),
-                $server->getServerProduct()->getSelectedPrice()
+                $selectedPrice,
+                $slots
             );
-            $this->renewServerService->renewServer($server, $server->getUser());
+            $this->renewServerService->renewServer($server, $server->getUser(), $slots);
         } catch (Exception) {
             return false;
         }

@@ -185,9 +185,15 @@ class StoreService
         }
     }
 
-    public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice): void
+    public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice, ?int $slots = null): void
     {
-        if ($selectedPrice->getPrice() > $user->getBalance()) {
+        $finalPrice = $selectedPrice->getPrice();
+        
+        if ($selectedPrice->getType()->value === 'slot' && $slots !== null && $slots > 0) {
+            $finalPrice = $selectedPrice->getPrice() * $slots;
+        }
+        
+        if ($finalPrice > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
     }
