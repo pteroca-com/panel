@@ -250,6 +250,8 @@ pteroca:
     kill: '终止'
     send: '发送'
     address: '地址'
+    copy_ip: '复制 IP 地址'
+    ip_copied: 'IP 地址已复制到剪贴板！'
     uptime: '运行时间'
     cpu_load: 'CPU负载'
     memory: '内存'

@@ -251,6 +251,8 @@ pteroca:
     kill: 'Tuer'
     send: 'Envoyer'
     address: 'Adresse'
+    copy_ip: 'Copier l''adresse IP'
+    ip_copied: 'Adresse IP copiée dans le presse-papiers !'
     uptime: 'Temps de fonctionnement'
     cpu_load: 'Charge CPU'
     memory: 'Mémoire'
