@@ -548,6 +548,8 @@ pteroca:
       alert:
         success: 'EULA has been accepted successfully. The server is restarting.'
         error: 'Failed to accept EULA.'
+    copy_ip: 'Copy IP address'
+    ip_copied: 'IP address copied to clipboard!'
 
   actions:
     login: 'Login'
