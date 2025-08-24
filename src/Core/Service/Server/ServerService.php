@@ -26,9 +26,15 @@ class ServerService
     ): ?ServerDetailsDTO
     {
         $clientApi = $this->pterodactylClientService->getApi($user);
-        $pterodactylClientServerDetails = $clientApi->servers->http->get(
-            sprintf('servers/%s/resources', $server->getPterodactylServerIdentifier()),
-        );
+
+        if (false === $server->getIsSuspended()) {
+            $serverState = $clientApi->servers->http->get(
+                sprintf('servers/%s/resources', $server->getPterodactylServerIdentifier()),
+            )?->get('current_state');
+        } else {
+            $serverState = ServerStateEnum::SUSPENDED->value;
+        }
+        
         $serverDetails = $this->getServerDetails($server);
 
         return new ServerDetailsDTO(
@@ -39,7 +45,7 @@ class ServerService
             limits: $serverDetails->limits,
             featureLimits: $serverDetails->featureLimits,
             egg: $serverDetails->egg,
-            state: ServerStateEnum::tryFrom($pterodactylClientServerDetails->get('current_state')),
+            state: ServerStateEnum::tryFrom($serverState),
         );
     }
 

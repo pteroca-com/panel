@@ -9,4 +9,5 @@ enum ServerStateEnum: string
     case STARTING = 'starting';
     case STOPPING = 'stopping';
     case OFFLINE = 'offline';
+    case SUSPENDED = 'suspended';
 }
