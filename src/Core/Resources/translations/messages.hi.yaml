@@ -250,6 +250,8 @@ pteroca:
     kill: 'बंद करें'
     send: 'भेजें'
     address: 'पता'
+    copy_ip: 'IP पता कॉपी करें'
+    ip_copied: 'IP पता क्लिपबोर्ड में कॉपी कर दिया गया!'
     uptime: 'अपटाइम'
     cpu_load: 'CPU लोड'
     memory: 'मेमोरी'

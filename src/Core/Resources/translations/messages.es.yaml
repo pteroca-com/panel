@@ -250,6 +250,8 @@ pteroca:
     kill: 'Terminar'
     send: 'Enviar'
     address: 'Dirección'
+    copy_ip: 'Copiar dirección IP'
+    ip_copied: '¡Dirección IP copiada al portapapeles!'
     uptime: 'Tiempo de actividad'
     cpu_load: 'Carga de CPU'
     memory: 'Memoria'

@@ -32,14 +32,14 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.address'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <div class="d-flex align-items-center">
                                         <span class="flex-grow-1" data-ip>{{ serverData.serverDetails.ip }}</span>
-                                        <button class="btn btn-link p-0 ms-2" onclick="terminal.copyIpToClipboard()" title="{{ 'pteroca.server.copy_ip'|trans }}" style="line-height: 1;">
+                                        <button class="btn btn-link p-0" onclick="terminal.copyIpToClipboard()" title="{{ 'pteroca.server.copy_ip'|trans }}">
                                             <i class="fas fa-copy text-muted"></i>
                                         </button>
                                     </div>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -71,9 +71,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.cpu_load'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-cpu-load></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -88,9 +88,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.memory'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-memory></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -105,9 +105,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.disk'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-disk></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -122,9 +122,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.network_inbound'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-inbound></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -139,9 +139,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.network_outbound'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-outbound></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -250,6 +250,8 @@ pteroca:
     kill: 'Beenden'
     send: 'Senden'
     address: 'Adresse'
+    copy_ip: 'IP-Adresse kopieren'
+    ip_copied: 'IP-Adresse in die Zwischenablage kopiert!'
     uptime: 'Betriebszeit'
     cpu_load: 'CPU-Auslastung'
     memory: 'Speicher'
