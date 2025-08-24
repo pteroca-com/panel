@@ -50,6 +50,23 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-cube fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.software'|trans }}</h6>
+                                <p class="card-text">
+                                    <span class="col-12 float-end mt-1 rounded-1" data-software>{{ serverData.pterodactylServer.relationships.egg.name ?? '-' }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
                                 <i class="fas fa-clock fa-3x" data-uptime-icon></i>
                             </div>
                             <div class="col-12 col-sm-9">

@@ -258,6 +258,7 @@ pteroca:
     disk: '磁盘'
     network_inbound: '入站网络'
     network_outbound: '出站网络'
+    software: '软件'
     command: '命令'
     startup_command: '启动命令'
     docker_image: 'Docker镜像'

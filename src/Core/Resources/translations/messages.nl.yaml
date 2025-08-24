@@ -225,6 +225,7 @@ pteroca:
     disk: 'Schijfruimte'
     network_inbound: 'Netwerk inkomende'
     network_outbound: 'Netwerk uitgaande'
+    software: 'Software'
     command: 'Opdracht'
     startup_command: 'Opstart opdracht'
     docker_image: 'Docker Image'
