@@ -40,7 +40,6 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
                 continue;
             }
 
-//            $server->setAutoRenewal(false);
             $server->setIsSuspended(true);
             $this->serverRepository->save($server);
 
@@ -78,8 +77,9 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
                 $selectedPrice,
                 $slots
             );
-            $this->renewServerService->renewServer($server, $server->getUser(), $slots);
-        } catch (Exception) {
+
+            $this->renewServerService->renewServer($server, $server->getUser(), null, $slots);
+        } catch (Exception $e) {
             return false;
         }
 
