@@ -69,6 +69,7 @@ class ProductCrudController extends AbstractPanelController
         );
         $internalCurrency = $this->settingService
             ->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
+
         $fields = [
             FormField::addTab($this->translator->trans('pteroca.crud.product.details'))
                 ->setIcon('fa fa-info-circle'),
@@ -95,6 +96,7 @@ class ProductCrudController extends AbstractPanelController
                 ->setRequired(false)
                 ->setHelp($this->translator->trans('pteroca.crud.product.banner_help'))
                 ->setColumns(5),
+            $this->getProductHelpPanel(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
                 ->setIcon('fa fa-server'),
@@ -134,6 +136,7 @@ class ProductCrudController extends AbstractPanelController
                 ->hideOnIndex()
                 ->setHelp($this->translator->trans('pteroca.crud.product.schedules_hint'))
                 ->setColumns(4),
+            $this->getProductHelpPanel(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
                 ->setIcon('fa fa-money'),
@@ -165,6 +168,7 @@ class ProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.price_slot_plan_hint'))
                 ->setRequired(true)
                 ->setEntryIsComplex(),
+            $this->getProductHelpPanel(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
                 ->setIcon('fa fa-link'),
@@ -198,6 +202,7 @@ class ProductCrudController extends AbstractPanelController
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.product.created_at'))->onlyOnDetail(),
             DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.product.updated_at'))->onlyOnDetail(),
             DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.product.deleted_at'))->onlyOnDetail(),
+            $this->getProductHelpPanel(),
         ];
 
         if (!empty($this->flashMessages)) {

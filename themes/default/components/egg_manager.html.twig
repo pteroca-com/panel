@@ -202,7 +202,7 @@
             let thSlotVariable = null;
             if (isVariablesSection && hasSlotPrices()) {
                 thSlotVariable = document.createElement('th');
-                thSlotVariable.textContent = loadedTranslations.egg_variable_slot_variable;
+                thSlotVariable.innerHTML = loadedTranslations.egg_variable_slot_variable + ' <i class="fas fa-info-circle text-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="' + loadedTranslations.egg_variable_slot_variable_hint + '"></i>';
                 tr.appendChild(thSlotVariable);
             }
 
