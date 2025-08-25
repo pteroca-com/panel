@@ -150,6 +150,8 @@ pteroca:
     discount_hint: '仅适用于第一个账单周期。'
     product_order_details: '产品详情和订购选项'
     total: '总计'
+    slot: '插槽'
+    slots: '插槽数'
 
   store:
     title: '商店'
@@ -173,6 +175,10 @@ pteroca:
     no_products_title: '没有产品'
     shop_is_empty: '商店为空'
     no_products_and_categories: '商店中暂时没有产品或类别。'
+    slot_pricing: '按插槽'
+    slot_based_pricing: '基于插槽的定价'
+    invalid_slots_number: '无效的插槽数量'
+    slots_exceed_maximum: '插槽数量超过允许的最大值 (%max%)'
   cart_configuration:
     title: '配置你的服务器'
     configuration: '配置'
@@ -673,6 +679,8 @@ pteroca:
       price_dynamic_plan: '动态价格 \- 按需'
       price_dynamic_plan_hint: '产品在动态周期内的价格，服务器离线时暂停计费。'
       price_dynamic_only_one_plan: '仅可设置一个动态价格方案。'
+      price_slot_plan: '插槽计划价格'
+      price_slot_plan_hint: '每个插槽的价格。设置后，请在每个 Egg 的产品连接中链接用于最大玩家数的变量。'
       period: '周期'
       unit: '单位'
       days: '天'
@@ -696,6 +704,12 @@ pteroca:
       only_one_selected_price_allowed: '仅允许选择一个价格。'
       product_connections_note: '以下设置只有在重新安装服务器或更换软件后才会生效。'
       deleted_at: '删除时间'
+      egg_variable_slot_variable: '插槽变量'
+      egg_variable_slot_variable_hint: '选择用于基于插槽定价的最大插槽（玩家）变量'
+      slot_variable_not_configured_egg: '此 Egg 未配置插槽变量'
+      slot_variables_unconfigured_eggs: '某些 Egg 未配置插槽变量'
+      see_product_configuration_guide: '点击此处打开有关如何设置产品的详细指南。'
+      slot_variable_required_for_slot_prices: '在定义插槽价格时，所有 Egg 必须配置插槽变量。'
       show_archived: '显示已归档'
     server:
       pterodactyl_server_id: 'Pterodactyl 服务器 ID'

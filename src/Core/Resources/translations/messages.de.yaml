@@ -150,6 +150,8 @@ pteroca:
     discount_hint: 'Der Rabatt wird nur für den ersten Abrechnungszeitraum angewendet.'
     product_order_details: 'Produktdetails und Bestelloptionen'
     total: 'Gesamt'
+    slot: 'Slot'
+    slots: 'Slots'
 
   store:
     title: 'Shop'
@@ -173,6 +175,10 @@ pteroca:
     no_products_title: 'Keine Produkte'
     shop_is_empty: 'Shop ist leer'
     no_products_and_categories: 'Es gibt noch keine Produkte oder Kategorien im Shop.'
+    slot_pricing: 'Pro Slot'
+    slot_based_pricing: 'Slot-basierte Preisgestaltung'
+    invalid_slots_number: 'Ungültige Anzahl von Slots'
+    slots_exceed_maximum: 'Anzahl der Slots überschreitet den maximal zulässigen Wert (%max%)'
   cart_configuration:
     title: 'Server konfigurieren'
     configuration: 'Konfiguration'
@@ -673,6 +679,8 @@ pteroca:
       price_dynamic_plan: 'Dynamischer Preis \- auf Abruf'
       price_dynamic_plan_hint: 'Der Produktpreis für einen dynamischen Zeitraum. Wenn der Server offline ist, wird die Abrechnung pausiert.'
       price_dynamic_only_one_plan: 'Es kann nur ein dynamischer Plan festgelegt werden.'
+      price_slot_plan: 'Slot-Plan Preis'
+      price_slot_plan_hint: 'Preis pro Slot. Nach dem Setzen verknüpfen Sie die Variable für maximale Spieler in Produktverbindungen für jedes Egg.'
       period: 'Zeitraum'
       unit: 'Einheit'
       days: 'Tage'
@@ -696,6 +704,12 @@ pteroca:
       only_one_selected_price_allowed: 'Es ist nur ein auszuwählender Preis zulässig.'
       product_connections_note: 'Die folgenden Einstellungen werden erst nach der Neuinstallation des Servers oder der Änderung der Software übernommen.'
       deleted_at: 'Gelöscht am'
+      egg_variable_slot_variable: 'Slot-Variable'
+      egg_variable_slot_variable_hint: 'Wählen Sie die Variable, die die maximalen Slots (Spieler) für die slot-basierte Preisgestaltung festlegt'
+      slot_variable_not_configured_egg: 'Slot-Variable für dieses Egg nicht konfiguriert'
+      slot_variables_unconfigured_eggs: 'Einige Eggs haben nicht konfigurierte Slot-Variablen'
+      see_product_configuration_guide: 'Klicken Sie hier, um die detaillierte Anleitung zum Einrichten von Produkten zu öffnen.'
+      slot_variable_required_for_slot_prices: 'Alle Eggs müssen eine Slot-Variable konfiguriert haben, wenn Slot-Preise definiert sind.'
       show_archived: 'Archivierte anzeigen'
     server:
       pterodactyl_server_id: 'Pterodactyl-Server-ID'
