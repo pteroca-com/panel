@@ -146,6 +146,8 @@ pteroca:
     discount_hint: 'Скидка будет применена только к первому платежному периоду.'
     product_order_details: 'Детали продукта и варианты заказа'
     total: 'Итого'
+    slot: 'слот'
+    slots: 'Слоты'
 
   store:
     title: 'Магазин'
@@ -169,6 +171,10 @@ pteroca:
     no_products_title: 'Нет товаров'
     shop_is_empty: 'Магазин пуст'
     no_products_and_categories: 'В магазине пока нет товаров или категорий.'
+    slot_pricing: 'За слот'
+    slot_based_pricing: 'Цены за слот'
+    invalid_slots_number: 'Неверное количество слотов'
+    slots_exceed_maximum: 'Количество слотов превышает максимально допустимое значение (%max%)'
   cart_configuration:
     title: 'Настроить сервер'
     configuration: 'Конфигурация'
@@ -668,6 +674,8 @@ pteroca:
       price_dynamic_plan: 'Динамический тариф \- по требованию'
       price_dynamic_plan_hint: 'Цена продукта на динамический период. Когда сервер не работает, оплата приостанавливается.'
       price_dynamic_only_one_plan: 'Можно задать только один динамический тариф.'
+      price_slot_plan: 'Цена плана за слот'
+      price_slot_plan_hint: 'Цена за слот. После установки свяжите переменную для максимального числа игроков в подключениях продукта для каждого egg.'
       period: 'Период'
       unit: 'Единица'
       days: 'Дни'
@@ -691,6 +699,12 @@ pteroca:
       only_one_selected_price_allowed: 'Разрешена только одна выбираемая цена.'
       product_connections_note: 'Следующие настройки будут применены только после переустановки сервера или смены программного обеспечения.'
       deleted_at: 'Удалён'
+      egg_variable_slot_variable: 'Переменная слота'
+      egg_variable_slot_variable_hint: 'Выберите переменную, которая задает максимальные слоты (игроков) для ценообразования по слотам'
+      slot_variable_not_configured_egg: 'Переменная слота не настроена для этого egg'
+      slot_variables_unconfigured_eggs: 'Некоторые eggs имеют не настроенные переменные слотов'
+      see_product_configuration_guide: 'Нажмите здесь, чтобы открыть подробное руководство по настройке продуктов.'
+      slot_variable_required_for_slot_prices: 'Все eggs должны иметь настроенную переменную слота, когда определены цены за слот.'
       show_archived: 'Показать архивированные'
     server:
       pterodactyl_server_id: 'ID сервера Pterodactyl'

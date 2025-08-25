@@ -150,6 +150,8 @@ pteroca:
     discount_hint: 'La réduction ne s''appliquera qu''au premier cycle de facturation.'
     product_order_details: 'Détails du produit et options de commande'
     total: 'Total'
+    slot: 'emplacement'
+    slots: 'Emplacements'
 
 
   store:
@@ -174,6 +176,10 @@ pteroca:
     no_products_title: 'Aucun produit'
     shop_is_empty: 'La boutique est vide'
     no_products_and_categories: 'Il n''y a pas encore de produits ou de catégories dans la boutique.'
+    slot_pricing: 'Par emplacement'
+    slot_based_pricing: 'Tarification par emplacement'
+    invalid_slots_number: 'Nombre d’emplacements invalide'
+    slots_exceed_maximum: 'Le nombre d’emplacements dépasse la valeur maximale autorisée (%max%)'
   cart_configuration:
     title: 'Configurer votre serveur'
     configuration: 'Configuration'
@@ -674,6 +680,8 @@ pteroca:
       price_dynamic_plan: 'Tarif dynamique \- sur demande'
       price_dynamic_plan_hint: 'Le prix du produit pour une période dynamique. Lorsque le serveur est hors ligne, la facturation est en pause.'
       price_dynamic_only_one_plan: 'Vous ne pouvez définir qu’un seul plan de tarification dynamique.'
+      price_slot_plan: 'Prix du plan par emplacement'
+      price_slot_plan_hint: 'Prix par emplacement. Après l’avoir défini, liez la variable correspondant au nombre maximal de joueurs dans les connexions produit pour chaque egg.'
       period: 'Période'
       unit: 'Unité'
       days: 'Jours'
@@ -697,6 +705,12 @@ pteroca:
       only_one_selected_price_allowed: 'Un seul prix sélectionnable est autorisé.'
       product_connections_note: 'Les réglages suivants ne prendront effet qu’après la réinstallation du serveur ou le changement du logiciel.'
       deleted_at: 'Supprimé le'
+      egg_variable_slot_variable: 'Variable d’emplacement'
+      egg_variable_slot_variable_hint: 'Sélectionnez la variable qui définit le nombre maximal d’emplacements (joueurs) pour la tarification par emplacement'
+      slot_variable_not_configured_egg: 'Variable d’emplacement non configurée pour cet egg'
+      slot_variables_unconfigured_eggs: 'Certains eggs ont des variables d’emplacement non configurées'
+      see_product_configuration_guide: 'Cliquez ici pour ouvrir le guide détaillé sur la configuration des produits.'
+      slot_variable_required_for_slot_prices: 'Tous les eggs doivent avoir une variable d’emplacement configurée lorsque des prix par emplacement sont définis.'
       show_archived: 'Afficher les archivés'
     server:
       pterodactyl_server_id: 'ID du serveur Pterodactyl'

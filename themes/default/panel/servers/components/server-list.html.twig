@@ -2,10 +2,10 @@
     <td>
         {% if not server.isSuspended %}
             <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
+            <span class="badge placeholder" data-state></span>
         {% else %}
-            <span class="badge badge-danger">{{ 'pteroca.servers.suspended'|trans }}</span>
+            <span class="badge badge-warning">{{ 'pteroca.servers.suspended'|trans }}</span>
         {% endif %}
-        <span class="badge placeholder" data-state></span>
     </td>
     <td>
         <strong>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</strong>

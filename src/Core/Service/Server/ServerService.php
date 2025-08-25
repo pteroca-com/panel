@@ -62,17 +62,42 @@ class ServerService
             return null;
         }
 
-        $serverIpAddress = sprintf(
-            '%s:%s',
-            $pterodactylServer->get('relationships')['allocations'][0]['ip'],
-            $pterodactylServer->get('relationships')['allocations'][0]['port'],
-        );
+        $allocations = $pterodactylServer->get('relationships')['allocations'] ?? [];
+        $primaryId = $pterodactylServer->get('allocation') ?? null;
+        $primary = null;
+
+        foreach ($allocations->toArray() as $a) {
+            if ($a->toArray()['id'] === $primaryId) {
+                $primary = $a;
+                break;
+            }
+        }
+
+        if ($primary === null && !empty($allocations)) {
+            $primary = reset($allocations->toArray());
+        }
+
+        if ($primary === null) {
+            return null;
+        }
+
+        $primary = $primary->toArray();
+        $host = $primary['alias'] ?? $primary['ip'] ?? null;
+        $port = $primary['port'] ?? null;
+
+        $serverAddress = null;
+        if ($host && $port) {
+            if (strpos($host, ':') !== false && $host[0] !== '[') {
+                $host = '['.$host.']';
+            }
+            $serverAddress = $host.':'.$port;
+        }
 
         return new ServerDetailsDTO(
             identifier: $server->getPterodactylServerIdentifier(),
             name: $pterodactylServer->get('name'),
             description: $pterodactylServer->get('description'),
-            ip: $serverIpAddress,
+            ip: $serverAddress,
             limits: $pterodactylServer->get('limits'),
             featureLimits: $pterodactylServer->get('feature_limits'),
             egg: $pterodactylServer->get('relationships')['egg']->toArray(),
