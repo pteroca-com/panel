@@ -60,7 +60,7 @@ class RenewServerService extends AbstractActionServerService
 
         $selectedPrice = $server->getServerProduct()->getSelectedPrice();
         
-        if ($slots === null && $selectedPrice->getType()->value === 'slot') {
+        if ($slots === null && $selectedPrice->getType()->value === ProductPriceTypeEnum::SLOT->value) {
             $slots = $this->serverSlotPricingService->getServerSlots($server);
         }
         

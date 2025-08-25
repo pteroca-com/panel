@@ -76,8 +76,6 @@
         }
 
         function loadEggsData() {
-            saveEggsConfigurationToHiddenField();
-
             const eggSelector = document.querySelector('select.egg-selector');
             const previousEggIds = loadedEggsConfigurations ? Object.keys(loadedEggsConfigurations).map(id => parseInt(id)) : [];
             const currentEggIds = eggSelector.tomselect.getValue().map(value => parseInt(value));
@@ -129,6 +127,7 @@
                 initializeSlotVariableCheckboxes();
                 observeSlotPricesChanges();
                 updateEggTabIndicators();
+                saveEggsConfigurationToHiddenField();
             }, 1000);
         }
 

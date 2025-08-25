@@ -4,6 +4,7 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
@@ -84,7 +85,7 @@ class CartController extends AbstractController
 
         $hasSlotPrices = false;
         foreach ($product->getPrices() as $price) {
-            if ($price->getType()->value === 'slot') {
+            if ($price->getType()->value === ProductPriceTypeEnum::SLOT->value) {
                 $hasSlotPrices = true;
                 break;
             }

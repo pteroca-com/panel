@@ -4,6 +4,7 @@ namespace App\Core\Service\Server;
 
 use App\Core\Contract\ProductPriceInterface;
 use App\Core\Entity\Server;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use JsonException;
 use RuntimeException;
@@ -61,7 +62,7 @@ class ServerSlotPricingService
 
     public function calculateSlotPrice(ProductPriceInterface $price, ?int $slots = null): float
     {
-        if ($price->getType()->value === 'slot' && $slots !== null && $slots > 0) {
+        if ($price->getType()->value === ProductPriceTypeEnum::SLOT->value && $slots !== null && $slots > 0) {
             return $price->getPrice() * $slots;
         }
         
@@ -71,7 +72,7 @@ class ServerSlotPricingService
     public function hasSlotPricing(Server $server): bool
     {
         foreach ($server->getServerProduct()->getPrices() as $price) {
-            if ($price->getType()->value === 'slot') {
+            if ($price->getType()->value === ProductPriceTypeEnum::SLOT->value) {
                 return true;
             }
         }
@@ -81,7 +82,7 @@ class ServerSlotPricingService
 
     public function hasActiveSlotPricing(Server $server): bool
     {
-        return $server->getServerProduct()->getSelectedPrice()->getType()->value === 'slot';
+        return $server->getServerProduct()->getSelectedPrice()->getType()->value === ProductPriceTypeEnum::SLOT->value;
     }
 
     private function throwSlotException(string $message): never

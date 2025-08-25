@@ -8,6 +8,7 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\Category;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -151,7 +152,7 @@ class StoreService
         }
 
         $selectedPrice = current($price);
-        if ($selectedPrice->getType()->value === 'slot') {
+        if ($selectedPrice->getType()->value === ProductPriceTypeEnum::SLOT->value) {
             if (empty($slots) || $slots < 1) {
                 throw new NotFoundHttpException($this->translator->trans('pteroca.store.invalid_slots_number'));
             }
@@ -189,7 +190,7 @@ class StoreService
     {
         $finalPrice = $selectedPrice->getPrice();
         
-        if ($selectedPrice->getType()->value === 'slot' && $slots !== null && $slots > 0) {
+        if ($selectedPrice->getType()->value === ProductPriceTypeEnum::SLOT->value && $slots !== null && $slots > 0) {
             $finalPrice = $selectedPrice->getPrice() * $slots;
         }
         

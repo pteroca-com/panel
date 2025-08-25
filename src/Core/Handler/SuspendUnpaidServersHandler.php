@@ -3,6 +3,7 @@
 namespace App\Core\Handler;
 
 use App\Core\Entity\Server;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
@@ -68,7 +69,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
             $selectedPrice = $server->getServerProduct()->getSelectedPrice();
             $slots = null;
             
-            if ($selectedPrice->getType()->value === 'slot') {
+            if ($selectedPrice->getType()->value === ProductPriceTypeEnum::SLOT->value) {
                 $slots = $this->serverSlotPricingService->getServerSlots($server);
             }
             

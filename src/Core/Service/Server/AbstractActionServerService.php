@@ -5,6 +5,7 @@ namespace App\Core\Service\Server;
 use App\Core\Contract\ProductInterface;
 use App\Core\Contract\ProductPriceInterface;
 use App\Core\Contract\UserInterface;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
@@ -39,7 +40,7 @@ abstract class AbstractActionServerService
 
         $balancePaymentAmount = $price->getPrice();
         
-        if ($price->getType()->value === 'slot' && $slots !== null && $slots > 0) {
+        if ($price->getType()->value === ProductPriceTypeEnum::SLOT->value && $slots !== null && $slots > 0) {
             $balancePaymentAmount = $balancePaymentAmount * $slots;
         }
         
