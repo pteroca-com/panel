@@ -4,7 +4,6 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
-use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
@@ -83,13 +82,7 @@ class CartController extends AbstractController
         $preparedEggs = $this->storeService->getProductEggs($product);
         $request = $request->query->all();
 
-        $hasSlotPrices = false;
-        foreach ($product->getPrices() as $price) {
-            if ($price->getType()->value === ProductPriceTypeEnum::SLOT->value) {
-                $hasSlotPrices = true;
-                break;
-            }
-        }
+        $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
 
         return $this->render('panel/cart/configure.html.twig', [
             'product' => $product,

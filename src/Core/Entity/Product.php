@@ -11,7 +11,7 @@ use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use Doctrine\Common\Collections\Collection;
 use App\Core\Contract\ProductPriceInterface;
-use App\Core\Trait\SlotVariableValidationTrait;
+use App\Core\Service\Server\ServerSlotConfigurationService;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -24,7 +24,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class Product implements ProductInterface
 {
     use ProductEntityTrait;
-    use SlotVariableValidationTrait;
 
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $description = null;
@@ -268,7 +267,11 @@ class Product implements ProductInterface
                 ->addViolation();
         }
 
-        $this->validateSlotVariablesConfiguration($context);
+        ServerSlotConfigurationService::validateSlotVariablesConfiguration(
+            $this->getSlotPrices()->toArray(),
+            $this->getEggsConfiguration(),
+            $context
+        );
     }
 
     public function __toString(): string

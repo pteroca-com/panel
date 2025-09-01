@@ -3,6 +3,7 @@
 namespace App\Core\Service\Server;
 
 use App\Core\Contract\ProductPriceInterface;
+use App\Core\Contract\ProductInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Service\Product\ProductPriceCalculatorService;
@@ -76,6 +77,17 @@ class ServerSlotPricingService
     public function hasActiveSlotPricing(Server $server): bool
     {
         return $server->getServerProduct()->getSelectedPrice()->getType()->value === ProductPriceTypeEnum::SLOT->value;
+    }
+
+    public function hasSlotPrices(ProductInterface $product): bool
+    {
+        foreach ($product->getPrices() as $price) {
+            if ($price->getType()->value === ProductPriceTypeEnum::SLOT->value) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private function throwSlotException(string $message): never
