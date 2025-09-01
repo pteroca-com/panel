@@ -11,7 +11,9 @@ use App\Core\Entity\Server;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
+use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\ServerSlotConfigurationService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -22,6 +24,8 @@ class StoreService
         private readonly ProductRepository $productRepository,
         private readonly PterodactylService $pterodactylService,
         private readonly TranslatorInterface $translator,
+        private readonly ProductPriceCalculatorService $productPriceCalculatorService,
+        private readonly ServerSlotConfigurationService $serverSlotConfigurationService,
         private readonly string $categoriesBasePath,
         private readonly string $productsBasePath,
     ) {}
@@ -164,14 +168,7 @@ class StoreService
                 if ($eggsConfigurationJson) {
                     try {
                         $eggsConfiguration = json_decode($eggsConfigurationJson, true, 512, JSON_THROW_ON_ERROR);
-                        if (isset($eggsConfiguration[$eggId]['variables'])) {
-                            foreach ($eggsConfiguration[$eggId]['variables'] as $variable) {
-                                if (isset($variable['slot_variable']) && $variable['slot_variable'] === 'on' && !empty($variable['value'])) {
-                                    $maxSlots = (int) $variable['value'];
-                                    break;
-                                }
-                            }
-                        }
+                        $maxSlots = $this->serverSlotConfigurationService->getMaxSlotsFromEggConfiguration($eggsConfiguration, $eggId) ?? $maxSlots;
                     } catch (\JsonException) {
                         // If JSON is invalid, use default maxSlots
                     }
@@ -188,11 +185,7 @@ class StoreService
 
     public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice, ?int $slots = null): void
     {
-        $finalPrice = $selectedPrice->getPrice();
-        
-        if ($selectedPrice->getType()->value === ProductPriceTypeEnum::SLOT->value && $slots !== null && $slots > 0) {
-            $finalPrice = $selectedPrice->getPrice() * $slots;
-        }
+        $finalPrice = $this->productPriceCalculatorService->calculateFinalPrice($selectedPrice, $slots);
         
         if ($finalPrice > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));

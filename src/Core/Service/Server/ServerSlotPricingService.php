@@ -5,6 +5,7 @@ namespace App\Core\Service\Server;
 use App\Core\Contract\ProductPriceInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ProductPriceTypeEnum;
+use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use JsonException;
 use RuntimeException;
@@ -13,6 +14,8 @@ class ServerSlotPricingService
 {
     public function __construct(
         private readonly PterodactylService $pterodactylService,
+        private readonly ProductPriceCalculatorService $productPriceCalculatorService,
+        private readonly ServerSlotConfigurationService $serverSlotConfigurationService,
     ) {}
 
     public function getServerSlots(Server $server): int
@@ -36,17 +39,11 @@ class ServerSlotPricingService
                 $this->throwSlotException('Missing egg variables configuration or server variables');
             }
 
-            $slotVariableId = null;
-            foreach ($eggsConfiguration[$eggId]['variables'] as $variableId => $variable) {
-                if (isset($variable['slot_variable']) && $variable['slot_variable'] === 'on') {
-                    $slotVariableId = $variableId;
-                    break;
-                }
-            }
-
-            if (!$slotVariableId) {
+            $slotVariable = $this->serverSlotConfigurationService->findSlotVariableInEggConfiguration($eggsConfiguration, $eggId);
+            if (!$slotVariable) {
                 $this->throwSlotException('No slot variable found in eggs configuration');
             }
+            $slotVariableId = $slotVariable['id'];
 
             foreach ($serverVariables as $serverVariable) {
                 if (isset($serverVariable['attributes']['id']) && $serverVariable['attributes']['id'] == $slotVariableId) {
@@ -62,11 +59,7 @@ class ServerSlotPricingService
 
     public function calculateSlotPrice(ProductPriceInterface $price, ?int $slots = null): float
     {
-        if ($price->getType()->value === ProductPriceTypeEnum::SLOT->value && $slots !== null && $slots > 0) {
-            return $price->getPrice() * $slots;
-        }
-        
-        return $price->getPrice();
+        return $this->productPriceCalculatorService->calculateFinalPrice($price, $slots);
     }
 
     public function hasSlotPricing(Server $server): bool

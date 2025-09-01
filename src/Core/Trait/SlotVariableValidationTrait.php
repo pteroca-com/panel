@@ -2,6 +2,7 @@
 
 namespace App\Core\Trait;
 
+use App\Core\Service\Server\ServerSlotConfigurationService;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 trait SlotVariableValidationTrait
@@ -12,12 +13,14 @@ trait SlotVariableValidationTrait
             $eggsConfiguration = json_decode($this->getEggsConfiguration() ?? '{}', true);
             
             if (!empty($eggsConfiguration)) {
+                $serverSlotConfigurationService = $this->serverSlotConfigurationService ?? new ServerSlotConfigurationService();
+
                 foreach ($eggsConfiguration as $eggConfig) {
                     $hasSlotVariable = false;
                     
                     if (isset($eggConfig['variables'])) {
                         foreach ($eggConfig['variables'] as $variable) {
-                            if (isset($variable['slot_variable']) && $variable['slot_variable'] === true) {
+                            if ($serverSlotConfigurationService->isSlotVariable($variable)) {
                                 $hasSlotVariable = true;
                                 break;
                             }

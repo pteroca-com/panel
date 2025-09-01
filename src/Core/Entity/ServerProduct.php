@@ -2,16 +2,17 @@
 
 namespace App\Core\Entity;
 
+use DateTime;
+use Doctrine\ORM\Mapping as ORM;
+use App\Core\Trait\ProductEntityTrait;
 use App\Core\Contract\ProductInterface;
-use App\Core\Contract\ProductPriceInterface;
+use App\Core\Entity\ServerProductPrice;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
-use App\Core\Trait\ProductEntityTrait;
-use App\Core\Trait\SlotVariableValidationTrait;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use App\Core\Contract\ProductPriceInterface;
+use App\Core\Trait\SlotVariableValidationTrait;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -122,7 +123,7 @@ class ServerProduct implements ProductInterface
 
     public function addPrice(ProductPriceInterface $price): self
     {
-        if (!$this->prices->contains($price)) {
+        if (!$this->prices->contains($price) && $price instanceof ServerProductPrice) {
             $this->prices[] = $price;
             $price->setServerProduct($this);
         }
@@ -132,7 +133,7 @@ class ServerProduct implements ProductInterface
 
     public function removePrice(ProductPriceInterface $price): self
     {
-        if ($this->prices->removeElement($price)) {
+        if ($this->prices->removeElement($price) && $price instanceof ServerProductPrice) {
             if ($price->getServerProduct() === $this) {
                 $price->setDeletedAt(new DateTime());
             }
