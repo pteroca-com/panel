@@ -8,7 +8,7 @@ require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
 
-$trustedProxies = $_ENV['TRUSTED_PROXIES'] ?? '';
+$trustedProxies = $_ENV['TRUSTED_PROXIES'] ?? null;
 if (!empty($trustedProxies)) {
     $proxiesArray = array_map('trim', explode(',', $trustedProxies));
 
@@ -21,6 +21,12 @@ if (!empty($trustedProxies)) {
         | Request::HEADER_X_FORWARDED_PREFIX
         | Request::HEADER_X_FORWARDED_AWS_ELB
     );
+}
+
+$trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? null;
+if (!empty($trustedHosts)) {
+    $hostsArray = array_map('trim', explode(',', $trustedHosts));
+    Request::setTrustedHosts($hostsArray);
 }
 
 return function (array $context) {
