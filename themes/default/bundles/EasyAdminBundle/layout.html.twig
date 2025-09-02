@@ -345,7 +345,7 @@
                         {% endblock content_top_header %}
                     </aside>
 
-                    {% if get_require_email_verification() and not app.user.verified %}
+                    {% if show_email_verification_alert() and not app.user.verified %}
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <strong>{{ 'pteroca.system.email_not_verified'|trans }}</strong>
