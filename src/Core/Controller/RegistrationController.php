@@ -2,6 +2,7 @@
 
 namespace App\Core\Controller;
 
+use App\Core\Contract\UserInterface;
 use App\Core\Entity\User;
 use App\Core\Form\RegistrationFormType;
 use App\Core\Service\Authorization\RegistrationService;
@@ -74,5 +75,16 @@ class RegistrationController extends AbstractController
         }
 
         return $this->redirectToRoute('panel');
+    }
+
+    #[Route('/verify-notice', name: 'verify_notice')]
+    public function verifyNotice(): Response
+    {
+        $user = $this->getUser();
+        if ($user instanceof UserInterface && $user->isVerified()) {
+            return $this->redirectToRoute('panel');
+        }
+
+        return $this->render('panel/registration/verify_notice.html.twig');
     }
 }
