@@ -3,7 +3,6 @@
 namespace App\Core\DTO\Email;
 
 use App\Core\Contract\ProductInterface;
-use App\Core\Contract\ProductPriceInterface;
 use App\Core\Contract\UserInterface;
 
 readonly class PurchaseEmailContextDTO extends EmailContextDTO
@@ -14,7 +13,7 @@ readonly class PurchaseEmailContextDTO extends EmailContextDTO
         array $serverData,
         array $panelData,
         private ProductInterface $product,
-        private ProductPriceInterface $selectedPrice,
+        private PriceCalculationDTO $priceCalculation,
     ) {
         parent::__construct($user, $currency, $serverData, $panelData);
     }
@@ -24,16 +23,17 @@ readonly class PurchaseEmailContextDTO extends EmailContextDTO
         return $this->product;
     }
 
-    public function getSelectedPrice(): ProductPriceInterface
+    public function getPriceCalculation(): PriceCalculationDTO
     {
-        return $this->selectedPrice;
+        return $this->priceCalculation;
     }
 
     public function toArray(): array
     {
         return array_merge(parent::toArray(), [
             'product' => $this->product,
-            'selectedPrice' => $this->selectedPrice,
+            'selectedPrice' => $this->priceCalculation->getOriginalPrice(),
+            'priceCalculation' => $this->priceCalculation->toArray(),
         ]);
     }
 }

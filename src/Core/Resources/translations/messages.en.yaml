@@ -960,6 +960,10 @@ pteroca:
       best_regards: 'Best regards'
       visit_website: 'Visit our website:'
       copyright: 'All rights reserved.'
+    pricing:
+      slot_format: '%slots% slots × %price% %currency% = %total% %currency%'
+      static_format: '%price% %currency%'
+      on_demand_format: '%price% %currency%'
     registration:
       subject: 'Registration'
       welcome: 'Welcome to our service! Thank you for registering.'

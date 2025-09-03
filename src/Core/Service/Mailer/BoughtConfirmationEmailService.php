@@ -25,11 +25,12 @@ class BoughtConfirmationEmailService
         Product $product,
         int $priceId,
         string $pterodactylAccountUsername,
+        ?int $slots = null,
     ): void {
         $price = $product->findPriceById($priceId);
 
         if ($price === null) {
-            throw new ProductPriceNotFoundException($priceId, $product->getId());
+            throw ProductPriceNotFoundException::forPriceAndProduct($priceId, $product->getId());
         }
 
         $context = $this->emailContextBuilder->buildPurchaseContext(
@@ -37,7 +38,8 @@ class BoughtConfirmationEmailService
             $server,
             $product,
             $price,
-            $pterodactylAccountUsername
+            $pterodactylAccountUsername,
+            $slots
         );
 
         $emailMessage = new SendEmailMessage(
@@ -59,7 +61,7 @@ class BoughtConfirmationEmailService
         $selectedPrice = $serverProduct->getSelectedPrice();
 
         if ($selectedPrice === null) {
-            throw new ProductPriceNotFoundException(0, $serverProduct->getId());
+            throw ProductPriceNotFoundException::forPriceAndProduct(0, $serverProduct->getId());
         }
 
         $context = $this->emailContextBuilder->buildRenewalContext(
