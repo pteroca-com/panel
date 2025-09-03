@@ -814,8 +814,6 @@ pteroca:
       test_smtp_connection: 'Test SMTP Connection'
       smtp_connection_success: 'SMTP connection successful!'
       smtp_connection_failed: 'SMTP connection failed!'
-      customer_motd_message: 'MOTD message in the customer dashboard'
-
     user:
       email: 'Email'
       roles: 'Roles'

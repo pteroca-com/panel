@@ -812,6 +812,10 @@ pteroca:
         options: '选项'
         supportDarkMode: '支持深色模式'
         supportCustomColors: '允许配置自定义颜色'
+      smtp_from: '发件人电子邮件地址'
+      test_smtp_connection: '测试 SMTP 连接'
+      smtp_connection_success: 'SMTP 连接成功！'
+      smtp_connection_failed: 'SMTP 连接失败！'
     user:
       email: '电子邮件'
       roles: '角色'

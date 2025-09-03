@@ -812,6 +812,10 @@ pteroca:
         options: 'विकल्प'
         supportDarkMode: 'डार्क मोड का समर्थन करें'
         supportCustomColors: 'अनुकूलित रंग कॉन्फ़िगर करने की अनुमति दें'
+      smtp_from: 'प्रेषक ईमेल पता'
+      test_smtp_connection: 'SMTP कनेक्शन का परीक्षण करें'
+      smtp_connection_success: 'SMTP कनेक्शन सफल!'
+      smtp_connection_failed: 'SMTP कनेक्शन विफल!'
     user:
       email: 'ईमेल'
       roles: 'भूमिकाएँ'

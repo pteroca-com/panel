@@ -801,6 +801,10 @@ pteroca:
         options: 'Opties'
         supportDarkMode: 'Donkere modus ondersteuning'
         supportCustomColors: 'Aangepaste kleuren configureren toestaan'
+      smtp_from: 'Afzender e-mailadres'
+      test_smtp_connection: 'SMTP-verbinding testen'
+      smtp_connection_success: 'SMTP-verbinding succesvol!'
+      smtp_connection_failed: 'SMTP-verbinding mislukt!'
     user:
       email: 'E-mail'
       roles: 'Rollen'

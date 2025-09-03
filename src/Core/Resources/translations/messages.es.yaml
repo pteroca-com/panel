@@ -812,6 +812,10 @@ pteroca:
         options: 'Opciones'
         supportDarkMode: 'Admitir modo oscuro'
         supportCustomColors: 'Permitir configurar colores personalizados'
+      smtp_from: 'Dirección de correo electrónico del remitente'
+      test_smtp_connection: 'Probar conexión SMTP'
+      smtp_connection_success: '¡Conexión SMTP exitosa!'
+      smtp_connection_failed: '¡Conexión SMTP fallida!'
     user:
       email: 'Correo electrónico'
       roles: 'Roles'
