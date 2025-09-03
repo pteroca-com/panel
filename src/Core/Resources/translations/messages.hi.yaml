@@ -959,6 +959,10 @@ pteroca:
       best_regards: 'सादर'
       visit_website: 'हमारी वेबसाइट पर जाएँ:'
       copyright: 'सभी अधिकार सुरक्षित।'
+    pricing:
+      slot_format: '%slots% स्लॉट × %price% %currency% = %total% %currency%'
+      static_format: '%price% %currency%'
+      on_demand_format: '%price% %currency%'
     registration:
       subject: 'पंजीकरण'
       welcome: 'हमारी सेवा में आपका स्वागत है! पंजीकरण के लिए धन्यवाद।'

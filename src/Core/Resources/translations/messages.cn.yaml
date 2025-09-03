@@ -959,6 +959,10 @@ pteroca:
       best_regards: '此致'
       visit_website: '访问我们的网站：'
       copyright: '版权所有。'
+    pricing:
+      slot_format: '%slots% 个插槽 × %price% %currency% = %total% %currency%'
+      static_format: '%price% %currency%'
+      on_demand_format: '%price% %currency%'
     registration:
       subject: '注册'
       welcome: '欢迎使用我们的服务！感谢您的注册。'

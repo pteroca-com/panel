@@ -947,6 +947,10 @@ pteroca:
       best_regards: 'Met vriendelijke groet'
       visit_website: 'Bezoek onze website:'
       copyright: 'Alle rechten voorbehouden.'
+    pricing:
+      slot_format: '%slots% slots × %price% %currency% = %total% %currency%'
+      static_format: '%price% %currency%'
+      on_demand_format: '%price% %currency%'
     registration:
       subject: 'Registratie'
       welcome: 'Welkom bij onze dienst! Bedankt voor het registreren.'
