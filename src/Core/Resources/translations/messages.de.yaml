@@ -964,9 +964,9 @@ pteroca:
       visit_website: 'Besuchen Sie unsere Website:'
       copyright: 'Alle Rechte vorbehalten.'
     pricing:
-      slot_format: '%slots% Slots × %price% %currency% = %total% %currency%'
-      static_format: '%price% %currency%'
-      on_demand_format: '%price% %currency%'
+      slot_format: '{{ slots }} Slots × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
+      static_format: '{{ price }} {{ currency }}'
+      on_demand_format: '{{ price }} {{ currency }}'
     registration:
       subject: 'Registrierung'
       welcome: 'Willkommen auf unserer Seite! Vielen Dank für Ihre Registrierung.'

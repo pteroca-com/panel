@@ -148,22 +148,22 @@ class EmailContextBuilderService
     ): string {
         return match ($pricingType) {
             ProductPriceTypeEnum::SLOT->value => $this->translator->trans('pteroca.email.pricing.slot_format', [
-                'slots' => $slots ?? 1,
-                'price' => number_format($basePrice, 2),
-                'currency' => $currency,
-                'total' => number_format($finalPrice, 2),
+                '{{ slots }}' => $slots ?? 1,
+                '{{ price }}' => number_format($basePrice, 2),
+                '{{ currency }}' => $currency,
+                '{{ total }}' => number_format($finalPrice, 2),
             ]),
             ProductPriceTypeEnum::STATIC->value => $this->translator->trans('pteroca.email.pricing.static_format', [
-                'price' => number_format($finalPrice, 2),
-                'currency' => $currency,
+                '{{ price }}' => number_format($finalPrice, 2),
+                '{{ currency }}' => $currency,
             ]),
             ProductPriceTypeEnum::ON_DEMAND->value => $this->translator->trans('pteroca.email.pricing.on_demand_format', [
-                'price' => number_format($finalPrice, 2),
-                'currency' => $currency,
+                '{{ price }}' => number_format($finalPrice, 2),
+                '{{ currency }}' => $currency,
             ]),
             default => $this->translator->trans('pteroca.email.pricing.static_format', [
-                'price' => number_format($finalPrice, 2),
-                'currency' => $currency,
+                '{{ price }}' => number_format($finalPrice, 2),
+                '{{ currency }}' => $currency,
             ]),
         };
     }
