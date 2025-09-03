@@ -784,8 +784,6 @@ pteroca:
         smtp_port: 'SMTP port'
         smtp_username: 'SMTP username'
         smtp_password: 'SMTP password'
-        smtp_from: 'Sender email address'
-        customer_motd_message: 'MOTD message in the customer dashboard'
         customer_motd_enabled: 'Enable MOTD message in the customer dashboard'
         customer_motd_title: 'MOTD message title in the customer dashboard'
         require_email_verification: 'Require email verification'
@@ -812,6 +810,11 @@ pteroca:
         options: 'Options'
         supportDarkMode: 'Support dark mode'
         supportCustomColors: 'Allow configuring custom colors'
+      smtp_from: 'Sender email address'
+      test_smtp_connection: 'Test SMTP Connection'
+      smtp_connection_success: 'SMTP connection successful!'
+      smtp_connection_failed: 'SMTP connection failed!'
+      customer_motd_message: 'MOTD message in the customer dashboard'
 
     user:
       email: 'Email'
