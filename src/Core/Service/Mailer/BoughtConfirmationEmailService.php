@@ -4,20 +4,17 @@ namespace App\Core\Service\Mailer;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Product;
-use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
-use App\Core\Enum\SettingEnum;
+use App\Core\Exception\Email\ProductPriceNotFoundException;
 use App\Core\Message\SendEmailMessage;
-use App\Core\Service\Server\ServerService;
-use App\Core\Service\SettingService;
+use App\Core\Service\Email\EmailContextBuilderService;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BoughtConfirmationEmailService
 {
     public function __construct(
-        private readonly SettingService $settingService,
-        private readonly ServerService $serverService,
+        private readonly EmailContextBuilderService $emailContextBuilder,
         private readonly TranslatorInterface $translator,
         private readonly MessageBusInterface $messageBus,
     ) {}
@@ -28,34 +25,28 @@ class BoughtConfirmationEmailService
         Product $product,
         int $priceId,
         string $pterodactylAccountUsername,
+        ?int $slots = null,
     ): void {
-        $price = $product->getPrices()->filter(
-            fn(ProductPrice $price) => $price->getId() === $priceId
-        )->first();
+        $price = $product->findPriceById($priceId);
 
-        if (empty($price)) {
-            throw new \InvalidArgumentException('Price not found');
+        if ($price === null) {
+            throw ProductPriceNotFoundException::forPriceAndProduct($priceId, $product->getId());
         }
 
-        $serverDetails = $this->serverService->getServerDetails($server);
+        $context = $this->emailContextBuilder->buildPurchaseContext(
+            $user,
+            $server,
+            $product,
+            $price,
+            $pterodactylAccountUsername,
+            $slots
+        );
+
         $emailMessage = new SendEmailMessage(
             $user->getEmail(),
             $this->translator->trans('pteroca.email.store.subject'),
             'email/purchased_product.html.twig',
-            [
-                'user' => $user,
-                'product' => $product,
-                'selectedPrice' => $price,
-                'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
-                'server' => [
-                    'ip' => $serverDetails->ip,
-                    'expiresAt' => $server->getExpiresAt()->format('Y-m-d H:i'),
-                ],
-                'panel' => [
-                    'url' => $this->getClientPanelUrl(),
-                    'username' => $pterodactylAccountUsername,
-                ],
-            ]
+            $context->toArray()
         );
 
         $this->messageBus->dispatch($emailMessage);
@@ -66,37 +57,28 @@ class BoughtConfirmationEmailService
         Server $server,
         string $pterodactylAccountUsername
     ): void {
-        $serverDetails = $this->serverService->getServerDetails($server);
-        $product = $server->getServerProduct();
-        $selectedPrice = $product->getSelectedPrice();
+        $serverProduct = $server->getServerProduct();
+        $selectedPrice = $serverProduct->getSelectedPrice();
+
+        if ($selectedPrice === null) {
+            throw ProductPriceNotFoundException::forPriceAndProduct(0, $serverProduct->getId());
+        }
+
+        $context = $this->emailContextBuilder->buildRenewalContext(
+            $user,
+            $server,
+            $serverProduct,
+            $selectedPrice,
+            $pterodactylAccountUsername
+        );
 
         $emailMessage = new SendEmailMessage(
             $user->getEmail(),
             $this->translator->trans('pteroca.email.renew.subject'),
             'email/renew_product.html.twig',
-            [
-                'user' => $user,
-                'product' => $product,
-                'selectedPrice' => $selectedPrice,
-                'currency' => $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
-                'server' => [
-                    'ip' => $serverDetails->ip,
-                    'expiresAt' => $server->getExpiresAt()->format('Y-m-d H:i'),
-                ],
-                'panel' => [
-                    'url' => $this->getClientPanelUrl(),
-                    'username' => $pterodactylAccountUsername,
-                ],
-            ]
+            $context->toArray()
         );
 
         $this->messageBus->dispatch($emailMessage);
-    }
-
-    private function getClientPanelUrl(): string
-    {
-        return $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_USE_AS_CLIENT_PANEL->value)
-            ? $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value)
-            : $this->settingService->getSetting(SettingEnum::SITE_URL->value);
     }
 }

@@ -191,10 +191,21 @@
                                             <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
                                                 {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
                                             </option>
+                                        {% elseif price.type.value == 'slot' %}
+                                            <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}">
+                                                {{ 'pteroca.store.slot_pricing'|trans }} - {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.slot'|trans }}
+                                            </option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
                             </div>
+
+                            {% set hasSlotPrices = false %}
+                            {% for price in product.prices %}
+                                {% if price.type.value == 'slot' %}
+                                    {% set hasSlotPrices = true %}
+                                {% endif %}
+                            {% endfor %}
 
                             <div class="mb-4">
                                 <label for="egg" class="form-label fw-semibold">
@@ -213,6 +224,16 @@
                                     </div>
                                 {% endif %}
                             </div>
+
+                            
+                            {% if hasSlotPrices %}
+                            {% include 'components/slot_selector.html.twig' with {
+                                'initialValue': 1,
+                                'maxValue': 32,
+                                'minValue': 1,
+                                'showBadge': true
+                            } %}
+                            {% endif %}
 
                             <!-- Price Calculation -->
                             <div class="mb-4">
@@ -294,4 +315,86 @@
     </div>
 
     {% include 'panel/store/components/product_order_calculator.html.twig' %}
+    
+    {% if hasSlotPrices %}
+    <script>
+        const eggsConfiguration = {{ product.eggsConfiguration|raw }};
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const durationSelect = document.getElementById('duration');
+            const slotSelection = document.getElementById('slot-selection');
+            const slotsRange = document.getElementById('slots');
+            const selectedSlotsDisplay = document.getElementById('selected-slots');
+            const eggSelect = document.getElementById('egg');
+            
+            // Update max slots based on selected egg
+            function updateMaxSlots() {
+                const selectedEggId = parseInt(eggSelect.value);
+                let maxSlots = 10; // default
+                
+                if (eggsConfiguration && eggsConfiguration[selectedEggId]) {
+                    const eggConfig = eggsConfiguration[selectedEggId];
+                    if (eggConfig.variables && typeof eggConfig.variables === 'object') {
+                        for (const variableId in eggConfig.variables) {
+                            const variable = eggConfig.variables[variableId];
+                            if (variable.slot_variable === 'on' && variable.value) {
+                                maxSlots = parseInt(variable.value);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Get current value before updating max
+                const currentSlotValue = parseInt(slotsRange.value);
+                
+                // Update max slots for the range input
+                slotsRange.max = maxSlots;
+                slotsRange.nextElementSibling.textContent = maxSlots;
+                
+                // If current value exceeds new maximum, adjust it to the new maximum
+                if (currentSlotValue > maxSlots) {
+                    slotsRange.value = maxSlots;
+                    handleSlotsChange(); // Update the display text
+                    console.log(`Slot value adjusted from ${currentSlotValue} to ${maxSlots} due to egg change`);
+                }
+            }
+            
+            // Handle duration selection change
+            function handleDurationChange() {
+                const selectedOption = durationSelect.options[durationSelect.selectedIndex];
+                const priceType = selectedOption.getAttribute('data-type');
+                
+                if (priceType === 'slot') {
+                    slotSelection.style.display = 'block';
+                    updateMaxSlots();
+                } else {
+                    slotSelection.style.display = 'none';
+                }
+            }
+            
+            // Handle slots range change
+            function handleSlotsChange() {
+                const slotsCount = slotsRange.value;
+                const slotText = slotsCount === '1' ? '{{ 'pteroca.product.slot'|trans }}' : '{{ 'pteroca.product.slots'|trans }}';
+                selectedSlotsDisplay.textContent = `${slotsCount} ${slotText}`;
+            }
+            
+            // Initialize
+            durationSelect.addEventListener('change', handleDurationChange);
+            slotsRange.addEventListener('input', handleSlotsChange);
+            eggSelect.addEventListener('change', function() {
+                if (slotSelection.style.display !== 'none') {
+                    updateMaxSlots();
+                    // Trigger price recalculation after slot maximum changes
+                    durationSelect.dispatchEvent(new Event('change'));
+                }
+            });
+            
+            // Initial check
+            handleDurationChange();
+            handleSlotsChange();
+        });
+    </script>
+    {% endif %}
 {% endblock %}

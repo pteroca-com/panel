@@ -3,9 +3,9 @@
     "name": "default",
     "description": "Default template for the project PteroCA.com",
     "author": "PteroCA.com",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "license": "MIT",
-    "pterocaVersion": "0.5.6",
+    "pterocaVersion": "0.5.7",
     "phpVersion": ">=8.2",
     "options": {
       "supportDarkMode": true,

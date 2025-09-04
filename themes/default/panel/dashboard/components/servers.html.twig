@@ -26,10 +26,10 @@
                                     <div class="d-flex align-items-center">
                                         {% if not server.isSuspended %}
                                             <span class="badge badge-success me-2">{{ 'pteroca.servers.active'|trans }}</span>
+                                            <span class="badge placeholder col-2 me-2" data-state></span>
                                         {% else %}
-                                            <span class="badge badge-danger me-2">{{ 'pteroca.servers.suspended'|trans }}</span>
+                                            <span class="badge badge-warning me-2">{{ 'pteroca.servers.suspended'|trans }}</span>
                                         {% endif %}
-                                        <span class="badge placeholder col-2 me-2" data-state></span>
                                         <small class="text-muted">
                                             <i class="fas fa-globe me-1"></i>
                                             <span class="placeholder col-4 rounded-1" data-ip></span>
@@ -38,12 +38,21 @@
                                 </div>
                             </div>
                             <div>
+                            {% if not server.isSuspended %}
                                 <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
                                    target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}"
                                    class="btn btn-primary btn-sm pt-1 pb-1 pe-3">
                                     <i class="fas fa-cog m-1"></i>
                                     <span class="d-none d-md-inline">{{ 'pteroca.servers.manage_server'|trans }}</span>
                                 </a>
+                            {% else %}
+                                <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
+                                    class="btn btn-primary btn-sm pt-1 pb-1 pe-3"
+                                    title="{{ 'pteroca.servers.extend'|trans }}">
+                                    <i class="fas fa-sync fa-xs m-1"></i>
+                                    <span>{{ 'pteroca.servers.extend'|trans }}</span>
+                                </a>
+                            {% endif %}
                             </div>
                         </div>
                     </div>

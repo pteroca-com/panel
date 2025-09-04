@@ -2,19 +2,21 @@
 
 namespace App\Core\Entity;
 
+use DateTime;
+use Doctrine\ORM\Mapping as ORM;
+use App\Core\Entity\ProductPrice;
+use App\Core\Trait\ProductEntityTrait;
 use App\Core\Contract\ProductInterface;
-use App\Core\Contract\ProductPriceInterface;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
-use App\Core\Trait\ProductEntityTrait;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use App\Core\Contract\ProductPriceInterface;
+use App\Core\Service\Server\ServerSlotConfigurationService;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\ProductRepository")]
 #[ORM\HasLifecycleCallbacks]
@@ -216,9 +218,27 @@ class Product implements ProductInterface
         return $this->prices->filter(fn(ProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
     }
 
+    public function setSlotPrices(iterable $prices): self
+    {
+        foreach ($this->getSlotPrices() as $existingPrice) {
+            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new \DateTime());
+            }
+        }
+
+        $this->syncPrices($this->getSlotPrices(), $prices);
+
+        return $this;
+    }
+
+    public function getSlotPrices(): Collection
+    {
+        return $this->prices->filter(fn(ProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::SLOT);
+    }
+
     public function addPrice(ProductPriceInterface $price): self
     {
-        if (!$this->prices->contains($price)) {
+        if (!$this->prices->contains($price) && $price instanceof ProductPrice) {
             $this->prices[] = $price;
             $price->setProduct($this);
         }
@@ -228,7 +248,7 @@ class Product implements ProductInterface
 
     public function removePrice(ProductPriceInterface $price): self
     {
-        if ($this->prices->removeElement($price)) {
+        if ($this->prices->removeElement($price) && $price instanceof ProductPrice) {
             if ($price->getProduct() === $this) {
                 $price->setDeletedAt(new \DateTime());
             }
@@ -246,6 +266,12 @@ class Product implements ProductInterface
                 ->atPath('prices')
                 ->addViolation();
         }
+
+        ServerSlotConfigurationService::validateSlotVariablesConfiguration(
+            $this->getSlotPrices()->toArray(),
+            $this->getEggsConfiguration(),
+            $context
+        );
     }
 
     public function __toString(): string

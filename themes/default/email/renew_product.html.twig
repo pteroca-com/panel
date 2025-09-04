@@ -2,12 +2,12 @@
 {% include 'email/header.html.twig' %}
 <p>
     {{ 'pteroca.email.renew.server_renewed'|trans }}<br>
-    {{ 'pteroca.email.renew.new_expiration' }} {{ server.expiresAt|date('Y-m-d H:i') }}<br><br>
+    {{ 'pteroca.email.renew.new_expiration'|trans }} {{ server.expiresAt|date('Y-m-d H:i') }}<br><br>
 </p>
 <p>
     <b>{{ 'pteroca.email.store.product_details'|trans }}:</b><br>
     {{ 'pteroca.email.store.product_name'|trans }}: {{ product.name }}<br>
-    {{ 'pteroca.email.store.product_price'|trans }}: {{ selectedPrice.value|number_format(2) }} {{ currency|upper }}<br>
+    {{ 'pteroca.email.store.product_price'|trans }}: {{ priceCalculation.formattedDescription }}<br>
 </p>
 <p>
     <b>{{ 'pteroca.email.store.server_details'|trans }}:</b><br>

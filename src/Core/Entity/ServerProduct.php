@@ -2,15 +2,17 @@
 
 namespace App\Core\Entity;
 
+use DateTime;
+use Doctrine\ORM\Mapping as ORM;
+use App\Core\Trait\ProductEntityTrait;
 use App\Core\Contract\ProductInterface;
-use App\Core\Contract\ProductPriceInterface;
+use App\Core\Entity\ServerProductPrice;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
-use App\Core\Trait\ProductEntityTrait;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use App\Core\Contract\ProductPriceInterface;
+use App\Core\Service\Server\ServerSlotConfigurationService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -100,9 +102,27 @@ class ServerProduct implements ProductInterface
         return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::ON_DEMAND);
     }
 
+    public function setSlotPrices(iterable $prices): self
+    {
+        foreach ($this->getSlotPrices() as $existingPrice) {
+            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new \DateTime());
+            }
+        }
+
+        $this->syncPrices($this->getSlotPrices(), $prices);
+
+        return $this;
+    }
+
+    public function getSlotPrices(): Collection
+    {
+        return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->getType() === ProductPriceTypeEnum::SLOT);
+    }
+
     public function addPrice(ProductPriceInterface $price): self
     {
-        if (!$this->prices->contains($price)) {
+        if (!$this->prices->contains($price) && $price instanceof ServerProductPrice) {
             $this->prices[] = $price;
             $price->setServerProduct($this);
         }
@@ -112,7 +132,7 @@ class ServerProduct implements ProductInterface
 
     public function removePrice(ProductPriceInterface $price): self
     {
-        if ($this->prices->removeElement($price)) {
+        if ($this->prices->removeElement($price) && $price instanceof ServerProductPrice) {
             if ($price->getServerProduct() === $this) {
                 $price->setDeletedAt(new DateTime());
             }
@@ -145,6 +165,12 @@ class ServerProduct implements ProductInterface
                 ->atPath('prices')
                 ->addViolation();
         }
+
+        ServerSlotConfigurationService::validateSlotVariablesConfiguration(
+            $this->getSlotPrices()->toArray(),
+            $this->getEggsConfiguration(),
+            $context
+        );
     }
 
     public function __toString(): string

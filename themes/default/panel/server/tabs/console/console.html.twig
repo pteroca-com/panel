@@ -277,7 +277,7 @@
             showAlert(message, type) {
                 // Create alert element
                 const alert = document.createElement('div');
-                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.className = `alert alert-${type} alert-dismissible fade show mb-3`;
                 alert.innerHTML = `
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -293,6 +293,29 @@
                         alert.remove();
                     }
                 }, 5000);
+            },
+            copyIpToClipboard() {
+                const ipElement = document.querySelector('[data-ip]');
+                const ipAddress = ipElement ? ipElement.textContent.trim() : '';
+                
+                if (ipAddress) {
+                    navigator.clipboard.writeText(ipAddress).then(() => {
+                        this.showAlert('{{ "pteroca.server.ip_copied"|trans }}', 'success');
+                    }).catch(err => {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = ipAddress;
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            this.showAlert('{{ "pteroca.server.ip_copied"|trans }}', 'success');
+                        } catch (fallbackErr) {
+                            console.error('Failed to copy IP Address: ', fallbackErr);
+                        }
+                        document.body.removeChild(textArea);
+                    });
+                }
             }
         };
 

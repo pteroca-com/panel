@@ -12,6 +12,7 @@ use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
+use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\SettingService;
 use App\Core\Service\StoreService;
 use Exception;
@@ -27,6 +28,7 @@ class CartController extends AbstractController
         private readonly ServerRepository $serverRepository,
         private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly TranslatorInterface $translator,
+        private readonly ServerSlotPricingService $serverSlotPricingService,
     ) {}
 
     #[Route('/cart/topup', name: 'cart_topup', methods: ['GET', 'POST'])]
@@ -80,11 +82,15 @@ class CartController extends AbstractController
         $preparedEggs = $this->storeService->getProductEggs($product);
         $request = $request->query->all();
 
+        $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
+
         return $this->render('panel/cart/configure.html.twig', [
             'product' => $product,
             'eggs' => $preparedEggs,
             'request' => $request,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
+            'hasSlotPrices' => $hasSlotPrices,
+            'initialSlots' => $request['slots'] ?? null,
         ]);
     }
 
@@ -108,12 +114,15 @@ class CartController extends AbstractController
         $priceId = $request->request->getInt('duration');
         $serverName = $request->request->getString('server-name');
         $autoRenewal = $request->request->getBoolean('auto-renewal');
+        $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
 
         try {
             $this->storeService->validateBoughtProduct(
                 $product,
                 $eggId,
-                $priceId
+                $priceId,
+                null,
+                $slots
             );
 
             $createServerService->createServer(
@@ -124,6 +133,7 @@ class CartController extends AbstractController
                 $autoRenewal,
                 $this->getUser(),
                 $request->request->getString('voucher'),
+                $slots
             );
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
@@ -146,10 +156,17 @@ class CartController extends AbstractController
     {
         $server = $this->getServerByRequest($request);
         $isOwner = $server->getUser() === $this->getUser();
+        $hasSlotPrices = $this->serverSlotPricingService->hasSlotPricing($server);
+        
+        if ($hasSlotPrices) {
+            $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
+        }
 
         return $this->render('panel/cart/renew.html.twig', [
             'server' => $server,
             'isOwner' => $isOwner,
+            'hasSlotPrices' => $hasSlotPrices,
+            'serverSlots' => $serverSlots ?? null,
         ]);
     }
 
@@ -170,17 +187,24 @@ class CartController extends AbstractController
         }
 
         try {
+            $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
+            if ($hasActiveSlotPricing) {
+                $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
+            }
+
             $this->storeService->validateBoughtProduct(
                 $server->getServerProduct(),
                 null,
                 $server->getServerProduct()->getSelectedPrice()->getId(),
                 $server,
+                $serverSlots ?? null
             );
 
             $renewServerService->renewServer(
                 $server,
                 $this->getUser(),
                 $request->request->getString('voucher'),
+                $serverSlots ?? null,
             );
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));

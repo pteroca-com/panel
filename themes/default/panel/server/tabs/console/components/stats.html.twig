@@ -32,8 +32,30 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.address'|trans }}</h6>
+                                <div class="card-text">
+                                    <div class="d-flex align-items-center">
+                                        <span class="flex-grow-1" data-ip>{{ serverData.serverDetails.ip }}</span>
+                                        <button class="btn btn-link p-0" onclick="terminal.copyIpToClipboard()" title="{{ 'pteroca.server.copy_ip'|trans }}">
+                                            <i class="fas fa-copy text-muted"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3 d-none d-sm-block">
+                                <i class="fas fa-cube fa-3x"></i>
+                            </div>
+                            <div class="col-12 col-sm-9">
+                                <h6 class="card-title">{{ 'pteroca.server.software'|trans }}</h6>
                                 <p class="card-text">
-                                    <span class="col-12 float-end mt-1 rounded-1" data-ip>{{ serverData.serverDetails.ip }}</span>
+                                    <span class="col-12 float-end mt-1 rounded-1" data-software>{{ serverData.pterodactylServer.relationships.egg.name ?? '-' }}</span>
                                 </p>
                             </div>
                         </div>
@@ -66,9 +88,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.cpu_load'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-cpu-load></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,9 +105,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.memory'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-memory></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -100,9 +122,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.disk'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-disk></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -117,9 +139,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.network_inbound'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-inbound></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -134,9 +156,9 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <h6 class="card-title">{{ 'pteroca.server.network_outbound'|trans }}</h6>
-                                <p class="card-text">
+                                <div class="card-text">
                                     <span class="placeholder col-12 float-end mt-1 rounded-1" data-network-outbound></span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>

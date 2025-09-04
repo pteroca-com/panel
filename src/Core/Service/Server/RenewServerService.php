@@ -11,6 +11,7 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
+use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
@@ -27,17 +28,20 @@ class RenewServerService extends AbstractActionServerService
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
         private readonly LogService $logService,
         private readonly VoucherPaymentService $voucherPaymentService,
+        private readonly ServerSlotPricingService $serverSlotPricingService,
         UserRepository $userRepository,
+        ProductPriceCalculatorService $productPriceCalculatorService,
         TranslatorInterface $translator,
         LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
+        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
     }
 
     public function renewServer(
         Server $server,
         UserInterface $user,
-        ?string $voucherCode = null
+        ?string $voucherCode = null,
+        ?int $slots = null
     ): void
     {
         if (!empty($voucherCode)) {
@@ -57,6 +61,11 @@ class RenewServerService extends AbstractActionServerService
         }
 
         $selectedPrice = $server->getServerProduct()->getSelectedPrice();
+        
+        if ($slots === null && $selectedPrice->getType()->value === ProductPriceTypeEnum::SLOT->value) {
+            $slots = $this->serverSlotPricingService->getServerSlots($server);
+        }
+        
         if ($selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND) {
             try {
                 $pterodactylClientApi = $this->pterodactylClientService
@@ -82,7 +91,7 @@ class RenewServerService extends AbstractActionServerService
 
         $this->serverRepository->save($server);
         if ($chargeBalance) {
-            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode);
+            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, $slots);
         }
 
         if ($currentTime->diff($server->getExpiresAt())->days >= 7) {

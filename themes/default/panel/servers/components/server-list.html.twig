@@ -2,10 +2,10 @@
     <td>
         {% if not server.isSuspended %}
             <span class="badge badge-success">{{ 'pteroca.servers.active'|trans }}</span>
+            <span class="badge placeholder" data-state></span>
         {% else %}
-            <span class="badge badge-danger">{{ 'pteroca.servers.suspended'|trans }}</span>
+            <span class="badge badge-warning">{{ 'pteroca.servers.suspended'|trans }}</span>
         {% endif %}
-        <span class="badge placeholder" data-state></span>
     </td>
     <td>
         <strong>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</strong>
@@ -27,12 +27,14 @@
     </td>
     <td>
         <div class="btn-group" role="group">
-            <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
-               class="btn btn-primary btn-sm"
-               target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}"
-               title="{{ 'pteroca.servers.manage_server'|trans }}">
-                <i class="fas fa-cogs fa-xs"></i>
-            </a>
+            {% if not server.isSuspended %}
+                <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
+                   class="btn btn-primary btn-sm"
+                   target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}"
+                   title="{{ 'pteroca.servers.manage_server'|trans }}">
+                    <i class="fas fa-cogs fa-xs"></i>
+                </a>
+            {% endif %}
             <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
                class="btn btn-primary btn-sm"
                title="{{ 'pteroca.servers.extend'|trans }}">
