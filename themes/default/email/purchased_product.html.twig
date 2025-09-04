@@ -7,7 +7,7 @@
 <p>
     <b>{{ 'pteroca.email.store.product_details'|trans }}:</b><br>
     {{ 'pteroca.email.store.product_name'|trans }}: {{ product.name }}<br>
-    {{ 'pteroca.email.store.product_price'|trans }}: {{ selectedPrice.value|number_format(2) }} {{ currency|upper }}<br>
+    {{ 'pteroca.email.store.product_price'|trans }}: {{ priceCalculation.formattedDescription }}<br>
 </p>
 <p>
     <b>{{ 'pteroca.email.store.server_details'|trans }}:</b><br>

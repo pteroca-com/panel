@@ -8,9 +8,12 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\Category;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
+use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Server\ServerSlotConfigurationService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -21,6 +24,8 @@ class StoreService
         private readonly ProductRepository $productRepository,
         private readonly PterodactylService $pterodactylService,
         private readonly TranslatorInterface $translator,
+        private readonly ProductPriceCalculatorService $productPriceCalculatorService,
+        private readonly ServerSlotConfigurationService $serverSlotConfigurationService,
         private readonly string $categoriesBasePath,
         private readonly string $productsBasePath,
     ) {}
@@ -136,7 +141,8 @@ class StoreService
         ProductInterface $product,
         ?int $eggId,
         int $priceId,
-        ?Server $server = null
+        ?Server $server = null,
+        ?int $slots = null
     ): void
     {
         if (empty($server) && (empty($eggId) || !in_array($eggId, $product->getEggs()))) {
@@ -148,11 +154,40 @@ class StoreService
         if (empty($price)) {
             throw new NotFoundHttpException($this->translator->trans('pteroca.store.price_not_found'));
         }
+
+        $selectedPrice = current($price);
+        if ($selectedPrice->getType()->value === ProductPriceTypeEnum::SLOT->value) {
+            if (empty($slots) || $slots < 1) {
+                throw new NotFoundHttpException($this->translator->trans('pteroca.store.invalid_slots_number'));
+            }
+
+            if (!empty($eggId)) {
+                $eggsConfigurationJson = $product->getEggsConfiguration();
+                $maxSlots = 32; // default value
+                
+                if ($eggsConfigurationJson) {
+                    try {
+                        $eggsConfiguration = json_decode($eggsConfigurationJson, true, 512, JSON_THROW_ON_ERROR);
+                        $maxSlots = $this->serverSlotConfigurationService->getMaxSlotsFromEggConfiguration($eggsConfiguration, $eggId) ?? $maxSlots;
+                    } catch (\JsonException) {
+                        // If JSON is invalid, use default maxSlots
+                    }
+                }
+
+                if ($slots > $maxSlots) {
+                    throw new NotFoundHttpException(
+                        $this->translator->trans('pteroca.store.slots_exceed_maximum', ['max' => $maxSlots])
+                    );
+                }
+            }
+        }
     }
 
-    public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice): void
+    public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice, ?int $slots = null): void
     {
-        if ($selectedPrice->getPrice() > $user->getBalance()) {
+        $finalPrice = $this->productPriceCalculatorService->calculateFinalPrice($selectedPrice, $slots);
+        
+        if ($finalPrice > $user->getBalance()) {
             throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
     }

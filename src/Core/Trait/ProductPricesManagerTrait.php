@@ -36,6 +36,13 @@ trait ProductPricesManagerTrait
         return $this;
     }
 
+    public function findPriceById(int $priceId): ?ProductPriceInterface
+    {
+        return $this->prices->filter(
+            fn(ProductPriceInterface $price) => $price->getId() === $priceId && !$price->getDeletedAt()
+        )->first() ?: null;
+    }
+
     #[Assert\Callback]
     public function validatePrices(ExecutionContextInterface $context): void
     {

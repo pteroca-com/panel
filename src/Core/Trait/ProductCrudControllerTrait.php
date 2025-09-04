@@ -2,6 +2,8 @@
 
 namespace App\Core\Trait;
 
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+
 trait ProductCrudControllerTrait
 {
     private array $flashMessages = [];
@@ -69,5 +71,18 @@ trait ProductCrudControllerTrait
     {
         $requestData = $this->requestStack->getCurrentRequest()->request->all();
         return $requestData['eggs_configuration'] ?? [];
+    }
+
+    private function getProductHelpPanel(): FormField
+    {
+        $helpText = sprintf(
+            '<small class="text-muted"><a href="%s" target="_blank">%s</a></small>',
+            'https://docs.pteroca.com/guidebook/product-configuration',
+            $this->translator->trans('pteroca.crud.product.see_product_configuration_guide'),
+        );
+
+        return FormField::addPanel('')
+                ->setHelp($helpText)
+                ->hideOnIndex();
     }
 }

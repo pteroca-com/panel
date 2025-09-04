@@ -2,6 +2,26 @@
 
 ---
 
+## [0.5.7] - 2025-09-04
+
+### Added
+- Added new **per-slot pricing type** with egg configuration support.  
+- Added server software tile on the server management page.  
+- Added automatic **Copy IP Address** button on the server management page.  
+- Added SMTP connection test button on the email settings page.  
+- Added support for the `TRUSTED_HOSTS` variable for Symfony host validation.
+
+### Changed
+- Improved server IP display: the correct allocation is now shown even when a domain is assigned.  
+- Rewritten email logic for server purchase and renewal notifications.  
+- Improved session configuration for better compatibility with Cloudflare.  
+
+### Fixed
+- Fixed issue where administrators could not update server egg variables.  
+- Fixed bug causing suspended servers not to appear in the user’s server list.  
+
+---
+
 ## [0.5.6] - 2025-08-15
 
 ### Added

@@ -17,6 +17,7 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
+use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Psr\Log\LoggerInterface;
@@ -37,9 +38,10 @@ class CreateServerService extends AbstractActionServerService
         private readonly VoucherPaymentService $voucherPaymentService,
         private readonly TranslatorInterface $translator,
         UserRepository $userRepository,
+        ProductPriceCalculatorService $productPriceCalculatorService,
         LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $translator, $logger);
+        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
     }
 
     public function createServer(
@@ -50,6 +52,7 @@ class CreateServerService extends AbstractActionServerService
         bool $autoRenewal,
         UserInterface $user,
         ?string $voucherCode = null,
+        ?int $slots = null,
     ): Server
     {
         if (!empty($voucherCode)) {
@@ -60,7 +63,7 @@ class CreateServerService extends AbstractActionServerService
             );
         }
 
-        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user);
+        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user, $slots);
 
         $createdEntityServer = $this->createEntityServer(
             $createdPterodactylServer,
@@ -72,7 +75,7 @@ class CreateServerService extends AbstractActionServerService
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
 
-        $this->updateUserBalance($user, $product, $priceId, $voucherCode);
+        $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots);
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
             $createdEntityServer,
@@ -100,12 +103,13 @@ class CreateServerService extends AbstractActionServerService
         Product $product,
         int $eggId,
         string $serverName,
-        UserInterface $user
+        UserInterface $user,
+        ?int $slots = null
     ): PterodactylServer
     {
         try {
             $preparedServerBuild = $this->serverBuildService
-                ->prepareServerBuild($product, $user, $eggId, $serverName);
+                ->prepareServerBuild($product, $user, $eggId, $serverName, $slots);
 
             return $this->pterodactylService
                 ->getApi()

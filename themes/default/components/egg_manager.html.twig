@@ -21,7 +21,9 @@
 
             const form = document.querySelector('form');
             if (form) {
-                form.addEventListener('submit', saveEggsConfigurationToHiddenField);
+                form.addEventListener('submit', function(e) {
+                    saveEggsConfigurationToHiddenField();
+                });
             }
 
             setTimeout(() => {
@@ -74,11 +76,15 @@
         }
 
         function loadEggsData() {
-            clearEggsData();
             const eggSelector = document.querySelector('select.egg-selector');
-            const eggIds = eggSelector.tomselect.getValue().map(value => parseInt(value));
+            const previousEggIds = loadedEggsConfigurations ? Object.keys(loadedEggsConfigurations).map(id => parseInt(id)) : [];
+            const currentEggIds = eggSelector.tomselect.getValue().map(value => parseInt(value));
+            
+            const newEggId = currentEggIds.find(id => !previousEggIds.includes(id));
+            
+            clearEggsData();
 
-            if (!eggIds.length) {
+            if (!currentEggIds.length) {
                 return;
             }
 
@@ -90,7 +96,7 @@
             const contentContainer = document.createElement('div');
             contentContainer.className = 'tab-content eggs-data-content';
 
-            eggIds.forEach((eggId, index) => {
+            currentEggIds.forEach((eggId, index) => {
                 const li = document.createElement('li'),
                     a = document.createElement('a'),
                     eggData = loadedEggs[eggId];
@@ -102,27 +108,35 @@
                 a.dataset.bsToggle = 'tab';
                 a.dataset.tab = 'tab';
                 a.className = 'nav-link';
-                if (index === 0) {
+                
+                if ((newEggId && eggId === newEggId) || (!newEggId && index === 0)) {
                     a.classList.add('active');
                 }
+                
                 li.appendChild(a);
                 ul.appendChild(li);
 
-                const tabContent = prepareEggTabContent(index, eggData);
+                const tabContent = prepareEggTabContent(index, eggData, (newEggId && eggId === newEggId) || (!newEggId && index === 0));
                 contentContainer.appendChild(tabContent);
             });
 
             eggSelector.parentElement.appendChild(container);
             eggSelector.parentElement.appendChild(contentContainer);
-            setTimeout(() => loadSavedEggsConfiguration(), 1000);
+            setTimeout(() => {
+                loadSavedEggsConfiguration();
+                initializeSlotVariableCheckboxes();
+                observeSlotPricesChanges();
+                updateEggTabIndicators();
+                saveEggsConfigurationToHiddenField();
+            }, 1000);
         }
 
-        function prepareEggTabContent(index, eggData) {
+        function prepareEggTabContent(index, eggData, isActive = false) {
             const tabContent = document.createElement('div');
             tabContent.id = 'tab_' + eggData.id;
             tabContent.className = 'tab-pane';
 
-            if (index === 0) {
+            if (isActive) {
                 tabContent.classList.add('active');
             }
 
@@ -150,12 +164,12 @@
                 }
             })
             tabContent.innerHTML += '<h5 class="mb-3 mt-4">' + loadedTranslations.variables + '</h5>';
-            tabContent.innerHTML += generateVariablesTable(eggData?.relationships?.variables)
+            tabContent.innerHTML += generateVariablesTable(eggData?.relationships?.variables, true)
 
             return tabContent;
         }
 
-        function generateVariablesTable(variables) {
+        function generateVariablesTable(variables, isVariablesSection = false) {
             if (variables === null || typeof variables === "undefined") {
                 return '';
             }
@@ -185,6 +199,13 @@
             tr.appendChild(thUserViewable);
             tr.appendChild(thUserEditable);
 
+            let thSlotVariable = null;
+            if (isVariablesSection && hasSlotPrices()) {
+                thSlotVariable = document.createElement('th');
+                thSlotVariable.innerHTML = loadedTranslations.egg_variable_slot_variable + ' <i class="fas fa-info-circle text-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="' + loadedTranslations.egg_variable_slot_variable_hint + '"></i>';
+                tr.appendChild(thSlotVariable);
+            }
+
             thead.appendChild(tr);
             table.appendChild(thead);
 
@@ -197,6 +218,7 @@
                     tdUserEditable = document.createElement('td');
 
                 tr.dataset.id = value.id;
+                tr.dataset.eggId = value.egg_id;
                 tdName.textContent = value.name;
                 tdDescription.textContent = value.description;
                 tdValue.innerHTML = createInput((value.default_value || ''), value.egg_id, value.id, value.options, 'value');
@@ -208,6 +230,13 @@
                 tr.appendChild(tdValue);
                 tr.appendChild(tdUserViewable);
                 tr.appendChild(tdUserEditable);
+
+                if (isVariablesSection && hasSlotPrices()) {
+                    const tdSlotVariable = document.createElement('td');
+                    const isNumeric = isValueNumeric(value.default_value || '');
+                    tdSlotVariable.innerHTML = createSlotVariableCheckbox(false, value.egg_id, value.id, 'slot_variable', !isNumeric);
+                    tr.appendChild(tdSlotVariable);
+                }
 
                 tbody.appendChild(tr);
             }
@@ -231,20 +260,180 @@
             if (options) {
                 return createSelect(value, eggId, options, name);
             }
-            return `<input type="text" value="${value}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control">`;
+            return `<input type="text" value="${value}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control" onchange="saveEggsConfigurationToHiddenField()">`;
         }
 
         function createCheckbox(checked, eggId, variableId, name) {
-            return `<input type="checkbox" class="form-check-input" name="${getInputName(eggId, variableId, name)}" ${checked ? 'checked' : ''}>`;
+            return `<input type="checkbox" class="form-check-input" name="${getInputName(eggId, variableId, name)}" ${checked ? 'checked' : ''} onchange="saveEggsConfigurationToHiddenField()">`;
+        }
+
+        function createSlotVariableCheckbox(checked, eggId, variableId, name, disabled = false) {
+            const checkboxId = `slot_var_${eggId}_${variableId}`;
+            const disabledAttr = disabled ? 'disabled' : '';
+            const onChangeHandler = disabled ? '' : `onchange="handleSlotVariableChange(this, '${eggId}')"`;
+            return `<input type="checkbox" class="form-check-input slot-variable-checkbox" id="${checkboxId}" name="${getInputName(eggId, variableId, name)}" ${checked ? 'checked' : ''} ${disabledAttr} ${onChangeHandler} data-egg-id="${eggId}" data-variable-id="${variableId}">`;
         }
 
         function createSelect(value, eggId, options, name) {
-            let select = `<select name="${getInputName(eggId, 'docker_image', name)}" class="form-control" style="font-size: 14px;">`;
+            let select = `<select name="${getInputName(eggId, 'docker_image', name)}" class="form-control" style="font-size: 14px;" onchange="saveEggsConfigurationToHiddenField()">`;
             for (const [key, option] of Object.entries(options)) {
                 select += `<option value="${option}" ${value === key ? 'selected' : ''}>${option}</option>`;
             }
             select += '</select>';
             return select;
+        }
+
+        function hasSlotPrices() {
+            let slotPricesContainer = document.querySelector('#Product_slotPrices');
+            if (!slotPricesContainer) {
+                slotPricesContainer = document.querySelector('#ServerProduct_slotPrices');
+            }
+            
+            if (slotPricesContainer) {
+                const slotPriceItems = slotPricesContainer.querySelectorAll('.field-collection-item:not(.field-collection-item-action)');
+                if (slotPriceItems.length > 0) {
+                    return true;
+                }
+            }
+            
+            const allElements = document.querySelectorAll('[id]');
+            for (let element of allElements) {
+                if (/^(Product|ServerProduct)_slotPrices_\d+$/.test(element.id)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function isValueNumeric(value) {
+            return !isNaN(value) && !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        function hasEggSlotVariableSelected(eggId) {
+            const slotCheckboxes = document.querySelectorAll(`input.slot-variable-checkbox[data-egg-id="${eggId}"]:checked`);
+            return slotCheckboxes.length > 0;
+        }
+
+        function updateEggTabIndicators() {
+            const eggTabs = document.querySelectorAll('.nav-link[href^="#tab_"]');
+            eggTabs.forEach(tab => {
+                const eggId = tab.getAttribute('href').replace('#tab_', '');
+                
+                const existingIcon = tab.querySelector('.slot-warning-icon');
+                if (existingIcon) {
+                    existingIcon.remove();
+                }
+                
+                if (hasSlotPrices() && !hasEggSlotVariableSelected(eggId)) {
+                    const warningIcon = document.createElement('i');
+                    warningIcon.className = 'fas fa-exclamation-triangle text-danger ms-2 slot-warning-icon';
+                    warningIcon.title = loadedTranslations.slot_variable_not_configured_egg;
+                    tab.appendChild(warningIcon);
+                }
+            });
+            
+            updateMainTabIndicator();
+        }
+        
+        function updateMainTabIndicator() {
+            const productConnectionsTab = document.querySelector('#tablist-tab-product-connections');
+            if (!productConnectionsTab) {
+                return;
+            }
+            
+            const existingIcon = productConnectionsTab.querySelector('.slot-warning-icon');
+            if (existingIcon) {
+                existingIcon.remove();
+            }
+            
+            if (hasSlotPrices() && hasUnconfiguredSlotVariables()) {
+                const warningIcon = document.createElement('i');
+                warningIcon.className = 'fas fa-exclamation-triangle text-danger ms-2 slot-warning-icon';
+                warningIcon.title = loadedTranslations.slot_variables_unconfigured_eggs;
+                productConnectionsTab.appendChild(warningIcon);
+            }
+        }
+        
+        function hasUnconfiguredSlotVariables() {
+            const eggTabs = document.querySelectorAll('.nav-link[href^="#tab_"]');
+            for (let tab of eggTabs) {
+                const eggId = tab.getAttribute('href').replace('#tab_', '');
+                if (!hasEggSlotVariableSelected(eggId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function handleSlotVariableChange(checkbox, eggId) {
+            if (checkbox.checked) {
+                const otherSlotCheckboxes = document.querySelectorAll(`input.slot-variable-checkbox[data-egg-id="${eggId}"]:not(#${checkbox.id})`);
+                otherSlotCheckboxes.forEach(otherCheckbox => {
+                    otherCheckbox.checked = false;
+                    const otherRow = otherCheckbox.closest('tr');
+                    const otherUserEditableCheckbox = otherRow.querySelector('input[name*="user_editable"]');
+                    if (otherUserEditableCheckbox) {
+                        otherUserEditableCheckbox.disabled = false;
+                    }
+                });
+
+                const row = checkbox.closest('tr');
+                const userEditableCheckbox = row.querySelector('input[name*="user_editable"]');
+                if (userEditableCheckbox) {
+                    userEditableCheckbox.checked = false;
+                    userEditableCheckbox.disabled = true;
+                }
+            } else {
+                const row = checkbox.closest('tr');
+                const userEditableCheckbox = row.querySelector('input[name*="user_editable"]');
+                if (userEditableCheckbox) {
+                    userEditableCheckbox.disabled = false;
+                }
+            }
+            
+            setTimeout(() => {
+                updateEggTabIndicators();
+                saveEggsConfigurationToHiddenField();
+            }, 50);
+        }
+
+        function updateSlotVariableCheckboxState(checkbox) {
+            const row = checkbox.closest('tr');
+            const valueInput = row.querySelector('input[name*="value"], select[name*="value"]');
+            
+            if (valueInput) {
+                const isNumeric = isValueNumeric(valueInput.value);
+                
+                if (!isNumeric && checkbox.checked) {
+                    checkbox.checked = false;
+                    const userEditableCheckbox = row.querySelector('input[name*="user_editable"]');
+                    if (userEditableCheckbox) {
+                        userEditableCheckbox.disabled = false;
+                    }
+                }
+                
+                checkbox.disabled = !isNumeric;
+                
+                if (!valueInput.hasAttribute('data-slot-listener-added')) {
+                    valueInput.setAttribute('data-slot-listener-added', 'true');
+                    valueInput.addEventListener('input', function() {
+                        updateSlotVariableCheckboxState(checkbox);
+                        setTimeout(() => {
+                            saveEggsConfigurationToHiddenField();
+                        }, 100);
+                    });
+                }
+            }
+        }
+
+        function initializeSlotVariableCheckboxes() {
+            setTimeout(() => {
+                const slotCheckboxes = document.querySelectorAll('.slot-variable-checkbox');
+                slotCheckboxes.forEach(checkbox => {
+                    updateSlotVariableCheckboxState(checkbox);
+                });
+            }, 500);
         }
 
         function clearEggsData() {
@@ -277,11 +466,16 @@
         }
 
         function loadSavedEggsConfiguration() {
-            if (loadedEggsConfigurations !== null) {
+            let eggsConfigurationElement = document.querySelector('#Product_eggsConfiguration');
+            if (!eggsConfigurationElement) {
+                eggsConfigurationElement = document.querySelector('#ServerProduct_eggsConfiguration');
+            }
+            
+            if (!eggsConfigurationElement) {
                 return;
             }
 
-            const savedEggsConfigurations = document.querySelector('#Product_eggsConfiguration').value;
+            const savedEggsConfigurations = eggsConfigurationElement.value;
             let eggsConfigurationsToLoad;
             try {
                 eggsConfigurationsToLoad = JSON.parse(savedEggsConfigurations);
@@ -289,17 +483,26 @@
                 eggsConfigurationsToLoad = null;
             }
             if (typeof eggsConfigurationsToLoad !== 'object' || eggsConfigurationsToLoad === null || Object.keys(eggsConfigurationsToLoad).length === 0) {
+                if (!loadedEggsConfigurations) {
+                    loadedEggsConfigurations = {};
+                }
                 return;
             }
+            
             loadedEggsConfigurations = eggsConfigurationsToLoad;
+            
             Object.entries(eggsConfigurationsToLoad).forEach(([eggId, configurations]) => {
                 const inputName = `eggs_configuration[${eggId}]`;
-                Object.entries(configurations.options).forEach(([name, value]) => {
-                    setConfigurationInputValue(inputName, 'options', name, value);
-                });
-                Object.entries(configurations.variables).forEach(([variableId, variable]) => {
-                    setConfigurationInputValue(inputName, 'variables', variableId, variable);
-                });
+                if (configurations.options) {
+                    Object.entries(configurations.options).forEach(([name, value]) => {
+                        setConfigurationInputValue(inputName, 'options', name, value);
+                    });
+                }
+                if (configurations.variables) {
+                    Object.entries(configurations.variables).forEach(([variableId, variable]) => {
+                        setConfigurationInputValue(inputName, 'variables', variableId, variable);
+                    });
+                }
             });
         }
 
@@ -307,7 +510,8 @@
             const valueInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
                 selectInput = document.querySelector(`select[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
                 viewableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_viewable]"]`),
-                editableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_editable]"]`);
+                editableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_editable]"]`),
+                slotVariableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][slot_variable]"]`);
             
             if (valueInput) {
                 valueInput.value = value.value;
@@ -320,6 +524,17 @@
             }
             if (editableInput) {
                 editableInput.checked = value.user_editable || false;
+            }
+            if (slotVariableInput) {
+                slotVariableInput.checked = value.slot_variable || false;
+                
+                if (value.slot_variable) {
+                    if (editableInput) {
+                        editableInput.disabled = true;
+                    }
+                }
+                
+                updateSlotVariableCheckboxState(slotVariableInput);
             }
         }
 
@@ -348,10 +563,122 @@
                 }
             });
 
-            const hiddenField = document.querySelector('#Product_eggsConfiguration');
+            let hiddenField = document.querySelector('#Product_eggsConfiguration');
+            if (!hiddenField) {
+                hiddenField = document.querySelector('#ServerProduct_eggsConfiguration');
+            }
+            
             if (hiddenField && Object.keys(eggsConfiguration).length > 0) {
                 hiddenField.value = JSON.stringify(eggsConfiguration);
             }
+        }
+
+        function observeSlotPricesChanges() {
+            const globalObserver = new MutationObserver(function(mutations) {
+                let shouldUpdateTables = false;
+                
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                if (node.id && /^(Product|ServerProduct)_slotPrices_\d+/.test(node.id)) {
+                                    shouldUpdateTables = true;
+                                }
+                                
+                                if (node.querySelector && node.querySelector('[id*="slotPrices"]')) {
+                                    shouldUpdateTables = true;
+                                }
+                                
+                                if (node.classList && node.classList.contains('field-collection-item')) {
+                                    const parentContainer = node.closest('#Product_slotPrices, #ServerProduct_slotPrices');
+                                    if (parentContainer) {
+                                        shouldUpdateTables = true;
+                                    }
+                                }
+                            }
+                        });
+                        
+                        mutation.removedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                if (node.id && /^(Product|ServerProduct)_slotPrices_\d+/.test(node.id)) {
+                                    shouldUpdateTables = true;
+                                }
+                                
+                                if (node.classList && node.classList.contains('field-collection-item')) {
+                                    shouldUpdateTables = true;
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                if (shouldUpdateTables) {
+                    setTimeout(() => {
+                        updateAllVariablesTables();
+                    }, 200);
+                }
+            });
+            
+            globalObserver.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
+        
+        function updateAllVariablesTables() {
+            const eggTabs = document.querySelectorAll('.tab-pane');
+            
+            eggTabs.forEach(tabPane => {
+                const eggId = parseInt(tabPane.id.replace('tab_', ''));
+                const eggData = loadedEggs[eggId];
+                
+                if (!eggData) return;
+                
+                const variablesHeaders = tabPane.querySelectorAll('h5');
+                let variablesHeader = null;
+                
+                variablesHeaders.forEach(header => {
+                    if (header.textContent === loadedTranslations.variables) {
+                        variablesHeader = header;
+                    }
+                });
+                
+                if (variablesHeader) {
+                    let existingTable = variablesHeader.nextElementSibling;
+                    if (existingTable && existingTable.tagName === 'TABLE') {
+                        const hasSlotVariableColumn = existingTable.querySelector('th').textContent === loadedTranslations.egg_variable_slot_variable || 
+                                                    Array.from(existingTable.querySelectorAll('th')).some(th => th.textContent === loadedTranslations.egg_variable_slot_variable);
+                        
+                        const shouldHaveSlotColumn = hasSlotPrices();
+                        
+                        if ((hasSlotVariableColumn && !shouldHaveSlotColumn) || (!hasSlotVariableColumn && shouldHaveSlotColumn)) {
+                            existingTable.remove();
+                            
+                            const newTableHTML = generateVariablesTable(eggData?.relationships?.variables, true);
+                            variablesHeader.insertAdjacentHTML('afterend', newTableHTML);
+                            
+                            setTimeout(() => {
+                                initializeSlotVariableCheckboxes();
+                                updateEggTabIndicators();
+                                saveEggsConfigurationToHiddenField();
+                            }, 100);
+                        } else {
+                            setTimeout(() => {
+                                updateEggTabIndicators();
+                            }, 100);
+                        }
+                    } else {
+                        const newTableHTML = generateVariablesTable(eggData?.relationships?.variables, true);
+                        variablesHeader.insertAdjacentHTML('afterend', newTableHTML);
+                        
+                        setTimeout(() => {
+                            initializeSlotVariableCheckboxes();
+                            updateEggTabIndicators();
+                            saveEggsConfigurationToHiddenField();
+                        }, 100);
+                    }
+                }
+            });
         }
 
         function restoreFormValuesAfterValidationError() {

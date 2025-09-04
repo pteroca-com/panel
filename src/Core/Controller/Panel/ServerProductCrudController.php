@@ -8,6 +8,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Form\ServerProductPriceDynamicFormType;
 use App\Core\Form\ServerProductPriceFixedFormType;
+use App\Core\Form\ServerProductPriceSlotFormType;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
@@ -107,6 +108,37 @@ class ServerProductCrudController extends AbstractPanelController
 
             ...$this->getServerBuildFields(),
 
+            FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
+                ->setIcon('fa fa-money'),
+            CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
+                ->setEntryType(ServerProductPriceFixedFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_static_plan_hint'))
+                ->setRequired(true)
+                ->setEntryIsComplex(),
+            CollectionField::new('dynamicPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_dynamic_plan'), $internalCurrency))
+                ->setEntryType(ServerProductPriceDynamicFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->setSortable(true)
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint') . $this->getExperimentalFeatureMessage())
+                ->setRequired(true)
+                ->setEntryIsComplex(),
+            CollectionField::new('slotPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_slot_plan'), $internalCurrency))
+                ->setEntryType(ServerProductPriceSlotFormType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->onlyOnForms()
+                ->setColumns(6)
+                ->setHelp($this->translator->trans('pteroca.crud.product.price_slot_plan_hint'))
+                ->setRequired(true)
+                ->setEntryIsComplex(),
+
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
                 ->setIcon('fa fa-link'),
             FormField::addPanel(sprintf(
@@ -141,28 +173,6 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setRequired(true)
                 ->setFormTypeOption('attr', ['class' => 'egg-selector'])
                 ->setColumns(12),
-
-            FormField::addTab($this->translator->trans('pteroca.crud.product.pricing'))
-                ->setIcon('fa fa-money'),
-            CollectionField::new('staticPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_static_plan'), $internalCurrency))
-                ->setEntryType(ServerProductPriceFixedFormType::class)
-                ->allowAdd()
-                ->allowDelete()
-                ->onlyOnForms()
-                ->setColumns(6)
-                ->setHelp($this->translator->trans('pteroca.crud.product.price_static_plan_hint'))
-                ->setRequired(true)
-                ->setEntryIsComplex(),
-            CollectionField::new('dynamicPrices', sprintf('%s (%s)', $this->translator->trans('pteroca.crud.product.price_dynamic_plan'), $internalCurrency))
-                ->setEntryType(ServerProductPriceDynamicFormType::class)
-                ->allowAdd()
-                ->allowDelete()
-                ->setSortable(true)
-                ->onlyOnForms()
-                ->setColumns(6)
-                ->setHelp($this->translator->trans('pteroca.crud.product.price_dynamic_plan_hint') . $this->getExperimentalFeatureMessage())
-                ->setRequired(true)
-                ->setEntryIsComplex(),
         ];
 
         return $fields;

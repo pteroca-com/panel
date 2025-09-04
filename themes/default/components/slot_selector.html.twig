@@ -1,0 +1,31 @@
+{# Slot Selector Component #}
+{# Parameters: 
+   - initialValue: initial slot value (default: 1)
+   - maxValue: maximum slot value (default: 32)
+   - minValue: minimum slot value (default: 1)
+   - showBadge: whether to show the slot count badge (default: true)
+#}
+
+{% set slotValue = initialValue ?? 1 %}
+{% set maxSlots = maxValue ?? 32 %}
+{% set minSlots = minValue ?? 1 %}
+{% set showBadge = showBadge ?? true %}
+
+<div class="mb-4" id="slot-selection" style="display: none;">
+    <label for="slots" class="form-label fw-semibold">
+        <i class="fas fa-server me-2 text-primary"></i>
+        {{ 'pteroca.product.slots'|trans }}
+    </label>
+    <div class="bg-light rounded-3 p-3">
+        <div class="d-flex align-items-center mb-3">
+            <span class="me-3">{{ minSlots }}</span>
+            <input type="range" class="form-range flex-grow-1" id="slots" name="slots" min="{{ minSlots }}" max="{{ maxSlots }}" value="{{ slotValue }}" step="1">
+            <span class="ms-3">{{ maxSlots }}</span>
+        </div>
+        {% if showBadge %}
+        <div class="text-center">
+            <span class="badge bg-secondary fs-6 text-white" id="selected-slots">{{ slotValue }} {{ slotValue == 1 ? ('pteroca.product.slot'|trans) : ('pteroca.product.slots'|trans) }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>

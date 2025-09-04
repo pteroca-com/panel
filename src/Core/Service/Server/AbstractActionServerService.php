@@ -6,6 +6,7 @@ use App\Core\Contract\ProductInterface;
 use App\Core\Contract\ProductPriceInterface;
 use App\Core\Contract\UserInterface;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -17,6 +18,7 @@ abstract class AbstractActionServerService
         private readonly UserRepository $userRepository,
         private readonly PterodactylService $pterodactylService,
         private readonly VoucherPaymentService $voucherPaymentService,
+        private readonly ProductPriceCalculatorService $productPriceCalculatorService,
         private readonly TranslatorInterface $translator,
         private readonly LoggerInterface $logger,
     ) {}
@@ -26,6 +28,7 @@ abstract class AbstractActionServerService
         ProductInterface $product,
         int $priceId,
         ?string $voucherCode = null,
+        ?int $slots = null
     ): void
     {
         $price = $product->getPrices()->filter(
@@ -36,7 +39,8 @@ abstract class AbstractActionServerService
             throw new \InvalidArgumentException($this->translator->trans('pteroca.store.price_not_found'));
         }
 
-        $balancePaymentAmount = $price->getPrice();
+        $balancePaymentAmount = $this->productPriceCalculatorService->calculateFinalPrice($price, $slots);
+        
         if (!empty($voucherCode)) {
             try {
                 $balancePaymentAmount = $this->voucherPaymentService->redeemPaymentVoucher(

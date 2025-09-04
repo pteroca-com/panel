@@ -55,7 +55,6 @@ class ServerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('s')
             ->where('s.user = :user')
-            ->andWhere('s.isSuspended = false')
             ->andWhere('s.deletedAt IS NULL')
             ->setParameter('user', $user)
             ->getQuery()
