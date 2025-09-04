@@ -9,7 +9,7 @@
 - Added server software tile on the server management page.  
 - Added automatic **Copy IP Address** button on the server management page.  
 - Added SMTP connection test button on the email settings page.  
-- Added support for the `TRUSTED_PROXIES` variable for Cloudflare compatibility.  
+- Added support for the `TRUSTED_HOSTS` variable for Symfony host validation.
 
 ### Changed
 - Improved server IP display: the correct allocation is now shown even when a domain is assigned.  
