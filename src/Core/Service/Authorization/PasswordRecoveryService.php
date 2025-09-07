@@ -17,6 +17,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PasswordRecoveryService
 {
+    private const PASSWORD_RESET_TOKEN_LIFETIME_HOURS = 1;
+
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly PasswordResetRequestRepository $passwordResetRequestRepository,
@@ -78,7 +80,7 @@ class PasswordRecoveryService
         $passwordResetRequest = new PasswordResetRequest();
         $passwordResetRequest->setUser($user);
         $passwordResetRequest->setToken($token);
-        $passwordResetRequest->setExpiresAt((new \DateTime())->modify('+1 hour'));
+        $passwordResetRequest->setExpiresAt((new \DateTime())->modify(sprintf('+%d hours', self::PASSWORD_RESET_TOKEN_LIFETIME_HOURS)));
         $this->passwordResetRequestRepository->save($passwordResetRequest);
     }
 

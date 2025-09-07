@@ -97,9 +97,18 @@
     <!-- JavaScript for resend functionality -->
     <script>
         function resendVerification() {
-            // Tutaj można dodać AJAX call do resend verification
-            // Na razie pokazujemy alert
-            alert('{{ 'pteroca.verification.resend_success'|trans }}');
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ path('resend_verification') }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token('resend_verification') }}';
+            form.appendChild(csrfInput);
+            
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 

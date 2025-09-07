@@ -960,11 +960,26 @@ pteroca:
       best_regards: 'Best regards'
       visit_website: 'Visit our website:'
       copyright: 'All rights reserved.'
+    verification:
+      subject: "Email Verification - %siteName%"
+      title: "Email Verification"
+      hello: "Hello %name%!"
+      message: "Thank you for registering at %siteName%. Please verify your email address by clicking the button below."
+      verify_button: "Verify Email Address"
+      alternative_text: "If the button doesn't work, you can also copy and paste the following link into your browser:"
+      footer_text: "If you didn't create an account at %siteName%, you can safely ignore this email."
+      resend_too_soon: "You can only resend verification email once every %minutes% minutes. Please try again later."
+      resend_success: "Verification email has been sent to your email address."
+      not_logged_in: "You must be logged in to resend verification email."
+      already_verified: "Your email address is already verified."
     registration:
       subject: 'Registration'
       welcome: 'Welcome to our service! Thank you for registering.'
+      account_ready: 'Your account is ready to use. You can now log in to your account and start using our services.'
+      email_verification_required: 'Email Verification Required'
       confirm_email: 'Please confirm your email address by clicking the link below:'
       confirm_email_button: 'Confirm email address'
+      alternative_text: 'If the button doesn''t work, you can also copy and paste the following link into your browser:'
       if_not_registered: 'If you did not register on our site, please ignore this email.'
     recovery:
       subject: 'Password Reset'
