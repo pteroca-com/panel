@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Es ist ein Fehler bei der Kommunikation mit dem Pterodactyl-Panel aufgetreten.'
     dont_have_permission: 'Sie haben keine Berechtigung, diese Aktion auszuführen.'
     experimental_feature: 'Diese Funktion ist experimentell und könnte nicht korrekt funktionieren.'
+    or_resend_verification_email: 'oder klicken Sie hier, um die Bestätigungs-E-Mail erneut zu senden.'
 
   login:
     title: 'Einloggen'
@@ -938,6 +939,7 @@ pteroca:
     server_user:
       user_not_exist: 'Benutzer mit E-Mail {{ email }} existiert nicht im System. Der Benutzer muss sich zuerst registrieren.'
       user_already_added: 'Benutzer mit E-Mail {{ email }} wurde bereits zu diesem Server hinzugefügt.'
+      user_not_verified: 'Benutzer mit E-Mail {{ email }} hat seine E-Mail-Adresse nicht verifiziert und kann nicht als Unterbenutzer hinzugefügt werden.'
       cannot_modify_yourself: 'Sie können diese Aktion nicht an sich selbst ausführen: {{ action }}.'
       modify_permissions: 'Berechtigungen ändern'
       delete_yourself_from_server: 'sich selbst vom Server entfernen'
@@ -959,11 +961,26 @@ pteroca:
       best_regards: 'Mit freundlichen Grüßen'
       visit_website: 'Besuchen Sie unsere Website:'
       copyright: 'Alle Rechte vorbehalten.'
+    verification:
+      subject: "E-Mail-Verifizierung - %siteName%"
+      title: "E-Mail-Verifizierung"
+      hello: "Hallo %name%!"
+      message: "Vielen Dank für Ihre Registrierung bei %siteName%. Bitte verifizieren Sie Ihre E-Mail-Adresse, indem Sie auf die Schaltfläche unten klicken."
+      verify_button: "E-Mail-Adresse verifizieren"
+      alternative_text: "Falls die Schaltfläche nicht funktioniert, können Sie auch den folgenden Link kopieren und in Ihren Browser einfügen:"
+      footer_text: "Falls Sie kein Konto bei %siteName% erstellt haben, können Sie diese E-Mail bedenkenlos ignorieren."
+      resend_too_soon: "Sie können die Verifizierungs-E-Mail nur alle %minutes% Minuten erneut senden. Bitte versuchen Sie es später noch einmal."
+      resend_success: "Die Verifizierungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet."
+      not_logged_in: "Sie müssen eingeloggt sein, um die Verifizierungs-E-Mail erneut zu senden."
+      already_verified: "Ihre E-Mail-Adresse ist bereits verifiziert."
     registration:
       subject: 'Registrierung'
       welcome: 'Willkommen auf unserer Seite! Vielen Dank für Ihre Registrierung.'
+      account_ready: 'Ihr Konto ist bereit zur Nutzung. Sie können sich jetzt in Ihr Konto einloggen und unsere Dienste nutzen.'
+      email_verification_required: 'E-Mail-Verifizierung erforderlich'
       confirm_email: 'Bestätigen Sie Ihre E-Mail-Adresse, indem Sie auf den folgenden Link klicken:'
       confirm_email_button: 'E-Mail-Adresse bestätigen'
+      alternative_text: 'Falls die Schaltfläche nicht funktioniert, können Sie auch den folgenden Link kopieren und in Ihren Browser einfügen:'
       if_not_registered: 'Wenn Sie sich nicht auf unserer Website registriert haben, ignorieren Sie diese Nachricht.'
     recovery:
       subject: 'Passwort zurücksetzen'
@@ -998,6 +1015,17 @@ pteroca:
       subject: 'Serversperrung'
       server_suspended: 'Wir informieren Sie, dass einer Ihrer Server gesperrt wurde, da er nicht verlängert wurde.'
       extend_server: 'Um den Server wiederherzustellen, verlängern Sie ihn im Kundenbereich.'
+
+  verification:
+    title: 'E-Mail-Verifizierung erforderlich'
+    subtitle: 'Bitte verifizieren Sie Ihre E-Mail-Adresse, um fortzufahren'
+    required: 'E-Mail-Verifizierung erforderlich'
+    description: 'Sie müssen Ihre E-Mail-Adresse verifizieren, bevor Sie auf diese Funktion zugreifen können.'
+    sent_to: 'Verifizierungs-E-Mail gesendet an'
+    resend: 'Verifizierungs-E-Mail erneut senden'
+    resend_success: 'Verifizierungs-E-Mail wurde gesendet!'
+    back_to_panel: 'Zurück zum Panel'
+    help_text: 'Überprüfen Sie Ihren E-Mail-Posteingang und Spam-Ordner auf den Verifizierungslink.'
 
   admin:
     overview:

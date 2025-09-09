@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: '与 Pterodactyl 面板通信时发生错误。'
     dont_have_permission: '您没有权限执行此操作。'
     experimental_feature: '此功能为实验性功能，可能无法正常工作。'
+    or_resend_verification_email: '或点击此处重新发送验证邮件。'
 
   login:
     title: '登录'
@@ -938,6 +939,7 @@ pteroca:
     server_user:
       user_not_exist: '邮箱{{ email }}的用户不存在于系统中。用户必须先注册。'
       user_already_added: '邮箱{{ email }}的用户已添加到此服务器。'
+      user_not_verified: '邮箱{{ email }}的用户尚未验证电子邮件地址，无法添加为子用户。'
       cannot_modify_yourself: '您不能对自己执行此操作：{{ action }}。'
       modify_permissions: '修改权限'
       delete_yourself_from_server: '从服务器删除自己'
@@ -959,11 +961,26 @@ pteroca:
       best_regards: '此致'
       visit_website: '访问我们的网站：'
       copyright: '版权所有。'
+    verification:
+      subject: "电子邮件验证 - %siteName%"
+      title: "电子邮件验证"
+      hello: "您好 %name%！"
+      message: "感谢您在 %siteName% 注册。请点击下方按钮验证您的电子邮件地址。"
+      verify_button: "验证电子邮件地址"
+      alternative_text: "如果按钮不起作用，您也可以将以下链接复制并粘贴到您的浏览器中："
+      footer_text: "如果您未在 %siteName% 创建账户，您可以安全地忽略此邮件。"
+      resend_too_soon: "您只能每 %minutes% 分钟重新发送验证邮件一次。请稍后再试。"
+      resend_success: "验证邮件已发送到您的电子邮件地址。"
+      not_logged_in: "您必须登录才能重新发送验证邮件。"
+      already_verified: "您的电子邮件地址已验证。"
     registration:
       subject: '注册'
       welcome: '欢迎使用我们的服务！感谢您的注册。'
+      account_ready: '您的账户已准备就绪。您现在可以登录您的账户并开始使用我们的服务。'
+      email_verification_required: '需要电子邮件验证'
       confirm_email: '请点击以下链接确认您的电子邮件地址：'
       confirm_email_button: '确认电子邮件地址'
+      alternative_text: '如果按钮不起作用，您也可以将以下链接复制并粘贴到您的浏览器中：'
       if_not_registered: '如果您未在我们的网站上注册，请忽略此消息。'
     recovery:
       subject: '密码重置'
@@ -998,6 +1015,17 @@ pteroca:
       subject: '服务器暂停'
       server_suspended: '我们通知您，您的一个服务器已被暂停，因为它未续订。'
       extend_server: '要恢复服务器，请在客户面板中续订它。'
+
+  verification:
+    title: '需要电子邮件验证'
+    subtitle: '请验证您的电子邮件地址以继续'
+    required: '需要电子邮件验证'
+    description: '您必须先验证您的电子邮件地址才能访问此功能。'
+    sent_to: '验证邮件发送至'
+    resend: '重新发送验证邮件'
+    resend_success: '验证邮件已发送！'
+    back_to_panel: '返回面板'
+    help_text: '请检查您的收件箱和垃圾邮件文件夹以获取验证链接。'
 
   admin:
     overview:

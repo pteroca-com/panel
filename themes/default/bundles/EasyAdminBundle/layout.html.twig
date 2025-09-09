@@ -348,7 +348,7 @@
                     {% if show_email_verification_alert() and not app.user.verified %}
                         <div class="col-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                <strong>{{ 'pteroca.system.email_not_verified'|trans }}</strong>
+                                <strong>{{ 'pteroca.system.email_not_verified'|trans }} <a href="{{ path('verify_notice') }}">{{ 'pteroca.system.or_resend_verification_email'|trans }}</a></strong>
                             </div>
                         </div>
                     {% endif %}

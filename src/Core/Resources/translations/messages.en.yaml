@@ -1,7 +1,8 @@
 pteroca:
   system:
     back: 'Back to panel'
-    email_not_verified: 'Your email address has not been verified yet. Please check your inbox.'
+    email_not_verified: 'Your email address has not been verified yet. Please check your inbox'
+    or_resend_verification_email: 'or click here to resend the verification email.'
     pterodactyl_error: 'Error while connecting to the Pterodactyl API.'
     dont_have_permission: 'You do not have permission to perform this action.'
     experimental_feature: 'This feature is experimental and may not work correctly.'
