@@ -7,7 +7,7 @@ use App\Core\Service\Mailer\MailerServiceInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-readonly class SendEmailMessageHandler
+final readonly class SendEmailMessageHandler
 {
 
     public function __construct(

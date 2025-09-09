@@ -939,6 +939,7 @@ pteroca:
     server_user:
       user_not_exist: 'User with email {{ email }} does not exist in the system. The user must register first.'
       user_already_added: 'User with email {{ email }} is already added to this server.'
+      user_not_verified: 'User with email {{ email }} has not verified their email address and cannot be added as a subuser.'
       cannot_modify_yourself: 'You cannot perform this action on yourself: {{ action }}.'
       modify_permissions: 'modify permissions'
       delete_yourself_from_server: 'delete yourself from server'
