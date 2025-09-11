@@ -90,8 +90,33 @@ class GitOperationService
         }
     }
 
+    public function validateCurrentBranch(): void
+    {
+        exec('git branch --show-current 2>/dev/null', $output, $returnCode);
+        
+        if ($returnCode !== 0 || empty($output)) {
+            throw new \RuntimeException('Cannot determine current Git branch.');
+        }
+        
+        $currentBranch = trim($output[0]);
+        
+        if ($currentBranch !== 'main') {
+            throw new \RuntimeException(sprintf(
+                'System updates can only be performed from the "main" branch. Current branch: "%s". Please switch to main branch using: git checkout main',
+                $currentBranch
+            ));
+        }
+        
+        if ($this->options['verbose'] ?? false) {
+            $this->io->success('Branch validation passed. Currently on main branch.');
+        }
+    }
+
     public function pullChanges(): void
     {
+        // Validate we're on the main branch before attempting update
+        $this->validateCurrentBranch();
+        
         if ($this->options['verbose'] ?? false) {
             $this->io->text('Fetching latest changes from origin/main...');
         }

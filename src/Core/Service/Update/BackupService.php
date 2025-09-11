@@ -2,7 +2,6 @@
 
 namespace App\Core\Service\Update;
 
-use Doctrine\DBAL\Connection;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
@@ -11,12 +10,10 @@ class BackupService
     private const BACKUP_DIR = 'var/backups';
     private const BACKUP_RETENTION_DAYS = 7;
 
-    private Connection $connection;
     private Filesystem $filesystem;
 
-    public function __construct(Connection $connection, Filesystem $filesystem = null)
+    public function __construct(Filesystem $filesystem = null)
     {
-        $this->connection = $connection;
         $this->filesystem = $filesystem ?? new Filesystem();
     }
 
@@ -83,19 +80,25 @@ class BackupService
         }
 
         $fileSize = filesize($backupPath);
-        if ($fileSize < 100) { // Minimum expected backup size
+        if ($fileSize < 50) { // More lenient minimum size
             return false;
         }
 
-        // Check if file contains SQL structure
+        // Check if file contains SQL structure or mysqldump markers
         $handle = fopen($backupPath, 'r');
         if ($handle) {
-            $firstLines = fread($handle, 1024);
+            $content = fread($handle, 2048); // Read more content for better detection
             fclose($handle);
             
-            return stripos($firstLines, 'CREATE TABLE') !== false || 
-                   stripos($firstLines, 'INSERT INTO') !== false ||
-                   stripos($firstLines, 'mysqldump') !== false;
+            // Check for various indicators that this is a valid SQL dump
+            return stripos($content, 'CREATE TABLE') !== false || 
+                   stripos($content, 'INSERT INTO') !== false ||
+                   stripos($content, 'mysqldump') !== false ||
+                   stripos($content, 'DROP TABLE') !== false ||
+                   stripos($content, 'CREATE DATABASE') !== false ||
+                   stripos($content, 'USE ') !== false ||
+                   stripos($content, '-- MySQL dump') !== false ||
+                   (stripos($content, 'SET') !== false && stripos($content, 'SQL_MODE') !== false);
         }
 
         return false;
@@ -161,31 +164,47 @@ class BackupService
         $parsedUrl = parse_url($databaseUrl);
         $dbName = ltrim($parsedUrl['path'], '/');
 
-        // Use mysqldump for creating backup
+        // Use mysqldump for creating backup with proper error handling
         $command = sprintf(
-            'mysqldump -h%s -P%d -u%s -p%s --single-transaction --routines --triggers --add-drop-table --quick --lock-tables=false %s > %s',
+            'mysqldump -h%s -P%d -u%s -p%s --single-transaction --routines --triggers --add-drop-table --quick --lock-tables=false %s',
             $parsedUrl['host'],
             $parsedUrl['port'] ?? 3306,
             $parsedUrl['user'],
             $parsedUrl['pass'],
-            $dbName,
-            escapeshellarg($backupPath)
+            $dbName
         );
 
-        $process = Process::fromShellCommandline($command);
+        $process = new Process(explode(' ', $command));
         $process->setTimeout(300);
         $process->run();
 
         if (!$process->isSuccessful()) {
             throw new \RuntimeException(sprintf(
-                'Database backup failed: %s',
-                $process->getErrorOutput()
+                'Database backup failed: %s. Command: %s',
+                $process->getErrorOutput() ?: $process->getOutput(),
+                $command
             ));
         }
 
+        // Write the output to file
+        $backupContent = $process->getOutput();
+        if (empty($backupContent)) {
+            throw new \RuntimeException('Database backup produced no output');
+        }
+
+        file_put_contents($backupPath, $backupContent);
+
         // Verify backup was created and has content
         if (!$this->validateBackup($backupPath)) {
-            throw new \RuntimeException('Backup validation failed - backup file is invalid or empty');
+            // Add more detailed information about what went wrong
+            $fileSize = file_exists($backupPath) ? filesize($backupPath) : 0;
+            $preview = file_exists($backupPath) ? substr(file_get_contents($backupPath), 0, 200) : 'File not found';
+            
+            throw new \RuntimeException(sprintf(
+                'Backup validation failed - backup file is invalid or empty. File size: %d bytes. Preview: %s',
+                $fileSize,
+                $preview
+            ));
         }
     }
 

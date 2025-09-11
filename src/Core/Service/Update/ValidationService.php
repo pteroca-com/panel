@@ -29,6 +29,7 @@ class ValidationService
         $results['permissions'] = $this->validatePermissions();
         $results['database'] = $this->testDatabaseConnection();
         $results['git'] = $this->validateGitEnvironment();
+        $results['git_branch'] = $this->validateGitBranch();
         $results['composer'] = $this->validateComposerEnvironment();
         $results['php_extensions'] = $this->validatePhpExtensions();
         $results['maintenance_mode'] = $this->isMaintenanceModeAvailable();
@@ -283,6 +284,46 @@ class ValidationService
         ];
     }
 
+    public function validateGitBranch(): array
+    {
+        $process = new Process(['git', 'branch', '--show-current']);
+        $process->run();
+        
+        if (!$process->isSuccessful()) {
+            return [
+                'status' => 'error',
+                'message' => 'Cannot determine current Git branch',
+                'details' => ['error' => $process->getErrorOutput()]
+            ];
+        }
+        
+        $currentBranch = trim($process->getOutput());
+        
+        if ($currentBranch !== 'main') {
+            return [
+                'status' => 'error',
+                'message' => sprintf(
+                    'Updates can only be performed from "main" branch. Current branch: "%s"',
+                    $currentBranch
+                ),
+                'details' => [
+                    'current_branch' => $currentBranch,
+                    'required_branch' => 'main',
+                    'suggestion' => 'Switch to main branch using: git checkout main'
+                ]
+            ];
+        }
+        
+        return [
+            'status' => 'ok',
+            'message' => 'Currently on main branch',
+            'details' => [
+                'current_branch' => $currentBranch,
+                'required_branch' => 'main'
+            ]
+        ];
+    }
+
     public function validateComposerEnvironment(): array
     {
         // Check if composer is installed
@@ -293,7 +334,7 @@ class ValidationService
             return [
                 'status' => 'error',
                 'message' => 'Composer is not installed or not accessible',
-                'details' => ['error' => $process->getErrorOutput()]
+                'details' => ['error' => $process->getErrorOutput() ?: 'Command failed with no output']
             ];
         }
 
@@ -305,31 +346,75 @@ class ValidationService
         $issues = [];
         
         if (!$this->filesystem->exists($composerJson)) {
-            $issues[] = 'composer.json not found';
+            $issues[] = 'composer.json not found in project root';
         }
         
         if (!$this->filesystem->exists($composerLock)) {
-            $issues[] = 'composer.lock not found - run composer install first';
+            $issues[] = 'composer.lock not found - run "composer install" first';
         }
 
         // Check if composer can validate the setup
+        $warnings = [];
         if (empty($issues)) {
             $process = new Process(['composer', 'validate', '--no-check-publish']);
             $process->setTimeout(30);
             $process->run();
             
+            $composerOutput = trim($process->getErrorOutput() ?: $process->getOutput());
+            
             if (!$process->isSuccessful()) {
-                $issues[] = 'Composer validation failed';
+                // Check if it's just warnings or actual errors
+                if (stripos($composerOutput, 'is valid, but with a few warnings') !== false) {
+                    // These are just warnings, not blocking errors
+                    $warnings[] = 'Composer has warnings (non-blocking): ' . $composerOutput;
+                } else {
+                    // These are actual errors
+                    $issues[] = 'Composer validation failed: ' . ($composerOutput ?: 'Unknown error');
+                }
+            } elseif ($composerOutput && stripos($composerOutput, 'warning') !== false) {
+                // Even successful validation might have warnings
+                $warnings[] = 'Composer warnings: ' . $composerOutput;
+            }
+
+            // Check for platform requirements only if we have no critical issues
+            if (empty($issues)) {
+                $process2 = new Process(['composer', 'check-platform-reqs']);
+                $process2->setTimeout(15);
+                $process2->run();
+                
+                if (!$process2->isSuccessful()) {
+                    $platformOutput = trim($process2->getErrorOutput() ?: $process2->getOutput());
+                    if ($platformOutput) {
+                        // Platform requirements issues are usually critical
+                        if (stripos($platformOutput, 'requires') !== false || stripos($platformOutput, 'missing') !== false) {
+                            $issues[] = 'Platform requirements check failed: ' . $platformOutput;
+                        } else {
+                            $warnings[] = 'Platform check warnings: ' . $platformOutput;
+                        }
+                    }
+                }
             }
         }
 
-        $status = empty($issues) ? 'ok' : 'error';
-        $message = empty($issues) ? 'Composer environment OK' : 'Composer environment issues found';
+        // Determine final status
+        if (!empty($issues)) {
+            $status = 'error';
+            $message = 'Composer environment has critical issues';
+        } elseif (!empty($warnings)) {
+            $status = 'warning';
+            $message = 'Composer environment OK with warnings';
+        } else {
+            $status = 'ok';
+            $message = 'Composer environment OK';
+        }
 
         return [
             'status' => $status,
             'message' => $message,
-            'details' => ['issues' => $issues]
+            'details' => [
+                'issues' => $issues,
+                'warnings' => $warnings
+            ]
         ];
     }
 

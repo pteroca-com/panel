@@ -235,6 +235,33 @@ class UpdateOrchestrator implements HandlerInterface
             
             foreach ($failedChecks as $check => $result) {
                 $this->io->text("  • $check: {$result['message']}");
+                
+                // Show detailed information for failed checks
+                if (isset($result['details']) && !empty($result['details'])) {
+                    if (isset($result['details']['issues']) && !empty($result['details']['issues'])) {
+                        foreach ($result['details']['issues'] as $issue) {
+                            $this->io->text("    → $issue");
+                        }
+                    }
+                    if (isset($result['details']['warnings']) && !empty($result['details']['warnings'])) {
+                        foreach ($result['details']['warnings'] as $warning) {
+                            $this->io->text("    ⚠ $warning");
+                        }
+                    }
+                    if (isset($result['details']['error'])) {
+                        $this->io->text("    → Error: {$result['details']['error']}");
+                    }
+                }
+            }
+            
+            // Show warnings as well for context
+            $warningChecks = array_filter($validationResults, fn($r) => $r['status'] === 'warning');
+            if (!empty($warningChecks)) {
+                $this->io->newLine();
+                $this->io->warning('Additional warnings found:');
+                foreach ($warningChecks as $check => $result) {
+                    $this->io->text("  • $check: {$result['message']}");
+                }
             }
             
             throw new \RuntimeException('Environment validation failed');
@@ -242,6 +269,12 @@ class UpdateOrchestrator implements HandlerInterface
 
         if ($summary['warnings'] > 0) {
             $this->io->warning("{$summary['warnings']} warning(s) found during validation.");
+            
+            // Show warning details in non-verbose mode too
+            $warningChecks = array_filter($validationResults, fn($r) => $r['status'] === 'warning');
+            foreach ($warningChecks as $check => $result) {
+                $this->io->text("  • $check: {$result['message']}");
+            }
         }
     }
 

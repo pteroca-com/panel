@@ -6,7 +6,6 @@ use App\Core\Service\Update\Operation\GitOperationService;
 use App\Core\Service\Update\Operation\DatabaseOperationService;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Filesystem\Filesystem;
 
 class UpdateRollbackService
 {
@@ -20,20 +19,17 @@ class UpdateRollbackService
     private DatabaseOperationService $databaseService;
     private BackupService $backupService;
     private SystemStateManager $stateManager;
-    private Filesystem $filesystem;
 
     public function __construct(
         GitOperationService $gitService,
         DatabaseOperationService $databaseService,
         BackupService $backupService,
-        SystemStateManager $stateManager,
-        Filesystem $filesystem = null
+        SystemStateManager $stateManager
     ) {
         $this->gitService = $gitService;
         $this->databaseService = $databaseService;
         $this->backupService = $backupService;
         $this->stateManager = $stateManager;
-        $this->filesystem = $filesystem ?? new Filesystem();
     }
 
     public function setIo(SymfonyStyle $io): self

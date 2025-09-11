@@ -18,7 +18,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class UpdateSystemHandler implements HandlerInterface
 {
-    private SymfonyStyle $io;
     private UpdateOrchestrator $orchestrator;
     private array $options = [
         'force-composer' => false,
@@ -38,7 +37,7 @@ class UpdateSystemHandler implements HandlerInterface
         Filesystem $filesystem = null
     ) {
         $lockManager = $lockManager ?? new UpdateLockManager();
-        $backupService = $backupService ?? new BackupService($connection);
+        $backupService = $backupService ?? new BackupService();
         $stateManager = $stateManager ?? new SystemStateManager();
         $validationService = $validationService ?? new ValidationService($connection);
         $filesystem = $filesystem ?? new Filesystem();
@@ -54,8 +53,7 @@ class UpdateSystemHandler implements HandlerInterface
             $gitService,
             $databaseService,
             $backupService,
-            $stateManager,
-            $filesystem
+            $stateManager
         );
 
         // Create orchestrator with all dependencies
@@ -79,7 +77,6 @@ class UpdateSystemHandler implements HandlerInterface
 
     public function setIo(SymfonyStyle $io): self
     {
-        $this->io = $io;
         $this->orchestrator->setIo($io);
         return $this;
     }
