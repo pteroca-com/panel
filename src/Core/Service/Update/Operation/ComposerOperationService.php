@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Core\Service\Update\Operation;
+
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+class ComposerOperationService
+{
+    private SymfonyStyle $io;
+    private array $options = [];
+
+    public function setIo(SymfonyStyle $io): self
+    {
+        $this->io = $io;
+        return $this;
+    }
+
+    public function setOptions(array $options): self
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    public function installDependencies(): void
+    {
+        $isDev = strtolower($_ENV['APP_ENV'] ?? '') === 'dev';
+        
+        // If --force-composer option is enabled, use --ignore-platform-reqs immediately
+        if ($this->options['force-composer'] ?? false) {
+            $this->io->note('Using --force-composer option: installing dependencies with --ignore-platform-reqs');
+            $this->installWithIgnorePlatform($isDev);
+            return;
+        }
+        
+        $composerCommand = sprintf(
+            'composer install %s --optimize-autoloader --no-interaction',
+            $isDev ? '' : '--no-dev',
+        );
+
+        exec($composerCommand, $output, $returnCode);
+        if ($returnCode !== 0) {
+            $outputString = implode("\n", $output);
+            
+            // Check if the error is related to platform dependencies
+            if ($this->isPlatformDependencyError($outputString)) {
+                $this->io->warning('Composer installation failed due to platform requirements.');
+                $this->io->text('This typically happens when the server is missing PHP extensions or has different PHP version requirements.');
+                
+                if ($this->io->confirm('Do you want to ignore platform dependencies and continue with the update?', false)) {
+                    $this->installWithIgnorePlatform($isDev);
+                    return;
+                }
+                
+                // User chose not to continue
+                throw new \RuntimeException('Update aborted due to composer dependency issues.');
+            }
+            
+            // For other composer errors, show the output and fail
+            throw new \RuntimeException('Failed to install composer dependencies. Composer output: ' . $outputString);
+        }
+    }
+
+    public function installWithIgnorePlatform(bool $isDev): void
+    {
+        $composerCommand = sprintf(
+            'composer install %s --optimize-autoloader --no-interaction --ignore-platform-reqs',
+            $isDev ? '' : '--no-dev',
+        );
+
+        $this->io->note('Running composer install with --ignore-platform-reqs...');
+        
+        exec($composerCommand, $output, $returnCode);
+        if ($returnCode !== 0) {
+            throw new \RuntimeException('Failed to install composer dependencies even with --ignore-platform-reqs. Composer output: ' . implode("\n", $output));
+        }
+
+        $this->io->success('Composer dependencies installed successfully (with ignored platform requirements).');
+        $this->io->warning('Note: Platform requirements were ignored. Make sure your server environment is compatible.');
+    }
+
+    public function isPlatformDependencyError(string $output): bool
+    {
+        $platformErrorPatterns = [
+            'requires php',
+            'platform requirements',
+            'requires ext-',
+            'Your requirements could not be resolved',
+            'requires',
+        ];
+        
+        $lowerOutput = strtolower($output);
+        
+        foreach ($platformErrorPatterns as $pattern) {
+            if (strpos($lowerOutput, $pattern) !== false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public function shouldUseForcedInstall(): bool
+    {
+        return $this->options['force-composer'] ?? false;
+    }
+}
