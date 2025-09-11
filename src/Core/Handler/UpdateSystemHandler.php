@@ -2,43 +2,107 @@
 
 namespace App\Core\Handler;
 
+use App\Core\Service\Update\BackupService;
+use App\Core\Service\Update\SystemStateManager;
+use App\Core\Service\Update\UpdateLockManager;
+use App\Core\Service\Update\ValidationService;
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Process;
 
 class UpdateSystemHandler implements HandlerInterface
 {
     private bool $hasError = false;
-
     private bool $isStashed = false;
+    private ?string $backupPath = null;
+    private array $initialState = [];
+    private array $rollbackActions = [];
 
     private SymfonyStyle $io;
+    private UpdateLockManager $lockManager;
+    private BackupService $backupService;
+    private SystemStateManager $stateManager;
+    private ValidationService $validationService;
+    private Filesystem $filesystem;
 
     private array $options = [
         'force-composer' => false,
         'dry-run' => false,
         'verbose' => false,
+        'skip-backup' => false,
+        'backup-retention' => 7,
+        'timeout' => 600,
     ];
+
+    public function __construct(
+        Connection $connection,
+        UpdateLockManager $lockManager = null,
+        BackupService $backupService = null,
+        SystemStateManager $stateManager = null,
+        ValidationService $validationService = null,
+        Filesystem $filesystem = null
+    ) {
+        $this->lockManager = $lockManager ?? new UpdateLockManager();
+        $this->backupService = $backupService ?? new BackupService($connection);
+        $this->stateManager = $stateManager ?? new SystemStateManager();
+        $this->validationService = $validationService ?? new ValidationService($connection);
+        $this->filesystem = $filesystem ?? new Filesystem();
+    }
 
     public function handle(): void
     {
-        if ($this->options['dry-run']) {
-            $this->io->title('DRY RUN MODE - No changes will be made');
-            $this->showDryRunPreview();
-            return;
+        try {
+            // Acquire update lock first
+            $this->lockManager->acquireLock();
+
+            if ($this->options['dry-run']) {
+                $this->io->title('DRY RUN MODE - No changes will be made');
+                $this->showDryRunPreview();
+                return;
+            }
+
+            // Pre-flight validation
+            $this->executeAtomicStep('Validating update environment', fn() => $this->validateEnvironment());
+            
+            // Capture initial system state
+            $this->executeAtomicStep('Capturing system state', fn() => $this->captureInitialState());
+
+            // Create backup unless skipped
+            if (!$this->options['skip-backup']) {
+                $this->executeAtomicStep('Creating database backup', fn() => $this->createBackup());
+            }
+
+            // Show warning and confirm
+            $this->showWarningMessage();
+
+            // Execute update steps with rollback capability
+            $this->executeAtomicStep('Configuring Git environment', fn() => $this->ensureGitSafeDirectory());
+            $this->executeAtomicStep('Stashing local changes', fn() => $this->stashGitChanges());
+            $this->executeAtomicStep('Pulling changes from repository', fn() => $this->pullGitChanges());
+            $this->executeAtomicStep('Restoring local changes', fn() => $this->applyStashedChanges());
+            $this->executeAtomicStep('Installing Composer dependencies', fn() => $this->composerInstall());
+            $this->executeAtomicStep('Updating database schema', fn() => $this->updateDatabase());
+            $this->executeAtomicStep('Clearing application cache', fn() => $this->clearCache());
+            $this->executeAtomicStep('Adjusting file permissions', fn() => $this->adjustFilePermissions());
+
+            // Clear rollback actions on success
+            $this->rollbackActions = [];
+            $this->stateManager->clearState();
+
+        } catch (\Exception $e) {
+            $this->hasError = true;
+            $this->io->error('Update failed: ' . $e->getMessage());
+            
+            if (!$this->options['dry-run']) {
+                $this->performCompleteRollback();
+            }
+            
+            throw $e;
+        } finally {
+            $this->lockManager->releaseLock();
         }
-
-        $this->checkPermissions();
-        $this->checkIfGitIsInstalled();
-        $this->checkIfComposerIsInstalled();
-        $this->ensureGitSafeDirectory();
-        $this->showWarningMessage();
-
-        $this->executeStep('Stashing local changes', fn() => $this->stashGitChanges());
-        $this->executeStep('Pulling changes from repository', fn() => $this->pullGitChanges());
-        $this->executeStep('Restoring local changes', fn() => $this->applyStashedChanges());
-        $this->executeStep('Installing Composer dependencies', fn() => $this->composerInstall());
-        $this->executeStep('Updating database schema', fn() => $this->updateDatabase());
-        $this->executeStep('Clearing application cache', fn() => $this->clearCache());
-        $this->executeStep('Adjusting file permissions', fn() => $this->adjustFilePermissions());
     }
 
     private function showDryRunPreview(): void
@@ -448,6 +512,163 @@ class UpdateSystemHandler implements HandlerInterface
                 exec(sprintf('chown -R %s %s', escapeshellarg($candidate), $directoryToCheck));
                 return;
             }
+        }
+    }
+
+    private function executeAtomicStep(string $description, callable $action): void
+    {
+        try {
+            $this->executeStep($description, $action);
+        } catch (\Exception $e) {
+            $this->hasError = true;
+            $this->io->error("Step failed: $description - " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function validateEnvironment(): void
+    {
+        $validationResults = $this->validationService->validateUpdateEnvironment();
+        $summary = $this->validationService->getValidationSummary($validationResults);
+
+        if ($this->options['verbose']) {
+            $this->io->section('Environment Validation Results');
+            
+            foreach ($validationResults as $check => $result) {
+                $icon = match ($result['status']) {
+                    'ok' => '✓',
+                    'warning' => '⚠',
+                    'error' => '✗'
+                };
+                
+                $this->io->text("  $icon $check: {$result['message']}");
+            }
+        }
+
+        if (!$summary['can_proceed']) {
+            $failedChecks = array_filter($validationResults, fn($r) => $r['status'] === 'error');
+            $this->io->error('Environment validation failed. The following issues must be resolved:');
+            
+            foreach ($failedChecks as $check => $result) {
+                $this->io->text("  • $check: {$result['message']}");
+            }
+            
+            throw new \RuntimeException('Environment validation failed');
+        }
+
+        if ($summary['warnings'] > 0) {
+            $this->io->warning("{$summary['warnings']} warning(s) found during validation.");
+        }
+    }
+
+    private function captureInitialState(): void
+    {
+        $this->initialState = $this->stateManager->captureSystemState();
+        
+        if ($this->options['verbose']) {
+            $this->io->text('Captured system state: ' . $this->stateManager->getStateSummary($this->initialState));
+        }
+    }
+
+    private function createBackup(): void
+    {
+        $retentionDays = (int)($this->options['backup-retention'] ?? 7);
+        $this->backupPath = $this->backupService->createDatabaseBackup($retentionDays);
+        
+        $backupSize = $this->backupService->getBackupSize($this->backupPath);
+        $backupSizeMB = round($backupSize / 1024 / 1024, 2);
+        
+        if ($this->options['verbose']) {
+            $this->io->success("Database backup created: {$this->backupPath} ({$backupSizeMB}MB)");
+        }
+
+        // Add rollback action for backup cleanup on failure
+        $this->rollbackActions[] = function() {
+            if ($this->backupPath && $this->filesystem->exists($this->backupPath)) {
+                $this->io->text('Keeping database backup for manual recovery: ' . $this->backupPath);
+            }
+        };
+    }
+
+    private function performCompleteRollback(): void
+    {
+        $this->io->section('Performing Complete System Rollback');
+
+        try {
+            // Execute rollback actions in reverse order
+            foreach (array_reverse($this->rollbackActions) as $rollbackAction) {
+                try {
+                    $rollbackAction();
+                } catch (\Exception $e) {
+                    $this->io->warning('Rollback action failed: ' . $e->getMessage());
+                }
+            }
+
+            // Restore database backup if available
+            if ($this->backupPath && $this->backupService->validateBackup($this->backupPath)) {
+                if ($this->io->confirm('Restore database from backup?', false)) {
+                    $this->io->text('Restoring database from backup...');
+                    $this->backupService->restoreDatabaseBackup($this->backupPath);
+                    $this->io->success('Database restored from backup.');
+                }
+            }
+
+            // Restore git state if we have initial state
+            if (!empty($this->initialState) && isset($this->initialState['git_commit'])) {
+                if ($this->stateManager->canRollbackTo($this->initialState)) {
+                    $this->io->text('Restoring Git state...');
+                    $process = new Process(['git', 'reset', '--hard', $this->initialState['git_commit']]);
+                    $process->setTimeout($this->options['timeout']);
+                    $process->run();
+                    
+                    if ($process->isSuccessful()) {
+                        $this->io->success('Git state restored.');
+                    } else {
+                        $this->io->warning('Could not restore Git state: ' . $process->getErrorOutput());
+                    }
+                }
+            }
+
+            // Restore stashed changes if any
+            if ($this->isStashed) {
+                $this->applyStashedChanges();
+            }
+
+            // Clear cache to ensure clean state
+            $process = new Process(['php', 'bin/console', 'cache:clear']);
+            $process->run();
+
+            $this->io->warning('System rollback completed. Please verify system state manually.');
+            
+        } catch (\Exception $e) {
+            $this->io->error('Rollback failed: ' . $e->getMessage());
+            $this->io->text('Manual intervention may be required.');
+            
+            if ($this->backupPath) {
+                $this->io->note("Database backup available at: {$this->backupPath}");
+            }
+        }
+    }
+
+    private function execWithTimeout(array $command, int $timeout = null): array
+    {
+        $timeout = $timeout ?? $this->options['timeout'];
+        
+        $process = new Process($command);
+        $process->setTimeout($timeout);
+        
+        try {
+            $process->run();
+            
+            return [
+                'success' => $process->isSuccessful(),
+                'output' => $process->getOutput(),
+                'error' => $process->getErrorOutput(),
+                'code' => $process->getExitCode()
+            ];
+            
+        } catch (ProcessTimedOutException $e) {
+            throw new \RuntimeException("Command timed out after {$timeout} seconds: " . implode(' ', $command));
         }
     }
 }
