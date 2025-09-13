@@ -605,6 +605,15 @@ pteroca:
     voucher_type_invalid: 'इस वाउचर का उपयोग इस भुगतान प्रकार पर नहीं किया जा सकता.'
     invalid_voucher_type: 'अमान्य वाउचर प्रकार.'
 
+  email_types:
+    email_verification: 'ईमेल सत्यापन'
+    payment_success: 'भुगतान पुष्टि'
+    purchased_product: 'उत्पाद खरीद'
+    registration: 'पंजीकरण पुष्टि'
+    renew_product: 'उत्पाद नवीनीकरण'
+    reset_password: 'पासवर्ड रीसेट'
+    server_suspended: 'सर्वर निलंबन'
+
   crud:
     category:
       name: 'श्रेणी का नाम'
@@ -867,6 +876,14 @@ pteroca:
       user: 'उपयोगकर्ता'
       ip_address: 'आईपी पता'
       server: 'सर्वर'
+    email_log:
+      email_log: 'ईमेल लॉग'
+      email_logs: 'ईमेल लॉग्स'
+      email_type: 'ईमेल प्रकार'
+      metadata: 'ईमेल मेटाडेटा'
+      sent_at: 'भेजा गया'
+      user: 'उपयोगकर्ता'
+      server: 'सर्वर'
     voucher:
       voucher: 'वाउचर'
       vouchers: 'वाउचर'
@@ -924,6 +941,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'भुगतान'
       logs: 'लॉग्स'
+      email_logs: 'ईमेल लॉग्स'
       server_logs: 'सर्वर लॉग्स'
       overview: 'अवलोकन'
       server_builds: 'सर्वर'

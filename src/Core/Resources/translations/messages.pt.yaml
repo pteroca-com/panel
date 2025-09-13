@@ -607,6 +607,15 @@ pteroca:
     voucher_type_invalid: 'Este vale não pode ser utilizado para este tipo de pagamento.'
     invalid_voucher_type: 'Tipo de vale inválido.'
 
+  email_types:
+    email_verification: 'Verificação de e-mail'
+    payment_success: 'Confirmação de pagamento'
+    purchased_product: 'Compra de produto'
+    registration: 'Confirmação de registro'
+    renew_product: 'Renovação de produto'
+    reset_password: 'Redefinição de senha'
+    server_suspended: 'Suspensão do servidor'
+
   crud:
     category:
       name: 'Nome da categoria'
@@ -869,6 +878,14 @@ pteroca:
       user: 'Usuário'
       ip_address: 'Endereço IP'
       server: 'Servidor'
+    email_log:
+      email_log: 'Registro de e-mail'
+      email_logs: 'Registros de e-mail'
+      email_type: 'Tipo de e-mail'
+      metadata: 'Metadados de e-mail'
+      sent_at: 'Enviado em'
+      user: 'Usuário'
+      server: 'Servidor'
     voucher:
       voucher: 'Vale'
       vouchers: 'Vales'
@@ -926,6 +943,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Pagamentos'
       logs: 'Registros'
+      email_logs: 'Registros de e-mail'
       server_logs: 'Logs do servidor'
       overview: 'Visão Geral'
       server_builds: 'Servidores'

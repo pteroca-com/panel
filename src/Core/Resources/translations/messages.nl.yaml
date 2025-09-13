@@ -594,6 +594,14 @@ pteroca:
     discount_value_invalid: 'De kortingswaarde is ongeldig. Maximum is 100 (%).'
     voucher_type_invalid: 'Deze voucher kan niet worden gebruikt voor dit type betaling.'
     invalid_voucher_type: 'Ongeldig voucher type.'
+  email_types:
+    email_verification: 'E-mail verificatie'
+    payment_success: 'Betalingsbevestiging'
+    purchased_product: 'Product aankoop'
+    registration: 'Registratie bevestiging'
+    renew_product: 'Product verlenging'
+    reset_password: 'Wachtwoord reset'
+    server_suspended: 'Server opschorting'
   crud:
     category:
       name: 'Categorienaam'
@@ -891,6 +899,14 @@ pteroca:
       user: 'Gebruiker'
       ip_address: 'IP-adres'
       server: 'Server'
+    email_log:
+      email_log: 'E-mail log'
+      email_logs: 'E-mail logs'
+      email_type: 'E-mail type'
+      metadata: 'E-mail metadata'
+      sent_at: 'Verzonden op'
+      user: 'Gebruiker'
+      server: 'Server'
     menu:
       menu: 'Menu'
       dashboard: 'Dashboard'
@@ -913,6 +929,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Betalingen'
       logs: 'Logboeken'
+      email_logs: 'E-mail logs'
       server_logs: 'Server logboeken'
       overview: 'Overzicht'
       server_builds: 'Servers'

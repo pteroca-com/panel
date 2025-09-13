@@ -605,6 +605,15 @@ pteroca:
     voucher_type_invalid: '此优惠券不可用于此支付方式.'
     invalid_voucher_type: '无效的优惠券类型.'
 
+  email_types:
+    email_verification: '电子邮件验证'
+    payment_success: '付款确认'
+    purchased_product: '产品购买'
+    registration: '注册确认'
+    renew_product: '产品续订'
+    reset_password: '密码重置'
+    server_suspended: '服务器暂停'
+
   crud:
     category:
       name: '类别名称'
@@ -867,6 +876,14 @@ pteroca:
       user: '用户'
       ip_address: 'IP 地址'
       server: '服务器'
+    email_log:
+      email_log: '电子邮件日志'
+      email_logs: '电子邮件日志'
+      email_type: '电子邮件类型'
+      metadata: '电子邮件元数据'
+      sent_at: '发送时间'
+      user: '用户'
+      server: '服务器'
     voucher:
       voucher: '优惠券'
       vouchers: '优惠券'
@@ -924,6 +941,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: '支付'
       logs: '日志'
+      email_logs: '电子邮件日志'
       server_logs: '服务器日志'
       overview: '概览'
       server_builds: '服务器'
