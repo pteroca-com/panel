@@ -5,6 +5,7 @@ namespace App\Core\Enum;
 enum CrudTemplateContextEnum: string
 {
     case CATEGORY = 'category';
+    case EMAIL_LOG = 'email_log';
     case LOG = 'log';
     case PAYMENT = 'payment';
     case PRODUCT = 'product';

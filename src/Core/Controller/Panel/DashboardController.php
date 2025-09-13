@@ -9,6 +9,7 @@ use App\Core\Controller\Panel\Setting\PterodactylSettingCrudController;
 use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
 use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
 use App\Core\Entity\Category;
+use App\Core\Entity\EmailLog;
 use App\Core\Entity\Log;
 use App\Core\Entity\Panel\UserAccount;
 use App\Core\Entity\Panel\UserPayment;
@@ -115,12 +116,13 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.categories'), 'fa fa-list', Category::class),
                 MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.products'), 'fa fa-sliders-h', Product::class),
             ]);
-            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server')->setSubItems([
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class),
+            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class);
+            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', Payment::class);
+            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered')->setSubItems([
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.email_logs'), 'fa fa-envelope', EmailLog::class),
                 MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars', ServerLog::class),
             ]);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', Payment::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class);
             yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.general'), 'fa fa-cog', $this->generateSettingsUrl(SettingContextEnum::GENERAL)),
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.pterodactyl'), 'fa fa-network-wired', $this->generateSettingsUrl(SettingContextEnum::PTERODACTYL)),
