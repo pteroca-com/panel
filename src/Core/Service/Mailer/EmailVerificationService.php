@@ -6,12 +6,9 @@ use App\Core\Contract\UserInterface;
 use App\Core\DTO\Email\EmailVerificationContextDTO;
 use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\EmailVerificationValueEnum;
-use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Message\SendEmailMessage;
-use App\Core\Repository\LogRepository;
 use App\Core\Service\Email\EmailNotificationService;
-use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
@@ -31,8 +28,6 @@ class EmailVerificationService
 
     public function __construct(
         private readonly SettingService $settingService,
-        private readonly LogService $logService,
-        private readonly LogRepository $logRepository,
         private readonly TranslatorInterface $translator,
         private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
@@ -67,7 +62,6 @@ class EmailVerificationService
 
         try {
             $this->messageBus->dispatch($emailMessage);
-            $this->logService->logAction($user, LogActionEnum::EMAIL_VERIFICATION_SENT);
             
             $this->emailNotificationService->logEmailSent(
                 $user,
@@ -86,14 +80,14 @@ class EmailVerificationService
 
     public function canResendVerification(UserInterface $user): bool
     {
-        $lastSentLog = $this->logRepository->findLastVerificationSent($user);
+        $lastSentLog = $this->emailNotificationService->getLastEmailByType($user, EmailTypeEnum::EMAIL_VERIFICATION);
         
         if (!$lastSentLog) {
             return true;
         }
 
         $now = new DateTimeImmutable();
-        $lastSentAt = DateTimeImmutable::createFromInterface($lastSentLog->getCreatedAt());
+        $lastSentAt = DateTimeImmutable::createFromInterface($lastSentLog->getSentAt());
         $timeDiff = $now->getTimestamp() - $lastSentAt->getTimestamp();
         
         return $timeDiff >= (self::RESEND_LIMIT_MINUTES * self::MINUTES_TO_SECONDS_MULTIPLIER);
@@ -124,7 +118,6 @@ class EmailVerificationService
 
         try {
             $this->messageBus->dispatch($emailMessage);
-            $this->logService->logAction($user, LogActionEnum::EMAIL_VERIFICATION_RESENT);
             
             $this->emailNotificationService->logEmailSent(
                 $user,

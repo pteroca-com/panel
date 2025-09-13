@@ -153,7 +153,12 @@ class RegistrationService
             );
             
             if ($context->verificationUrl !== null) {
-                $this->logService->logAction($user, LogActionEnum::EMAIL_VERIFICATION_SENT);
+                $this->emailNotificationService->logEmailSent(
+                    $user,
+                    EmailTypeEnum::EMAIL_VERIFICATION,
+                    null,
+                    $this->translator->trans('pteroca.email.verification.subject', ['%siteName%' => $context->siteName])
+                );
             }
         } catch (\Exception $exception) {
             $this->logger->error('Failed to send registration email', [

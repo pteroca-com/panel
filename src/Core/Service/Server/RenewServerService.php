@@ -96,7 +96,7 @@ class RenewServerService extends AbstractActionServerService
         }
 
         $previousExpiresAt = clone $currentExpirationDate;
-        if ($this->emailNotificationService->shouldSendRenewalNotification($server, $previousExpiresAt, $server->getExpiresAt())) {
+        if ($this->boughtConfirmationEmailService->shouldSendRenewalNotification($server, $previousExpiresAt, $server->getExpiresAt())) {
             $this->boughtConfirmationEmailService->sendRenewConfirmationEmail(
                 $user,
                 $server,
