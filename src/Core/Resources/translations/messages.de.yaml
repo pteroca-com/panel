@@ -1037,6 +1037,11 @@ pteroca:
       subject: 'Serversperrung'
       server_suspended: 'Wir informieren Sie, dass einer Ihrer Server gesperrt wurde, da er nicht verlängert wurde.'
       extend_server: 'Um den Server wiederherzustellen, verlängern Sie ihn im Kundenbereich.'
+      server_details: 'Serverdetails'
+      server_name: 'Server: %serverName%'
+      suspension_date: 'Suspendiert am: %suspensionDate%'
+      auto_delete_warning: 'Wichtig: Ihr Server wird automatisch nach %days% Tagen (%deleteDate%) gelöscht, falls nicht verlängert.'
+      panel_access: 'Zugang zum Panel'
 
   verification:
     title: 'E-Mail-Verifizierung erforderlich'

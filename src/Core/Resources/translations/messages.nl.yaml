@@ -1024,6 +1024,11 @@ pteroca:
       subject: 'Server Schorsing'
       server_suspended: 'We informeren u dat een van uw servers is opgeschort omdat het niet vernieuwd is.'
       extend_server: 'Om de server te herstellen, verleng deze in het klantenpaneel.'
+      server_details: 'Server gegevens'
+      server_name: 'Server: %serverName%'
+      suspension_date: 'Opgeschort op: %suspensionDate%'
+      auto_delete_warning: 'Belangrijk: Uw server wordt automatisch verwijderd na %days% dagen (%deleteDate%) als deze niet wordt verlengd.'
+      panel_access: 'Toegang tot paneel'
   verification:
     title: 'E-mail verificatie vereist'
     subtitle: 'Verificeer uw e-mailadres om door te gaan'

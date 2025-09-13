@@ -1037,6 +1037,11 @@ pteroca:
       subject: 'सर्वर निलंबन'
       server_suspended: 'हम आपको सूचित करना चाहते हैं कि आपका एक सर्वर नवीनीकरण न होने के कारण निलंबित कर दिया गया है।'
       extend_server: 'सर्वर को पुनर्स्थापित करने के लिए, ग्राहक पैनल में इसका नवीनीकरण करें।'
+      server_details: 'सर्वर विवरण'
+      server_name: 'सर्वर: %serverName%'
+      suspension_date: 'निलंबित: %suspensionDate%'
+      auto_delete_warning: 'महत्वपूर्ण: यदि नवीनीकृत नहीं किया गया तो आपका सर्वर %days% दिनों के बाद (%deleteDate%) स्वचालित रूप से हटा दिया जाएगा।'
+      panel_access: 'पैनल पहुंच'
 
   verification:
     title: 'ईमेल सत्यापन आवश्यक'

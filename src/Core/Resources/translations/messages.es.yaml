@@ -1037,6 +1037,11 @@ pteroca:
       subject: 'Suspensión del servidor'
       server_suspended: 'Te informamos que uno de tus servidores ha sido suspendido porque no fue renovado.'
       extend_server: 'Para restaurar el servidor, renueva tu suscripción en el panel de cliente.'
+      server_details: 'Detalles del servidor'
+      server_name: 'Servidor: %serverName%'
+      suspension_date: 'Suspendido el: %suspensionDate%'
+      auto_delete_warning: 'Importante: Tu servidor será eliminado automáticamente después de %days% días (%deleteDate%) si no se renueva.'
+      panel_access: 'Acceso al panel'
 
   verification:
     title: 'Verificación de correo electrónico requerida'
