@@ -55,5 +55,11 @@ interface UserInterface extends SymfonyUserInterface, PasswordAuthenticatedUserI
 
     public function eraseCredentials(): void;
 
+    public function getDeletedAt(): ?\DateTime;
+    public function setDeletedAt(?\DateTime $deletedAt): self;
+    public function isDeleted(): bool;
+    public function softDelete(): self;
+    public function restore(): self;
+
     public function __toString(): string;
 }

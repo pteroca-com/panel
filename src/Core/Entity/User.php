@@ -61,6 +61,9 @@ class User implements UserInterface
     #[Vich\UploadableField(mapping: 'user_avatars', fileNameProperty: 'avatarPath')]
     private ?File $avatarFile = null;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $deletedAt = null;
+
     #[ORM\OneToMany(targetEntity: Log::class, mappedBy: 'user', cascade: ['remove'])]
     private PersistentCollection $logs;
 
@@ -288,6 +291,37 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTime $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deletedAt !== null;
+    }
+
+    public function softDelete(): self
+    {
+        $this->deletedAt = new \DateTime();
+
+        return $this;
+    }
+
+    public function restore(): self
+    {
+        $this->deletedAt = null;
+
+        return $this;
     }
 
     public function __toString(): string

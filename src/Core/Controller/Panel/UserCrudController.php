@@ -2,28 +2,33 @@
 
 namespace App\Core\Controller\Panel;
 
-use App\Core\Contract\UserInterface;
+use Exception;
 use App\Core\Entity\User;
-use App\Core\Enum\CrudTemplateContextEnum;
+use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
-use App\Core\Service\Crud\PanelCrudService;
+use App\Core\Enum\LogActionEnum;
+use App\Core\Contract\UserInterface;
+use App\Core\Service\Logs\LogService;
 use App\Core\Service\User\UserService;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Core\Enum\CrudTemplateContextEnum;
+use App\Core\Service\Crud\PanelCrudService;
+use Symfony\Component\HttpFoundation\Response;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Exception;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use App\Core\Exception\PterodactylUserNotFoundException;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
 class UserCrudController extends AbstractPanelController
 {
@@ -31,6 +36,7 @@ class UserCrudController extends AbstractPanelController
         PanelCrudService $panelCrudService,
         private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
+        private readonly LogService $logService,
     ) {
         parent::__construct($panelCrudService);
     }
@@ -63,6 +69,11 @@ class UserCrudController extends AbstractPanelController
                 ->setColumns(2)
                 ->hideOnIndex();
             $fields[] = DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss')
+                ->setDisabled()
+                ->setColumns(2)
+                ->hideOnIndex();
+            $fields[] = DateField::new('deletedAt', $this->translator->trans('pteroca.crud.user.deleted_at'))
                 ->setFormat('dd.MM.yyyy HH:mm:ss')
                 ->setDisabled()
                 ->setColumns(2)
@@ -129,6 +140,8 @@ class UserCrudController extends AbstractPanelController
                 ->setFormat('dd.MM.yyyy HH:mm:ss');
             $fields[] = DateField::new('updatedAt', $this->translator->trans('pteroca.crud.user.updated_at'))
                 ->setFormat('dd.MM.yyyy HH:mm:ss');
+            $fields[] = DateField::new('deletedAt', $this->translator->trans('pteroca.crud.user.deleted_at'))
+                ->setFormat('dd.MM.yyyy HH:mm:ss');
         }
 
         return $fields;
@@ -136,13 +149,22 @@ class UserCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
+        $restoreAction = Action::new('restore', $this->translator->trans('pteroca.crud.user.restore'))
+            ->linkToCrudAction('restoreUser')
+            ->setCssClass('btn text-success')
+            ->displayIf(fn ($entity) => $entity instanceof UserInterface && $entity->isDeleted());
+
         return $actions
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.user.add')))
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.user.add')))
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.user.save')))
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $restoreAction)
+            ->update(Crud::PAGE_DETAIL, Action::DELETE, fn (Action $action) => $action->displayIf(fn ($entity) => $entity instanceof UserInterface && !$entity->isDeleted()))
+            ->add(Crud::PAGE_DETAIL, $restoreAction)
+            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => $action->displayIf(fn ($entity) => $entity instanceof UserInterface && !$entity->isDeleted()));
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -171,6 +193,7 @@ class UserCrudController extends AbstractPanelController
             ->add('isBlocked')
             ->add('createdAt')
             ->add('updatedAt')
+            ->add('deletedAt')
         ;
         return parent::configureFilters($filters);
     }
@@ -205,13 +228,73 @@ class UserCrudController extends AbstractPanelController
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof UserInterface) {
+            $activeServersCount = $entityManager->getRepository(Server::class)->count([
+                'user' => $entityInstance,
+                'deletedAt' => null
+            ]);
+            
+            if ($activeServersCount > 0) {
+                $this->addFlash('danger', $this->translator->trans('pteroca.crud.user.cannot_delete_user_with_active_servers', ['count' => $activeServersCount]));
+                return;
+            }
+            
+            $pterodactylUserNotFound = false;
+            
             try {
                 $this->userService->deleteUserFromPterodactyl($entityInstance);
+            } catch (PterodactylUserNotFoundException) {
+                $pterodactylUserNotFound = true;
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
+                return;
             }
+            
+            $entityInstance->softDelete();
+            $entityManager->persist($entityInstance);
+            $entityManager->flush();
+            
+            $this->logService->logAction($entityInstance, LogActionEnum::ENTITY_DELETE, [
+                'deleted_by' => $this->getUser()->getEmail(),
+            ]);
+            
+            if ($pterodactylUserNotFound) {
+                $this->addFlash('warning', $this->translator->trans('pteroca.crud.user.pterodactyl_user_not_found'));
+            } else {
+                $this->addFlash('success', $this->translator->trans('pteroca.crud.user.deleted_successfully'));
+            }
+            
+            return;
         }
 
         parent::deleteEntity($entityManager, $entityInstance);
+    }
+
+    public function restoreUser(EntityManagerInterface $entityManager): Response
+    {
+        $request = $this->container->get('request_stack')->getCurrentRequest();
+        $entityId = $request->query->get('entityId');
+        
+        $user = $entityManager->getRepository(User::class)->find($entityId);
+        
+        if (!$user instanceof UserInterface || !$user->isDeleted()) {
+            $this->addFlash('danger', $this->translator->trans('pteroca.crud.user.restore_error'));
+            return $this->redirect($request->headers->get('referer'));
+        }
+
+        try {
+            $user->restore();
+            $entityManager->persist($user);
+            $entityManager->flush();
+            
+            $this->logService->logAction($user, LogActionEnum::ENTITY_RESTORE, [
+                'restored_by' => $this->getUser()->getEmail(),
+            ]);
+            
+            $this->addFlash('success', $this->translator->trans('pteroca.crud.user.restored_successfully'));
+        } catch (Exception) {
+            $this->addFlash('danger', $this->translator->trans('pteroca.crud.user.restore_error'));
+        }
+        
+        return $this->redirect($request->headers->get('referer'));
     }
 }

@@ -57,6 +57,12 @@ class RegistrationService
         bool $sendEmail = true
     ): RegisterUserActionResult
     {
+        $existingDeletedUser = $this->userRepository->findDeletedByEmail($user->getEmail());
+        
+        if ($existingDeletedUser) {
+            return $this->reactivateUser($existingDeletedUser, $plainPassword, $roles, $isVerified, $sendEmail);
+        }
+
         $user->setIsVerified($isVerified);
         $user->setRoles($roles);
 
@@ -80,6 +86,43 @@ class RegistrationService
             success: true,
             user: $user,
         );
+    }
+
+    private function reactivateUser(
+        UserInterface $deletedUser,
+        string $plainPassword,
+        array $roles,
+        bool $isVerified,
+        bool $sendEmail
+    ): RegisterUserActionResult
+    {
+        try {
+            $deletedUser->restore();
+            $deletedUser->setIsVerified($isVerified);
+            $deletedUser->setRoles($roles);
+            
+            if (!empty($plainPassword)) {
+                $deletedUser->setPlainPassword($plainPassword);
+                $this->userService->updateUserInPterodactyl($deletedUser, $plainPassword);
+            }
+
+            $this->userRepository->save($deletedUser);
+            $this->logService->logAction($deletedUser, LogActionEnum::USER_REGISTERED);
+
+            if ($sendEmail) {
+                $this->sendRegistrationEmail($deletedUser);
+            }
+
+            return new RegisterUserActionResult(
+                success: true,
+                user: $deletedUser,
+            );
+        } catch (\Exception $exception) {
+            return new RegisterUserActionResult(
+                success: false,
+                error: $exception->getMessage(),
+            );
+        }
     }
 
     public function verifyEmail(string $token): void
