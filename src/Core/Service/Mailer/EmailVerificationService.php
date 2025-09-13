@@ -4,11 +4,13 @@ namespace App\Core\Service\Mailer;
 
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\Email\EmailVerificationContextDTO;
+use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\LogRepository;
+use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use DateTimeImmutable;
@@ -34,6 +36,7 @@ class EmailVerificationService
         private readonly TranslatorInterface $translator,
         private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {
         $this->jwtConfiguration = Configuration::forSymmetricSigner(
             new Sha256(),
@@ -65,6 +68,13 @@ class EmailVerificationService
         try {
             $this->messageBus->dispatch($emailMessage);
             $this->logService->logAction($user, LogActionEnum::EMAIL_VERIFICATION_SENT);
+            
+            $this->emailNotificationService->logEmailSent(
+                $user,
+                EmailTypeEnum::EMAIL_VERIFICATION,
+                null,
+                $this->translator->trans('pteroca.email.verification.subject', ['%siteName%' => $context->siteName])
+            );
         } catch (\Exception $exception) {
             $this->logger->error('Failed to send verification email', [
                 'exception' => $exception,
@@ -115,6 +125,13 @@ class EmailVerificationService
         try {
             $this->messageBus->dispatch($emailMessage);
             $this->logService->logAction($user, LogActionEnum::EMAIL_VERIFICATION_RESENT);
+            
+            $this->emailNotificationService->logEmailSent(
+                $user,
+                EmailTypeEnum::EMAIL_VERIFICATION,
+                null,
+                $this->translator->trans('pteroca.email.verification.subject', ['%siteName%' => $context->siteName])
+            );
         } catch (\Exception $exception) {
             $this->logger->error('Failed to resend verification email', [
                 'exception' => $exception,

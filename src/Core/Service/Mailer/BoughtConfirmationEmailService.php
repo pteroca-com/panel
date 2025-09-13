@@ -6,8 +6,10 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\Product;
 use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
+use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Message\SendEmailMessage;
+use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\SettingService;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -20,6 +22,7 @@ class BoughtConfirmationEmailService
         private readonly ServerService $serverService,
         private readonly TranslatorInterface $translator,
         private readonly MessageBusInterface $messageBus,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {}
 
     public function sendBoughtConfirmationEmail(
@@ -59,6 +62,18 @@ class BoughtConfirmationEmailService
         );
 
         $this->messageBus->dispatch($emailMessage);
+        
+        $this->emailNotificationService->logEmailSent(
+            $user,
+            EmailTypeEnum::PURCHASED_PRODUCT,
+            $server,
+            $this->translator->trans('pteroca.email.store.subject'),
+            [
+                'product_id' => $product->getId(),
+                'price_id' => $priceId,
+                'server_expires_at' => $server->getExpiresAt()->format('Y-m-d H:i:s'),
+            ]
+        );
     }
 
     public function sendRenewConfirmationEmail(
@@ -91,6 +106,18 @@ class BoughtConfirmationEmailService
         );
 
         $this->messageBus->dispatch($emailMessage);
+        
+        $this->emailNotificationService->logEmailSent(
+            $user,
+            EmailTypeEnum::RENEW_PRODUCT,
+            $server,
+            $this->translator->trans('pteroca.email.renew.subject'),
+            [
+                'product_id' => $product->getId(),
+                'price_type' => $selectedPrice->getType()->value,
+                'server_expires_at' => $server->getExpiresAt()->format('Y-m-d H:i:s'),
+            ]
+        );
     }
 
     private function getClientPanelUrl(): string
