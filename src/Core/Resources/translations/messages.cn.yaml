@@ -1045,6 +1045,11 @@ pteroca:
       subject: '服务器暂停'
       server_suspended: '我们通知您，您的一个服务器已被暂停，因为它未续订。'
       extend_server: '要恢复服务器，请在客户面板中续订它。'
+      server_details: '服务器详情'
+      server_name: '服务器：%serverName%'
+      suspension_date: '暂停日期：%suspensionDate%'
+      auto_delete_warning: '重要提示：如果未续费，您的服务器将在 %days% 天后（%deleteDate%）自动删除。'
+      panel_access: '访问面板'
 
   verification:
     title: '需要电子邮件验证'

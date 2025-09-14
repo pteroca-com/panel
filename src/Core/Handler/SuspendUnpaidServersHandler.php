@@ -8,6 +8,7 @@ use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Email\EmailNotificationService;
+use App\Core\Service\Mailer\ServerSuspensionEmailService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
@@ -28,6 +29,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
         private TranslatorInterface $translator,
         private MessageBusInterface $messageBus,
         private EmailNotificationService $emailNotificationService,
+        private ServerSuspensionEmailService $serverSuspensionEmailService,
     ) {}
 
     public function handle(): void
@@ -50,21 +52,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
                 ->servers
                 ->suspend($server->getPterodactylServerId());
 
-            // TODO finish this mail
-            $emailMessage = new SendEmailMessage(
-                $server->getUser()->getEmail(),
-                $this->translator->trans('pteroca.email.suspended.subject'),
-                'email/server_suspended.html.twig',
-                ['user' => $server->getUser()],
-            );
-            $this->messageBus->dispatch($emailMessage);
-            
-            $this->emailNotificationService->logEmailSent(
-                $server->getUser(),
-                EmailTypeEnum::SERVER_SUSPENDED,
-                $server,
-                $this->translator->trans('pteroca.email.suspended.subject')
-            );
+            $this->serverSuspensionEmailService->sendServerSuspensionEmail($server);
         }
     }
 

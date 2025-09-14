@@ -1043,6 +1043,11 @@ pteroca:
       subject: 'Server Suspension'
       server_suspended: 'We inform you that one of your servers has been suspended because it has not been renewed.'
       extend_server: 'To restore the server, renew it in the client panel.'
+      server_details: 'Server Details'
+      server_name: 'Server: %serverName%'
+      suspension_date: 'Suspended on: %suspensionDate%'
+      auto_delete_warning: 'Important: Your server will be automatically deleted after %days% days (%deleteDate%) if not renewed.'
+      panel_access: 'Access Panel'
 
   verification:
     title: 'Email Verification Required'
