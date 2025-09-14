@@ -1,0 +1,32 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-ban text-danger" style="font-size: 3rem;"></i>
+                    </div>
+                    
+                    <h3 class="card-title mb-3">
+                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                        {{ 'pteroca.server.server_suspended'|trans }}
+                    </h3>
+                    
+                    <p class="card-text mb-4 text-muted">
+                        {{ 'pteroca.server.server_suspended_message'|trans }}
+                    </p>
+                    
+                    <div class="alert alert-warning mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        {% if server.expiresAt|date("Y-m-d H:i:s") < "now"|date("Y-m-d H:i:s") %}
+                            {{ 'pteroca.server.suspended_expired_description'|trans({ '%expireDate%': server.expiresAt|date("Y-m-d H:i") }) }}
+                        {% else %}
+                            {{ 'pteroca.server.server_suspended_description'|trans }}
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
