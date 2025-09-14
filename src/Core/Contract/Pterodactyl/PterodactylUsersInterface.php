@@ -8,11 +8,15 @@ interface PterodactylUsersInterface
 {
     public function getAllUsers(array $parameters = []): array;
 
-    public function getUser(string $userId): PterodactylUser;
+    public function getAllUsersPaginated(int $page = 1, array $parameters = []): array;
 
-    public function updateUser(string $userId, array $details): PterodactylUser;
+    public function getUser(int|string $userId, array $parameters = []): PterodactylUser;
+
+    public function getUserByExternalId(string $externalId, array $parameters = []): PterodactylUser;
+
+    public function updateUser(int|string $userId, array $details): PterodactylUser;
 
     public function createUser(array $details): PterodactylUser;
 
-    public function deleteUser(string $userId): bool;
+    public function deleteUser(int|string $userId): bool;
 }
