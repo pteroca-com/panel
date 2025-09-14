@@ -69,4 +69,14 @@ class EmailLogRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function deleteOldLogs(\DateTimeInterface $cutoffDate): int
+    {
+        $qb = $this->createQueryBuilder('el')
+            ->delete()
+            ->where('el.sentAt < :cutoffDate')
+            ->setParameter('cutoffDate', $cutoffDate);
+
+        return $qb->getQuery()->execute();
+    }
 }
