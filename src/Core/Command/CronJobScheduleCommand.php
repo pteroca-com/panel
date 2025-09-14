@@ -25,6 +25,12 @@ class CronJobScheduleCommand extends Command
                 'settingValue' => '1',
             ]
         ],
+        'app:delete-old-logs' => [
+            [
+                'settingName' => SettingEnum::LOG_CLEANUP_ENABLED,
+                'settingValue' => '1',
+            ]
+        ],
     ];
 
     public function __construct(
