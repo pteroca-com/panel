@@ -605,6 +605,15 @@ pteroca:
     voucher_type_invalid: 'This voucher cannot be used for this type of payment.'
     invalid_voucher_type: 'Invalid voucher type.'
 
+  email_types:
+    email_verification: 'Email verification'
+    payment_success: 'Payment confirmation'
+    purchased_product: 'Product purchase'
+    registration: 'Registration confirmation'
+    renew_product: 'Product renewal'
+    reset_password: 'Password reset'
+    server_suspended: 'Server suspension'
+
   crud:
     category:
       name: 'Category name'
@@ -869,6 +878,14 @@ pteroca:
       user: 'User'
       ip_address: 'IP address'
       server: 'Server'
+    email_log:
+      email_log: 'Email log'
+      email_logs: 'Email logs'
+      email_type: 'Email type'
+      metadata: 'Email metadata'
+      sent_at: 'Sent at'
+      user: 'User'
+      server: 'Server'
     voucher:
       voucher: 'Voucher'
       vouchers: 'Vouchers'
@@ -926,6 +943,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Payments'
       logs: 'Logs'
+      email_logs: 'Email logs'
       server_logs: 'Server logs'
       overview: 'Overview'
       server_builds: 'Servers'

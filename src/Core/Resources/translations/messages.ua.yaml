@@ -605,6 +605,15 @@ pteroca:
     voucher_type_invalid: 'Цей ваучер не можна використати для цього типу оплати.'
     invalid_voucher_type: 'Невірний тип ваучера.'
 
+  email_types:
+    email_verification: 'Перевірка електронної пошти'
+    payment_success: 'Підтвердження оплати'
+    purchased_product: 'Купівля продукту'
+    registration: 'Підтвердження реєстрації'
+    renew_product: 'Продовження продукту'
+    reset_password: 'Скидання пароля'
+    server_suspended: 'Призупинення сервера'
+
   crud:
     category:
       name: 'Назва категорії'
@@ -871,6 +880,14 @@ pteroca:
       user: 'Користувач'
       ip_address: 'IP-адреса'
       server: 'Сервер'
+    email_log:
+      email_log: 'Журнал електронної пошти'
+      email_logs: 'Журнали електронної пошти'
+      email_type: 'Тип електронної пошти'
+      metadata: 'Метадані електронної пошти'
+      sent_at: 'Надіслано'
+      user: 'Користувач'
+      server: 'Сервер'
     voucher:
       voucher: 'Ваучер'
       vouchers: 'Ваучери'
@@ -928,6 +945,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Платежі'
       logs: 'Журнали'
+      email_logs: 'Журнали електронної пошти'
       server_logs: 'Логи сервера'
       overview: 'Огляд'
       server_builds: 'Сервери'

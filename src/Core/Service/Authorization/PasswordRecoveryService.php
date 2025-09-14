@@ -4,10 +4,12 @@ namespace App\Core\Service\Authorization;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\PasswordResetRequest;
+use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\PasswordResetRequestRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\SettingService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -27,6 +29,7 @@ class PasswordRecoveryService
         private readonly SettingService $settingService,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly LoggerInterface $logger,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {}
 
     public function createRecoveryRequest(string $email): void
@@ -94,6 +97,13 @@ class PasswordRecoveryService
         );
         try {
             $this->messageBus->dispatch($emailMessage);
+            
+            $this->emailNotificationService->logEmailSent(
+                $user,
+                EmailTypeEnum::RESET_PASSWORD,
+                null,
+                $this->translator->trans('pteroca.email.recovery.subject')
+            );
         } catch (\Exception $e) {
             $this->logger->error('Failed to send recovery email', ['exception' => $e]);
         }

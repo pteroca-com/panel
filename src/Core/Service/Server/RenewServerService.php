@@ -9,6 +9,7 @@ use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\VoucherTypeEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Product\ProductPriceCalculatorService;
@@ -26,6 +27,7 @@ class RenewServerService extends AbstractActionServerService
         private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerRepository $serverRepository,
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
+        private readonly EmailNotificationService $emailNotificationService,
         private readonly LogService $logService,
         private readonly VoucherPaymentService $voucherPaymentService,
         private readonly ServerSlotPricingService $serverSlotPricingService,
@@ -52,7 +54,6 @@ class RenewServerService extends AbstractActionServerService
             );
         }
 
-        $currentTime = new \DateTime();
         $currentExpirationDate = $server->getExpiresAt();
         if ($currentExpirationDate < new \DateTime()) {
             $currentExpirationDate = new \DateTime();
@@ -94,12 +95,14 @@ class RenewServerService extends AbstractActionServerService
             $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, $slots);
         }
 
-        if ($currentTime->diff($server->getExpiresAt())->days >= 7) {
+        $previousExpiresAt = clone $currentExpirationDate;
+        if ($this->boughtConfirmationEmailService->shouldSendRenewalNotification($server, $previousExpiresAt, $server->getExpiresAt())) {
             $this->boughtConfirmationEmailService->sendRenewConfirmationEmail(
                 $user,
                 $server,
                 $this->getPterodactylAccountLogin($user),
             );
+            
         }
 
         $this->logService->logAction(

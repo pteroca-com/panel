@@ -599,6 +599,15 @@ pteroca:
     voucher_type_invalid: 'Dieser Gutschein kann nicht für diese Zahlungsart verwendet werden.'
     invalid_voucher_type: 'Ungültiger Gutscheintyp.'
 
+  email_types:
+    email_verification: 'E-Mail-Verifizierung'
+    payment_success: 'Zahlungsbestätigung'
+    purchased_product: 'Produktkauf'
+    registration: 'Registrierungsbestätigung'
+    renew_product: 'Produktverlängerung'
+    reset_password: 'Passwort zurücksetzen'
+    server_suspended: 'Server-Suspension'
+
   crud:
     category:
       name: 'Kategoriename'
@@ -865,6 +874,14 @@ pteroca:
       user: 'Benutzer'
       ip_address: 'IP-Adresse'
       server: 'Server'
+    email_log:
+      email_log: 'E-Mail-Protokoll'
+      email_logs: 'E-Mail-Protokolle'
+      email_type: 'E-Mail-Typ'
+      metadata: 'E-Mail-Metadaten'
+      sent_at: 'Gesendet am'
+      user: 'Benutzer'
+      server: 'Server'
     voucher:
       voucher: 'Gutschein'
       vouchers: 'Gutscheine'
@@ -922,6 +939,7 @@ pteroca:
       phpmyadmin: 'phpMyAdmin URL'
       payments: 'Zahlungen'
       logs: 'Logs'
+      email_logs: 'E-Mail-Protokolle'
       server_logs: 'Server-Logs'
       overview: 'Übersicht'
       server_builds: 'Server'

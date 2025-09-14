@@ -5,12 +5,14 @@ namespace App\Core\Service\Authorization;
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\Action\Result\RegisterUserActionResult;
 use App\Core\DTO\Email\RegistrationEmailContextDTO;
+use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\EmailVerificationService;
 use App\Core\Service\SettingService;
@@ -39,6 +41,7 @@ class RegistrationService
         private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
         private readonly EmailVerificationService $emailVerificationService,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {
         $this->jwtConfiguration = Configuration::forSymmetricSigner(
             new Sha256(),
@@ -142,8 +145,20 @@ class RegistrationService
             
             $this->messageBus->dispatch($emailMessage);
             
+            $this->emailNotificationService->logEmailSent(
+                $user,
+                EmailTypeEnum::REGISTRATION,
+                null,
+                $this->translator->trans('pteroca.email.registration.subject')
+            );
+            
             if ($context->verificationUrl !== null) {
-                $this->logService->logAction($user, LogActionEnum::EMAIL_VERIFICATION_SENT);
+                $this->emailNotificationService->logEmailSent(
+                    $user,
+                    EmailTypeEnum::EMAIL_VERIFICATION,
+                    null,
+                    $this->translator->trans('pteroca.email.verification.subject', ['%siteName%' => $context->siteName])
+                );
             }
         } catch (\Exception $exception) {
             $this->logger->error('Failed to send registration email', [

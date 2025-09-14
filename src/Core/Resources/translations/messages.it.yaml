@@ -605,6 +605,15 @@ pteroca:
     voucher_type_invalid: 'Questo buono non può essere utilizzato per questo tipo di pagamento.'
     invalid_voucher_type: 'Tipo di buono non valido.'
 
+  email_types:
+    email_verification: 'Verifica e-mail'
+    payment_success: 'Conferma pagamento'
+    purchased_product: 'Acquisto prodotto'
+    registration: 'Conferma registrazione'
+    renew_product: 'Rinnovo prodotto'
+    reset_password: 'Reimpostazione password'
+    server_suspended: 'Sospensione server'
+
   crud:
     category:
       name: 'Nome categoria'
@@ -871,6 +880,14 @@ pteroca:
       user: 'Utente'
       ip_address: 'Indirizzo IP'
       server: 'Server'
+    email_log:
+      email_log: 'Registro e-mail'
+      email_logs: 'Registri e-mail'
+      email_type: 'Tipo e-mail'
+      metadata: 'Metadati e-mail'
+      sent_at: 'Inviato il'
+      user: 'Utente'
+      server: 'Server'
     voucher:
       voucher: 'Buono'
       vouchers: 'Buoni'
@@ -928,6 +945,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Pagamenti'
       logs: 'Registri'
+      email_logs: 'Registri e-mail'
       server_logs: 'Registri del server'
       overview: 'Panoramica'
       server_builds: 'Server'
