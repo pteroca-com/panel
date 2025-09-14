@@ -2,15 +2,13 @@
 
 namespace App\Core\Service\Sync;
 
-use App\Core\Repository\ServerRepository;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Psr\Log\LoggerInterface;
 
 class PterodactylSyncService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
-        private readonly ServerRepository $serverRepository,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly LoggerInterface $logger
     ) {
     }
@@ -18,14 +16,13 @@ class PterodactylSyncService
     public function getExistingPterodactylServerIds(int $limit = 1000): array
     {
         $this->logger->info('Fetching existing servers from Pterodactyl');
-        
-        $pterodactylApi = $this->pterodactylService->getApi();
-        $pterodactylServers = $pterodactylApi->servers->all([
+
+        $pterodactylServers = $this->pterodactylApplicationService->allServers([
             'per_page' => $limit,
         ]);
         
         $existingServerIds = [];
-        foreach ($pterodactylServers->toArray() as $server) {
+        foreach ($pterodactylServers as $server) {
             $existingServerIds[] = $server['id'];
         }
         

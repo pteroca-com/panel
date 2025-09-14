@@ -17,7 +17,7 @@ services:
 
   App\Core\:
     resource: '../../*'
-    exclude: '../../{DependencyInjection,DTO,Entity,Migrations,Tests,Kernel.php}'
+    exclude: '../../{DependencyInjection,DTO,Entity,Migrations,Tests,Kernel.php,Adapter/Pterodactyl}'
     tags: ['controller.service_arguments']
 
   App\Core\Service\StoreService:
@@ -55,3 +55,10 @@ services:
       $templatesBaseDir: '%kernel.project_dir%/themes'
     tags:
       - { name: 'twig.loader', priority: 1 }
+
+  App\Core\Contract\Pterodactyl\PterodactylAdapterInterface:
+    alias: App\Core\Adapter\Pterodactyl\PterodactylAdapter
+
+  App\Core\Adapter\Pterodactyl\PterodactylAdapter:
+    autowire: true
+

@@ -2,13 +2,12 @@
 
 namespace App\Core\Controller;
 
-use App\Core\Contract\UserInterface;
 use App\Core\Controller\Panel\AbstractPanelController;
 use App\Core\Entity\Panel\UserAccount;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Crud\PanelCrudService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -33,7 +32,7 @@ class UserAccountCrudController extends AbstractPanelController
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TranslatorInterface $translator,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         PanelCrudService $panelCrudService,
     ) {
         parent::__construct($panelCrudService);
@@ -156,10 +155,8 @@ class UserAccountCrudController extends AbstractPanelController
                 $entityInstance->setPassword($hashedPassword);
             }
 
-            $pterodactylAccount = $this->pterodactylService
-                ->getApi()
-                ->users
-                ->get($entityInstance->getPterodactylUserId());
+            $pterodactylAccount = $this->pterodactylApplicationService
+                ->getUser($entityInstance->getPterodactylUserId());
             if (!empty($pterodactylAccount->username)) {
                 $pterodactylAccountDetails = [
                     'username' => $pterodactylAccount->username,
@@ -170,7 +167,7 @@ class UserAccountCrudController extends AbstractPanelController
                 if ($plainPassword) {
                     $pterodactylAccountDetails['password'] = $plainPassword;
                 }
-                $this->pterodactylService->getApi()->users->update(
+                $this->pterodactylApplicationService->updateUser(
                     $entityInstance->getPterodactylUserId(),
                     $pterodactylAccountDetails
                 );

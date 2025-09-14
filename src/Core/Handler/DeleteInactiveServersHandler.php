@@ -5,7 +5,7 @@ namespace App\Core\Handler;
 use App\Core\Enum\SettingEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\SettingRepository;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use DateTime;
 
 readonly class DeleteInactiveServersHandler implements HandlerInterface
@@ -14,7 +14,7 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
 
     public function __construct(
         private ServerRepository $serverRepository,
-        private PterodactylService $pterodactylService,
+        private PterodactylApplicationService $pterodactylApplicationService,
         private SettingRepository $settingRepository,
     ) {}
 
@@ -28,7 +28,7 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
         $dateObject = new DateTime(sprintf('now - %d days', $this->getDeleteInactiveServersDaysAfter()));
         $serversToDelete = $this->serverRepository->getServersExpiredBefore($dateObject);
         foreach ($serversToDelete as $server) {
-            $this->pterodactylService->getApi()->servers->delete($server->getPterodactylServerId());
+            $this->pterodactylApplicationService->deleteServer($server->getPterodactylServerId());
             $this->serverRepository->delete($server);
         }
     }

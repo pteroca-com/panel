@@ -4,7 +4,7 @@ namespace App\Core\Controller\API;
 
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\ServerEulaService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
@@ -19,7 +19,7 @@ class ServerController extends APIAbstractController
     public function __construct(
         private readonly ServerService $serverService,
         private readonly ServerRepository $serverRepository,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerEulaService $serverEulaService,
     ) {}
 

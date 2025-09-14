@@ -2,19 +2,19 @@
 
 namespace App\Core\Factory;
 
+use App\Core\DTO\Pterodactyl\Resource;
 use App\Core\DTO\ServerVariableDTO;
 
 class ServerVariableFactory
 {
     /**
-     * @return array<ServerVariableDTO
+     * @return array<Resource>
      */
     public function createFromCollection(array $variables): array
     {
         $preparedVariables = [];
 
         foreach ($variables as $variable) {
-            $variable = $variable['attributes'];
             $variableRules = explode('|', $variable['rules']);
 
             $preparedVariables[] = new ServerVariableDTO(

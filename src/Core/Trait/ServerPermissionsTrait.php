@@ -4,10 +4,10 @@ namespace App\Core\Trait;
 
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\Collection\ServerPermissionCollection;
+use App\Core\DTO\Pterodactyl\PterodactylServer;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Enum\UserRoleEnum;
-use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 trait ServerPermissionsTrait
 {

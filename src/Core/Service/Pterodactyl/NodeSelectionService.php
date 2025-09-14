@@ -8,7 +8,8 @@ use Exception;
 class NodeSelectionService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService
+        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     ) {}
 
     public function getBestAllocationId(ProductInterface $product): int
@@ -18,7 +19,7 @@ class NodeSelectionService
         $bestNodeFreeDisk = 0;
 
         foreach ($product->getNodes() as $nodeId) {
-            $node = $this->pterodactylService->getApi()->nodes->get($nodeId);
+            $node = $this->pterodactylApplicationService->getNode($nodeId);
 
             $freeMemory = $node['memory'] - $node['allocated_resources']['memory'];
             $freeDisk = $node['disk'] - $node['allocated_resources']['disk'];

@@ -13,11 +13,10 @@ use App\Core\Repository\ServerProductPriceRepository;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerEggService;
 use App\Core\Service\SettingService;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Timdesm\PterodactylPhpApi\PterodactylApi;
 use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class MigrateServersHandler implements HandlerInterface
@@ -26,10 +25,8 @@ class MigrateServersHandler implements HandlerInterface
 
     private SymfonyStyle $io;
 
-    private PterodactylApi $pterodactylApi;
-
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerRepository $serverRepository,
         private readonly ServerProductRepository $serverProductRepository,
         private readonly ServerProductPriceRepository $serverProductPriceRepository,
@@ -57,7 +54,6 @@ class MigrateServersHandler implements HandlerInterface
     public function handle(bool $dryRun = false): void
     {
         $this->io->title('Pterodactyl Server Migration');
-        $this->pterodactylApi = $this->pterodactylService->getApi();
 
         if ($dryRun) {
             $this->io->info('Running in dry-run mode - no changes will be made');
@@ -260,7 +256,7 @@ class MigrateServersHandler implements HandlerInterface
     private function getPterodactylServers(): array
     {
         $this->io->section('Fetching servers from Pterodactyl...');
-        $servers = $this->pterodactylApi->servers->all([
+        $servers = $this->pterodactylApplicationService->allServers([
             'per_page' => $this->limit,
         ]);
         $this->io->info(sprintf('Fetched %d servers from Pterodactyl', count($servers->toArray())));
@@ -271,9 +267,10 @@ class MigrateServersHandler implements HandlerInterface
     private function getPterodactylUsers(): array
     {
         $this->io->section('Fetching users from Pterodactyl...');
-        $users = $this->pterodactylApi->users->all([
-            'per_page' => $this->limit,
-        ]);
+        $users = $this->pterodactylApplicationService
+            ->getAllUsers([
+                'per_page' => $this->limit,
+            ]);
         $this->io->info(sprintf('Fetched %d users from Pterodactyl', count($users->toArray())));
 
         return $users->toArray();

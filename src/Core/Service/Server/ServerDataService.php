@@ -4,6 +4,7 @@ namespace App\Core\Service\Server;
 
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\Collection\ServerVariableCollection;
+use App\Core\DTO\Pterodactyl\PterodactylServer;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
@@ -12,20 +13,19 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Logs\ServerLogService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\ServerPermissionsTrait;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class ServerDataService
 {
     use ServerPermissionsTrait;
 
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerNestService $serverNestService,
         private readonly ServerService $serverService,
@@ -39,12 +39,9 @@ class ServerDataService
 
     public function getServerData(Server $server, UserInterface $user, int $currentPage): ServerDataDTO
     {
-        /** @var PterodactylServer $pterodactylServer */
-        $pterodactylServer = $this->pterodactylService
-            ->getApi()
-            ->servers
-            ->get($server->getPterodactylServerId(), [
-                'include' => ['variables', 'egg', 'databases', 'subusers'],
+        $pterodactylServer = $this->pterodactylApplicationService
+            ->getServer($server->getPterodactylServerId(), [
+                'variables', 'egg', 'databases', 'subusers',
             ]);
         
         $isInstalling = $this->isServerInstalling($pterodactylServer);

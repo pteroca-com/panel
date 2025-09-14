@@ -7,7 +7,7 @@ use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Mailer\ServerSuspensionEmailService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\StoreService;
@@ -20,7 +20,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
 
     public function __construct(
         private ServerRepository $serverRepository,
-        private PterodactylService $pterodactylService,
+        private PterodactylApplicationService $pterodactylApplicationService,
         private StoreService $storeService,
         private RenewServerService $renewServerService,
         private ServerSlotPricingService $serverSlotPricingService,
@@ -46,9 +46,8 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
             $server->setIsSuspended(true);
             $this->serverRepository->save($server);
 
-            $this->pterodactylService->getApi()
-                ->servers
-                ->suspend($server->getPterodactylServerId());
+            $this->pterodactylApplicationService
+                ->suspendServer($server->getPterodactylServerId());
 
             $this->serverSuspensionEmailService->sendServerSuspensionEmail($server);
         }

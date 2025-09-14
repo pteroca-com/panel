@@ -3,12 +3,12 @@
 namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Entity\Server;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class ServerConfigurationStartupService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     )
     {
     }
@@ -18,10 +18,8 @@ class ServerConfigurationStartupService
         array $startupPayload,
     ): void
     {
-        $this->pterodactylService
-            ->getApi()
-            ->servers
-            ->updateStartup(
+        $this->pterodactylApplicationService
+            ->updateServerStartup(
                 $server->getPterodactylServerId(),
                 $startupPayload,
             );

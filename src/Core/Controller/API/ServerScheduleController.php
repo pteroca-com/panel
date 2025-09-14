@@ -4,7 +4,7 @@ namespace App\Core\Controller\API;
 
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerScheduleService;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +19,7 @@ class ServerScheduleController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerScheduleService $serverScheduleService,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly TranslatorInterface $translator,
     ) {}
 

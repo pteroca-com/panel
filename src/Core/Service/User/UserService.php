@@ -7,8 +7,8 @@ use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Exception\PterodactylUserNotFoundException;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Pterodactyl\PterodactylUsernameService;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -19,7 +19,7 @@ class UserService
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly PterodactylUsernameService $usernameService,
         private readonly PterodactylAccountService $pterodactylAccountService,
         private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
@@ -37,20 +37,20 @@ class UserService
         }
 
         try {
-            $createdUser = $this->pterodactylService->getApi()->users->create([
+            $createdUser = $this->pterodactylApplicationService->createUser([
                 'email' => $user->getEmail(),
                 'username' => $this->usernameService->generateUsername($user->getEmail()),
                 'first_name' => $user->getName(),
                 'last_name' => $user->getSurname(),
                 'password' => $plainPassword,
             ]);
-            $user->setPterodactylUserId($createdUser->id);
+            $user->setPterodactylUserId($createdUser->get('id'));
 
             try {
                 $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
                 $user->setPterodactylUserApiKey($pterodactylClientApiKey);
             } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
-                $this->pterodactylService->getApi()->users->delete($createdUser->id);
+                $this->pterodactylApplicationService->deleteUser($createdUser->get('id'));
                 $this->logger->error('Failed to create Pterodactyl client API key during user creation', [
                     'exception' => $exception,
                     'user' => $user,
@@ -74,10 +74,8 @@ class UserService
         }
 
         try {
-            $pterodactylAccount = $this->pterodactylService
-                ->getApi()
-                ->users
-                ->get($user->getPterodactylUserId());
+            $pterodactylAccount = $this->pterodactylApplicationService
+                ->getUser($user->getPterodactylUserId());
             
             if (!empty($pterodactylAccount->username)) {
                 $pterodactylAccountDetails = [
@@ -90,10 +88,10 @@ class UserService
                 if ($plainPassword) {
                     $pterodactylAccountDetails['password'] = $plainPassword;
                 }
-                
-                $this->pterodactylService->getApi()->users->update(
+
+                $this->pterodactylApplicationService->updateUser(
                     $user->getPterodactylUserId(),
-                    $pterodactylAccountDetails
+                    $pterodactylAccountDetails,
                 );
             }
         } catch (Exception $exception) {
@@ -108,7 +106,7 @@ class UserService
     public function deleteUserFromPterodactyl(UserInterface $user): void
     {
         try {
-            $this->pterodactylService->getApi()->users->delete($user->getPterodactylUserId());
+            $this->pterodactylApplicationService->deleteUser($user->getPterodactylUserId());
         } catch (Exception $exception) {
             $this->logger->error('Failed to delete Pterodactyl account', [
                 'exception' => $exception,

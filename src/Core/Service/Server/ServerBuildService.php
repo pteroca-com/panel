@@ -4,12 +4,12 @@ namespace App\Core\Service\Server;
 
 use App\Core\Contract\ProductInterface;
 use App\Core\Contract\UserInterface;
+use App\Core\DTO\Pterodactyl\PterodactylServer;
 use App\Core\Entity\ServerProduct;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use JsonException;
 use Timdesm\PterodactylPhpApi\Resources\Egg as PterodactylEgg;
-use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class ServerBuildService
 {

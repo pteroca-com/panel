@@ -8,14 +8,14 @@ use App\Core\Entity\Server;
 use App\Core\Enum\ServerStateEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 
 class ServerService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
         private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerRepository $serverRepository,
         private readonly ServerSubuserRepository $serverSubuserRepository,
     ) {}
@@ -52,9 +52,9 @@ class ServerService
     public function getServerDetails(Server $server, ?object $pterodactylServer = null): ?ServerDetailsDTO
     {
         if (empty($pterodactylServer)) {
-            $pterodactylServer = $this->pterodactylService->getApi()->servers->get(
+            $pterodactylServer = $this->pterodactylApplicationService->getServer(
                 $server->getPterodactylServerId(),
-                ['include' => ['allocations', 'egg']],
+                ['allocations', 'egg'],
             );
         }
 
@@ -67,14 +67,15 @@ class ServerService
         $primary = null;
 
         foreach ($allocations->toArray() as $a) {
-            if ($a->toArray()['id'] === $primaryId) {
+            if ($a->get('id') === $primaryId) {
                 $primary = $a;
                 break;
             }
         }
 
-        if ($primary === null && !empty($allocations)) {
-            $primary = reset($allocations->toArray());
+        if ($primary === null && !empty($allocations->toArray())) {
+            $firstAllocation = $allocations->toArray();
+            $primary = reset($firstAllocation);
         }
 
         if ($primary === null) {
@@ -87,7 +88,7 @@ class ServerService
 
         $serverAddress = null;
         if ($host && $port) {
-            if (strpos($host, ':') !== false && $host[0] !== '[') {
+            if (str_contains($host, ':') && $host[0] !== '[') {
                 $host = '['.$host.']';
             }
             $serverAddress = $host.':'.$port;

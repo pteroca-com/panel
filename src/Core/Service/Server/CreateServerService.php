@@ -3,6 +3,7 @@
 namespace App\Core\Service\Server;
 
 use App\Core\Contract\UserInterface;
+use App\Core\DTO\Pterodactyl\PterodactylServer;
 use App\Core\Entity\Product;
 use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
@@ -18,17 +19,16 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Product\ProductPriceCalculatorService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
-use Timdesm\PterodactylPhpApi\Resources\Server as PterodactylServer;
 
 class CreateServerService extends AbstractActionServerService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerRepository $serverRepository,
         private readonly ServerProductRepository $serverProductRepository,
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
@@ -111,10 +111,8 @@ class CreateServerService extends AbstractActionServerService
             $preparedServerBuild = $this->serverBuildService
                 ->prepareServerBuild($product, $user, $eggId, $serverName, $slots);
 
-            return $this->pterodactylService
-                ->getApi()
-                ->servers
-                ->create($preparedServerBuild);
+            return $this->pterodactylApplicationService
+                ->createServer($preparedServerBuild);
         } catch (ValidationException $exception) {
             $errors = array_map(
                 fn($error) => $error['detail'],

@@ -4,7 +4,7 @@ namespace App\Core\Controller\API;
 
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerUserService;
 use App\Core\Trait\InternalServerApiTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +18,7 @@ class ServerUserController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerUserService $serverUserService,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     ) {}
 
     #[Route('/panel/api/server/{id}/users/all', name: 'server_users_get_all', methods: ['GET'])]

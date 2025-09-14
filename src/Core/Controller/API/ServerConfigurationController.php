@@ -7,7 +7,7 @@ use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\ServerLogService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerConfiguration\ServerAutoRenewalService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationDetailsService;
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationOptionService;
@@ -25,7 +25,7 @@ class ServerConfigurationController extends APIAbstractController
     public function __construct(
         private readonly ServerRepository $serverRepository,
         private readonly ServerLogService $serverLogService,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     ) {}
 
     #[Route('/panel/api/server/{id}/startup/variable', name: 'server_startup_variable_update', methods: ['POST'])]

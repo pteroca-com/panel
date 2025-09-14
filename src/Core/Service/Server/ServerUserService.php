@@ -11,8 +11,8 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\ServerLogService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\SettingService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -20,7 +20,7 @@ class ServerUserService
 {
     public function __construct(
         private readonly PterodactylClientService $pterodactylClientService,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
         private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly UserRepository $userRepository,
@@ -45,10 +45,9 @@ class ServerUserService
     ): array
     {
         $pterodactylClientApi = $this->pterodactylClientService->getApi($user);
-        $pterodactylApi = $this->pterodactylService->getApi();
 
         try {
-            $existingPterodactylUsers = $pterodactylApi->users->all(['filter[email]' => $email]);
+            $existingPterodactylUsers = $this->pterodactylApplicationService->getAllUsers(['filter[email]' => $email]);
             $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
 
             if (count($existingPterodactylUsers->toArray()) === 0 || !$existingPterocaUser) {

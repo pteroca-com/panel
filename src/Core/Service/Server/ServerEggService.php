@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -9,6 +10,7 @@ class ServerEggService
 {
     public function __construct(
         private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly TranslatorInterface $translator,
     )
     {
@@ -16,10 +18,8 @@ class ServerEggService
 
     public function prepareEggsConfiguration(int $pterodactylServerId): string
     {
-        $pterodactylServer = $this->pterodactylService
-            ->getApi()
-            ->servers
-            ->get($pterodactylServerId, ['include' => 'variables'])
+        $pterodactylServer = $this->pterodactylApplicationService
+            ->getServer($pterodactylServerId, ['include' => 'variables'])
             ->toArray();
 
         $pterodactylServerVariables = $pterodactylServer['relationships']['variables']->toArray();

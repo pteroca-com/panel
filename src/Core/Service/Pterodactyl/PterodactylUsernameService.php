@@ -5,7 +5,7 @@ namespace App\Core\Service\Pterodactyl;
 class PterodactylUsernameService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     ) {}
 
     public function generateUsername(string $username): string
@@ -15,7 +15,8 @@ class PterodactylUsernameService
             $username = explode('+', $username)[0];
         }
 
-        $user = $this->pterodactylService->getApi()->users->all(['filter' => ['username' => $username]])->toArray();
+        $user = $this->pterodactylApplicationService->getAllUsers(['filter' => ['username' => $username]]);
+        $user = current($user);
 
         if (!empty($user)) {
             $username = sprintf('%s%d', $username, rand(1, 999));

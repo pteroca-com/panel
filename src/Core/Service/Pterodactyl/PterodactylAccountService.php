@@ -3,16 +3,16 @@
 namespace App\Core\Service\Pterodactyl;
 
 use App\Core\Contract\UserInterface;
+use App\Core\DTO\Pterodactyl\PterodactylUser;
 use App\Core\Exception\PterodactylAccountEmailAlreadyExists;
 use Exception;
-use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class PterodactylAccountService
 {
     private const PTERODACTYL_ACCOUNT_EXISTS_ERROR = 'The email has already been taken.';
 
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly PterodactylUsernameService $usernameService,
     )
     {
@@ -21,7 +21,7 @@ class PterodactylAccountService
     public function createPterodactylAccount(UserInterface $user, string $plainPassword): PterodactylUser
     {
        try {
-           return $this->pterodactylService->getApi()->users->create([
+           return $this->pterodactylApplicationService->createUser([
                'email' => $user->getEmail(),
                'username' => $this->usernameService->generateUsername($user->getEmail()),
                'first_name' => $user->getName(),
@@ -53,8 +53,8 @@ class PterodactylAccountService
     public function updatePterodactylAccountPassword(UserInterface $user, string $plainPassword): PterodactylUser
     {
         try {
-            $currentPterodactylUser = $this->pterodactylService->getApi()->users->get($user->getPterodactylUserId());
-            return $this->pterodactylService->getApi()->users->update($user->getPterodactylUserId(), [
+            $currentPterodactylUser = $this->pterodactylApplicationService->getUser($user->getPterodactylUserId());
+            return $this->pterodactylApplicationService->updateUser($user->getPterodactylUserId(), [
                 'email' => $currentPterodactylUser->get('email'),
                 'username' => $currentPterodactylUser->get('username'),
                 'first_name' => $currentPterodactylUser->get('first_name'),
@@ -68,9 +68,7 @@ class PterodactylAccountService
 
     public function deletePterodactylAccount(UserInterface $user): void
     {
-        $this->pterodactylService
-            ->getApi()
-            ->users
-            ->delete($user->getPterodactylUserId());
+        $this->pterodactylApplicationService
+            ->deleteUser($user->getPterodactylUserId());
     }
 }

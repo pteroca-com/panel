@@ -4,15 +4,15 @@ namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class ServerConfigurationOptionService extends AbstractServerConfiguration
 {
     public function __construct(
-        private readonly PterodactylService                $pterodactylService,
+        private readonly PterodactylApplicationService    $pterodactylApplicationService,
         private readonly ServerConfigurationStartupService $serverConfigurationStartupService,
     ) {
-        parent::__construct($this->pterodactylService);
+        parent::__construct($this->pterodactylApplicationService);
     }
 
     public function updateServerStartupOption(

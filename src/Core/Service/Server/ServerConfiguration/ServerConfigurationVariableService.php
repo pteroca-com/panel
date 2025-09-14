@@ -5,8 +5,8 @@ namespace App\Core\Service\Server\ServerConfiguration;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
@@ -14,9 +14,9 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
 {
     public function __construct(
         private readonly PterodactylClientService $pterodactylClientService,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     ) {
-        parent::__construct($this->pterodactylService);
+        parent::__construct($this->pterodactylApplicationService);
     }
 
     public function updateServerVariable(

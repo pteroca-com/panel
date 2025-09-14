@@ -12,6 +12,7 @@ use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
 use App\Core\Service\Product\ProductPriceCalculatorService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerSlotConfigurationService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -23,6 +24,7 @@ class StoreService
         private readonly CategoryRepository $categoryRepository,
         private readonly ProductRepository $productRepository,
         private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly TranslatorInterface $translator,
         private readonly ProductPriceCalculatorService $productPriceCalculatorService,
         private readonly ServerSlotConfigurationService $serverSlotConfigurationService,
@@ -101,10 +103,8 @@ class StoreService
     public function productHasNodeWithResources(Product $product): bool
     {
         foreach ($product->getNodes() as $node) {
-            $node = $this->pterodactylService
-                ->getApi()
-                ->nodes
-                ->get($node)
+            $node = $this->pterodactylApplicationService
+                ->getNode($node)
                 ->toArray();
 
             if ($this->checkNodeResources($product->getMemory(), $product->getDiskSpace(), $node)) {

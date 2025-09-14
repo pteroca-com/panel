@@ -3,21 +3,21 @@
 namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Entity\Server;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class AbstractServerConfiguration
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     )
     {
     }
 
     protected function getServerDetails(Server $server, array $include = []): array
     {
-        $serverDetails = $this->pterodactylService->getApi()->servers->get($server->getPterodactylServerId(), [
-            'include' => $include,
-        ])?->toArray();
+        $serverDetails = $this->pterodactylApplicationService
+            ->getServer($server->getPterodactylServerId(), $include)
+            ?->toArray();
 
         if (empty($serverDetails)) {
             throw new \Exception('Server not found');

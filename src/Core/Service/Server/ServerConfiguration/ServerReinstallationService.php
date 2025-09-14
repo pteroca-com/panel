@@ -4,18 +4,18 @@ namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 
 class ServerReinstallationService extends AbstractServerConfiguration
 {
     public function __construct(
         private readonly PterodactylClientService          $pterodactylClientService,
-        private readonly PterodactylService                $pterodactylService,
+        private readonly PterodactylApplicationService     $pterodactylApplicationService,
         private readonly ServerConfigurationStartupService $serverConfigurationStartupService,
     )
     {
-        parent::__construct($this->pterodactylService);
+        parent::__construct($this->pterodactylApplicationService);
     }
 
     public function reinstallServer(Server $server, UserInterface $user, ?int $selectedEgg): void

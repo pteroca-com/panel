@@ -13,8 +13,8 @@ use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Product\ProductPriceCalculatorService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -23,7 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class RenewServerService extends AbstractActionServerService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerRepository $serverRepository,
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
@@ -86,7 +86,7 @@ class RenewServerService extends AbstractActionServerService
         $expirationDateModifier = sprintf('+%d %s', $selectedPrice->getValue(), $selectedPrice->getUnit()->value);
         $server->setExpiresAt($currentExpirationDate->modify($expirationDateModifier));
         if ($server->getIsSuspended()) {
-            $this->pterodactylService->getApi()->servers->unsuspend($server->getPterodactylServerId());
+            $this->pterodactylApplicationService->unsuspendServer($server->getPterodactylServerId());
             $server->setIsSuspended(false);
         }
 
