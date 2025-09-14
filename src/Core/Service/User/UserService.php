@@ -4,6 +4,7 @@ namespace App\Core\Service\User;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
+use App\Core\Exception\PterodactylUserNotFoundException;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
 use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
@@ -113,6 +114,11 @@ class UserService
                 'exception' => $exception,
                 'user' => $user,
             ]);
+            
+            if (str_contains($exception->getMessage(), 'The resource you are looking for could not be found')) {
+                throw new PterodactylUserNotFoundException('User not found in Pterodactyl', 0, $exception);
+            }
+            
             throw new Exception($this->translator->trans('pteroca.system.pterodactyl_error'));
         }
     }

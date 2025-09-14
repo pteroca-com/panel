@@ -58,9 +58,54 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getLastRegisteredUsers(int $limit): array
     {
         return $this->createQueryBuilder('u')
+            ->where('u.deletedAt IS NULL')
             ->orderBy('u.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findAllNotDeleted(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.deletedAt IS NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByEmailIncludingDeleted(string $email): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.email = :email')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findDeletedByEmail(string $email): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.email = :email')
+            ->andWhere('u.deletedAt IS NOT NULL')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null): array
+    {
+        $criteria['deletedAt'] = null;
+        return parent::findBy($criteria, $orderBy, $limit, $offset);
+    }
+
+    public function findAll(): array
+    {
+        return $this->findAllNotDeleted();
+    }
+
+    public function findOneBy(array $criteria, array $orderBy = null): ?User
+    {
+        $criteria['deletedAt'] = null;
+        return parent::findOneBy($criteria, $orderBy);
     }
 }

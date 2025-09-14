@@ -13,6 +13,7 @@ enum LogActionEnum
    case ENTITY_ADD;
    case ENTITY_EDIT;
    case ENTITY_DELETE;
+   case ENTITY_RESTORE;
    case USER_REGISTERED;
    case USER_VERIFY_EMAIL;
    case VOUCHER_REDEEMED;

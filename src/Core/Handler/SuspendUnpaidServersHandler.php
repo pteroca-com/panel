@@ -3,9 +3,7 @@
 namespace App\Core\Handler;
 
 use App\Core\Entity\Server;
-use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
-use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Mailer\ServerSuspensionEmailService;
