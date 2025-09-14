@@ -3,9 +3,7 @@
 namespace App\Core\Adapter\Pterodactyl;
 
 use App\Core\Contract\Pterodactyl\PterodactylServersInterface;
-use App\Core\DTO\Pterodactyl\Credentials;
 use App\Core\DTO\Pterodactyl\PterodactylServer;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PterodactylServers extends AbstractPterodactylAdapter implements PterodactylServersInterface
 {
@@ -55,7 +53,7 @@ class PterodactylServers extends AbstractPterodactylAdapter implements Pterodact
 
     public function updateServerDetails(string $serverId, array $details): bool
     {
-        $response = $this->makeRequest('PATCH', "servers/{$serverId}", ['json' => $details]);
+        $response = $this->makeRequest('PATCH', "servers/{$serverId}/details", ['json' => $details]);
         return in_array($response->getStatusCode(), [200, 204]);
     }
 
@@ -83,6 +81,46 @@ class PterodactylServers extends AbstractPterodactylAdapter implements Pterodact
         $data = $this->validateServerResponse($response, 201);
         
         return new PterodactylServer($data['attributes']);
+    }
+
+    public function paginate(int $page = 1, array $query = []): array
+    {
+        $options = ['query' => array_merge(['page' => $page], $query)];
+        
+        $response = $this->makeRequest('GET', 'servers', $options);
+        $data = $this->validateServerResponse($response, 200);
+
+        $servers = [];
+        foreach ($data['data'] as $serverData) {
+            $servers[] = new PterodactylServer($serverData['attributes']);
+        }
+
+        return $servers;
+    }
+
+    public function getServerByExternalId(string $externalId, array $query = []): PterodactylServer
+    {
+        $options = [];
+        if (!empty($query)) {
+            $options['query'] = $query;
+        }
+
+        $response = $this->makeRequest('GET', "servers/external/{$externalId}", $options);
+        $data = $this->validateServerResponse($response, 200);
+        
+        return new PterodactylServer($data['attributes']);
+    }
+
+    public function reinstallServer(string $serverId): bool
+    {
+        $response = $this->makeRequest('POST', "servers/{$serverId}/reinstall");
+        return $response->getStatusCode() === 202;
+    }
+
+    public function forceDeleteServer(string $serverId): bool
+    {
+        $response = $this->makeRequest('DELETE', "servers/{$serverId}/force");
+        return $response->getStatusCode() === 204;
     }
 
 }
