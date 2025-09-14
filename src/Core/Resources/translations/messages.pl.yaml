@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Wystąpił błąd podczas komunikacji z panelem Pterodactyl.'
     dont_have_permission: 'Nie masz uprawnień do wykonania tej akcji.'
     experimental_feature: 'Ta funkcja jest eksperymentalna i może nie działać poprawnie.'
+    or_resend_verification_email: 'lub kliknij tutaj, aby ponownie wysłać e-mail weryfikacyjny.'
 
   login:
     title: 'Zaloguj się'
@@ -942,6 +943,7 @@ pteroca:
     server_user:
       user_not_exist: 'Użytkownik o adresie email {{ email }} nie istnieje w systemie. Użytkownik musi się najpierw zarejestrować.'
       user_already_added: 'Użytkownik o adresie email {{ email }} został już dodany do tego serwera.'
+      user_not_verified: 'Użytkownik o adresie email {{ email }} nie zweryfikował swojego adresu e-mail i nie może zostać dodany jako podużytkownik.'
       cannot_modify_yourself: 'Nie możesz wykonać tej akcji na sobie: {{ action }}.'
       modify_permissions: 'modyfikować uprawnienia'
       delete_yourself_from_server: 'usunąć siebie z serwera'
@@ -963,6 +965,18 @@ pteroca:
       best_regards: 'Pozdrawiamy'
       visit_website: 'Odwiedź naszą stronę:'
       copyright: 'Wszelkie prawa zastrzeżone.'
+    verification:
+      subject: "Weryfikacja e-mail - %siteName%"
+      title: "Weryfikacja e-mail"
+      hello: "Cześć %name%!"
+      message: "Dziękujemy za rejestrację w %siteName%. Zweryfikuj swój adres e-mail, klikając przycisk poniżej."
+      verify_button: "Zweryfikuj adres e-mail"
+      alternative_text: "Jeśli przycisk nie działa, możesz również skopiować i wkleić poniższy link do przeglądarki:"
+      footer_text: "Jeśli nie utworzyłeś konta w %siteName%, możesz bezpiecznie zignorować tę wiadomość."
+      resend_too_soon: "Możesz ponownie wysłać e-mail weryfikacyjny tylko raz na %minutes% minut. Spróbuj ponownie później."
+      resend_success: "E-mail weryfikacyjny został wysłany na Twój adres e-mail."
+      not_logged_in: "Musisz być zalogowany, aby ponownie wysłać e-mail weryfikacyjny."
+      already_verified: "Twój adres e-mail jest już zweryfikowany."
     pricing:
       slot_format: '{{ slots }} slotów × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -970,8 +984,11 @@ pteroca:
     registration:
       subject: 'Rejestracja'
       welcome: 'Witaj w naszym serwisie! Dziękujemy za rejestrację.'
+      account_ready: 'Twoje konto jest gotowe do użytku. Możesz teraz zalogować się na swoje konto i rozpocząć korzystanie z naszych usług.'
+      email_verification_required: 'Weryfikacja e-mail wymagana'
       confirm_email: 'Potwierdź swój adres e-mail, klikając poniższy link:'
       confirm_email_button: 'Potwierdź adres e-mail'
+      alternative_text: 'Jeśli przycisk nie działa, możesz również skopiować i wkleić poniższy link do przeglądarki:'
       if_not_registered: 'Jeśli nie rejestrowałeś się na naszej stronie, zignoruj tę wiadomość.'
     recovery:
       subject: 'Resetowanie hasła'
@@ -1006,6 +1023,17 @@ pteroca:
       subject: 'Zawieszenie serwera'
       server_suspended: 'Informujemy, że jeden z Twoich serwer został zawieszony, ponieważ nie został przedłużony.'
       extend_server: 'Aby przywrócić serwer, przedłuż go w panelu klienta.'
+
+  verification:
+    title: 'Weryfikacja e-mail wymagana'
+    subtitle: 'Zweryfikuj swój adres e-mail, aby kontynuować'
+    required: 'Weryfikacja e-mail wymagana'
+    description: 'Musisz zweryfikować swój adres e-mail, zanim uzyskasz dostęp do tej funkcji.'
+    sent_to: 'E-mail weryfikacyjny wysłany do'
+    resend: 'Wyślij ponownie e-mail weryfikacyjny'
+    resend_success: 'E-mail weryfikacyjny został wysłany!'
+    back_to_panel: 'Powrót do panelu'
+    help_text: 'Sprawdź swoją skrzynkę odbiorczą i folder spamu pod kątem linku weryfikacyjnego.'
 
   admin:
     overview:

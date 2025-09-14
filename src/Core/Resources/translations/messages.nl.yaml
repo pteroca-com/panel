@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Fout tijdens het verbinden met de Pterodactyl API.'
     dont_have_permission: 'U bent niet bevoegd om deze functie te gebruiken.'
     experimental_feature: 'Deze functie is experimenteel en werkt mogelijk niet correct.'
+    or_resend_verification_email: 'of klik hier om de verificatie-e-mail opnieuw te verzenden.'
   login:
     title: 'Aanmelden'
     email_address: 'Email adres'
@@ -931,6 +932,7 @@ pteroca:
     server_user:
       user_not_exist: 'Gebruiker met e-mailadres {{ email }} bestaat niet in het systeem. De gebruiker moet zich eerst registreren.'
       user_already_added: 'Gebruiker met e-mailadres {{ email }} is al toegevoegd aan deze server.'
+      user_not_verified: 'Gebruiker met e-mailadres {{ email }} heeft zijn e-mailadres niet geverifieerd en kan niet als subgebruiker worden toegevoegd.'
       cannot_modify_yourself: 'U kunt deze actie niet op uzelf uitvoeren: {{ action }}.'
       modify_permissions: 'machtigingen wijzigen'
       delete_yourself_from_server: 'uzelf van de server verwijderen'
@@ -951,6 +953,18 @@ pteroca:
       best_regards: 'Met vriendelijke groet'
       visit_website: 'Bezoek onze website:'
       copyright: 'Alle rechten voorbehouden.'
+    verification:
+      subject: "E-mail verificatie - %siteName%"
+      title: "E-mail verificatie"
+      hello: "Hallo %name%!"
+      message: "Bedankt voor het registreren bij %siteName%. Verificeer je e-mailadres door op de onderstaande knop te klikken."
+      verify_button: "Verificeer e-mailadres"
+      alternative_text: "Als de knop niet werkt, kunt u ook de volgende link kopiëren en plakken in uw browser:"
+      footer_text: "Als u geen account heeft aangemaakt bij %siteName%, kunt u deze e-mail veilig negeren."
+      resend_too_soon: "U kunt de verificatie-e-mail slechts één keer per %minutes% minuten opnieuw verzenden. Probeer het later opnieuw."
+      resend_success: "De verificatie-e-mail is naar uw e-mailadres verzonden."
+      not_logged_in: "U moet ingelogd zijn om de verificatie-e-mail opnieuw te verzenden."
+      already_verified: "Uw e-mailadres is al geverifieerd."
     pricing:
       slot_format: '{{ slots }} slots × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -958,8 +972,11 @@ pteroca:
     registration:
       subject: 'Registratie'
       welcome: 'Welkom bij onze dienst! Bedankt voor het registreren.'
+      account_ready: 'Uw account is klaar voor gebruik. U kunt nu inloggen op uw account en beginnen met het gebruik van onze diensten.'
+      email_verification_required: 'E-mail verificatie vereist'
       confirm_email: 'Bevestig je e-mailadres door op onderstaande link te klikken:'
       confirm_email_button: 'Bevestig e-mailadres'
+      alternative_text: 'Als de knop niet werkt, kunt u ook de volgende link kopiëren en plakken in uw browser:'
       if_not_registered: 'Als u niet voor onze site aangemeld bent, kunt u deze e-mail negeren.'
     recovery:
       subject: 'Wachtwoord opnieuw instellen'
@@ -994,6 +1011,16 @@ pteroca:
       subject: 'Server Schorsing'
       server_suspended: 'We informeren u dat een van uw servers is opgeschort omdat het niet vernieuwd is.'
       extend_server: 'Om de server te herstellen, verleng deze in het klantenpaneel.'
+  verification:
+    title: 'E-mail verificatie vereist'
+    subtitle: 'Verificeer uw e-mailadres om door te gaan'
+    required: 'E-mail verificatie vereist'
+    description: 'U moet uw e-mailadres verifiëren voordat u toegang heeft tot deze functie.'
+    sent_to: 'Verificatie-e-mail verzonden naar'
+    resend: 'Verificatie-e-mail opnieuw verzenden'
+    resend_success: 'Verificatie-e-mail is verzonden!'
+    back_to_panel: 'Terug naar paneel'
+    help_text: 'Controleer uw inbox en spam-map voor de verificatielink.'
   admin:
     overview:
       title: 'Beheerder Overzicht'

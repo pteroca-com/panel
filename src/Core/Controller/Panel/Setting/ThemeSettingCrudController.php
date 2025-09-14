@@ -6,6 +6,7 @@ use App\Core\DTO\TemplateOptionsDTO;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Repository\SettingRepository;
+use App\Core\Repository\SettingOptionRepository;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\LocaleService;
 use App\Core\Service\SettingService;
@@ -32,6 +33,7 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
         PanelCrudService $panelCrudService,
         RequestStack $requestStack,
         SettingRepository $settingRepository,
+        SettingOptionRepository $settingOptionRepository,
         SettingService $settingService,
         LocaleService $localeService,
         private readonly TemplateService $templateService,
@@ -44,6 +46,7 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
             $requestStack,
             $translator,
             $settingRepository,
+            $settingOptionRepository,
             $settingService,
             $localeService
         );

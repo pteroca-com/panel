@@ -2,17 +2,18 @@
 
 namespace App\Core\Twig;
 
-use App\Core\DTO\TemplateOptionsDTO;
-use App\Core\Enum\SettingEnum;
-use App\Core\Service\SettingService;
-use App\Core\Service\System\SystemVersionService;
-use App\Core\Trait\FormatBytesTrait;
-use App\Core\Service\Template\TemplateManager;
-use Symfony\Component\Routing\RouterInterface;
-use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use App\Core\Enum\SettingEnum;
+use App\Core\DTO\TemplateOptionsDTO;
+use App\Core\Service\SettingService;
+use App\Core\Trait\FormatBytesTrait;
 use Symfony\Component\Asset\Packages;
+use Twig\Extension\AbstractExtension;
+use App\Core\Enum\EmailVerificationValueEnum;
+use App\Core\Service\Template\TemplateManager;
+use Symfony\Component\Routing\RouterInterface;
+use App\Core\Service\System\SystemVersionService;
 
 class AppExtension extends AbstractExtension
 {
@@ -35,7 +36,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('get_logo', [$this, 'getLogo']),
             new TwigFunction('get_title', [$this, 'getTitle']),
             new TwigFunction('get_site_url', [$this, 'getSiteUrl']),
-            new TwigFunction('get_require_email_verification', [$this, 'getRequireEmailVerification']),
+            new TwigFunction('show_email_verification_alert', [$this, 'showEmailVerificationAlert']),
             new TwigFunction('get_captcha_site_key', [$this, 'getCaptchaSiteKey']),
             new TwigFunction('get_favicon', [$this, 'getFavicon']),
             new TwigFunction('use_pterodactyl_panel_as_client_panel', [$this, 'usePterodactylPanelAsClientPanel']),
@@ -113,9 +114,15 @@ class AppExtension extends AbstractExtension
         return $this->settingService->getSetting(SettingEnum::SITE_URL->value) ?? '';
     }
 
-    public function getRequireEmailVerification(): bool
+    public function showEmailVerificationAlert(): bool
     {
-        return (bool)$this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
+        $emailVerificationValue = $this->settingService
+            ->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
+
+        return in_array($emailVerificationValue, [
+            EmailVerificationValueEnum::REQUIRED->value,
+            EmailVerificationValueEnum::OPTIONAL->value,
+        ]);
     }
 
     public function usePterodactylPanelAsClientPanel(): bool

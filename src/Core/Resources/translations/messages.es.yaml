@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Se produjo un error al comunicarse con el panel de Pterodactyl.'
     dont_have_permission: 'No tienes permiso para realizar esta acción.'
     experimental_feature: 'Esta función es experimental y puede no funcionar correctamente.'
+    or_resend_verification_email: 'o haz clic aquí para reenviar el correo de verificación.'
 
   login:
     title: 'Iniciar sesión'
@@ -942,6 +943,7 @@ pteroca:
     server_user:
       user_not_exist: 'El usuario con correo {{ email }} no existe en el sistema. El usuario debe registrarse primero.'
       user_already_added: 'El usuario con correo {{ email }} ya ha sido añadido a este servidor.'
+      user_not_verified: 'El usuario con correo {{ email }} no ha verificado su dirección de correo electrónico y no puede ser añadido como subusuario.'
       cannot_modify_yourself: 'No puedes realizar esta acción en ti mismo: {{ action }}.'
       modify_permissions: 'modificar permisos'
       delete_yourself_from_server: 'eliminarte del servidor'
@@ -963,6 +965,18 @@ pteroca:
       best_regards: 'Saludos cordiales'
       visit_website: 'Visita nuestro sitio web:'
       copyright: 'Todos los derechos reservados.'
+    verification:
+      subject: "Verificación de correo electrónico - %siteName%"
+      title: "Verificación de correo electrónico"
+      hello: "¡Hola %name%!"
+      message: "Gracias por registrarte en %siteName%. Por favor verifica tu dirección de correo electrónico haciendo clic en el botón de abajo."
+      verify_button: "Verificar dirección de correo electrónico"
+      alternative_text: "Si el botón no funciona, también puedes copiar y pegar el siguiente enlace en tu navegador:"
+      footer_text: "Si no creaste una cuenta en %siteName%, puedes ignorar este correo de forma segura."
+      resend_too_soon: "Solo puedes reenviar el correo de verificación una vez cada %minutes% minutos. Por favor inténtalo de nuevo más tarde."
+      resend_success: "El correo de verificación ha sido enviado a tu dirección de correo electrónico."
+      not_logged_in: "Debes estar conectado para reenviar el correo de verificación."
+      already_verified: "Tu dirección de correo electrónico ya está verificada."
     pricing:
       slot_format: '{{ slots }} ranuras × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -970,8 +984,11 @@ pteroca:
     registration:
       subject: 'Registro'
       welcome: '¡Bienvenido a nuestro servicio! Gracias por registrarte.'
+      account_ready: 'Tu cuenta está lista para usar. Ahora puedes iniciar sesión en tu cuenta y comenzar a usar nuestros servicios.'
+      email_verification_required: 'Verificación de correo electrónico requerida'
       confirm_email: 'Confirma tu dirección de correo electrónico haciendo clic en el siguiente enlace:'
       confirm_email_button: 'Confirmar correo electrónico'
+      alternative_text: 'Si el botón no funciona, también puedes copiar y pegar el siguiente enlace en tu navegador:'
       if_not_registered: 'Si no te has registrado en nuestro sitio, ignora este mensaje.'
     recovery:
       subject: 'Restablecimiento de contraseña'
@@ -1006,6 +1023,17 @@ pteroca:
       subject: 'Suspensión del servidor'
       server_suspended: 'Te informamos que uno de tus servidores ha sido suspendido porque no fue renovado.'
       extend_server: 'Para restaurar el servidor, renueva tu suscripción en el panel de cliente.'
+
+  verification:
+    title: 'Verificación de correo electrónico requerida'
+    subtitle: 'Por favor verifica tu dirección de correo electrónico para continuar'
+    required: 'Verificación de correo electrónico requerida'
+    description: 'Debes verificar tu dirección de correo electrónico antes de poder acceder a esta función.'
+    sent_to: 'Correo de verificación enviado a'
+    resend: 'Reenviar correo de verificación'
+    resend_success: '¡El correo de verificación ha sido enviado!'
+    back_to_panel: 'Volver al panel'
+    help_text: 'Revisa tu bandeja de entrada y carpeta de spam para el enlace de verificación.'
 
   admin:
     overview:

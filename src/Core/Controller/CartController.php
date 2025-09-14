@@ -2,13 +2,13 @@
 
 namespace App\Core\Controller;
 
+use App\Core\Attribute\RequiresVerifiedEmail;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
-use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
@@ -32,6 +32,7 @@ class CartController extends AbstractController
     ) {}
 
     #[Route('/cart/topup', name: 'cart_topup', methods: ['GET', 'POST'])]
+    #[RequiresVerifiedEmail]
     public function topUpBalance(
         Request $request,
         SettingService $settingService,
@@ -95,20 +96,13 @@ class CartController extends AbstractController
     }
 
     #[Route('/cart/buy', name: 'cart_buy', methods: ['POST'])]
+    #[RequiresVerifiedEmail]
     public function buy(
         Request $request,
-        UserVerificationService $userVerificationService,
         CreateServerService $createServerService,
     ): Response
     {
         $product = $this->getProductByRequest($request);
-
-        try {
-            $userVerificationService->validateUserVerification($this->getUser());
-        } catch (Exception $e) {
-            $this->addFlash('danger', $e->getMessage());
-            return $this->redirectToRoute('panel', ['routeName' => 'store_product', 'id' => $product->getId()]);
-        }
 
         $eggId = $request->request->getInt('egg');
         $priceId = $request->request->getInt('duration');
@@ -157,7 +151,7 @@ class CartController extends AbstractController
         $server = $this->getServerByRequest($request);
         $isOwner = $server->getUser() === $this->getUser();
         $hasSlotPrices = $this->serverSlotPricingService->hasSlotPricing($server);
-        
+
         if ($hasSlotPrices) {
             $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
         }
@@ -171,20 +165,13 @@ class CartController extends AbstractController
     }
 
     #[Route('/cart/renew/buy', name: 'cart_renew_buy', methods: ['POST'])]
+    #[RequiresVerifiedEmail]
     public function renewBuy(
         Request $request,
-        UserVerificationService $userVerificationService,
         RenewServerService $renewServerService,
     ): Response
     {
         $server = $this->getServerByRequest($request);
-
-        try {
-            $userVerificationService->validateUserVerification($this->getUser());
-        } catch (Exception $e) {
-            $this->addFlash('danger', $e->getMessage());
-            return $this->redirectToRoute('panel', ['routeName' => 'cart_renew', 'id' => $server->getId()]);
-        }
 
         try {
             $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);

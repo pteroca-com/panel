@@ -1,7 +1,8 @@
 pteroca:
   system:
     back: 'Back to panel'
-    email_not_verified: 'Your email address has not been verified yet. Please check your inbox.'
+    email_not_verified: 'Your email address has not been verified yet. Please check your inbox'
+    or_resend_verification_email: 'or click here to resend the verification email.'
     pterodactyl_error: 'Error while connecting to the Pterodactyl API.'
     dont_have_permission: 'You do not have permission to perform this action.'
     experimental_feature: 'This feature is experimental and may not work correctly.'
@@ -940,6 +941,7 @@ pteroca:
     server_user:
       user_not_exist: 'User with email {{ email }} does not exist in the system. The user must register first.'
       user_already_added: 'User with email {{ email }} is already added to this server.'
+      user_not_verified: 'User with email {{ email }} has not verified their email address and cannot be added as a subuser.'
       cannot_modify_yourself: 'You cannot perform this action on yourself: {{ action }}.'
       modify_permissions: 'modify permissions'
       delete_yourself_from_server: 'delete yourself from server'
@@ -961,6 +963,18 @@ pteroca:
       best_regards: 'Best regards'
       visit_website: 'Visit our website:'
       copyright: 'All rights reserved.'
+    verification:
+      subject: "Email Verification - %siteName%"
+      title: "Email Verification"
+      hello: "Hello %name%!"
+      message: "Thank you for registering at %siteName%. Please verify your email address by clicking the button below."
+      verify_button: "Verify Email Address"
+      alternative_text: "If the button doesn't work, you can also copy and paste the following link into your browser:"
+      footer_text: "If you didn't create an account at %siteName%, you can safely ignore this email."
+      resend_too_soon: "You can only resend verification email once every %minutes% minutes. Please try again later."
+      resend_success: "Verification email has been sent to your email address."
+      not_logged_in: "You must be logged in to resend verification email."
+      already_verified: "Your email address is already verified."
     pricing:
       slot_format: '{{ slots }} slots × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -968,8 +982,11 @@ pteroca:
     registration:
       subject: 'Registration'
       welcome: 'Welcome to our service! Thank you for registering.'
+      account_ready: 'Your account is ready to use. You can now log in to your account and start using our services.'
+      email_verification_required: 'Email Verification Required'
       confirm_email: 'Please confirm your email address by clicking the link below:'
       confirm_email_button: 'Confirm email address'
+      alternative_text: 'If the button doesn''t work, you can also copy and paste the following link into your browser:'
       if_not_registered: 'If you did not register on our site, please ignore this email.'
     recovery:
       subject: 'Password Reset'
@@ -1004,6 +1021,17 @@ pteroca:
       subject: 'Server Suspension'
       server_suspended: 'We inform you that one of your servers has been suspended because it has not been renewed.'
       extend_server: 'To restore the server, renew it in the client panel.'
+
+  verification:
+    title: 'Email Verification Required'
+    subtitle: 'Please verify your email address to continue'
+    required: 'Email verification required'
+    description: 'You must verify your email address before you can access this feature.'
+    sent_to: 'Verification email sent to'
+    resend: 'Resend Verification Email'
+    resend_success: 'Verification email has been sent!'
+    back_to_panel: 'Back to Panel'
+    help_text: 'Check your email inbox and spam folder for the verification link.'
 
   admin:
     overview:
