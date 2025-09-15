@@ -8,7 +8,6 @@ use Exception;
 class NodeSelectionService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
     ) {}
 
@@ -19,7 +18,10 @@ class NodeSelectionService
         $bestNodeFreeDisk = 0;
 
         foreach ($product->getNodes() as $nodeId) {
-            $node = $this->pterodactylApplicationService->getNode($nodeId);
+            $node = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->nodes()
+                ->getNode($nodeId);
 
             $freeMemory = $node['memory'] - $node['allocated_resources']['memory'];
             $freeDisk = $node['disk'] - $node['allocated_resources']['disk'];
@@ -37,7 +39,12 @@ class NodeSelectionService
             throw new Exception('No suitable node found with enough resources');
         }
 
-        $allocations = $this->pterodactylService->getApi()->node_allocations->all($bestNode['id'])->toArray();
+        $allocations = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->nodeAllocations()
+            ->all($bestNode['id'])
+            ->toArray();
+
         foreach ($allocations as $allocation) {
             if (!$allocation['assigned']) {
                 return $allocation['id'];

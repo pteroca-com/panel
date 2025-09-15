@@ -47,6 +47,8 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
             $this->serverRepository->save($server);
 
             $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
                 ->suspendServer($server->getPterodactylServerId());
 
             $this->serverSuspensionEmailService->sendServerSuspensionEmail($server);

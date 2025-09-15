@@ -7,7 +7,7 @@ use App\Core\DTO\Action\Result\ServerAllocationActionResult;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -18,7 +18,7 @@ class ServerNetworkService
     private const DELETE_PRIMARY_ALLOCATION_ERROR = 'You cannot delete the primary allocation for this server.';
 
     public function __construct(
-        private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
         private readonly TranslatorInterface $translator,
     ) {}
@@ -28,14 +28,11 @@ class ServerNetworkService
         UserInterface $user,
     ): ServerAllocationActionResult
     {
-        $endpointUrl = $this->getEndpointUrl($server, null);
-
         try {
-            $this->pterodactylClientService
-                ->getApi($user)
-                ->servers
-                ->http
-                ->post($endpointUrl);
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->network()
+                ->assignAllocation($server);
         } catch (Exception $exception) {
             $errorObject = json_decode($exception->getMessage(), true)['errors'][0] ?? null;
             $errorDetail = $errorObject['detail'] ?? null;
@@ -78,14 +75,11 @@ class ServerNetworkService
         int $allocationId,
     ): ServerAllocationActionResult
     {
-        $endpointUrl = $this->getEndpointUrl($server, $allocationId, 'primary');
-
         try {
-            $this->pterodactylClientService
-                ->getApi($user)
-                ->servers
-                ->http
-                ->post($endpointUrl);
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->network()
+                ->setPrimaryAllocation($server, $allocationId);
         } catch (Exception $exception) {
             $errorDetail = sprintf(
                 '%s: %s',
@@ -124,16 +118,11 @@ class ServerNetworkService
         string $notes,
     ): ServerAllocationActionResult
     {
-        $endpointUrl = $this->getEndpointUrl($server, $allocationId);
-
         try {
-            $this->pterodactylClientService
-                ->getApi($user)
-                ->servers
-                ->http
-                ->post($endpointUrl, [
-                    'notes' => $notes,
-                ]);
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->network()
+                ->updateAllocationNotes($server, $allocationId, $notes);
         } catch (Exception $exception) {
             $errorDetail = sprintf(
                 '%s: %s',
@@ -172,14 +161,11 @@ class ServerNetworkService
         int $allocationId,
     ): ServerAllocationActionResult
     {
-        $endpointUrl = $this->getEndpointUrl($server, $allocationId);
-
         try {
-            $this->pterodactylClientService
-                ->getApi($user)
-                ->servers
-                ->http
-                ->delete($endpointUrl);
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->network()
+                ->removeAllocation($server, $allocationId);
         } catch (Exception $exception) {
             $errorObject = json_decode($exception->getMessage(), true)['errors'][0] ?? null;
             $errorDetail = $errorObject['detail'] ?? null;
@@ -216,31 +202,5 @@ class ServerNetworkService
             success: true,
             server: $server,
         );
-    }
-
-    private function getEndpointUrl(Server $server, ?int $allocationId, string $additionalUri = ''): string
-    {
-        $endpointUrl = sprintf(
-            'servers/%s/network/allocations',
-            $server->getPterodactylServerIdentifier(),
-        );
-
-        if (!empty($allocationId)) {
-            $endpointUrl = sprintf(
-                '%s/%d',
-                $endpointUrl,
-                $allocationId,
-            );
-        }
-
-        if (!empty($additionalUri)) {
-            $endpointUrl = sprintf(
-                '%s/%s',
-                $endpointUrl,
-                $additionalUri,
-            );
-        }
-
-        return $endpointUrl;
     }
 }

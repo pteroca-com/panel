@@ -11,7 +11,7 @@ use App\Core\Form\ProductPriceFixedFormType;
 use App\Core\Form\ProductPriceSlotFormType;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Crud\ProductCopyService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\ExperimentalFeatureMessageTrait;
 use App\Core\Trait\ProductCrudControllerTrait;
@@ -44,7 +44,7 @@ class ProductCrudController extends AbstractPanelController
 
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,

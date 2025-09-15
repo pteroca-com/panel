@@ -3,13 +3,11 @@
 namespace App\Core\Service\Server;
 
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerEggService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly TranslatorInterface $translator,
     )
@@ -19,6 +17,8 @@ class ServerEggService
     public function prepareEggsConfiguration(int $pterodactylServerId): string
     {
         $pterodactylServer = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->servers()
             ->getServer($pterodactylServerId, ['include' => 'variables'])
             ->toArray();
 
@@ -51,19 +51,20 @@ class ServerEggService
 
     public function prepareEggsDataByNest(int $nestId): array
     {
-        $eggs = $this->pterodactylService
-            ->getApi()
-            ->nest_eggs
+        $eggs = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->nestEggs()
             ->all($nestId, ['include' => 'variables'])
             ->toArray();
+
 
         $translations = $this->getEggsTranslations();
         $choices = [];
         $loadedEggs = [];
 
         foreach ($eggs as $egg) {
-            $choices[$egg->name] = $egg->id;
-            $loadedEggs[$egg->id] = $egg;
+            $choices[$egg['name']] = $egg['id'];
+            $loadedEggs[$egg['id']] = $egg;
         }
 
         return [

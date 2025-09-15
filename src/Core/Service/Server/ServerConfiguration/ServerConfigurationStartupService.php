@@ -19,6 +19,8 @@ class ServerConfigurationStartupService
     ): void
     {
         $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->servers()
             ->updateServerStartup(
                 $server->getPterodactylServerId(),
                 $startupPayload,

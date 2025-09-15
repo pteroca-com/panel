@@ -68,6 +68,8 @@ abstract class AbstractActionServerService
     protected function getPterodactylAccountLogin(UserInterface $user): ?string
     {
         return $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->users()
             ->getUser($user->getPterodactylUserId())?->get('username') ?? null;
     }
 }

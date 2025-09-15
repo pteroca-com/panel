@@ -16,7 +16,7 @@ class ServerEulaService
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly SettingService $settingService,
-        private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
     ) {
     }
@@ -26,8 +26,13 @@ class ServerEulaService
         try {
             $this->updateEulaFileContent($server, $user);
 
-            $api = $this->pterodactylClientService->getApi($user);
-            $api->servers->power($server->getPterodactylServerIdentifier(), 'restart');
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->servers()
+                ->sendPowerSignal(
+                    $server->getPterodactylServerIdentifier(),
+                    'restart'
+                );
 
             $this->serverLogService->logServerAction($user, $server, ServerLogActionEnum::ACCEPT_EULA);
 

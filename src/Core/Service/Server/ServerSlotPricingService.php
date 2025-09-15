@@ -7,14 +7,14 @@ use App\Core\Contract\ProductInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Service\Product\ProductPriceCalculatorService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use JsonException;
 use RuntimeException;
 
 class ServerSlotPricingService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ProductPriceCalculatorService $productPriceCalculatorService,
         private readonly ServerSlotConfigurationService $serverSlotConfigurationService,
     ) {}
@@ -28,13 +28,14 @@ class ServerSlotPricingService
             }
 
             $eggsConfiguration = json_decode($eggsConfigurationJson, true, 512, JSON_THROW_ON_ERROR);
-            
-            $pterodactylServer = $this->pterodactylService->getApi()
-                ->servers
-                ->get($server->getPterodactylServerId(), ['include' => 'variables']);
+
+            $pterodactylServer = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
+                ->getServer($server->getPterodactylServerId(), ['include' => 'variables']);
 
             $eggId = $pterodactylServer->get('egg');
-            $serverVariables = $pterodactylServer->get('relationships')['variables']?->toArray() ?? [];
+            $serverVariables = $pterodactylServer->get('relationships')['variables']->toArray() ?? [];
 
             if (!isset($eggsConfiguration[$eggId]['variables']) || empty($serverVariables)) {
                 $this->throwSlotException('Missing egg variables configuration or server variables');
@@ -47,8 +48,8 @@ class ServerSlotPricingService
             $slotVariableId = $slotVariable['id'];
 
             foreach ($serverVariables as $serverVariable) {
-                if (isset($serverVariable['attributes']['id']) && $serverVariable['attributes']['id'] == $slotVariableId) {
-                    return (int) $serverVariable['attributes']['server_value'];
+                if (isset($serverVariable['id']) && $serverVariable['id'] == $slotVariableId) {
+                    return (int) $serverVariable['server_value'];
                 }
             }
 

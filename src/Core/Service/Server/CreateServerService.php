@@ -3,7 +3,7 @@
 namespace App\Core\Service\Server;
 
 use App\Core\Contract\UserInterface;
-use App\Core\DTO\Pterodactyl\PterodactylServer;
+use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
 use App\Core\Entity\Product;
 use App\Core\Entity\ProductPrice;
 use App\Core\Entity\Server;
@@ -41,7 +41,7 @@ class CreateServerService extends AbstractActionServerService
         ProductPriceCalculatorService $productPriceCalculatorService,
         LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
+        parent::__construct($userRepository, $pterodactylApplicationService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
     }
 
     public function createServer(
@@ -112,6 +112,8 @@ class CreateServerService extends AbstractActionServerService
                 ->prepareServerBuild($product, $user, $eggId, $serverName, $slots);
 
             return $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
                 ->createServer($preparedServerBuild);
         } catch (ValidationException $exception) {
             $errors = array_map(

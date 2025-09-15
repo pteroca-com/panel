@@ -16,6 +16,8 @@ class AbstractServerConfiguration
     protected function getServerDetails(Server $server, array $include = []): array
     {
         $serverDetails = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->servers()
             ->getServer($server->getPterodactylServerId(), $include)
             ?->toArray();
 

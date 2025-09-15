@@ -9,12 +9,10 @@ use App\Core\Enum\ServerStateEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
 
 class ServerService
 {
     public function __construct(
-        private readonly PterodactylClientService $pterodactylClientService,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerRepository $serverRepository,
         private readonly ServerSubuserRepository $serverSubuserRepository,
@@ -25,12 +23,12 @@ class ServerService
         Server $server,
     ): ?ServerDetailsDTO
     {
-        $clientApi = $this->pterodactylClientService->getApi($user);
+        $clientApi = $this->pterodactylApplicationService
+            ->getClientApi($user);
 
         if (false === $server->getIsSuspended()) {
-            $serverState = $clientApi->servers->http->get(
-                sprintf('servers/%s/resources', $server->getPterodactylServerIdentifier()),
-            )?->get('current_state');
+            $serverState = $clientApi->servers()
+                ->getServerResources($server->getPterodactylServerIdentifier())['current_state'] ?? null;
         } else {
             $serverState = ServerStateEnum::SUSPENDED->value;
         }
@@ -52,10 +50,13 @@ class ServerService
     public function getServerDetails(Server $server, ?object $pterodactylServer = null): ?ServerDetailsDTO
     {
         if (empty($pterodactylServer)) {
-            $pterodactylServer = $this->pterodactylApplicationService->getServer(
-                $server->getPterodactylServerId(),
-                ['allocations', 'egg'],
-            );
+            $pterodactylServer = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
+                ->getServer(
+                    $server->getPterodactylServerId(),
+                    ['allocations', 'egg'],
+                );
         }
 
         if (!$pterodactylServer->has('relationships')) {
@@ -66,7 +67,7 @@ class ServerService
         $primaryId = $pterodactylServer->get('allocation') ?? null;
         $primary = null;
 
-        foreach ($allocations->toArray() as $a) {
+        foreach ($allocations as $a) {
             if ($a->get('id') === $primaryId) {
                 $primary = $a;
                 break;
@@ -82,7 +83,6 @@ class ServerService
             return null;
         }
 
-        $primary = $primary->toArray();
         $host = $primary['alias'] ?? $primary['ip'] ?? null;
         $port = $primary['port'] ?? null;
 

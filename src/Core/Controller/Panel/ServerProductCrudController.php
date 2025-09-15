@@ -11,8 +11,7 @@ use App\Core\Form\ServerProductPriceFixedFormType;
 use App\Core\Form\ServerProductPriceSlotFormType;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Service\Crud\PanelCrudService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
@@ -51,8 +50,7 @@ class ServerProductCrudController extends AbstractPanelController
 
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly PterodactylService $pterodactylService,
-        private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly UpdateServerService $updateServerService,
         private readonly SettingService $settingService,
         private readonly ServerProductRepository $serverProductRepository,
@@ -226,11 +224,11 @@ class ServerProductCrudController extends AbstractPanelController
         try {
             $entityId = $context->getRequest()->get('entityId');
             $serverProduct = $this->serverProductRepository->find($entityId);
-            $pterodactylServerResources = $this->pterodactylClientService
-                ->getApi($serverProduct->getServer()->getUser())
-                ->servers
-                ->resources($serverProduct->getServer()->getPterodactylServerIdentifier());
-            $this->isServerOffline = $pterodactylServerResources->get('current_state') !== 'running';
+            $pterodactylServerResources = $this->pterodactylApplicationService
+                ->getClientApi($serverProduct->getServer()->getUser())
+                ->servers()
+                ->getServerResources($serverProduct->getServer()->getPterodactylServerIdentifier());
+            $this->isServerOffline = $pterodactylServerResources['current_state'] !== 'running';
         } catch (\Exception $exception) {
             $this->isServerOffline = true;
         }

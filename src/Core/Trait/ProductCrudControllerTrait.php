@@ -11,18 +11,22 @@ trait ProductCrudControllerTrait
     private function getNodesChoices(): array
     {
         try {
-            $nodes = $this->pterodactylService->getApi()->nodes->all()->toArray();
+            $nodes = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->nodes()
+                ->getAllNodes()
+                ->toArray();
             $locations = [];
             $choices = [];
 
             foreach ($nodes as $node) {
-                if (empty($locations[$node->location_id])) {
-                    $locations[$node->location_id] = $this->pterodactylService
-                        ->getApi()
-                        ->locations
-                        ->get($node->location_id);
+                if (empty($locations[$node['location_id']])) {
+                    $locations[$node['location_id']] = $this->pterodactylApplicationService
+                        ->getApplicationApi()
+                        ->locations()
+                        ->get($node['location_id']);
                 }
-                $choices[$locations[$node->location_id]->short][$node->name] = $node->id;
+                $choices[$locations[$node['location_id']]['short']][$node['name']] = $node['id'];
             }
 
             return $choices;
@@ -35,11 +39,15 @@ trait ProductCrudControllerTrait
     private function getNestsChoices(): array
     {
         try {
-            $nests = $this->pterodactylService->getApi()->nests->all()->toArray();
+            $nests = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->nests()
+                ->all()
+                ->toArray();
             $choices = [];
 
             foreach ($nests as $nest) {
-                $choices[$nest->name] = $nest->id;
+                $choices[$nest['name']] = $nest['id'];
             }
 
             return $choices;
@@ -54,9 +62,14 @@ trait ProductCrudControllerTrait
         try {
             $choices = [];
             foreach ($nests as $nestId) {
-                $eggs = $this->pterodactylService->getApi()->nest_eggs->all($nestId)->toArray();
+                $eggs = $this->pterodactylApplicationService
+                    ->getApplicationApi()
+                    ->nestEggs()
+                    ->all($nestId)
+                    ->toArray();
+
                 foreach ($eggs as $egg) {
-                    $choices[$egg->name] = $egg->id;
+                    $choices[$egg['name']] = $egg['id'];
                 }
             }
 

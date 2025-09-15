@@ -2,17 +2,17 @@
 
 namespace App\Core\Service\Server;
 
+use App\Core\Contract\Pterodactyl\Client\PterodactylClientAdapterInterface;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
-use Timdesm\PterodactylPhpApi\PterodactylApi;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class ServerBackupService
 {
     public function __construct(
-        private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
     ) {}
 
@@ -29,12 +29,9 @@ class ServerBackupService
         }
 
         $createdBackup = $this->getPterodactylClientApi($user)
-            ->server_backups
-            ->create($server->getPterodactylServerIdentifier(), [
-                'name' => $backupName,
-                'is_locked' => $isLocked,
-                'ignored' => $ignoredFiles ?? '',
-            ])->toArray();
+            ->backups()
+            ->createBackup($server, $backupName, $ignoredFiles, $isLocked)
+            ->toArray();
 
         $this->serverLogService->logServerAction(
             $user,
@@ -55,16 +52,9 @@ class ServerBackupService
         string $backupId,
     ): string
     {
-        $endpointUrl = sprintf(
-            'servers/%s/backups/%s/download',
-            $server->getPterodactylServerIdentifier(), $backupId
-        );
-
         $downloadUrl = $this->getPterodactylClientApi($user)
-            ->server_backups
-            ->http
-            ->get($endpointUrl)
-            ->toArray()['url'] ?? null;
+            ->backups()
+            ->getBackupDownloadUrl($server, $backupId)['url'] ?? null;
 
         if (empty($downloadUrl)) {
             throw new \RuntimeException('Failed to get backup download URL');
@@ -89,8 +79,8 @@ class ServerBackupService
     ): string
     {
         $deletedBackup = $this->getPterodactylClientApi($user)
-            ->server_backups
-            ->delete($server->getPterodactylServerIdentifier(), $backupId, []);
+            ->backups()
+            ->deleteBackup($server, $backupId);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -111,17 +101,9 @@ class ServerBackupService
         bool $truncate = false,
     ): void
     {
-        $endpointUrl = sprintf(
-            'servers/%s/backups/%s/restore',
-            $server->getPterodactylServerIdentifier(), $backupId
-        );
-
-        $requestData['truncate'] = $truncate;
-
         $this->getPterodactylClientApi($user)
-            ->server_backups
-            ->http
-            ->post($endpointUrl, $requestData);
+            ->backups()
+            ->restoreBackup($server, $backupId, $truncate);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -134,9 +116,9 @@ class ServerBackupService
         );
     }
 
-    private function getPterodactylClientApi(UserInterface $user): PterodactylApi
+    private function getPterodactylClientApi(UserInterface $user): PterodactylClientAdapterInterface
     {
-        return $this->pterodactylClientService
-            ->getApi($user);
+        return $this->pterodactylApplicationService
+            ->getClientApi($user);
     }
 }

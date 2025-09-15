@@ -40,7 +40,6 @@
         "symfony/serializer": "^7.0",
         "symfony/ux-twig-component": "^2.22",
         "symfony/yaml": "^7.0",
-        "timdesm/pterodactyl-php-api": "^1.2",
         "vich/uploader-bundle": "^2.4"
     },
     "config": {

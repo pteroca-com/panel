@@ -13,7 +13,6 @@ use App\Core\Repository\CategoryRepository;
 use App\Core\Repository\ProductRepository;
 use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\ServerSlotConfigurationService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -23,7 +22,6 @@ class StoreService
     public function __construct(
         private readonly CategoryRepository $categoryRepository,
         private readonly ProductRepository $productRepository,
-        private readonly PterodactylService $pterodactylService,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly TranslatorInterface $translator,
         private readonly ProductPriceCalculatorService $productPriceCalculatorService,
@@ -91,19 +89,21 @@ class StoreService
 
     public function getProductEggs(Product $product): array
     {
-        $eggs = $this->pterodactylService
-            ->getApi()
-            ->nest_eggs
+        $eggs = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->nestEggs()
             ->all($product->getNest())
             ->toArray();
 
-        return array_filter($eggs, fn($egg) => in_array($egg->id, $product->getEggs()));
+        return array_filter($eggs, fn($egg) => in_array($egg['id'], $product->getEggs()));
     }
 
     public function productHasNodeWithResources(Product $product): bool
     {
         foreach ($product->getNodes() as $node) {
             $node = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->nodes()
                 ->getNode($node)
                 ->toArray();
 

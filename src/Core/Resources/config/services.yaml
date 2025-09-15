@@ -56,9 +56,20 @@ services:
     tags:
       - { name: 'twig.loader', priority: 1 }
 
-  App\Core\Contract\Pterodactyl\PterodactylAdapterInterface:
-    alias: App\Core\Adapter\Pterodactyl\PterodactylAdapter
+  App\Core\Contract\Pterodactyl\Application\PterodactylAdapterInterface:
+    alias: App\Core\Adapter\Pterodactyl\Application\PterodactylAdapter
 
-  App\Core\Adapter\Pterodactyl\PterodactylAdapter:
+  App\Core\Contract\Pterodactyl\Client\PterodactylClientAdapterInterface:
+    alias: App\Core\Adapter\Pterodactyl\Client\PterodactylClientAdapter
+
+  App\Core\Adapter\Pterodactyl\Application\PterodactylAdapter:
     autowire: true
 
+  App\Core\Adapter\Pterodactyl\Client\PterodactylClientAdapter:
+    autowire: true
+
+  App\Core\Contract\Pterodactyl\Client\PterodactylAccountInterface:
+    alias: App\Core\Adapter\Pterodactyl\Client\PterodactylAccount
+
+  App\Core\Contract\Pterodactyl\Client\PterodactylServersInterface:
+    alias: App\Core\Adapter\Pterodactyl\Client\PterodactylServers

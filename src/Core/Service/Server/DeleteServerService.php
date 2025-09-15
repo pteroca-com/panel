@@ -20,7 +20,10 @@ class DeleteServerService
     public function deleteServer(Server $entityInstance): void
     {
         try {
-            $this->pterodactylApplicationService->deleteServer($entityInstance->getPterodactylServerId());
+            $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
+                ->deleteServer($entityInstance->getPterodactylServerId());
         } catch (\Exception $e) {
             $this->logger->error('Failed to delete pterodactyl server during deleting entity', [
                 'exception' => $e,

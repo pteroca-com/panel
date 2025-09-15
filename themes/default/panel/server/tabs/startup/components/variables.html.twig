@@ -1,35 +1,35 @@
 {% block main %}
-    {% if serverData.pterodactylServer.relationships.variables.toArray()|length > 0 %}
+    {% if serverData.pterodactylServer.relationships.variables|length > 0 %}
         <div class="row mt-3">
             <div class="col-12">
                 <h3 class="mb-4">{{ 'pteroca.server.variables'|trans }}</h3>
             </div>
-            {% for key, variable in serverData.pterodactylServer.relationships.variables.toArray() %}
-                {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_viewable is defined or isAdminView %}
+            {% for key, variable in serverData.pterodactylServer.relationships.variables %}
+                {% if serverData.productEggConfiguration.variables[variable.id].user_viewable is defined or isAdminView %}
                     <div class="col-12 col-xl-6">
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="card-title">
-                                    {{ variable.attributes.name }}
-                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ variable.attributes.description }}"><i class="fas fa-xs fa-info-circle"></i></span>
-                                    {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined %}
+                                    {{ variable.name }}
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ variable.description }}"><i class="fas fa-xs fa-info-circle"></i></span>
+                                    {% if serverData.productEggConfiguration.variables[variable.id].user_editable is not defined %}
                                         <span class="badge bg-secondary text-white">{{ 'pteroca.server.read_only'|trans }}</span>
                                     {% endif %}
                                     {% if isAdminView %}
                                         <span class="badge bg-warning text-white">{{ 'pteroca.server.admin_view'|trans }}</span>
                                     {% endif %}
-                                    {% if not server.isSuspended and (serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is defined or isAdminView) and hasServerPermission(serverData.serverPermissions, 'startup.update') %}
-                                        <a class="float-end hover-pointer" onclick="toggleSetting('{{ variable.attributes.env_variable }}')">
-                                            <i class="fas fa-edit text-white" data-option-name="{{ variable.attributes.env_variable }}"></i>
+                                    {% if not server.isSuspended and (serverData.productEggConfiguration.variables[variable.id].user_editable is defined or isAdminView) and hasServerPermission(serverData.serverPermissions, 'startup.update') %}
+                                        <a class="float-end hover-pointer" onclick="toggleSetting('{{ variable.env_variable }}')">
+                                            <i class="fas fa-edit text-white" data-option-name="{{ variable.env_variable }}"></i>
                                         </a>
                                     {% endif %}
                                 </h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    {% set serverVariable = serverData.serverVariables.getByEnvVariable(variable.attributes.env_variable) %}
+                                    {% set serverVariable = serverData.serverVariables.getByEnvVariable(variable.env_variable) %}
                                     {% if serverVariable.rules|length > 0 %}
-                                        <div class="col-12 mb-3 d-none server-variables" data-option-name="{{ variable.attributes.env_variable }}">
+                                        <div class="col-12 mb-3 d-none server-variables" data-option-name="{{ variable.env_variable }}">
                                             <code>
                                                 <span class="badge badge-dark bg-dark bg-opacity-25 text-dark p-1">{{ 'pteroca.server.rules'|trans }}:</span>
                                                 {% for rule in serverVariable.rules %}
@@ -40,7 +40,7 @@
                                     {% endif %}
                                     <div class="col-12">
                                         <div class="form-widget">
-                                            <input type="text" class="form-control" data-option-name="{{ variable.attributes.env_variable }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.attributes.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                            <input type="text" class="form-control" data-option-name="{{ variable.env_variable }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
                                         </div>
                                     </div>
                                 </div>

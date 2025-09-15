@@ -2,16 +2,15 @@
 
 namespace App\Core\DTO\Pterodactyl;
 
+use App\Core\Contract\Pterodactyl\MetaAccessInterface;
 use ArrayAccess;
 
-class Collection implements ArrayAccess
+class Collection implements ArrayAccess, MetaAccessInterface
 {
-    protected array $data;
-
-    public function __construct(array $data = [])
-    {
-        // Collection zawsze przechowuje tablicę elementów
-        $this->data = $data;
+    public function __construct(
+        protected array $data = [],
+        protected array $meta = [],
+    ) {
     }
 
     public function all(): array
@@ -21,7 +20,35 @@ class Collection implements ArrayAccess
 
     public function toArray(): array
     {
-        return $this->data;
+        $result = [];
+        foreach ($this->data as $key => $value) {
+            $result[$key] = $this->convertValue($value);
+        }
+        return $result;
+    }
+
+    /**
+     * Konwertuje pojedynczą wartość, obsługując zagnieżdżone obiekty
+     */
+    private function convertValue($value)
+    {
+        if ($value instanceof Resource) {
+            return $value->toArray();
+        }
+
+        if ($value instanceof Collection) {
+            return $value->toArray();
+        }
+
+        if (is_array($value)) {
+            $result = [];
+            foreach ($value as $key => $item) {
+                $result[$key] = $this->convertValue($item);
+            }
+            return $result;
+        }
+
+        return $value;
     }
 
     public function get(int $index)
@@ -77,5 +104,10 @@ class Collection implements ArrayAccess
     public function offsetUnset($offset): void
     {
         unset($this->data[$offset]);
+    }
+
+    public function getMeta(): array
+    {
+        return $this->meta;
     }
 }

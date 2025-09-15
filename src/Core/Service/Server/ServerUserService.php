@@ -12,14 +12,12 @@ use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\SettingService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerUserService
 {
     public function __construct(
-        private readonly PterodactylClientService $pterodactylClientService,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
         private readonly ServerSubuserRepository $serverSubuserRepository,
@@ -30,10 +28,10 @@ class ServerUserService
 
     public function getAllSubusers(Server $server, UserInterface $user): array
     {
-        return $this->pterodactylClientService
-            ->getApi($user)
-            ->http
-            ->get(sprintf('servers/%s/users', $server->getPterodactylServerIdentifier()))
+        return $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->users()
+            ->getUsers($server->getPterodactylServerIdentifier())
             ->toArray();
     }
 
@@ -44,10 +42,14 @@ class ServerUserService
         array $permissions = []
     ): array
     {
-        $pterodactylClientApi = $this->pterodactylClientService->getApi($user);
+        $pterodactylClientApi = $this->pterodactylApplicationService
+            ->getClientApi($user);
 
         try {
-            $existingPterodactylUsers = $this->pterodactylApplicationService->getAllUsers(['filter[email]' => $email]);
+            $existingPterodactylUsers = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->users()
+                ->getAllUsers(['filter[email]' => $email]);
             $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
 
             if (count($existingPterodactylUsers->toArray()) === 0 || !$existingPterocaUser) {
@@ -66,10 +68,8 @@ class ServerUserService
                 }
             }
 
-            $result = $pterodactylClientApi->http->post(sprintf('servers/%s/users', $server->getPterodactylServerIdentifier()), [
-                'email' => $email,
-                'permissions' => $permissions,
-            ]);
+            $result = $pterodactylClientApi->users()
+                ->createUser($server->getPterodactylServerIdentifier(), $email, $permissions);
 
             $this->syncServerSubuser($server, $existingPterocaUser, $permissions);
 
@@ -116,12 +116,10 @@ class ServerUserService
 
         $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.modify_permissions'));
 
-        $result = $this->pterodactylClientService
-            ->getApi($user)
-            ->http
-            ->post(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid), [
-                'permissions' => $permissions,
-            ]);
+        $result = $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->users()
+            ->updateUserPermissions($server->getPterodactylServerIdentifier(), $subuserUuid, $permissions);
 
         $this->syncServerSubuser($server, $existingPterocaUser, $permissions);
 
@@ -154,10 +152,10 @@ class ServerUserService
 
         $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.delete_yourself_from_server'));
 
-        $this->pterodactylClientService
-            ->getApi($user)
-            ->http
-            ->delete(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid));
+        $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->users()
+            ->deleteUser($server->getPterodactylServerIdentifier(), $subuserUuid);
 
         $existingSubuser = $this->serverSubuserRepository->findSubuserByServerAndUser($server, $existingPterocaUser);
         if ($existingSubuser) {
@@ -181,10 +179,10 @@ class ServerUserService
         string $subuserUuid
     ): array
     {
-        return $this->pterodactylClientService
-            ->getApi($user)
-            ->http
-            ->get(sprintf('servers/%s/users/%s', $server->getPterodactylServerIdentifier(), $subuserUuid))
+        return $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->users()
+            ->getUser($server->getPterodactylServerIdentifier(), $subuserUuid)
             ->toArray();
     }
 

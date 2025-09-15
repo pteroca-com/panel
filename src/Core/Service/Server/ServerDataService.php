@@ -4,7 +4,7 @@ namespace App\Core\Service\Server;
 
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\Collection\ServerVariableCollection;
-use App\Core\DTO\Pterodactyl\PterodactylServer;
+use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
 use App\Core\DTO\ServerDataDTO;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
@@ -14,7 +14,6 @@ use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\ServerPermissionsTrait;
 use Exception;
@@ -26,7 +25,6 @@ class ServerDataService
 
     public function __construct(
         private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerNestService $serverNestService,
         private readonly ServerService $serverService,
         private readonly ServerVariableFactory $serverVariableFactory,
@@ -40,6 +38,8 @@ class ServerDataService
     public function getServerData(Server $server, UserInterface $user, int $currentPage): ServerDataDTO
     {
         $pterodactylServer = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->servers()
             ->getServer($server->getPterodactylServerId(), [
                 'variables', 'egg', 'databases', 'subusers',
             ]);
@@ -64,21 +64,17 @@ class ServerDataService
         $permissions = $this->getServerPermissions($pterodactylServer, $server, $user);
 
         try {
-            $pterodactylClientApi = $this->pterodactylClientService
-                ->getApi($user);
+            $pterodactylClientApi = $this->pterodactylApplicationService
+                ->getClientApi($user);
         } catch (UserDoesNotHaveClientApiKeyException $e) {
             $pterodactylClientApi = null;
         }
 
         if ($permissions->hasPermission(ServerPermissionEnum::ALLOCATION_READ)) {
             try {
-                $allocatedPorts = $pterodactylClientApi->servers
-                    ->http
-                    ->get(sprintf('servers/%s/network/allocations', $server->getPterodactylServerIdentifier()))
+                $allocatedPorts = $pterodactylClientApi->network()
+                    ->getAllocations($server->getPterodactylServerIdentifier())
                     ->toArray();
-                $allocatedPorts = array_map(function ($allocation) {
-                    return $allocation->toArray();
-                }, $allocatedPorts);
             } catch (Exception $exception) {
                 $this->logger->error('Failed to get allocated ports for server', [
                     'server_id' => $server->getId(),
@@ -90,11 +86,11 @@ class ServerDataService
         }
 
         $pterodactylClientServer = $pterodactylClientApi
-            ?->servers
-            ->get($server->getPterodactylServerIdentifier());
+            ?->servers()
+            ->getServer($server->getPterodactylServerIdentifier());
         $pterodactylClientAccount = $pterodactylClientApi
-            ?->account
-            ->details();
+            ?->account()
+            ->getAccount();
         $productEggsConfiguration = $server->getServerProduct()->getEggsConfiguration();
 
         try {
@@ -131,9 +127,8 @@ class ServerDataService
         if ($server->getServerProduct()->getBackups() && $permissions->hasPermission(ServerPermissionEnum::BACKUP_READ)) {
             try {
                 $serverBackups = $pterodactylClientApi
-                    ->server_backups
-                    ->http
-                    ->get(sprintf('servers/%s/backups', $server->getPterodactylServerIdentifier()))
+                    ->backups()
+                    ->getBackups($server->getPterodactylServerIdentifier())
                     ->toArray();
             } catch (Exception $exception) {
                 $this->logger->error('Failed to get server backups', [
@@ -146,12 +141,9 @@ class ServerDataService
         }
 
         if ($permissions->hasPermission(ServerPermissionEnum::USER_READ)) {
-            $subusers = $pterodactylClientApi->servers
-                ->http
-                ->get(sprintf(
-                    'servers/%s/users',
-                    $server->getPterodactylServerIdentifier(),
-                ))
+            $subusers = $pterodactylClientApi
+                ->users()
+                ->getUsers($server->getPterodactylServerIdentifier())
                 ->toArray();
         }
 
@@ -161,12 +153,9 @@ class ServerDataService
             $showPterodactylLogs = (bool)$this->settingService->getSetting(SettingEnum::SHOW_PTERODACTYL_LOGS_IN_SERVER_ACTIVITY->value);
 
             if ($showPterodactylLogs) {
-                $pterodactylActivityLogs = $pterodactylClientApi->servers
-                    ->http
-                    ->get(sprintf(
-                        'servers/%s/activity',
-                        $server->getPterodactylServerIdentifier(),
-                    ))->toArray();
+                $pterodactylActivityLogs = $pterodactylClientApi->servers()
+                    ->getServerActivity($server->getPterodactylServerIdentifier())
+                    ->toArray();
             }
 
             $activityLogs = $this->serverLogService->getServerLogsWithPagination(
@@ -178,10 +167,8 @@ class ServerDataService
 
         if ($permissions->hasPermission(ServerPermissionEnum::SCHEDULE_READ)) {
             try {
-                $serverSchedules = $pterodactylClientApi
-                    ->servers
-                    ->http
-                    ->get(sprintf('servers/%s/schedules', $server->getPterodactylServerIdentifier()))
+                $serverSchedules = $pterodactylClientApi->schedules()
+                    ->getSchedules($server->getPterodactylServerIdentifier())
                     ->toArray();
                 $serverSchedules = array_map(function ($schedule) {
                     return $schedule->toArray();

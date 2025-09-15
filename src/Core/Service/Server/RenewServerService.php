@@ -14,7 +14,6 @@ use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -24,7 +23,6 @@ class RenewServerService extends AbstractActionServerService
 {
     public function __construct(
         private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly PterodactylClientService $pterodactylClientService,
         private readonly ServerRepository $serverRepository,
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
         private readonly EmailNotificationService $emailNotificationService,
@@ -36,7 +34,7 @@ class RenewServerService extends AbstractActionServerService
         TranslatorInterface $translator,
         LoggerInterface $logger,
     ) {
-        parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
+        parent::__construct($userRepository, $pterodactylApplicationService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
     }
 
     public function renewServer(
@@ -69,10 +67,10 @@ class RenewServerService extends AbstractActionServerService
         
         if ($selectedPrice->getType() === ProductPriceTypeEnum::ON_DEMAND) {
             try {
-                $pterodactylClientApi = $this->pterodactylClientService
-                    ->getApi($user);
-                $serverResources = $pterodactylClientApi->servers
-                    ->resources($server->getPterodactylServerIdentifier());
+                $pterodactylClientApi = $this->pterodactylApplicationService
+                    ->getClientApi($user);
+                $serverResources = $pterodactylClientApi->servers()
+                    ->getServerResources($server->getPterodactylServerIdentifier());
             } catch (Exception) {
                 $serverResources = null;
             }
@@ -86,7 +84,10 @@ class RenewServerService extends AbstractActionServerService
         $expirationDateModifier = sprintf('+%d %s', $selectedPrice->getValue(), $selectedPrice->getUnit()->value);
         $server->setExpiresAt($currentExpirationDate->modify($expirationDateModifier));
         if ($server->getIsSuspended()) {
-            $this->pterodactylApplicationService->unsuspendServer($server->getPterodactylServerId());
+            $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
+                ->unsuspendServer($server->getPterodactylServerId());
             $server->setIsSuspended(false);
         }
 

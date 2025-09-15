@@ -6,12 +6,12 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class ServerDatabaseService
 {
     public function __construct(
-        private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
     ) {}
 
@@ -20,13 +20,10 @@ class ServerDatabaseService
         UserInterface $user,
     ): array
     {
-        return $this->pterodactylClientService
-            ->getApi($user)
-            ->server_databases
-            ->http
-            ->get("servers/{$server->getPterodactylServerIdentifier()}/databases", [
-                'include' => 'password'
-            ])
+        return $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->databases()
+            ->getDatabases($server->getPterodactylServerIdentifier(), ['include' => 'password'])
             ->toArray();
     }
 
@@ -41,12 +38,15 @@ class ServerDatabaseService
             $connectionsFrom = '%';
         }
 
-        $pterodactylClientApi = $this->pterodactylClientService->getApi($user);
+        $pterodactylClientApi = $this->pterodactylApplicationService
+            ->getClientApi($user);
 
-        $pterodactylClientApi->server_databases->create($server->getPterodactylServerIdentifier(), [
-            'database' => $databaseName,
-            'remote' => $connectionsFrom,
-        ]);
+        $pterodactylClientApi->databases()
+            ->createDatabase(
+                $server->getPterodactylServerIdentifier(),
+                $databaseName,
+                $connectionsFrom
+            );
 
         $this->serverLogService->logServerAction(
             $user,
@@ -65,10 +65,10 @@ class ServerDatabaseService
         int $databaseId,
     ): void
     {
-        $this->pterodactylClientService
-            ->getApi($user)
-            ->server_databases
-            ->delete($server->getPterodactylServerIdentifier(), $databaseId);
+        $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->databases()
+            ->deleteDatabase($server->getPterodactylServerIdentifier(), $databaseId);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -86,11 +86,10 @@ class ServerDatabaseService
         string $databaseId,
     ): array
     {
-        $rotatedPassword = $this->pterodactylClientService
-            ->getApi($user)
-            ->server_databases
-            ->http
-            ->post("servers/{$server->getPterodactylServerIdentifier()}/databases/$databaseId/rotate-password")
+        $rotatedPassword = $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->databases()
+            ->rotatePassword($server->getPterodactylServerIdentifier(), $databaseId)
             ->toArray();
 
         $this->serverLogService->logServerAction(

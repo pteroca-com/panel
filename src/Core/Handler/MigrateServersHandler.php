@@ -256,9 +256,12 @@ class MigrateServersHandler implements HandlerInterface
     private function getPterodactylServers(): array
     {
         $this->io->section('Fetching servers from Pterodactyl...');
-        $servers = $this->pterodactylApplicationService->allServers([
-            'per_page' => $this->limit,
-        ]);
+        $servers = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->servers()
+            ->all([
+                'per_page' => $this->limit,
+            ]);
         $this->io->info(sprintf('Fetched %d servers from Pterodactyl', count($servers->toArray())));
 
         return $servers->toArray();
@@ -268,6 +271,8 @@ class MigrateServersHandler implements HandlerInterface
     {
         $this->io->section('Fetching users from Pterodactyl...');
         $users = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->users()
             ->getAllUsers([
                 'per_page' => $this->limit,
             ]);

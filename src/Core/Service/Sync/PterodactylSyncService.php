@@ -17,9 +17,12 @@ class PterodactylSyncService
     {
         $this->logger->info('Fetching existing servers from Pterodactyl');
 
-        $pterodactylServers = $this->pterodactylApplicationService->allServers([
-            'per_page' => $limit,
-        ]);
+        $pterodactylServers = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->servers()
+            ->all([
+                'per_page' => $limit,
+            ]);
         
         $existingServerIds = [];
         foreach ($pterodactylServers as $server) {

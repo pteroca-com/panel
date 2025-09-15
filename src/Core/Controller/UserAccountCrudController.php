@@ -156,6 +156,8 @@ class UserAccountCrudController extends AbstractPanelController
             }
 
             $pterodactylAccount = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->users()
                 ->getUser($entityInstance->getPterodactylUserId());
             if (!empty($pterodactylAccount->username)) {
                 $pterodactylAccountDetails = [
@@ -167,10 +169,13 @@ class UserAccountCrudController extends AbstractPanelController
                 if ($plainPassword) {
                     $pterodactylAccountDetails['password'] = $plainPassword;
                 }
-                $this->pterodactylApplicationService->updateUser(
-                    $entityInstance->getPterodactylUserId(),
-                    $pterodactylAccountDetails
-                );
+                $this->pterodactylApplicationService
+                    ->getApplicationApi()
+                    ->users()
+                    ->updateUser(
+                        $entityInstance->getPterodactylUserId(),
+                        $pterodactylAccountDetails
+                    );
             }
         }
 

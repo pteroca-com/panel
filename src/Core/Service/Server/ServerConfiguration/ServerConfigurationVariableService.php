@@ -6,14 +6,12 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
 class ServerConfigurationVariableService extends AbstractServerConfiguration
 {
     public function __construct(
-        private readonly PterodactylClientService $pterodactylClientService,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
     ) {
         parent::__construct($this->pterodactylApplicationService);
@@ -30,28 +28,24 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         $serverVariable = $this->getServerVariable($serverDetails, $variableKey);
         $this->validateVariable($server, $serverDetails, $serverVariable, $variableValue, $user);
 
-        $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->put("servers/{$server->getPterodactylServerIdentifier()}/startup/variable", [], [
-                'key' => $variableKey,
-                'value' => $variableValue,
-            ]);
+        $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->servers()
+            ->updateServerStartupVariable($server, $variableKey, $variableValue);
     }
 
     private function getServerVariable(array $serverDetails, string $variableKey): array
     {
-        $serverVariables = $serverDetails['relationships']['variables']->toArray();
+        $serverVariables = $serverDetails['relationships']['variables'];
         $foundVariable = current(array_filter($serverVariables, function ($variable) use ($variableKey) {
-            return $variable['attributes']['env_variable'] === $variableKey;
+            return $variable['env_variable'] === $variableKey;
         }));
 
-        if (empty($foundVariable['attributes'])) {
+        if (empty($foundVariable)) {
             throw new \Exception('Variable not found');
         }
 
-        return $foundVariable['attributes'];
+        return $foundVariable;
     }
 
     private function isVariableEditableForUser(Server $server, array $serverDetails, array $serverVariable, UserInterface $user): bool

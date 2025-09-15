@@ -3,7 +3,7 @@
 namespace App\Core\Service\Pterodactyl;
 
 use App\Core\Contract\UserInterface;
-use App\Core\DTO\Pterodactyl\PterodactylUser;
+use App\Core\DTO\Pterodactyl\Application\PterodactylUser;
 use App\Core\Exception\PterodactylAccountEmailAlreadyExists;
 use Exception;
 
@@ -21,13 +21,16 @@ class PterodactylAccountService
     public function createPterodactylAccount(UserInterface $user, string $plainPassword): PterodactylUser
     {
        try {
-           return $this->pterodactylApplicationService->createUser([
-               'email' => $user->getEmail(),
-               'username' => $this->usernameService->generateUsername($user->getEmail()),
-               'first_name' => $user->getName(),
-               'last_name' => $user->getSurname(),
-               'password' => $plainPassword,
-           ]);
+           return $this->pterodactylApplicationService
+               ->getApplicationApi()
+               ->users()
+               ->createUser([
+                   'email' => $user->getEmail(),
+                   'username' => $this->usernameService->generateUsername($user->getEmail()),
+                   'first_name' => $user->getName(),
+                   'last_name' => $user->getSurname(),
+                   'password' => $plainPassword,
+               ]);
        } catch (Exception $e) {
            $deepErrors = $e->errors['errors'] ?? [];
            $errors = array_map(fn($error) => $error['detail'], $deepErrors);
@@ -53,14 +56,21 @@ class PterodactylAccountService
     public function updatePterodactylAccountPassword(UserInterface $user, string $plainPassword): PterodactylUser
     {
         try {
-            $currentPterodactylUser = $this->pterodactylApplicationService->getUser($user->getPterodactylUserId());
-            return $this->pterodactylApplicationService->updateUser($user->getPterodactylUserId(), [
-                'email' => $currentPterodactylUser->get('email'),
-                'username' => $currentPterodactylUser->get('username'),
-                'first_name' => $currentPterodactylUser->get('first_name'),
-                'last_name' => $currentPterodactylUser->get('last_name'),
-                'password' => $plainPassword,
-            ]);
+            $currentPterodactylUser = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->users()
+                ->getUser($user->getPterodactylUserId());
+
+            return $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->users()
+                ->updateUser($user->getPterodactylUserId(), [
+                    'email' => $currentPterodactylUser->get('email'),
+                    'username' => $currentPterodactylUser->get('username'),
+                    'first_name' => $currentPterodactylUser->get('first_name'),
+                    'last_name' => $currentPterodactylUser->get('last_name'),
+                    'password' => $plainPassword,
+                ]);
         } catch (Exception $e) {
             throw new Exception(sprintf('Error while updating user password: %s', $e->getMessage()));
         }
@@ -69,6 +79,8 @@ class PterodactylAccountService
     public function deletePterodactylAccount(UserInterface $user): void
     {
         $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->users()
             ->deleteUser($user->getPterodactylUserId());
     }
 }

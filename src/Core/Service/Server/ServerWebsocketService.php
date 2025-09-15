@@ -5,13 +5,13 @@ namespace App\Core\Service\Server;
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\ServerWebsocketDTO;
 use App\Core\Entity\Server;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Psr\Log\LoggerInterface;
 
 class ServerWebsocketService
 {
     public function __construct(
-        private readonly PterodactylClientService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly LoggerInterface $logger,
     ) {}
 
@@ -22,10 +22,10 @@ class ServerWebsocketService
         }
 
         try {
-            $websocketData = $this->pterodactylService
-                ->getApi($user)
-                ->servers
-                ->websocket($server->getPterodactylServerIdentifier());
+            $websocketData = $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->servers()
+                ->getWebSocketToken($server->getPterodactylServerIdentifier());
         } catch (\Exception $e) {
             $this->logger->error('Failed to get websocket token for server', [
                 'server_id' => $server->getId(),
@@ -37,8 +37,8 @@ class ServerWebsocketService
         }
 
         return new ServerWebsocketDTO(
-            $websocketData['data']['token'],
-            $websocketData['data']['socket'],
+            $websocketData['token'],
+            $websocketData['socket'],
             $server,
         );
     }

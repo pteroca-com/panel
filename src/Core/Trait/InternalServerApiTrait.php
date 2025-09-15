@@ -23,6 +23,8 @@ trait InternalServerApiTrait
 
         try {
             $pterodactylServer = $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
                 ->getServer($server->getPterodactylServerId(), [
                     'subusers'
                 ]);

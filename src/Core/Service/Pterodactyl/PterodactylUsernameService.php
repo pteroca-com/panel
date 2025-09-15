@@ -15,7 +15,10 @@ class PterodactylUsernameService
             $username = explode('+', $username)[0];
         }
 
-        $user = $this->pterodactylApplicationService->getAllUsers(['filter' => ['username' => $username]]);
+        $user = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->users()
+            ->getAllUsers(['filter' => ['username' => $username]]);
         $user = current($user);
 
         if (!empty($user)) {

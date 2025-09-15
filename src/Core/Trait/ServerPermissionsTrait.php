@@ -4,7 +4,7 @@ namespace App\Core\Trait;
 
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\Collection\ServerPermissionCollection;
-use App\Core\DTO\Pterodactyl\PterodactylServer;
+use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -25,10 +25,10 @@ trait ServerPermissionsTrait
         if (!$isAdmin && !$isServerOwner) {
             $subUser = current(array_filter(
                 $pterodactylServer->get('relationships')['subusers']->toArray(),
-                fn($subuser) => $subuser['attributes']['user_id'] === $user->getPterodactylUserId(),
+                fn($subuser) => $subuser['user_id'] === $user->getPterodactylUserId(),
             ));
 
-            return ServerPermissionEnum::fromArray($subUser['attributes']['permissions'] ?? []);
+            return ServerPermissionEnum::fromArray($subUser['permissions'] ?? []);
         }
 
         $allPermissions = [];

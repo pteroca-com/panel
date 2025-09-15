@@ -28,7 +28,10 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
         $dateObject = new DateTime(sprintf('now - %d days', $this->getDeleteInactiveServersDaysAfter()));
         $serversToDelete = $this->serverRepository->getServersExpiredBefore($dateObject);
         foreach ($serversToDelete as $server) {
-            $this->pterodactylApplicationService->deleteServer($server->getPterodactylServerId());
+            $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
+                ->deleteServer($server->getPterodactylServerId());
             $this->serverRepository->delete($server);
         }
     }

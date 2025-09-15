@@ -2,111 +2,46 @@
 
 namespace App\Core\Service\Pterodactyl;
 
-use App\Core\Contract\Pterodactyl\PterodactylAdapterInterface;
-use App\Core\DTO\Pterodactyl\PterodactylNode;
-use App\Core\DTO\Pterodactyl\PterodactylServer;
-use App\Core\DTO\Pterodactyl\PterodactylUser;
-use App\Core\DTO\Pterodactyl\Resource;
+use App\Core\Contract\Pterodactyl\Application\PterodactylAdapterInterface;
+use App\Core\Contract\Pterodactyl\Client\PterodactylClientAdapterInterface;
+use App\Core\Contract\UserInterface;
+use App\Core\DTO\Pterodactyl\Credentials;
+use App\Core\Enum\SettingEnum;
+use App\Core\Service\SettingService;
 
 class PterodactylApplicationService
 {
     public function __construct(
+        private readonly SettingService $settingService,
         private readonly PterodactylAdapterInterface $pterodactylAdapter,
+        private readonly PterodactylClientAdapterInterface $pterodactylClientAdapter,
     ) {
     }
 
-    public function allServers(array $parameters = []): array
+    public function getApplicationApi(): PterodactylAdapterInterface
     {
-        return $this->pterodactylAdapter->getServers()->all($parameters);
+        $applicationCredentials = new Credentials(
+            $this->getApiUrl(),
+            $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value),
+        );
+        $this->pterodactylAdapter->setCredentials($applicationCredentials);
+
+        return $this->pterodactylAdapter;
     }
 
-    public function getServer(string $serverId, array $include = []): PterodactylServer
+    public function getClientApi(UserInterface $user): PterodactylClientAdapterInterface
     {
-        return $this->pterodactylAdapter->getServers()->getServer($serverId, $include);
+        $userCredentials = new Credentials(
+            $this->getApiUrl(),
+            $user->getPterodactylUserApiKey(),
+        );
+        $this->pterodactylClientAdapter->setCredentials($userCredentials);
+
+        return $this->pterodactylClientAdapter;
     }
 
-    public function suspendServer(string $serverId): bool
+    private function getApiUrl(): string
     {
-        return $this->pterodactylAdapter->getServers()->suspendServer($serverId);
-    }
-
-    public function unsuspendServer(string $serverId): bool
-    {
-        return $this->pterodactylAdapter->getServers()->unsuspendServer($serverId);
-    }
-
-    public function updateServerDetails(string $serverId, array $details): bool
-    {
-        return $this->pterodactylAdapter->getServers()->updateServerDetails($serverId, $details);
-    }
-
-    public function updateServerBuild(string $serverId, array $buildDetails): bool
-    {
-        return $this->pterodactylAdapter->getServers()->updateServerBuild($serverId, $buildDetails);
-    }
-
-    public function updateServerStartup(string $serverId, array $startupDetails): bool
-    {
-        return $this->pterodactylAdapter->getServers()->updateServerStartup($serverId, $startupDetails);
-    }
-
-    public function deleteServer(string $serverId): bool
-    {
-        return $this->pterodactylAdapter->getServers()->deleteServer($serverId);
-    }
-
-    public function createServer(array $details): PterodactylServer
-    {
-        return $this->pterodactylAdapter->getServers()->createServer($details);
-    }
-
-    public function getAllUsers(array $parameters = []): array
-    {
-        return $this->pterodactylAdapter->getUsers()->getAllUsers($parameters);
-    }
-
-    public function getUser(string $userId): ?PterodactylUser
-    {
-        return $this->pterodactylAdapter->getUsers()->getUser($userId);
-    }
-
-    public function updateUser(string $userId, array $details): PterodactylUser
-    {
-        return $this->pterodactylAdapter->getUsers()->updateUser($userId, $details);
-    }
-
-    public function createUser(array $details): PterodactylUser
-    {
-        return $this->pterodactylAdapter->getUsers()->createUser($details);
-    }
-
-    public function deleteUser(string $userId): bool
-    {
-        return $this->pterodactylAdapter->getUsers()->deleteUser($userId);
-    }
-
-    public function getAllNodes(array $parameters = []): array
-    {
-        return $this->pterodactylAdapter->getNodes()->getAllNodes($parameters);
-    }
-
-    public function getNode(string $nodeId): PterodactylNode
-    {
-        return $this->pterodactylAdapter->getNodes()->getNode($nodeId);
-    }
-
-    public function updateNode(string $nodeId, array $details): PterodactylNode
-    {
-        return $this->pterodactylAdapter->getNodes()->updateNode($nodeId, $details);
-    }
-
-    public function createNode(array $details): PterodactylNode
-    {
-        return $this->pterodactylAdapter->getNodes()->createNode($details);
-    }
-
-    public function deleteNode(string $nodeId): bool
-    {
-        return $this->pterodactylAdapter->getNodes()->deleteNode($nodeId);
+        return $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
     }
 }

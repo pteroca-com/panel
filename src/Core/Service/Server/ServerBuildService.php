@@ -4,17 +4,17 @@ namespace App\Core\Service\Server;
 
 use App\Core\Contract\ProductInterface;
 use App\Core\Contract\UserInterface;
-use App\Core\DTO\Pterodactyl\PterodactylServer;
+use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
+use App\Core\DTO\Pterodactyl\Resource;
 use App\Core\Entity\ServerProduct;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use JsonException;
-use Timdesm\PterodactylPhpApi\Resources\Egg as PterodactylEgg;
 
 class ServerBuildService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly NodeSelectionService $nodeSelectionService,
     ) {}
 
@@ -26,11 +26,7 @@ class ServerBuildService
         ?int $slots = null,
     ): array
     {
-        $selectedEgg = $this->pterodactylService->getApi()->nest_eggs->get(
-            $product->getNest(),
-            $eggId,
-            ['include' => 'variables']
-        );
+        $selectedEgg = $this->getSelectedEgg($eggId, $product);
         if (!$selectedEgg->has('id')) {
             throw new \Exception('Egg not found');
         }
@@ -100,11 +96,7 @@ class ServerBuildService
     public function prepareUpdateServerStartup(ServerProduct $product, PterodactylServer $pterodactylServer): array
     {
         $eggId = $pterodactylServer->get('egg');
-        $selectedEgg = $this->pterodactylService->getApi()->nest_eggs->get(
-            $product->getNest(),
-            $eggId,
-            ['include' => 'variables']
-        );
+        $selectedEgg = $this->getSelectedEgg($eggId, $product);
         if (!$selectedEgg->has('id')) {
             throw new \Exception('Egg not found in nest');
         }
@@ -134,7 +126,7 @@ class ServerBuildService
         ];
     }
 
-    private function prepareEnvironmentVariables(PterodactylEgg $egg, array $productEggConfiguration, ?int $slots = null): array
+    private function prepareEnvironmentVariables(Resource $egg, array $productEggConfiguration, ?int $slots = null): array
     {
         $environmentVariables = [];
 
@@ -154,5 +146,13 @@ class ServerBuildService
         }
 
         return $environmentVariables;
+    }
+
+    private function getSelectedEgg(int $eggId, ProductInterface $product): Resource
+    {
+        return $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->nestEggs()
+            ->getEgg($product->getNest(), $eggId, ['include' => 'variables']);
     }
 }

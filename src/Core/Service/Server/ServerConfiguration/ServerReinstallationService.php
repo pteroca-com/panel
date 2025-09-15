@@ -5,12 +5,10 @@ namespace App\Core\Service\Server\ServerConfiguration;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
 
 class ServerReinstallationService extends AbstractServerConfiguration
 {
     public function __construct(
-        private readonly PterodactylClientService          $pterodactylClientService,
         private readonly PterodactylApplicationService     $pterodactylApplicationService,
         private readonly ServerConfigurationStartupService $serverConfigurationStartupService,
     )
@@ -30,11 +28,10 @@ class ServerReinstallationService extends AbstractServerConfiguration
         }
 
         try {
-            $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->post("servers/{$server->getPterodactylServerIdentifier()}/settings/reinstall");
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->servers()
+                ->reinstallServer($server);
         } catch (\Exception $e) {
             if ($e->getMessage() !== '[]') {
                 throw new \Exception('Failed to reinstall server: ' . $e->getMessage());

@@ -3,7 +3,7 @@
 namespace App\Core\Service\Server;
 
 use App\Core\DTO\Action\Result\UpdateServerActionResult;
-use App\Core\DTO\Pterodactyl\PterodactylServer;
+use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Enum\CrudFlashMessageTypeEnum;
@@ -26,7 +26,10 @@ class UpdateServerService
         $pterodactylServerId = $entityInstance instanceof Server
             ? $entityInstance->getPterodactylServerId()
             : $entityInstance->getServer()->getPterodactylServerId();
-        $pterodactylServer = $this->pterodactylApplicationService->getServer($pterodactylServerId);
+        $pterodactylServer = $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->servers()
+            ->getServer($pterodactylServerId);
         $updateServerActionResult = new UpdateServerActionResult();
 
         return match (true) {
@@ -98,6 +101,8 @@ class UpdateServerService
             $updatedServerBuild = $this->serverBuildService
                 ->prepareUpdateServerBuild($entityInstance, $pterodactylServer);
             $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
                 ->updateServerBuild(
                     $entityInstance->getServer()->getPterodactylServerId(),
                     $updatedServerBuild
@@ -129,6 +134,8 @@ class UpdateServerService
                 ->prepareUpdateServerStartup($entityInstance, $pterodactylServer);
 
             $this->pterodactylApplicationService
+                ->getApplicationApi()
+                ->servers()
                 ->updateServerStartup(
                     $entityInstance->getServer()->getPterodactylServerId(),
                     $updatedServerStartup
@@ -159,7 +166,10 @@ class UpdateServerService
         if ($entityInstance->getIsSuspended() !== $pterodactylServer->get('suspended')) {
             if ($entityInstance->getIsSuspended()) {
                 try {
-                    $this->pterodactylApplicationService->suspendServer($entityInstance->getPterodactylServerId());
+                    $this->pterodactylApplicationService
+                        ->getApplicationApi()
+                        ->servers()
+                        ->suspendServer($entityInstance->getPterodactylServerId());
                     $updateServerActionResult->addMessage(
                         $this->translator->trans('pteroca.crud.server.suspended_successfully'),
                         CrudFlashMessageTypeEnum::SUCCESS,
@@ -174,7 +184,10 @@ class UpdateServerService
                 }
             } else {
                 try {
-                    $this->pterodactylApplicationService->unsuspendServer($entityInstance->getPterodactylServerId());
+                    $this->pterodactylApplicationService
+                        ->getApplicationApi()
+                        ->servers()
+                        ->unsuspendServer($entityInstance->getPterodactylServerId());
                     $updateServerActionResult->addMessage(
                         $this->translator->trans('pteroca.crud.server.unsuspended_successfully'),
                         CrudFlashMessageTypeEnum::SUCCESS,
@@ -200,14 +213,17 @@ class UpdateServerService
     {
         if ($entityInstance->getUser()->getPterodactylUserId() !== $pterodactylServer->get('user')) {
             try {
-                $this->pterodactylApplicationService->updateServerDetails(
-                    $entityInstance->getPterodactylServerId(),
-                    [
-                        'name' => $pterodactylServer->get('name'),
-                        'description' => $pterodactylServer->get('description'),
-                        'user' => $entityInstance->getUser()->getPterodactylUserId(),
-                    ],
-                );
+                $this->pterodactylApplicationService
+                    ->getApplicationApi()
+                    ->servers()
+                    ->updateServerDetails(
+                        $entityInstance->getPterodactylServerId(),
+                        [
+                            'name' => $pterodactylServer->get('name'),
+                            'description' => $pterodactylServer->get('description'),
+                            'user' => $entityInstance->getUser()->getPterodactylUserId(),
+                        ],
+                    );
                 $updateServerActionResult->addMessage(
                     $this->translator->trans('pteroca.crud.server.details_updated_successfully'),
                     CrudFlashMessageTypeEnum::SUCCESS,

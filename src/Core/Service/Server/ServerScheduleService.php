@@ -6,22 +6,21 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Service\Logs\ServerLogService;
-use App\Core\Service\Pterodactyl\PterodactylClientService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class ServerScheduleService
 {
     public function __construct(
-        private readonly PterodactylClientService $pterodactylClientService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
     ) {}
 
     public function getAllSchedules(Server $server, UserInterface $user): array
     {
-        $schedules = $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->get(sprintf('servers/%s/schedules', $server->getPterodactylServerIdentifier()))
+        $schedules = $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->getSchedules($server->getPterodactylServerIdentifier())
             ->toArray();
 
         return array_map(function ($schedule) {
@@ -59,11 +58,10 @@ class ServerScheduleService
             'only_when_online' => $onlyWhenOnline,
         ];
 
-        $result = $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->post(sprintf('servers/%s/schedules', $server->getPterodactylServerIdentifier()), $scheduleData);
+        $result = $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->createSchedule($server, $scheduleData);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -112,11 +110,10 @@ class ServerScheduleService
             $scheduleData['only_when_online'] = $onlyWhenOnline;
         }
 
-        $result = $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->post(sprintf('servers/%s/schedules/%d', $server->getPterodactylServerIdentifier(), $scheduleId), $scheduleData);
+        $result = $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->updateSchedule($server, $scheduleId, $scheduleData);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -140,11 +137,10 @@ class ServerScheduleService
         int $scheduleId
     ): void
     {
-        $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->delete(sprintf('servers/%s/schedules/%d', $server->getPterodactylServerIdentifier(), $scheduleId));
+        $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->deleteSchedule($server, $scheduleId);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -162,13 +158,11 @@ class ServerScheduleService
         int $scheduleId
     ): array
     {
-        $schedule = $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->get(sprintf('servers/%s/schedules/%d', $server->getPterodactylServerIdentifier(), $scheduleId));
-
-        return $schedule->toArray();
+        return $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->getSchedule($server, $scheduleId)
+            ->toArray();
     }
 
     public function updateScheduleTask(
@@ -189,11 +183,10 @@ class ServerScheduleService
             'continue_on_failure' => $continueOnFailure,
         ];
 
-        $result = $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->post(sprintf('servers/%s/schedules/%d/tasks/%d', $server->getPterodactylServerIdentifier(), $scheduleId, $taskId), $taskData);
+        $result = $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->updateScheduleTask($server, $scheduleId, $taskId, $taskData);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -229,11 +222,10 @@ class ServerScheduleService
             'continue_on_failure' => $continueOnFailure,
         ];
 
-        $result = $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->post(sprintf('servers/%s/schedules/%d/tasks', $server->getPterodactylServerIdentifier(), $scheduleId), $taskData);
+        $result = $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->createScheduleTask($server, $scheduleId, $taskData);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -258,11 +250,10 @@ class ServerScheduleService
         int $taskId
     ): void
     {
-        $this->pterodactylClientService
-            ->getApi($user)
-            ->servers
-            ->http
-            ->delete(sprintf('servers/%s/schedules/%d/tasks/%d', $server->getPterodactylServerIdentifier(), $scheduleId, $taskId));
+        $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->schedules()
+            ->deleteScheduleTask($server, $scheduleId, $taskId);
 
         $this->serverLogService->logServerAction(
             $user,

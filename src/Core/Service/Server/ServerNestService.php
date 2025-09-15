@@ -3,21 +3,21 @@
 namespace App\Core\Service\Server;
 
 use App\Core\Entity\Server;
-use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class ServerNestService
 {
     public function __construct(
-        private readonly PterodactylService $pterodactylService,
+        private readonly PterodactylApplicationService $pterodactylApplicationService,
     )
     {
     }
 
     public function getNestEggs(int $nestId): array
     {
-        return $this->pterodactylService
-            ->getApi()
-            ->nest_eggs
+        return $this->pterodactylApplicationService
+            ->getApplicationApi()
+            ->nestEggs()
             ->all($nestId)
             ->toArray();
     }
@@ -26,8 +26,8 @@ class ServerNestService
     {
         $nestEggs = $this->getNestEggs($server->getServerProduct()->getNest());
 
-        return array_filter($nestEggs, function ($egg) use ($server) {
-            return in_array($egg->id, $server->getServerProduct()->getEggs());
+        return array_filter($nestEggs, function (array $egg) use ($server) {
+            return in_array($egg['id'], $server->getServerProduct()->getEggs());
         });
     }
 }
