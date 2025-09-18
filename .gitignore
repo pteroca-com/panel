@@ -11,6 +11,11 @@
 /var/
 /vendor/
 /.idea
+src/Core/Tests/E2E/.env.test
+src/Core/Tests/E2E/test-results/
+src/Core/Tests/E2E/playwright-report/
+src/Core/Tests/E2E/node_modules/
+src/Core/Tests/E2E/package-lock.json
 ###< symfony/framework-bundle ###
 
 ###> symfony/phpunit-bridge ###
