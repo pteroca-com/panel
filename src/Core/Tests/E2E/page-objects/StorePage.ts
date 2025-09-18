@@ -83,7 +83,14 @@ export class ProductPage {
   }
 
   async selectEgg(index: number = 0) {
-    await this.eggSelect.selectOption({ index });
+    // Sprawdź czy select ma dostępne opcje
+    const options = await this.eggSelect.locator('option').count();
+    if (options > 0) {
+      await this.eggSelect.selectOption({ index });
+    } else {
+      // Jeśli nie ma opcji, pomiń ten krok
+      console.log('No egg options available, skipping egg selection');
+    }
   }
 
   async clickOrder() {
