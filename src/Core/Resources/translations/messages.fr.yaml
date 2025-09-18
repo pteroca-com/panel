@@ -111,6 +111,7 @@ pteroca:
     amount_hint: 'Entrez le montant que vous souhaitez recharger.'
     view_transaction_history: 'Voir l''historique des transactions'
     view_all_payments_description: 'Affiche tous les paiements effectués sur votre compte.'
+    amount_must_be_positive: 'The amount must be positive.'
     payment_is_not_configured: 'Le système de paiement n’est pas configuré. Contactez l’administrateur.'
 
   product:
