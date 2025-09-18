@@ -54,6 +54,14 @@ class CartController extends AbstractController
             ]);
         }
 
+        $amount = (float) $requestPayload['amount'];
+        if ($amount <= 0) {
+            $this->addFlash('danger', $this->translator->trans('pteroca.recharge.amount_must_be_positive'));
+            return $this->redirectToRoute('panel', [
+                'routeName' => 'recharge_balance',
+            ]);
+        }
+
         if ($request->isMethod('POST')) {
             try {
                 $paymentUrl = $paymentService->createPayment(
