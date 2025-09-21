@@ -82,7 +82,6 @@ class SystemStateManager
 
     public function canRollbackTo(array $targetState): bool
     {
-        // Check if we have enough information to rollback
         $requiredKeys = ['git_commit', 'db_schema_version'];
         
         foreach ($requiredKeys as $key) {
@@ -91,7 +90,6 @@ class SystemStateManager
             }
         }
 
-        // Check if git commit still exists
         return $this->gitCommitExists($targetState['git_commit']);
     }
 
@@ -166,20 +164,18 @@ class SystemStateManager
             if ($process->isSuccessful()) {
                 $output = $process->getOutput();
                 
-                // Parse migration status to get current version
                 preg_match('/Current Version:\s+(.+)/', $output, $matches);
                 if (isset($matches[1])) {
                     return trim($matches[1]);
                 }
                 
-                // Alternative: get latest executed migration
                 preg_match_all('/\[migrate\]\s+(\w+)/', $output, $allMatches);
                 if (!empty($allMatches[1])) {
                     return end($allMatches[1]);
                 }
             }
         } catch (\Exception $e) {
-            // Fall back to checking migration table directly if command fails
+            return $this->getCurrentSchemaVersionFromDatabase();
         }
         
         return null;
@@ -204,7 +200,6 @@ class SystemStateManager
 
     private function getAppVersion(): ?string
     {
-        // Try to get version from git tags
         $process = new Process(['git', 'describe', '--tags', '--exact-match']);
         $process->run();
         
@@ -212,7 +207,6 @@ class SystemStateManager
             return trim($process->getOutput());
         }
         
-        // Try to get version from git describe
         $process = new Process(['git', 'describe', '--tags']);
         $process->run();
         
@@ -220,7 +214,6 @@ class SystemStateManager
             return trim($process->getOutput());
         }
         
-        // Try to get from composer.json
         $composerPath = dirname(__DIR__, 4) . '/composer.json';
         if ($this->filesystem->exists($composerPath)) {
             $composerData = json_decode(file_get_contents($composerPath), true);
@@ -278,6 +271,19 @@ class SystemStateManager
         if ($this->filesystem->exists($stateFile)) {
             $stateContent = file_get_contents($stateFile);
             $this->systemState = json_decode($stateContent, true) ?? [];
+        }
+    }
+
+    private function getCurrentSchemaVersionFromDatabase(): ?string
+    {
+        try {
+            $pdo = new \PDO('sqlite:' . dirname(__DIR__, 4) . '/var/data.db');
+            $stmt = $pdo->query('SELECT version FROM doctrine_migration_versions ORDER BY version DESC LIMIT 1');
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            
+            return $result ? $result['version'] : null;
+        } catch (\Exception $e) {
+            return null;
         }
     }
 

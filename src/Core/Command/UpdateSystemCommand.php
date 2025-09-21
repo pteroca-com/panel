@@ -74,7 +74,6 @@ class UpdateSystemCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         
-        // Show enhanced header with safety warnings
         $this->showUpdateHeader($io, $input);
         
         $options = [
@@ -86,7 +85,6 @@ class UpdateSystemCommand extends Command
             'timeout' => (int)$input->getOption('timeout'),
         ];
 
-        // Warn about dangerous options
         if ($options['skip-backup'] && !$options['dry-run']) {
             $io->warning('WARNING: Database backup is disabled. This is dangerous and not recommended.');
             if (!$io->confirm('Are you absolutely sure you want to continue without backup?', false)) {
@@ -95,7 +93,6 @@ class UpdateSystemCommand extends Command
             }
         }
         
-        // Create handler with dependencies
         $updateSystemHandler = new UpdateSystemHandler(
             $this->connection,
             $this->lockManager,
@@ -157,7 +154,6 @@ class UpdateSystemCommand extends Command
             ]);
         }
         
-        // Show current system info
         $currentVersion = $this->getCurrentVersion();
         $phpVersion = PHP_VERSION;
         $environment = $_ENV['APP_ENV'] ?? 'prod';

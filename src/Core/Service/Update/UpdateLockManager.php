@@ -21,7 +21,6 @@ class UpdateLockManager
     {
         $lockPath = $this->getLockFilePath();
         
-        // Check if lock file exists and is still valid
         if ($this->filesystem->exists($lockPath)) {
             $lockData = $this->readLockFile($lockPath);
             
@@ -33,17 +32,14 @@ class UpdateLockManager
                 ));
             }
             
-            // Remove stale lock
             $this->filesystem->remove($lockPath);
         }
 
-        // Create lock directory if it doesn't exist
         $lockDir = dirname($lockPath);
         if (!$this->filesystem->exists($lockDir)) {
             $this->filesystem->mkdir($lockDir);
         }
 
-        // Create new lock file
         $lockData = [
             'pid' => getmypid(),
             'timestamp' => time(),
@@ -102,12 +98,10 @@ class UpdateLockManager
 
     private function isLockValid(array $lockData): bool
     {
-        // Check if process is still running
-        if (isset($lockData['pid']) && $this->isProcessRunning((int)$lockData['pid'])) {
-            return true;
+        if (isset($lockData['pid']) && !$this->isProcessRunning((int)$lockData['pid'])) {
+            return false;
         }
 
-        // Check lock age
         if (isset($lockData['timestamp'])) {
             return (time() - $lockData['timestamp']) < self::MAX_LOCK_AGE;
         }

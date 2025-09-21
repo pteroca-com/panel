@@ -21,16 +21,12 @@ class BackupService
     {
         $backupPath = $this->generateBackupPath();
         
-        // Ensure backup directory exists
         $backupDir = dirname($backupPath);
         if (!$this->filesystem->exists($backupDir)) {
             $this->filesystem->mkdir($backupDir, 0755);
         }
 
-        // Create database backup
         $this->performBackup($backupPath);
-        
-        // Cleanup old backups
         $this->cleanupOldBackups($retentionDays);
 
         return $backupPath;
@@ -50,7 +46,6 @@ class BackupService
         $parsedUrl = parse_url($databaseUrl);
         $dbName = ltrim($parsedUrl['path'], '/');
 
-        // Restore database from backup
         $command = sprintf(
             'mysql -h%s -P%d -u%s -p%s %s < %s',
             $parsedUrl['host'],
@@ -80,17 +75,15 @@ class BackupService
         }
 
         $fileSize = filesize($backupPath);
-        if ($fileSize < 50) { // More lenient minimum size
+        if ($fileSize < 50) {
             return false;
         }
 
-        // Check if file contains SQL structure or mysqldump markers
         $handle = fopen($backupPath, 'r');
         if ($handle) {
-            $content = fread($handle, 2048); // Read more content for better detection
+            $content = fread($handle, 2048);
             fclose($handle);
             
-            // Check for various indicators that this is a valid SQL dump
             return stripos($content, 'CREATE TABLE') !== false || 
                    stripos($content, 'INSERT INTO') !== false ||
                    stripos($content, 'mysqldump') !== false ||
@@ -137,7 +130,6 @@ class BackupService
             }
         }
 
-        // Sort by creation time, newest first
         usort($backups, fn($a, $b) => $b['created'] - $a['created']);
 
         return $backups;
@@ -164,7 +156,6 @@ class BackupService
         $parsedUrl = parse_url($databaseUrl);
         $dbName = ltrim($parsedUrl['path'], '/');
 
-        // Use mysqldump for creating backup with proper error handling
         $command = sprintf(
             'mysqldump -h%s -P%d -u%s -p%s --single-transaction --routines --triggers --add-drop-table --quick --lock-tables=false %s',
             $parsedUrl['host'],
@@ -186,7 +177,6 @@ class BackupService
             ));
         }
 
-        // Write the output to file
         $backupContent = $process->getOutput();
         if (empty($backupContent)) {
             throw new \RuntimeException('Database backup produced no output');
@@ -194,9 +184,7 @@ class BackupService
 
         file_put_contents($backupPath, $backupContent);
 
-        // Verify backup was created and has content
         if (!$this->validateBackup($backupPath)) {
-            // Add more detailed information about what went wrong
             $fileSize = file_exists($backupPath) ? filesize($backupPath) : 0;
             $preview = file_exists($backupPath) ? substr(file_get_contents($backupPath), 0, 200) : 'File not found';
             
@@ -218,7 +206,6 @@ class BackupService
                 try {
                     $this->filesystem->remove($backup['path']);
                 } catch (\Exception $e) {
-                    // Log warning but don't fail the backup process
                     error_log("Failed to remove old backup {$backup['path']}: " . $e->getMessage());
                 }
             }

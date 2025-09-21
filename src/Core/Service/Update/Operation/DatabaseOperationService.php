@@ -38,7 +38,6 @@ class DatabaseOperationService
 
     public function canRollbackMigrations(): bool
     {
-        // Check if we can rollback migrations by checking if there are executed migrations
         exec('php bin/console doctrine:migrations:status --show-versions 2>/dev/null', $output, $returnCode);
         
         if ($returnCode !== 0) {
@@ -47,7 +46,6 @@ class DatabaseOperationService
 
         $outputString = implode("\n", $output);
         
-        // Look for executed migrations
         return strpos($outputString, '[migrate]') !== false;
     }
 
@@ -61,7 +59,6 @@ class DatabaseOperationService
         if ($targetVersion) {
             $command = "php bin/console doctrine:migrations:migrate {$targetVersion} --no-interaction";
         } else {
-            // Rollback to previous migration
             $command = 'php bin/console doctrine:migrations:migrate prev --no-interaction';
         }
 
@@ -85,13 +82,11 @@ class DatabaseOperationService
 
             $outputString = implode("\n", $output);
             
-            // Parse migration status to get current version
             preg_match('/Current Version:\s+(.+)/', $outputString, $matches);
             if (isset($matches[1])) {
                 return trim($matches[1]);
             }
             
-            // Alternative: get latest executed migration
             preg_match_all('/\[migrate\]\s+(\w+)/', $outputString, $allMatches);
             if (!empty($allMatches[1])) {
                 return end($allMatches[1]);
