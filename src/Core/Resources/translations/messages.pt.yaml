@@ -18,6 +18,7 @@ pteroca:
     sign_in: 'Entrar'
     invalid_captcha: 'Verificação CAPTCHA inválida.'
     user_blocked: 'Sua conta foi bloqueada.'
+    invalid_credentials: 'E-mail ou senha inválidos.'
     dont_have_account_yet: 'Ainda não tem uma conta? Cadastre-se!'
     subtitle: 'Faça login na sua conta'
 

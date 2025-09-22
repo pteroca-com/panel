@@ -17,6 +17,7 @@ pteroca:
     sign_in: 'Inloggen'
     invalid_captcha: 'Ongeldige CAPTCHA-verificatie.'
     user_blocked: 'Uw account is geblokkeerd.'
+    invalid_credentials: 'Ongeldig e-mailadres of wachtwoord.'
     dont_have_account_yet: "Heeft u nog geen account? Registreer nu!"
     subtitle: 'Log in op uw account'
   register:

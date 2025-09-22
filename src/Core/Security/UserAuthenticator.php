@@ -45,9 +45,14 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             throw new CustomUserMessageAuthenticationException($this->translator->trans('pteroca.login.invalid_captcha'));
         }
 
-        $user = $this->userRepository->findOneBy(['email' => $email]);
-        if (!empty($user) && $user->isBlocked()) {
-            throw new CustomUserMessageAuthenticationException($this->translator->trans('pteroca.login.user_blocked'));
+        $user = $this->userRepository->findByEmailIncludingDeleted($email);
+        if (!empty($user)) {
+            if ($user->isDeleted()) {
+                throw new CustomUserMessageAuthenticationException($this->translator->trans('pteroca.login.invalid_credentials'));
+            }
+            if ($user->isBlocked()) {
+                throw new CustomUserMessageAuthenticationException($this->translator->trans('pteroca.login.user_blocked'));
+            }
         }
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);

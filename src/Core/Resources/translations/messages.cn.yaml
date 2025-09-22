@@ -18,6 +18,7 @@ pteroca:
     sign_in: '登录'
     invalid_captcha: 'CAPTCHA 验证无效。'
     user_blocked: '您的账户已被锁定。'
+    invalid_credentials: '电子邮件或密码无效。'
     dont_have_account_yet: '还没有账户？注册！'
     subtitle: '登录您的账户'
 
