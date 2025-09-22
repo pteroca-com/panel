@@ -856,6 +856,8 @@ pteroca:
       passwords_must_match: 'पासवर्ड मेल खाना चाहिए।'
       deleted_successfully: 'उपयोगकर्ता सफलतापूर्वक हटाया गया।'
       restored_successfully: 'उपयोगकर्ता सफलतापूर्वक बहाल किया गया।'
+      account_restored: 'उपयोगकर्ता खाता पहले हटाए गए खाते से पुनर्स्थापित किया गया है।'
+      created_successfully: 'उपयोगकर्ता सफलतापूर्वक बनाया गया है।'
       restore_error: 'उपयोगकर्ता को बहाल करने में त्रुटि।'
       restore: 'बहाल करें'
       pterodactyl_user_not_found: 'Pterodactyl में उपयोगकर्ता नहीं मिला, लेकिन PteroCA से सफलतापूर्वक हटाया गया।'

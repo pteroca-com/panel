@@ -856,6 +856,8 @@ pteroca:
       avatar: 'Awatar'
       deleted_successfully: 'Użytkownik został pomyślnie usunięty.'
       restored_successfully: 'Użytkownik został pomyślnie przywrócony.'
+      account_restored: 'Konto użytkownika zostało przywrócone z wcześniej usuniętego konta.'
+      created_successfully: 'Użytkownik został pomyślnie utworzony.'
       restore_error: 'Błąd podczas przywracania użytkownika.'
       restore: 'Przywróć'
       pterodactyl_user_not_found: 'Użytkownik nie został znaleziony w Pterodactyl, ale został pomyślnie usunięty z PteroCA.'

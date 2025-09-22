@@ -844,6 +844,8 @@ pteroca:
       passwords_must_match: 'Wachtwoorden moeten overeenkomen.'
       deleted_successfully: 'Gebruiker succesvol verwijderd.'
       restored_successfully: 'Gebruiker succesvol hersteld.'
+      account_restored: 'Het gebruikersaccount is hersteld van een eerder verwijderd account.'
+      created_successfully: 'De gebruiker is succesvol aangemaakt.'
       restore_error: 'Fout bij het herstellen van de gebruiker.'
       restore: 'Herstellen'
       pterodactyl_user_not_found: 'Gebruiker niet gevonden in Pterodactyl, maar succesvol verwijderd uit PteroCA.'

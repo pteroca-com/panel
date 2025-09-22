@@ -853,11 +853,10 @@ pteroca:
       repeat_password_hint: 'Enter the password again to confirm.'
       passwords_must_match: 'Passwords must match.'
       deleted_successfully: 'User deleted successfully.'
-      restored_successfully: 'User restored successfully.'
-      restore_error: 'Error restoring user.'
-      restore: 'Restore'
       pterodactyl_user_not_found: 'User not found in Pterodactyl, but deleted from PteroCA successfully.'
       cannot_delete_user_with_active_servers: 'Cannot delete user with {{ count }} active server(s). Please delete or suspend the servers first.'
+      account_restored: 'User account has been restored from previously deleted account.'
+      created_successfully: 'User has been created successfully.'
     payment:
       session_id: 'Session ID'
       status: 'Status'

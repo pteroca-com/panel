@@ -851,6 +851,8 @@ pteroca:
       passwords_must_match: 'Пароли должны совпадать.'
       deleted_successfully: 'Пользователь успешно удален.'
       restored_successfully: 'Пользователь успешно восстановлен.'
+      account_restored: 'Учетная запись пользователя была восстановлена из ранее удаленной учетной записи.'
+      created_successfully: 'Пользователь успешно создан.'
       restore_error: 'Ошибка при восстановлении пользователя.'
       restore: 'Восстановить'
       pterodactyl_user_not_found: 'Пользователь не найден в Pterodactyl, но успешно удален из PteroCA.'

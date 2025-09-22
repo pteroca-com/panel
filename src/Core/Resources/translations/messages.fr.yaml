@@ -857,6 +857,8 @@ pteroca:
       passwords_must_match: 'Les mots de passe doivent correspondre.'
       deleted_successfully: 'Utilisateur supprimé avec succès.'
       restored_successfully: 'Utilisateur restauré avec succès.'
+      account_restored: "Le compte utilisateur a été restauré à partir d'un compte précédemment supprimé."
+      created_successfully: "L'utilisateur a été créé avec succès."
       restore_error: 'Erreur lors de la restauration de l''utilisateur.'
       restore: 'Restaurer'
       pterodactyl_user_not_found: 'Utilisateur non trouvé dans Pterodactyl, mais supprimé avec succès de PteroCA.'

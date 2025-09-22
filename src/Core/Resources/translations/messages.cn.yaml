@@ -856,6 +856,8 @@ pteroca:
       passwords_must_match: '两次输入的密码必须一致。'
       deleted_successfully: '用户删除成功。'
       restored_successfully: '用户恢复成功。'
+      account_restored: '用户账户已从之前删除的账户中恢复。'
+      created_successfully: '用户已成功创建。'
       restore_error: '恢复用户时出错。'
       restore: '恢复'
       pterodactyl_user_not_found: '在 Pterodactyl 中未找到用户，但在 PteroCA 中已成功删除。'

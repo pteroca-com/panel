@@ -850,6 +850,8 @@ pteroca:
       passwords_must_match: 'Die Passwörter müssen übereinstimmen.'
       deleted_successfully: 'Benutzer erfolgreich gelöscht.'
       restored_successfully: 'Benutzer erfolgreich wiederhergestellt.'
+      account_restored: 'Benutzerkonto wurde von einem zuvor gelöschten Konto wiederhergestellt.'
+      created_successfully: 'Benutzer wurde erfolgreich erstellt.'
       restore_error: 'Fehler beim Wiederherstellen des Benutzers.'
       restore: 'Wiederherstellen'
       pterodactyl_user_not_found: 'Benutzer nicht in Pterodactyl gefunden, aber erfolgreich aus PteroCA gelöscht.'
