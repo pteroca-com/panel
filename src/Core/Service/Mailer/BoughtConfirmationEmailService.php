@@ -2,17 +2,19 @@
 
 namespace App\Core\Service\Mailer;
 
-use App\Core\Contract\UserInterface;
-use App\Core\Entity\Product;
 use App\Core\Entity\Server;
+use App\Core\Entity\Product;
+use App\Core\Enum\SettingEnum;
 use App\Core\Enum\EmailTypeEnum;
-use App\Core\Enum\ProductPriceTypeEnum;
-use App\Core\Exception\Email\ProductPriceNotFoundException;
+use App\Core\Contract\UserInterface;
+use App\Core\Service\SettingService;
 use App\Core\Message\SendEmailMessage;
-use App\Core\Service\Email\EmailContextBuilderService;
+use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Service\Email\EmailNotificationService;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Core\Service\Email\EmailContextBuilderService;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Core\Exception\Email\ProductPriceNotFoundException;
 
 class BoughtConfirmationEmailService
 {
@@ -21,6 +23,7 @@ class BoughtConfirmationEmailService
         private readonly TranslatorInterface $translator,
         private readonly MessageBusInterface $messageBus,
         private readonly EmailNotificationService $emailNotificationService,
+        private readonly SettingService $settingService,
     ) {}
 
     public function sendBoughtConfirmationEmail(
@@ -104,7 +107,7 @@ class BoughtConfirmationEmailService
             $server,
             $this->translator->trans('pteroca.email.renew.subject'),
             [
-                'product_id' => $product->getId(),
+                'product_id' => $server->getServerProduct()->getId(),
                 'price_type' => $selectedPrice->getType()->value,
                 'server_expires_at' => $server->getExpiresAt()->format('Y-m-d H:i:s'),
             ]

@@ -815,6 +815,10 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO Login Secret Key'
         show_pterodactyl_logs_in_server_activity: 'Show Pterodactyl logs in server activity'
         current_theme: 'Current theme of the panel'
+        smtp_from: 'SMTP From'
+        renewal_notification_enabled: 'Enable renewal notifications'
+        renewal_notification_min_period_hours: 'Notification minimum frequency (in hours)'
+        renewal_notification_on_demand_min_hours: 'On-demand minimum hours before sending notification'
       template:
         name: 'Template name'
         description: 'Template description'
@@ -827,7 +831,6 @@ pteroca:
         options: 'Options'
         supportDarkMode: 'Support dark mode'
         supportCustomColors: 'Allow configuring custom colors'
-      smtp_from: 'Sender email address'
       test_smtp_connection: 'Test SMTP Connection'
       smtp_connection_success: 'SMTP connection successful!'
       smtp_connection_failed: 'SMTP connection failed!'
