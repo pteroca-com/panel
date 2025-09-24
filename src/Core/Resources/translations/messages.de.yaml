@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Es ist ein Fehler bei der Kommunikation mit dem Pterodactyl-Panel aufgetreten.'
     dont_have_permission: 'Sie haben keine Berechtigung, diese Aktion auszuführen.'
     experimental_feature: 'Diese Funktion ist experimentell und könnte nicht korrekt funktionieren.'
+    or_resend_verification_email: 'oder klicken Sie hier, um die Bestätigungs-E-Mail erneut zu senden.'
 
   demo:
     action_disabled: 'Diese Aktion ist in der Demoversion deaktiviert.'
@@ -314,6 +315,10 @@ pteroca:
     server_installing: 'Server wird installiert'
     server_installing_message: 'Ihr Server wird derzeit installiert und steht in wenigen Minuten zur Verfügung. Bitte warten Sie, bis der Installationsvorgang abgeschlossen ist.'
     server_installing_description: 'Der Installationsvorgang kann je nach ausgewählter Software und Serverspezifikation mehrere Minuten dauern.'
+    server_suspended: 'Server ist suspendiert'
+    server_suspended_message: 'Ihr Server ist derzeit suspendiert und kann nicht zugegriffen werden.'
+    server_suspended_description: 'Dieser Server wurde aufgrund einer administrativen Massnahme oder eines Verstosses gegen die Richtlinien suspendiert. Bitte kontaktieren Sie den Support für Hilfe.'
+    suspended_expired_description: 'Dieser Server wurde suspendiert, weil er am %expireDate% abgelaufen ist und nicht verlängert wurde. Um den Server wiederherzustellen, verlängern Sie ihn bitte.'
     rules: 'Regeln'
     data_validation_error: 'Fehler bei der Validierung. Bitte überprüfen Sie, ob alle Regeln erfüllt sind.'
     enable_auto_renewal: 'Automatische Verlängerung für diesen Server aktivieren'
@@ -572,6 +577,7 @@ pteroca:
     entity_add: 'Entität hinzugefügt'
     entity_edit: 'Entität bearbeitet'
     entity_delete: 'Entität gelöscht'
+    entity_restore: 'Entität wiederhergestellt'
     user_registered: 'Benutzer registriert'
     user_verify_email: 'E-Mail-Adresse verifiziert'
     voucher_redeemed: 'Gutschein eingelöst'
@@ -603,6 +609,15 @@ pteroca:
     discount_value_invalid: 'Der Rabattwert ist ungültig. Das Maximum beträgt 100(%).'
     voucher_type_invalid: 'Dieser Gutschein kann für diese Zahlungsart nicht verwendet werden.'
     invalid_voucher_type: 'Ungültiger Gutschein-Typ.'
+
+  email_types:
+    email_verification: 'E-Mail-Verifizierung'
+    payment_success: 'Zahlungsbestätigung'
+    purchased_product: 'Produktkauf'
+    registration: 'Registrierungsbestätigung'
+    renew_product: 'Produktverlängerung'
+    reset_password: 'Passwort zurücksetzen'
+    server_suspended: 'Server-Suspension'
 
   crud:
     category:
@@ -837,10 +852,17 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl-Benutzer-ID'
       created_at: 'Erstellt am'
       updated_at: 'Aktualisiert am'
+      deleted_at: 'Gelöscht am'
       avatar: 'Avatar'
       repeat_password: 'Passwort wiederholen'
       repeat_password_hint: 'Geben Sie das Passwort erneut ein, um es zu bestätigen.'
       passwords_must_match: 'Die Passwörter müssen übereinstimmen.'
+      deleted_successfully: 'Benutzer erfolgreich gelöscht.'
+      restored_successfully: 'Benutzer erfolgreich wiederhergestellt.'
+      restore_error: 'Fehler beim Wiederherstellen des Benutzers.'
+      restore: 'Wiederherstellen'
+      pterodactyl_user_not_found: 'Benutzer nicht in Pterodactyl gefunden, aber erfolgreich aus PteroCA gelöscht.'
+      cannot_delete_user_with_active_servers: 'Benutzer mit {{ count }} aktiven Server(n) kann nicht gelöscht werden. Bitte löschen oder suspendieren Sie die Server zuerst.'
     payment:
       session_id: 'Sitzungs-ID'
       status: 'Status'
@@ -869,6 +891,14 @@ pteroca:
       created_at: 'Erstellt am'
       user: 'Benutzer'
       ip_address: 'IP-Adresse'
+      server: 'Server'
+    email_log:
+      email_log: 'E-Mail-Protokoll'
+      email_logs: 'E-Mail-Protokolle'
+      email_type: 'E-Mail-Typ'
+      metadata: 'E-Mail-Metadaten'
+      sent_at: 'Gesendet am'
+      user: 'Benutzer'
       server: 'Server'
     voucher:
       voucher: 'Gutschein'
@@ -927,6 +957,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Zahlungen'
       logs: 'Logs'
+      email_logs: 'E-Mail-Protokolle'
       server_logs: 'Server-Logs'
       overview: 'Übersicht'
       server_builds: 'Server'
@@ -946,6 +977,7 @@ pteroca:
     server_user:
       user_not_exist: 'Benutzer mit E-Mail {{ email }} existiert nicht im System. Der Benutzer muss sich zuerst registrieren.'
       user_already_added: 'Benutzer mit E-Mail {{ email }} wurde bereits zu diesem Server hinzugefügt.'
+      user_not_verified: 'Benutzer mit E-Mail {{ email }} hat seine E-Mail-Adresse nicht verifiziert und kann nicht als Unterbenutzer hinzugefügt werden.'
       cannot_modify_yourself: 'Sie können diese Aktion nicht an sich selbst ausführen: {{ action }}.'
       modify_permissions: 'Berechtigungen ändern'
       delete_yourself_from_server: 'sich selbst vom Server entfernen'
@@ -967,6 +999,18 @@ pteroca:
       best_regards: 'Mit freundlichen Grüßen'
       visit_website: 'Besuchen Sie unsere Website:'
       copyright: 'Alle Rechte vorbehalten.'
+    verification:
+      subject: "E-Mail-Verifizierung - %siteName%"
+      title: "E-Mail-Verifizierung"
+      hello: "Hallo %name%!"
+      message: "Vielen Dank für Ihre Registrierung bei %siteName%. Bitte verifizieren Sie Ihre E-Mail-Adresse, indem Sie auf die Schaltfläche unten klicken."
+      verify_button: "E-Mail-Adresse verifizieren"
+      alternative_text: "Falls die Schaltfläche nicht funktioniert, können Sie auch den folgenden Link kopieren und in Ihren Browser einfügen:"
+      footer_text: "Falls Sie kein Konto bei %siteName% erstellt haben, können Sie diese E-Mail bedenkenlos ignorieren."
+      resend_too_soon: "Sie können die Verifizierungs-E-Mail nur alle %minutes% Minuten erneut senden. Bitte versuchen Sie es später noch einmal."
+      resend_success: "Die Verifizierungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet."
+      not_logged_in: "Sie müssen eingeloggt sein, um die Verifizierungs-E-Mail erneut zu senden."
+      already_verified: "Ihre E-Mail-Adresse ist bereits verifiziert."
     pricing:
       slot_format: '{{ slots }} Slots × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -974,8 +1018,11 @@ pteroca:
     registration:
       subject: 'Registrierung'
       welcome: 'Willkommen auf unserer Seite! Vielen Dank für Ihre Registrierung.'
+      account_ready: 'Ihr Konto ist bereit zur Nutzung. Sie können sich jetzt in Ihr Konto einloggen und unsere Dienste nutzen.'
+      email_verification_required: 'E-Mail-Verifizierung erforderlich'
       confirm_email: 'Bestätigen Sie Ihre E-Mail-Adresse, indem Sie auf den folgenden Link klicken:'
       confirm_email_button: 'E-Mail-Adresse bestätigen'
+      alternative_text: 'Falls die Schaltfläche nicht funktioniert, können Sie auch den folgenden Link kopieren und in Ihren Browser einfügen:'
       if_not_registered: 'Wenn Sie sich nicht auf unserer Website registriert haben, ignorieren Sie diese Nachricht.'
     recovery:
       subject: 'Passwort zurücksetzen'
@@ -1010,6 +1057,22 @@ pteroca:
       subject: 'Serversperrung'
       server_suspended: 'Wir informieren Sie, dass einer Ihrer Server gesperrt wurde, da er nicht verlängert wurde.'
       extend_server: 'Um den Server wiederherzustellen, verlängern Sie ihn im Kundenbereich.'
+      server_details: 'Serverdetails'
+      server_name: 'Server: %serverName%'
+      suspension_date: 'Suspendiert am: %suspensionDate%'
+      auto_delete_warning: 'Wichtig: Ihr Server wird automatisch nach %days% Tagen (%deleteDate%) gelöscht, falls nicht verlängert.'
+      panel_access: 'Zugang zum Panel'
+
+  verification:
+    title: 'E-Mail-Verifizierung erforderlich'
+    subtitle: 'Bitte verifizieren Sie Ihre E-Mail-Adresse, um fortzufahren'
+    required: 'E-Mail-Verifizierung erforderlich'
+    description: 'Sie müssen Ihre E-Mail-Adresse verifizieren, bevor Sie auf diese Funktion zugreifen können.'
+    sent_to: 'Verifizierungs-E-Mail gesendet an'
+    resend: 'Verifizierungs-E-Mail erneut senden'
+    resend_success: 'Verifizierungs-E-Mail wurde gesendet!'
+    back_to_panel: 'Zurück zum Panel'
+    help_text: 'Überprüfen Sie Ihren E-Mail-Posteingang und Spam-Ordner auf den Verifizierungslink.'
 
   admin:
     overview:

@@ -5,12 +5,15 @@ namespace App\Core\Service\Server;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerSubuser;
+use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\ServerLogActionEnum;
+use App\Core\Enum\SettingEnum;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
 use App\Core\Service\Pterodactyl\PterodactylService;
+use App\Core\Service\SettingService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerUserService
@@ -22,6 +25,7 @@ class ServerUserService
         private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly UserRepository $userRepository,
         private readonly TranslatorInterface $translator,
+        private readonly SettingService $settingService,
     ) {}
 
     public function getAllSubusers(Server $server, UserInterface $user): array
@@ -49,6 +53,11 @@ class ServerUserService
 
             if (count($existingPterodactylUsers->toArray()) === 0 || !$existingPterocaUser) {
                 throw new \Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
+            }
+
+            $verificationSetting = $this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
+            if ($verificationSetting === EmailVerificationValueEnum::REQUIRED->value && !$existingPterocaUser->isVerified()) {
+                throw new \Exception($this->translator->trans('pteroca.api.server_user.user_not_verified', ['email' => $email]));
             }
 
             $currentSubusers = $this->getAllSubusers($server, $user);

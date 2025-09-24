@@ -1,13 +1,35 @@
 {% trans_default_domain 'messages' %}
+{% set title = 'pteroca.email.registration.subject'|trans %}
 {% include 'email/header.html.twig' %}
+
 <p>
-    {{ 'pteroca.email.registration.welcome'|trans }}<br>
+    {{ 'pteroca.email.registration.welcome'|trans }}
+</p>
+
+<p>
+    {{ 'pteroca.email.registration.account_ready'|trans }}
+</p>
+
+{% if verificationUrl %}
+<hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+
+<p>
+    <strong>{{ 'pteroca.email.registration.email_verification_required'|trans }}</strong><br>
     {{ 'pteroca.email.registration.confirm_email'|trans }}
 </p>
-<p>
+
+<p style="text-align: center; margin: 30px 0;">
     <a href="{{ verificationUrl }}" class="button">{{ 'pteroca.email.registration.confirm_email_button'|trans }}</a>
 </p>
+
+<p style="font-size: 12px; color: #666;">
+    {{ 'pteroca.email.registration.alternative_text'|trans }}<br>
+    <a href="{{ verificationUrl }}">{{ verificationUrl }}</a>
+</p>
+{% endif %}
+
 <p>
     {{ 'pteroca.email.registration.if_not_registered'|trans }}
 </p>
+
 {% include 'email/footer.html.twig' %}

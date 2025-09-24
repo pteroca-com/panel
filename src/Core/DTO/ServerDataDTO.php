@@ -11,6 +11,7 @@ class ServerDataDTO
     public function __construct(
         public array $pterodactylServer,
         public bool $isInstalling,
+        public bool $isSuspended = false,
         public ?Server $server = null,
         public ?ServerPermissionCollection $serverPermissions = null,
         public ?ServerDetailsDTO $serverDetails = null,

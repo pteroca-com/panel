@@ -55,6 +55,15 @@ class ServerDataService
             );
         }
 
+        $isSuspended = $server->getIsSuspended();
+        if ($isSuspended) {
+            return new ServerDataDTO(
+                pterodactylServer: $pterodactylServer->toArray(),
+                isInstalling: false,
+                isSuspended: true,
+            );
+        }
+
         $permissions = $this->getServerPermissions($pterodactylServer, $server, $user);
 
         try {

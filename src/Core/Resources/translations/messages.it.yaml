@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Si è verificato un errore durante la comunicazione con il pannello di Pterodactyl.'
     dont_have_permission: 'Non hai il permesso per eseguire questa azione.'
     experimental_feature: 'Questa funzionalità è sperimentale e potrebbe non funzionare correttamente.'
+    or_resend_verification_email: 'oppure clicca qui per inviare nuovamente l''email di verifica.'
 
   demo:
     action_disabled: 'Questa azione è disabilitata nella demo.'
@@ -21,6 +22,7 @@ pteroca:
     sign_in: 'Accedi'
     invalid_captcha: 'Verifica CAPTCHA non valida.'
     user_blocked: 'Il tuo account è stato bloccato.'
+    invalid_credentials: 'E-mail o password non validi.'
     dont_have_account_yet: 'Non hai ancora un account? Registrati!'
     subtitle: 'Accedi al tuo account'
 
@@ -115,6 +117,7 @@ pteroca:
     amount_hint: 'Inserisci l''importo che desideri ricaricare.'
     view_transaction_history: 'Visualizza storico transazioni'
     view_all_payments_description: 'Mostra tutti i pagamenti effettuati sul tuo account.'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: 'Informazioni'
@@ -314,6 +317,10 @@ pteroca:
     server_installing: 'Il server è in fase di installazione'
     server_installing_message: 'Il tuo server è attualmente in fase di installazione e sarà disponibile tra pochi minuti. Attendi il completamento del processo di installazione.'
     server_installing_description: 'Il processo di installazione può richiedere diversi minuti a seconda del software selezionato e delle specifiche del server.'
+    server_suspended: 'Server sospeso'
+    server_suspended_message: 'Il tuo server è attualmente sospeso e non può essere accessibile.'
+    server_suspended_description: 'Questo server è stato sospeso a causa di un''azione amministrativa o violazione delle policy. Si prega di contattare il supporto per assistenza.'
+    suspended_expired_description: 'Questo server è stato sospeso perché è scaduto il %expireDate% e non è stato rinnovato. Per ripristinare il server, si prega di rinnovarlo.'
     rules: 'Regole'
     data_validation_error: 'Errore durante la validazione. Si prega di controllare se tutte le regole sono rispettate.'
     enable_auto_renewal: 'Abilita il rinnovo automatico per questo server'
@@ -572,6 +579,7 @@ pteroca:
     entity_add: 'Entità aggiunta'
     entity_edit: 'Entità modificata'
     entity_delete: 'Entità eliminata'
+    entity_restore: 'Entità ripristinata'
     user_registered: 'Account registrato'
     user_verify_email: 'Verifica e-mail'
     voucher_redeemed: 'Voucher riscattato'
@@ -603,6 +611,15 @@ pteroca:
     discount_value_invalid: 'Il valore dello sconto non è valido. Il massimo è 100(%).'
     voucher_type_invalid: 'Questo buono non può essere utilizzato per questo tipo di pagamento.'
     invalid_voucher_type: 'Tipo di buono non valido.'
+
+  email_types:
+    email_verification: 'Verifica e-mail'
+    payment_success: 'Conferma pagamento'
+    purchased_product: 'Acquisto prodotto'
+    registration: 'Conferma registrazione'
+    renew_product: 'Rinnovo prodotto'
+    reset_password: 'Reimpostazione password'
+    server_suspended: 'Sospensione server'
 
   crud:
     category:
@@ -837,10 +854,19 @@ pteroca:
       pterodactyl_user_id: 'ID utente su Pterodactyl'
       created_at: 'Creato il'
       updated_at: 'Aggiornato il'
+      deleted_at: 'Eliminato il'
       avatar: 'Avatar'
       repeat_password: 'Ripeti password'
       repeat_password_hint: 'Inserisci nuovamente la password per confermare.'
       passwords_must_match: 'Le password devono corrispondere.'
+      deleted_successfully: 'Utente eliminato con successo.'
+      restored_successfully: 'Utente ripristinato con successo.'
+      account_restored: "L'account utente è stato ripristinato da un account precedentemente eliminato."
+      created_successfully: "L'utente è stato creato con successo."
+      restore_error: 'Errore durante il ripristino dell''utente.'
+      restore: 'Ripristina'
+      pterodactyl_user_not_found: 'Utente non trovato in Pterodactyl, ma eliminato con successo da PteroCA.'
+      cannot_delete_user_with_active_servers: 'Impossibile eliminare l''utente con {{ count }} server attivo(i). Si prega di eliminare o sospendere i server prima.'
     payment:
       session_id: 'ID sessione'
       status: 'Stato'
@@ -869,6 +895,14 @@ pteroca:
       created_at: 'Creato il'
       user: 'Utente'
       ip_address: 'Indirizzo IP'
+      server: 'Server'
+    email_log:
+      email_log: 'Registro e-mail'
+      email_logs: 'Registri e-mail'
+      email_type: 'Tipo e-mail'
+      metadata: 'Metadati e-mail'
+      sent_at: 'Inviato il'
+      user: 'Utente'
       server: 'Server'
     voucher:
       voucher: 'Buono'
@@ -927,6 +961,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Pagamenti'
       logs: 'Registri'
+      email_logs: 'Registri e-mail'
       server_logs: 'Registri del server'
       overview: 'Panoramica'
       server_builds: 'Server'
@@ -946,6 +981,7 @@ pteroca:
     server_user:
       user_not_exist: 'L''utente con email {{ email }} non esiste nel sistema. L''utente deve prima registrarsi.'
       user_already_added: 'L''utente con email {{ email }} è già stato aggiunto a questo server.'
+      user_not_verified: 'L''utente con email {{ email }} non ha verificato il suo indirizzo e-mail e non può essere aggiunto come sottoutente.'
       cannot_modify_yourself: 'Non puoi eseguire questa azione su te stesso: {{ action }}.'
       modify_permissions: 'modificare i permessi'
       delete_yourself_from_server: 'rimuovere te stesso dal server'
@@ -967,6 +1003,18 @@ pteroca:
       best_regards: 'Cordiali saluti'
       visit_website: 'Visita il nostro sito:'
       copyright: 'Tutti i diritti riservati.'
+    verification:
+      subject: "Verifica e-mail - %siteName%"
+      title: "Verifica e-mail"
+      hello: "Ciao %name%!"
+      message: "Grazie per esserti registrato su %siteName%. Verifica il tuo indirizzo e-mail cliccando sul pulsante qui sotto."
+      verify_button: "Verifica indirizzo e-mail"
+      alternative_text: "Se il pulsante non funziona, puoi anche copiare e incollare il seguente link nel tuo browser:"
+      footer_text: "Se non hai creato un account su %siteName%, puoi ignorare tranquillamente questa e-mail."
+      resend_too_soon: "Puoi inviare nuovamente l'e-mail di verifica solo una volta ogni %minutes% minuti. Riprova più tardi."
+      resend_success: "L'e-mail di verifica è stata inviata al tuo indirizzo e-mail."
+      not_logged_in: "Devi essere connesso per inviare nuovamente l'e-mail di verifica."
+      already_verified: "Il tuo indirizzo e-mail è già verificato."
     pricing:
       slot_format: '{{ slots }} slot × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -974,8 +1022,11 @@ pteroca:
     registration:
       subject: 'Registrazione'
       welcome: 'Benvenuto nel nostro servizio! Grazie per esserti registrato.'
+      account_ready: 'Il tuo account è pronto per l''uso. Ora puoi accedere al tuo account e iniziare a utilizzare i nostri servizi.'
+      email_verification_required: 'Verifica e-mail richiesta'
       confirm_email: 'Conferma il tuo indirizzo e-mail cliccando sul link qui sotto:'
       confirm_email_button: 'Conferma e-mail'
+      alternative_text: 'Se il pulsante non funziona, puoi anche copiare e incollare il seguente link nel tuo browser:'
       if_not_registered: 'Se non ti sei registrato sul nostro sito, ignora questo messaggio.'
     recovery:
       subject: 'Reimpostazione della password'
@@ -1010,6 +1061,22 @@ pteroca:
       subject: 'Sospensione server'
       server_suspended: 'Ti informiamo che uno dei tuoi server è stato sospeso perché non è stato rinnovato.'
       extend_server: 'Per ripristinare il server, rinnova nel pannello clienti.'
+      server_details: 'Dettagli server'
+      server_name: 'Server: %serverName%'
+      suspension_date: 'Sospeso il: %suspensionDate%'
+      auto_delete_warning: 'Importante: Il tuo server verrà eliminato automaticamente dopo %days% giorni (%deleteDate%) se non rinnovato.'
+      panel_access: 'Accesso al pannello'
+
+  verification:
+    title: 'Verifica e-mail richiesta'
+    subtitle: 'Verifica il tuo indirizzo e-mail per continuare'
+    required: 'Verifica e-mail richiesta'
+    description: 'Devi verificare il tuo indirizzo e-mail prima di poter accedere a questa funzione.'
+    sent_to: 'E-mail di verifica inviata a'
+    resend: 'Invia nuovamente e-mail di verifica'
+    resend_success: 'L''e-mail di verifica è stata inviata!'
+    back_to_panel: 'Torna al pannello'
+    help_text: 'Controlla la tua casella di posta e la cartella spam per il link di verifica.'
 
   admin:
     overview:

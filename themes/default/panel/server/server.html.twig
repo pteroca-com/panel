@@ -44,6 +44,8 @@
 
     {% if serverData.isInstalling %}
         {% include 'panel/server/server_installing.html.twig' %}
+    {% elseif serverData.isSuspended %}
+        {% include 'panel/server/server_suspended.html.twig' %}
     {% else %}
         <div class="container mt-4">
             {% include 'panel/server/tabs/navigation.html.twig' %}

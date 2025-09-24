@@ -5,6 +5,7 @@ namespace App\Core\Service\Payment;
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\PaymentSessionDTO;
 use App\Core\Entity\Payment;
+use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
@@ -15,6 +16,7 @@ use App\Core\Provider\Payment\PaymentProviderInterface;
 use App\Core\Repository\PaymentRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
+use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use App\Core\Service\Voucher\VoucherPaymentService;
@@ -33,6 +35,7 @@ class PaymentService
         private readonly LogService $logService,
         private readonly UserVerificationService $userVerificationService,
         private readonly VoucherPaymentService $voucherPaymentService,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {}
 
     public function createPayment(
@@ -132,6 +135,13 @@ class PaymentService
                 ],
             );
             $this->messageBus->dispatch($emailMessage);
+            
+            $this->emailNotificationService->logEmailSent(
+                $user,
+                EmailTypeEnum::PAYMENT_SUCCESS,
+                null,
+                $this->translator->trans('pteroca.email.payment.subject')
+            );
 
             $this->logService->logAction(
                 $user,

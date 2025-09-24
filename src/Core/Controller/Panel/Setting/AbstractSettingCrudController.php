@@ -9,6 +9,7 @@ use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingTypeEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\SettingRepository;
+use App\Core\Repository\SettingOptionRepository;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\LocaleService;
 use App\Core\Service\SettingService;
@@ -46,6 +47,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingRepository $settingRepository,
+        private readonly SettingOptionRepository $settingOptionRepository,
         private readonly SettingService $settingService,
         private readonly LocaleService $localeService,
     ) {
@@ -107,6 +109,8 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 ->setUploadDir('public/uploads/settings')
                 ->setBasePath('/uploads/settings')
                 ->setUploadedFileNamePattern('[randomhash].[extension]'),
+            SettingTypeEnum::SELECT->value => ChoiceField::new('value', $valueLabel)
+                ->setChoices($this->getSelectOptions($this->currentEntity?->getName())),
             default => TextareaField::new('value', $valueLabel)
                 ->formatValue(function ($value, $entity) {
                     return match ($entity->getType()) {
@@ -127,20 +131,14 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
-        $actions
+        return $actions
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.setting.add')))
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.setting.add')))
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.setting.save')))
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
-            ->remove(Crud::PAGE_DETAIL, Action::INDEX);
-        if (strtolower($_ENV['APP_ENV']) === 'prod') {
-            $actions
-                ->remove(Crud::PAGE_INDEX, Action::DELETE)
-                ->remove(Crud::PAGE_INDEX, Action::NEW);
-        }
-
-        return $actions;
+            ->remove(Crud::PAGE_INDEX, Action::DELETE)
+            ->remove(Crud::PAGE_INDEX, Action::NEW);
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -231,5 +229,14 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         $hint = $this->translator->trans($hintIndex);
 
         return $hint !== $hintIndex ? $hint : '';
+    }
+
+    private function getSelectOptions(?string $settingName): array
+    {
+        if (empty($settingName)) {
+            return [];
+        }
+
+        return $this->settingOptionRepository->getOptionsForSetting($settingName);
     }
 }

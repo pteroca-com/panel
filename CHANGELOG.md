@@ -2,6 +2,24 @@
 
 ---
 
+## [0.5.8] - 2025-09-24
+
+### Added
+- Added validation for top-up amounts to prevent invalid values.  
+- Added soft delete support for servers.  
+- Added command for removing old system logs.  
+
+### Changed
+- Updated system updater to further improve reliability.  
+- Rewritten logic for post-purchase and renewal emails, with minor template improvements.  
+- Rewritten logic for user account activation to ensure proper functionality.  
+- General code improvements and optimizations.  
+
+### Fixed
+- Fixed issue when accessing the page of a suspended server, which previously resulted in an error.  
+
+---
+
 ## [0.5.7] - 2025-09-04
 
 ### Added

@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Ocorreu um erro ao se comunicar com o painel Pterodactyl.'
     dont_have_permission: 'Você não tem permissão para acessar esta página.'
     experimental_feature: 'Este recurso é experimental e pode não funcionar corretamente.'
+    or_resend_verification_email: 'ou clique aqui para reenviar o e-mail de verificação.'
 
   demo:
     action_disabled: 'Esta ação está desativada no modo de demonstração.'
@@ -21,6 +22,7 @@ pteroca:
     sign_in: 'Entrar'
     invalid_captcha: 'Verificação CAPTCHA inválida.'
     user_blocked: 'Sua conta foi bloqueada.'
+    invalid_credentials: 'E-mail ou senha inválidos.'
     dont_have_account_yet: 'Ainda não tem uma conta? Cadastre-se!'
     subtitle: 'Faça login na sua conta'
 
@@ -115,6 +117,7 @@ pteroca:
     amount_hint: 'Insira o valor que deseja recarregar.'
     view_transaction_history: 'Ver histórico de transações'
     view_all_payments_description: 'Mostra todos os pagamentos feitos em sua conta.'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: 'Informações'
@@ -316,6 +319,10 @@ pteroca:
     server_installing: 'O servidor está sendo instalado'
     server_installing_message: 'Seu servidor está sendo instalado e estará disponível em alguns minutos. Por favor, aguarde a conclusão do processo de instalação.'
     server_installing_description: 'O processo de instalação pode levar vários minutos, dependendo do software selecionado e das especificações do servidor.'
+    server_suspended: 'Servidor suspenso'
+    server_suspended_message: 'Seu servidor está atualmente suspenso e não pode ser acessado.'
+    server_suspended_description: 'Este servidor foi suspenso devido a uma ação administrativa ou violação de política. Por favor, entre em contato com o suporte para assistência.'
+    suspended_expired_description: 'Este servidor foi suspenso porque expirou em %expireDate% e não foi renovado. Para restaurar o servidor, por favor renove-o.'
     rules: 'Regras'
     data_validation_error: 'Erro durante a validação. Por favor, verifique se todas as regras foram atendidas.'
     enable_auto_renewal: 'Ativar renovação automática para este servidor'
@@ -574,6 +581,7 @@ pteroca:
     entity_add: 'Entidade adicionada'
     entity_edit: 'Entidade editada'
     entity_delete: 'Entidade excluída'
+    entity_restore: 'Entidade restaurada'
     user_registered: 'Conta registrada'
     user_verify_email: 'Verificação de e-mail'
     voucher_redeemed: 'Voucher resgatado'
@@ -605,6 +613,15 @@ pteroca:
     discount_value_invalid: 'O valor do desconto é inválido. O máximo é 100(%).'
     voucher_type_invalid: 'Este vale não pode ser utilizado para este tipo de pagamento.'
     invalid_voucher_type: 'Tipo de vale inválido.'
+
+  email_types:
+    email_verification: 'Verificação de e-mail'
+    payment_success: 'Confirmação de pagamento'
+    purchased_product: 'Compra de produto'
+    registration: 'Confirmação de registro'
+    renew_product: 'Renovação de produto'
+    reset_password: 'Redefinição de senha'
+    server_suspended: 'Suspensão do servidor'
 
   crud:
     category:
@@ -839,10 +856,19 @@ pteroca:
       pterodactyl_user_id: 'ID do usuário no Pterodactyl'
       created_at: 'Criado em'
       updated_at: 'Atualizado em'
+      deleted_at: 'Excluído em'
       avatar: 'Avatar'
       repeat_password: 'Repetir senha'
       repeat_password_hint: 'Digite a senha novamente para confirmar.'
       passwords_must_match: 'As senhas devem coincidir.'
+      deleted_successfully: 'Usuário excluído com sucesso.'
+      restored_successfully: 'Usuário restaurado com sucesso.'
+      account_restored: 'A conta do usuário foi restaurada de uma conta anteriormente excluída.'
+      created_successfully: 'O usuário foi criado com sucesso.'
+      restore_error: 'Erro ao restaurar o usuário.'
+      restore: 'Restaurar'
+      pterodactyl_user_not_found: 'Usuário não encontrado no Pterodactyl, mas excluído com sucesso do PteroCA.'
+      cannot_delete_user_with_active_servers: 'Não é possível excluir o usuário com {{ count }} servidor(es) ativo(s). Exclua ou suspenda os servidores primeiro.'
     payment:
       session_id: 'ID da sessão'
       status: 'Status'
@@ -871,6 +897,14 @@ pteroca:
       created_at: 'Criado em'
       user: 'Usuário'
       ip_address: 'Endereço IP'
+      server: 'Servidor'
+    email_log:
+      email_log: 'Registro de e-mail'
+      email_logs: 'Registros de e-mail'
+      email_type: 'Tipo de e-mail'
+      metadata: 'Metadados de e-mail'
+      sent_at: 'Enviado em'
+      user: 'Usuário'
       server: 'Servidor'
     voucher:
       voucher: 'Vale'
@@ -929,6 +963,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Pagamentos'
       logs: 'Registros'
+      email_logs: 'Registros de e-mail'
       server_logs: 'Logs do servidor'
       overview: 'Visão Geral'
       server_builds: 'Servidores'
@@ -948,6 +983,7 @@ pteroca:
     server_user:
       user_not_exist: 'O usuário com e-mail {{ email }} não existe no sistema. O usuário deve se registrar primeiro.'
       user_already_added: 'O usuário com e-mail {{ email }} já foi adicionado a este servidor.'
+      user_not_verified: 'O usuário com e-mail {{ email }} não verificou seu endereço de e-mail e não pode ser adicionado como subusuário.'
       cannot_modify_yourself: 'Você não pode executar esta ação em si mesmo: {{ action }}.'
       modify_permissions: 'modificar permissões'
       delete_yourself_from_server: 'remover-se do servidor'
@@ -969,6 +1005,18 @@ pteroca:
       best_regards: 'Atenciosamente'
       visit_website: 'Visite nosso site:'
       copyright: 'Todos os direitos reservados.'
+    verification:
+      subject: "Verificação de e-mail - %siteName%"
+      title: "Verificação de e-mail"
+      hello: "Olá %name%!"
+      message: "Obrigado por se registrar em %siteName%. Verifique seu endereço de e-mail clicando no botão abaixo."
+      verify_button: "Verificar endereço de e-mail"
+      alternative_text: "Se o botão não funcionar, você também pode copiar e colar o link a seguir no seu navegador:"
+      footer_text: "Se você não criou uma conta em %siteName%, pode ignorar este e-mail com segurança."
+      resend_too_soon: "Você só pode reenviar o e-mail de verificação uma vez a cada %minutes% minutos. Tente novamente mais tarde."
+      resend_success: "O e-mail de verificação foi enviado para seu endereço de e-mail."
+      not_logged_in: "Você deve estar logado para reenviar o e-mail de verificação."
+      already_verified: "Seu endereço de e-mail já está verificado."
     pricing:
       slot_format: '{{ slots }} slots × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -976,8 +1024,11 @@ pteroca:
     registration:
       subject: 'Registro'
       welcome: 'Bem-vindo ao nosso serviço! Obrigado por se registrar.'
+      account_ready: 'Sua conta está pronta para uso. Agora você pode fazer login na sua conta e começar a usar nossos serviços.'
+      email_verification_required: 'Verificação de e-mail obrigatória'
       confirm_email: 'Confirme seu endereço de e-mail clicando no link abaixo:'
       confirm_email_button: 'Confirmar e-mail'
+      alternative_text: 'Se o botão não funcionar, você também pode copiar e colar o link a seguir no seu navegador:'
       if_not_registered: 'Se você não se registrou em nosso site, ignore esta mensagem.'
     recovery:
       subject: 'Redefinição de senha'
@@ -1012,6 +1063,22 @@ pteroca:
       subject: 'Suspensão de servidor'
       server_suspended: 'Informamos que um de seus servidores foi suspenso por não ter sido renovado.'
       extend_server: 'Para restaurar o servidor, renove-o no painel do cliente.'
+      server_details: 'Detalhes do servidor'
+      server_name: 'Servidor: %serverName%'
+      suspension_date: 'Suspenso em: %suspensionDate%'
+      auto_delete_warning: 'Importante: O seu servidor será automaticamente eliminado após %days% dias (%deleteDate%) se não for renovado.'
+      panel_access: 'Acesso ao painel'
+
+  verification:
+    title: 'Verificação de e-mail obrigatória'
+    subtitle: 'Verifique seu endereço de e-mail para continuar'
+    required: 'Verificação de e-mail obrigatória'
+    description: 'Você deve verificar seu endereço de e-mail antes de acessar esta função.'
+    sent_to: 'E-mail de verificação enviado para'
+    resend: 'Reenviar e-mail de verificação'
+    resend_success: 'O e-mail de verificação foi enviado!'
+    back_to_panel: 'Voltar ao painel'
+    help_text: 'Verifique sua caixa de entrada e pasta de spam para o link de verificação.'
 
   admin:
     overview:

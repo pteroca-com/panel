@@ -2,9 +2,10 @@
 
 namespace App\Core\Service\Authorization;
 
-use App\Core\Contract\UserInterface;
 use App\Core\Enum\SettingEnum;
+use App\Core\Contract\UserInterface;
 use App\Core\Service\SettingService;
+use App\Core\Enum\EmailVerificationValueEnum;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserVerificationService
@@ -16,10 +17,10 @@ class UserVerificationService
 
     public function validateUserVerification(UserInterface $user): void
     {
-        $isVerificationRequired = $this->settingService
+        $isVerificationRequiredValue = $this->settingService
             ->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
 
-        if ($isVerificationRequired && !$user->isVerified()) {
+        if ($isVerificationRequiredValue === EmailVerificationValueEnum::REQUIRED->value && !$user->isVerified()) {
             throw new \Exception($this->translator->trans('pteroca.system.email_not_verified'));
         }
     }

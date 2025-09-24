@@ -1,7 +1,33 @@
 {% trans_default_domain 'messages' %}
 {% include 'email/header.html.twig' %}
-<p>
-    {{ 'pteroca.email.suspended.server_suspended'|trans }}<br>
-    {{ 'pteroca.email.suspended.extend_server'|trans }}
-</p>
+
+<h2>{{ 'pteroca.email.suspended.subject'|trans }}</h2>
+
+<p>{{ 'pteroca.email.suspended.server_suspended'|trans }}</p>
+
+<div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #dc3545; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #dc3545;">{{ 'pteroca.email.suspended.server_details'|trans }}</h3>
+    <p><strong>{{ 'pteroca.email.suspended.server_name'|trans({'%serverName%': serverName}) }}</strong></p>
+    <p>{{ 'pteroca.email.suspended.suspension_date'|trans({'%suspensionDate%': suspensionDate|date('Y-m-d H:i')}) }}</p>
+</div>
+
+{% if autoDeleteEnabled and deleteAfterDays and deleteDate %}
+<div style="background-color: #fff3cd; padding: 15px; border: 1px solid #ffeaa7; border-radius: 4px; margin: 20px 0;">
+    <p style="margin: 0; color: #856404;">
+        <strong>⚠️ {{ 'pteroca.email.suspended.auto_delete_warning'|trans({
+            '%days%': deleteAfterDays,
+            '%deleteDate%': deleteDate|date('Y-m-d H:i')
+        }) }}</strong>
+    </p>
+</div>
+{% endif %}
+
+<p>{{ 'pteroca.email.suspended.extend_server'|trans }}</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ panelUrl }}" class="button">
+        {{ 'pteroca.email.suspended.panel_access'|trans }}
+    </a>
+</div>
+
 {% include 'email/footer.html.twig' %}

@@ -57,7 +57,11 @@ class ServerCrudController extends AbstractPanelController
                 ->setDisabled(),
             AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product_server_build'))
                 ->setDisabled(),
-            AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user')),
+            AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user'))
+                ->setQueryBuilder(function ($queryBuilder) {
+                    return $queryBuilder
+                        ->andWhere('entity.deletedAt IS NULL');
+                }),
             BooleanField::new('autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
                 ->hideOnIndex(),
 
