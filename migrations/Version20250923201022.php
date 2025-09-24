@@ -12,7 +12,7 @@ final class Version20250923201022 extends AbstractMigration
     private const NEW_SETTINGS = [
         [
             'name' => 'renewal_notification_enabled',
-            'value' => '1',
+            'value' => '0',
             'type' => 'boolean',
             'context' => 'email_settings',
             'hierarchy' => 100,
