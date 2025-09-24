@@ -1,7 +1,8 @@
 pteroca:
   system:
     back: 'Back to panel'
-    email_not_verified: 'Your email address has not been verified yet. Please check your inbox.'
+    email_not_verified: 'Your email address has not been verified yet. Please check your inbox'
+    or_resend_verification_email: 'or click here to resend the verification email.'
     pterodactyl_error: 'Error while connecting to the Pterodactyl API.'
     dont_have_permission: 'You do not have permission to perform this action.'
     experimental_feature: 'This feature is experimental and may not work correctly.'
@@ -17,6 +18,7 @@ pteroca:
     sign_in: 'Sign in'
     invalid_captcha: 'Invalid CAPTCHA verification.'
     user_blocked: 'Your account has been blocked.'
+    invalid_credentials: 'Invalid email or password.'
     dont_have_account_yet: "Don't have an account yet? Register now!"
     subtitle: 'Sign in to your account'
 
@@ -111,6 +113,7 @@ pteroca:
     amount_hint: 'Enter the amount you want to recharge.'
     view_transaction_history: 'View transaction history'
     view_all_payments_description: 'View all payments that have been made on your account.'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: 'Information'
@@ -311,6 +314,10 @@ pteroca:
     server_installing: 'Server is being installed'
     server_installing_message: 'Your server is currently being installed and will be available in a few minutes. Please wait while the installation process completes.'
     server_installing_description: 'The installation process may take several minutes depending on the selected software and server specifications.'
+    server_suspended: 'Server is suspended'
+    server_suspended_message: 'Your server is currently suspended and cannot be accessed.'
+    server_suspended_description: 'This server has been suspended due to administrative action or policy violation. Please contact support for assistance.'
+    suspended_expired_description: 'This server has been suspended because it expired on %expireDate% and has not been renewed. To restore the server, please renew it.'
     rules: 'Rules'
     data_validation_error: 'Error during validation. Please check if all rules are met.'
     enable_auto_renewal: 'Enable auto-renewal for this server'
@@ -568,6 +575,7 @@ pteroca:
     entity_add: 'Entity added'
     entity_edit: 'Entity edited'
     entity_delete: 'Entity deleted'
+    entity_restore: 'Entity restored'
     user_registered: 'User registered'
     user_verify_email: 'Email verified'
     voucher_redeemed: 'Voucher redeemed'
@@ -599,6 +607,15 @@ pteroca:
     discount_value_invalid: 'The discount value is invalid. Maximum is 100 (%).'
     voucher_type_invalid: 'This voucher cannot be used for this type of payment.'
     invalid_voucher_type: 'Invalid voucher type.'
+
+  email_types:
+    email_verification: 'Email verification'
+    payment_success: 'Payment confirmation'
+    purchased_product: 'Product purchase'
+    registration: 'Registration confirmation'
+    renew_product: 'Product renewal'
+    reset_password: 'Password reset'
+    server_suspended: 'Server suspension'
 
   crud:
     category:
@@ -798,6 +815,10 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO Login Secret Key'
         show_pterodactyl_logs_in_server_activity: 'Show Pterodactyl logs in server activity'
         current_theme: 'Current theme of the panel'
+        smtp_from: 'SMTP From'
+        renewal_notification_enabled: 'Enable renewal notifications'
+        renewal_notification_min_period_hours: 'Notification minimum frequency (in hours)'
+        renewal_notification_on_demand_min_hours: 'On-demand minimum hours before sending notification'
       template:
         name: 'Template name'
         description: 'Template description'
@@ -810,7 +831,6 @@ pteroca:
         options: 'Options'
         supportDarkMode: 'Support dark mode'
         supportCustomColors: 'Allow configuring custom colors'
-      smtp_from: 'Sender email address'
       test_smtp_connection: 'Test SMTP Connection'
       smtp_connection_success: 'SMTP connection successful!'
       smtp_connection_failed: 'SMTP connection failed!'
@@ -831,10 +851,16 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl User ID'
       created_at: 'Created at'
       updated_at: 'Last activity'
+      deleted_at: 'Deleted at'
       avatar: 'Avatar'
       repeat_password: 'Repeat password'
       repeat_password_hint: 'Enter the password again to confirm.'
       passwords_must_match: 'Passwords must match.'
+      deleted_successfully: 'User deleted successfully.'
+      pterodactyl_user_not_found: 'User not found in Pterodactyl, but deleted from PteroCA successfully.'
+      cannot_delete_user_with_active_servers: 'Cannot delete user with {{ count }} active server(s). Please delete or suspend the servers first.'
+      account_restored: 'User account has been restored from previously deleted account.'
+      created_successfully: 'User has been created successfully.'
     payment:
       session_id: 'Session ID'
       status: 'Status'
@@ -863,6 +889,14 @@ pteroca:
       created_at: 'Created at'
       user: 'User'
       ip_address: 'IP address'
+      server: 'Server'
+    email_log:
+      email_log: 'Email log'
+      email_logs: 'Email logs'
+      email_type: 'Email type'
+      metadata: 'Email metadata'
+      sent_at: 'Sent at'
+      user: 'User'
       server: 'Server'
     voucher:
       voucher: 'Voucher'
@@ -921,6 +955,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Payments'
       logs: 'Logs'
+      email_logs: 'Email logs'
       server_logs: 'Server logs'
       overview: 'Overview'
       server_builds: 'Servers'
@@ -940,6 +975,7 @@ pteroca:
     server_user:
       user_not_exist: 'User with email {{ email }} does not exist in the system. The user must register first.'
       user_already_added: 'User with email {{ email }} is already added to this server.'
+      user_not_verified: 'User with email {{ email }} has not verified their email address and cannot be added as a subuser.'
       cannot_modify_yourself: 'You cannot perform this action on yourself: {{ action }}.'
       modify_permissions: 'modify permissions'
       delete_yourself_from_server: 'delete yourself from server'
@@ -961,6 +997,18 @@ pteroca:
       best_regards: 'Best regards'
       visit_website: 'Visit our website:'
       copyright: 'All rights reserved.'
+    verification:
+      subject: "Email Verification - %siteName%"
+      title: "Email Verification"
+      hello: "Hello %name%!"
+      message: "Thank you for registering at %siteName%. Please verify your email address by clicking the button below."
+      verify_button: "Verify Email Address"
+      alternative_text: "If the button doesn't work, you can also copy and paste the following link into your browser:"
+      footer_text: "If you didn't create an account at %siteName%, you can safely ignore this email."
+      resend_too_soon: "You can only resend verification email once every %minutes% minutes. Please try again later."
+      resend_success: "Verification email has been sent to your email address."
+      not_logged_in: "You must be logged in to resend verification email."
+      already_verified: "Your email address is already verified."
     pricing:
       slot_format: '{{ slots }} slots × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -968,8 +1016,11 @@ pteroca:
     registration:
       subject: 'Registration'
       welcome: 'Welcome to our service! Thank you for registering.'
+      account_ready: 'Your account is ready to use. You can now log in to your account and start using our services.'
+      email_verification_required: 'Email Verification Required'
       confirm_email: 'Please confirm your email address by clicking the link below:'
       confirm_email_button: 'Confirm email address'
+      alternative_text: 'If the button doesn''t work, you can also copy and paste the following link into your browser:'
       if_not_registered: 'If you did not register on our site, please ignore this email.'
     recovery:
       subject: 'Password Reset'
@@ -1004,6 +1055,22 @@ pteroca:
       subject: 'Server Suspension'
       server_suspended: 'We inform you that one of your servers has been suspended because it has not been renewed.'
       extend_server: 'To restore the server, renew it in the client panel.'
+      server_details: 'Server Details'
+      server_name: 'Server: %serverName%'
+      suspension_date: 'Suspended on: %suspensionDate%'
+      auto_delete_warning: 'Important: Your server will be automatically deleted after %days% days (%deleteDate%) if not renewed.'
+      panel_access: 'Access Panel'
+
+  verification:
+    title: 'Email Verification Required'
+    subtitle: 'Please verify your email address to continue'
+    required: 'Email verification required'
+    description: 'You must verify your email address before you can access this feature.'
+    sent_to: 'Verification email sent to'
+    resend: 'Resend Verification Email'
+    resend_success: 'Verification email has been sent!'
+    back_to_panel: 'Back to Panel'
+    help_text: 'Check your email inbox and spam folder for the verification link.'
 
   admin:
     overview:

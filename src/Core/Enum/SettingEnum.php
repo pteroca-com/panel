@@ -50,4 +50,9 @@ enum SettingEnum: string
     case DELETE_SUSPENDED_SERVERS_DAYS_AFTER = 'delete_suspended_servers_days_after';
     case CURRENT_THEME = 'current_theme';
     case IS_CONFIGURED = 'is_configured';
+    case RENEWAL_NOTIFICATION_ENABLED = 'renewal_notification_enabled';
+    case RENEWAL_NOTIFICATION_MIN_PERIOD_HOURS = 'renewal_notification_min_period_hours';
+    case RENEWAL_NOTIFICATION_ON_DEMAND_MIN_HOURS = 'renewal_notification_on_demand_min_hours';
+    case LOG_CLEANUP_ENABLED = 'log_cleanup_enabled';
+    case LOG_CLEANUP_DAYS_AFTER = 'log_cleanup_days_after';
 }

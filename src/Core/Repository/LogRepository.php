@@ -18,4 +18,14 @@ class LogRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($log);
         $this->getEntityManager()->flush();
     }
+
+    public function deleteOldLogs(\DateTimeInterface $cutoffDate): int
+    {
+        $qb = $this->createQueryBuilder('l')
+            ->delete()
+            ->where('l.createdAt < :cutoffDate')
+            ->setParameter('cutoffDate', $cutoffDate);
+
+        return $qb->getQuery()->execute();
+    }
 }

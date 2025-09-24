@@ -1,0 +1,115 @@
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
+
+{% block body_class 'page-login bg-light' %}
+{% block page_title %}{{ get_title() }} | {{ 'pteroca.verification.title'|trans }}{% endblock %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
+{% endblock %}
+
+{% block head_favicon %}
+    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
+{% endblock %}
+
+{% block wrapper_wrapper %}
+    {% set page_title = block('page_title') %}
+
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+        <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+            <!-- Logo Section - poza kartą -->
+            <div class="text-center mb-4">
+                {% block header_logo %}
+                    <div class="mb-3">
+                        <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid" style="max-height: 80px;" />
+                    </div>
+                {% endblock header_logo %}
+            </div>
+            
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <!-- Title Section -->
+                    <div class="text-center mb-4">
+                        <i class="fas fa-envelope-open-text fa-3x text-warning mb-3"></i>
+                        <h1 class="h4 fw-bold text-dark mb-1">{{ 'pteroca.verification.title'|trans }}</h1>
+                        <p class="text-muted small mb-0">{{ 'pteroca.verification.subtitle'|trans }}</p>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% include '@EasyAdmin/flash_messages.html.twig' %}
+
+                    <!-- Verification Info -->
+                    <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div>
+                            <strong>{{ 'pteroca.verification.required'|trans }}</strong><br>
+                            <small>{{ 'pteroca.verification.description'|trans }}</small>
+                        </div>
+                    </div>
+
+                    <!-- User Info -->
+                    {% if app.user %}
+                        <div class="mb-4">
+                            <p class="text-muted small mb-2">{{ 'pteroca.verification.sent_to'|trans }}:</p>
+                            <p class="fw-semibold text-dark mb-0">
+                                <i class="fas fa-envelope me-2"></i>
+                                {{ app.user.email }}
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="button" class="btn btn-primary btn-lg fw-semibold" onclick="resendVerification()">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            {{ 'pteroca.verification.resend'|trans }}
+                        </button>
+                        
+                        <a href="{{ path('panel') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            {{ 'pteroca.verification.back_to_panel'|trans }}
+                        </a>
+                    </div>
+
+                    <!-- Help Text -->
+                    <div class="text-center">
+                        <p class="text-muted small mb-0">
+                            <i class="fas fa-question-circle me-1"></i>
+                            {{ 'pteroca.verification.help_text'|trans }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-3">
+                <p class="text-white small mb-0">
+                    Powered by 
+                    <a href="https://pteroca.com" target="_blank" class="text-white text-decoration-none">
+                        PteroCA v{{ get_app_version() }}
+                    </a> 
+                    &copy; {{ 'now'|date('Y') }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for resend functionality -->
+    <script>
+        function resendVerification() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ path('resend_verification') }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token('resend_verification') }}';
+            form.appendChild(csrfInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+
+{% endblock %}

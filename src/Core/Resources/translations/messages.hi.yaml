@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Pterodactyl API से कनेक्ट करने में त्रुटि हुई।'
     dont_have_permission: 'आपको इस क्रिया को करने की अनुमति नहीं है।'
     experimental_feature: 'यह फीचर परीक्षणाधीन है और सही से काम नहीं कर सकता है।'
+    or_resend_verification_email: 'या सत्यापन ईमेल को फिर से भेजने के लिए यहाँ क्लिक करें।'
 
   login:
     title: 'लॉगिन'
@@ -17,6 +18,7 @@ pteroca:
     sign_in: 'साइन इन करें'
     invalid_captcha: 'अमान्य CAPTCHA सत्यापन।'
     user_blocked: 'आपका खाता ब्लॉक कर दिया गया है।'
+    invalid_credentials: 'अमान्य ईमेल या पासवर्ड।'
     dont_have_account_yet: "अभी तक खाता नहीं है? अभी पंजीकरण करें!"
     subtitle: 'अपने खाते में लॉगिन करें'
 
@@ -111,6 +113,7 @@ pteroca:
     amount_hint: 'वह राशि दर्ज करें जिसे आप रिचार्ज करना चाहते हैं।'
     view_transaction_history: 'लेन-देन इतिहास देखें'
     view_all_payments_description: 'आपके खाते पर किए गए सभी भुगतान दिखाता है।'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: 'जानकारी'
@@ -310,6 +313,10 @@ pteroca:
     server_installing: 'सर्वर स्थापित किया जा रहा है'
     server_installing_message: 'आपका सर्वर वर्तमान में स्थापित किया जा रहा है और कुछ ही मिनटों में उपलब्ध होगा। कृपया स्थापना प्रक्रिया पूरी होने तक प्रतीक्षा करें।'
     server_installing_description: 'स्थापना प्रक्रिया में चयनित सॉफ़्टवेयर और सर्वर विनिर्देशों के आधार पर कई मिनट लग सकते हैं।'
+    server_suspended: 'सर्वर निलंबित है'
+    server_suspended_message: 'आपका सर्वर वर्तमान में निलंबित है और इसे एक्सेस नहीं किया जा सकता।'
+    server_suspended_description: 'यह सर्वर प्रशासनिक कार्रवाई या नीति उल्लंघन के कारण निलंबित किया गया है। सहायता के लिए कृपया सहायता से संपर्क करें।'
+    suspended_expired_description: 'यह सर्वर निलंबित किया गया है क्योंकि यह %expireDate% को समाप्त हो गया है और इसे नवीनीकृत नहीं किया गया है। सर्वर को पुनर्स्थापित करने के लिए, कृपया इसे नवीनीकृत करें।'
     rules: 'नियम'
     data_validation_error: 'मान्यता त्रुटि। कृपया जांचें कि सभी नियम पूरे हो रहे हैं या नहीं।'
     enable_auto_renewal: 'इस सर्वर के लिए स्वतः नवीनीकरण सक्षम करें'
@@ -568,6 +575,7 @@ pteroca:
     entity_add: 'इकाई जोड़ी गई'
     entity_edit: 'इकाई संपादित की गई'
     entity_delete: 'इकाई हटाई गई'
+    entity_restore: 'इकाई बहाल की गई'
     user_registered: 'उपयोगकर्ता पंजीकृत हुआ'
     user_verify_email: 'ईमेल सत्यापित किया गया'
     voucher_redeemed: 'वाउचर भुनाया गया'
@@ -599,6 +607,15 @@ pteroca:
     discount_value_invalid: 'छूट मान अमान्य है. अधिकतम मान 100(%).'
     voucher_type_invalid: 'इस वाउचर का उपयोग इस भुगतान प्रकार पर नहीं किया जा सकता.'
     invalid_voucher_type: 'अमान्य वाउचर प्रकार.'
+
+  email_types:
+    email_verification: 'ईमेल सत्यापन'
+    payment_success: 'भुगतान पुष्टि'
+    purchased_product: 'उत्पाद खरीद'
+    registration: 'पंजीकरण पुष्टि'
+    renew_product: 'उत्पाद नवीनीकरण'
+    reset_password: 'पासवर्ड रीसेट'
+    server_suspended: 'सर्वर निलंबन'
 
   crud:
     category:
@@ -833,10 +850,19 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl उपयोगकर्ता आईडी'
       created_at: 'बनाया गया'
       updated_at: 'अंतिम गतिविधि'
+      deleted_at: 'हटाया गया'
       avatar: 'अवतार'
       repeat_password: 'पासवर्ड दोहराएं'
       repeat_password_hint: 'पुष्टि के लिए पासवर्ड फिर से दर्ज करें।'
       passwords_must_match: 'पासवर्ड मेल खाना चाहिए।'
+      deleted_successfully: 'उपयोगकर्ता सफलतापूर्वक हटाया गया।'
+      restored_successfully: 'उपयोगकर्ता सफलतापूर्वक बहाल किया गया।'
+      account_restored: 'उपयोगकर्ता खाता पहले हटाए गए खाते से पुनर्स्थापित किया गया है।'
+      created_successfully: 'उपयोगकर्ता सफलतापूर्वक बनाया गया है।'
+      restore_error: 'उपयोगकर्ता को बहाल करने में त्रुटि।'
+      restore: 'बहाल करें'
+      pterodactyl_user_not_found: 'Pterodactyl में उपयोगकर्ता नहीं मिला, लेकिन PteroCA से सफलतापूर्वक हटाया गया।'
+      cannot_delete_user_with_active_servers: '{{ count }} सक्रिय सर्वर के साथ उपयोगकर्ता को हटा नहीं सकता। कृपया पहले सर्वर को हटाएं या निलंबित करें।'
     payment:
       session_id: 'सत्र आईडी'
       status: 'स्थिति'
@@ -865,6 +891,14 @@ pteroca:
       created_at: 'बनाया गया'
       user: 'उपयोगकर्ता'
       ip_address: 'आईपी पता'
+      server: 'सर्वर'
+    email_log:
+      email_log: 'ईमेल लॉग'
+      email_logs: 'ईमेल लॉग्स'
+      email_type: 'ईमेल प्रकार'
+      metadata: 'ईमेल मेटाडेटा'
+      sent_at: 'भेजा गया'
+      user: 'उपयोगकर्ता'
       server: 'सर्वर'
     voucher:
       voucher: 'वाउचर'
@@ -923,6 +957,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'भुगतान'
       logs: 'लॉग्स'
+      email_logs: 'ईमेल लॉग्स'
       server_logs: 'सर्वर लॉग्स'
       overview: 'अवलोकन'
       server_builds: 'सर्वर'
@@ -942,6 +977,7 @@ pteroca:
     server_user:
       user_not_exist: 'ईमेल {{ email }} वाला उपयोगकर्ता सिस्टम में मौजूद नहीं है। उपयोगकर्ता को पहले पंजीकरण करना होगा।'
       user_already_added: 'ईमेल {{ email }} वाला उपयोगकर्ता पहले से ही इस सर्वर में जोड़ा गया है।'
+      user_not_verified: 'ईमेल {{ email }} वाला उपयोगकर्ता ने अपना ईमेल पता सत्यापित नहीं किया है और उसे सब-यूजर के रूप में जोड़ा नहीं जा सकता।'
       cannot_modify_yourself: 'आप अपने आप पर यह क्रिया नहीं कर सकते: {{ action }}।'
       modify_permissions: 'अनुमतियां संशोधित करें'
       delete_yourself_from_server: 'अपने आप को सर्वर से हटाएं'
@@ -963,6 +999,18 @@ pteroca:
       best_regards: 'सादर'
       visit_website: 'हमारी वेबसाइट पर जाएँ:'
       copyright: 'सभी अधिकार सुरक्षित।'
+    verification:
+      subject: "ईमेल सत्यापन - %siteName%"
+      title: "ईमेल सत्यापन"
+      hello: "नमस्ते %name%!"
+      message: "%siteName% में पंजीकरण करने के लिए धन्यवाद। कृपया नीचे दिए गए बटन पर क्लिक करके अपना ईमेल पता सत्यापित करें।"
+      verify_button: "ईमेल पता सत्यापित करें"
+      alternative_text: "यदि बटन काम नहीं करता है, तो आप नीचे दिए गए लिंक को कॉपी और पेस्ट करके अपने ब्राउज़र में खोल सकते हैं:"
+      footer_text: "यदि आपने %siteName% पर खाता नहीं बनाया है, तो आप इस ईमेल को सुरक्षित रूप से अनदेखा कर सकते हैं।"
+      resend_too_soon: "आप सत्यापन ईमेल को केवल हर %minutes% मिनट में एक बार फिर से भेज सकते हैं। कृपया बाद में पुनः प्रयास करें।"
+      resend_success: "सत्यापन ईमेल आपके ईमेल पते पर भेज दिया गया है।"
+      not_logged_in: "सत्यापन ईमेल को फिर से भेजने के लिए आपको लॉग इन होना चाहिए।"
+      already_verified: "आपका ईमेल पता पहले से ही सत्यापित है।"
     pricing:
       slot_format: '{{ slots }} स्लॉट × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -970,8 +1018,11 @@ pteroca:
     registration:
       subject: 'पंजीकरण'
       welcome: 'हमारी सेवा में आपका स्वागत है! पंजीकरण के लिए धन्यवाद।'
+      account_ready: 'आपका खाता उपयोग के लिए तैयार है। अब आप अपने खाते में लॉग इन कर सकते हैं और हमारी सेवाओं का उपयोग शुरू कर सकते हैं।'
+      email_verification_required: 'ईमेल सत्यापन आवश्यक'
       confirm_email: 'कृपया नीचे दिए गए लिंक पर क्लिक करके अपना ईमेल पता सत्यापित करें:'
       confirm_email_button: 'ईमेल पता सत्यापित करें'
+      alternative_text: 'यदि बटन काम नहीं करता है, तो आप नीचे दिए गए लिंक को कॉपी और पेस्ट करके अपने ब्राउज़र में खोल सकते हैं:'
       if_not_registered: 'यदि आपने हमारी साइट पर पंजीकरण नहीं किया है, तो कृपया इस ईमेल को अनदेखा करें।'
     recovery:
       subject: 'पासवर्ड रीसेट'
@@ -1006,6 +1057,22 @@ pteroca:
       subject: 'सर्वर निलंबन'
       server_suspended: 'हम आपको सूचित करना चाहते हैं कि आपका एक सर्वर नवीनीकरण न होने के कारण निलंबित कर दिया गया है।'
       extend_server: 'सर्वर को पुनर्स्थापित करने के लिए, ग्राहक पैनल में इसका नवीनीकरण करें।'
+      server_details: 'सर्वर विवरण'
+      server_name: 'सर्वर: %serverName%'
+      suspension_date: 'निलंबित: %suspensionDate%'
+      auto_delete_warning: 'महत्वपूर्ण: यदि नवीनीकृत नहीं किया गया तो आपका सर्वर %days% दिनों के बाद (%deleteDate%) स्वचालित रूप से हटा दिया जाएगा।'
+      panel_access: 'पैनल पहुंच'
+
+  verification:
+    title: 'ईमेल सत्यापन आवश्यक'
+    subtitle: 'कृपया जारी रखने के लिए अपना ईमेल पता सत्यापित करें'
+    required: 'ईमेल सत्यापन आवश्यक'
+    description: 'इस फीचर तक पहुंचने से पहले आपको अपना ईमेल पता सत्यापित करना होगा।'
+    sent_to: 'सत्यापन ईमेल भेजा गया'
+    resend: 'सत्यापन ईमेल फिर से भेजें'
+    resend_success: 'सत्यापन ईमेल भेज दिया गया है!'
+    back_to_panel: 'पैनल पर वापस जाएं'
+    help_text: 'सत्यापन लिंक के लिए अपने इनबॉक्स और स्पैम फोल्डर की जांच करें।'
 
   admin:
     overview:

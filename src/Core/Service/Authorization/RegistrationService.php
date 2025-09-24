@@ -4,15 +4,19 @@ namespace App\Core\Service\Authorization;
 
 use App\Core\Contract\UserInterface;
 use App\Core\DTO\Action\Result\RegisterUserActionResult;
+use App\Core\DTO\Email\RegistrationEmailContextDTO;
+use App\Core\Enum\EmailTypeEnum;
+use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
+use App\Core\Service\Mailer\EmailVerificationService;
 use App\Core\Service\SettingService;
 use App\Core\Service\User\UserService;
-use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
@@ -36,6 +40,8 @@ class RegistrationService
         private readonly UserService $userService,
         private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
+        private readonly EmailVerificationService $emailVerificationService,
+        private readonly EmailNotificationService $emailNotificationService,
     ) {
         $this->jwtConfiguration = Configuration::forSymmetricSigner(
             new Sha256(),
@@ -51,6 +57,12 @@ class RegistrationService
         bool $sendEmail = true
     ): RegisterUserActionResult
     {
+        $existingDeletedUser = $this->userRepository->findDeletedByEmail($user->getEmail());
+        
+        if ($existingDeletedUser) {
+            return $this->reactivateUser($existingDeletedUser, $plainPassword, $roles, $isVerified, $sendEmail);
+        }
+
         $user->setIsVerified($isVerified);
         $user->setRoles($roles);
 
@@ -76,6 +88,43 @@ class RegistrationService
         );
     }
 
+    private function reactivateUser(
+        UserInterface $deletedUser,
+        string $plainPassword,
+        array $roles,
+        bool $isVerified,
+        bool $sendEmail
+    ): RegisterUserActionResult
+    {
+        try {
+            $deletedUser->restore();
+            $deletedUser->setIsVerified($isVerified);
+            $deletedUser->setRoles($roles);
+            
+            if (!empty($plainPassword)) {
+                $deletedUser->setPlainPassword($plainPassword);
+                $this->userService->updateUserInPterodactyl($deletedUser, $plainPassword);
+            }
+
+            $this->userRepository->save($deletedUser);
+            $this->logService->logAction($deletedUser, LogActionEnum::USER_REGISTERED);
+
+            if ($sendEmail) {
+                $this->sendRegistrationEmail($deletedUser);
+            }
+
+            return new RegisterUserActionResult(
+                success: true,
+                user: $deletedUser,
+            );
+        } catch (\Exception $exception) {
+            return new RegisterUserActionResult(
+                success: false,
+                error: $exception->getMessage(),
+            );
+        }
+    }
+
     public function verifyEmail(string $token): void
     {
         try {
@@ -91,6 +140,14 @@ class RegistrationService
 
         if (!$this->jwtConfiguration->validator()->validate($token, ...$constraints)) {
             throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+        }
+
+        if ($token->claims()->has('exp')) {
+            $expiry = $token->claims()->get('exp');
+            $expiryTimestamp = $expiry instanceof \DateTimeInterface ? $expiry->getTimestamp() : (int) $expiry;
+            if ($expiryTimestamp < time()) {
+                throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+            }
         }
 
         if (!$this->jwtConfiguration->signer()->verify(
@@ -114,21 +171,38 @@ class RegistrationService
 
     private function sendRegistrationEmail(UserInterface $user): void
     {
-        $verificationToken = $this->createVerificationToken($user);
-        $baseUrl = $this->settingService->getSetting(SettingEnum::SITE_URL->value);
-        $verificationUrl = sprintf('%s/verify-email/%s', $baseUrl, $verificationToken);
-        $emailMessage = new SendEmailMessage(
-            $user->getEmail(),
-            $this->translator->trans('pteroca.email.registration.subject'),
-            'email/registration.html.twig',
-            [
-                'name' => $user->getName(),
-                'verificationUrl' => $verificationUrl,
-                'user' => $user,
-            ]
-        );
         try {
+            $context = $this->buildRegistrationEmailContext($user);
+            
+            $emailMessage = new SendEmailMessage(
+                $user->getEmail(),
+                $this->translator->trans('pteroca.email.registration.subject'),
+                'email/registration.html.twig',
+                [
+                    'user' => $context->user,
+                    'siteName' => $context->siteName,
+                    'siteUrl' => $context->siteUrl,
+                    'verificationUrl' => $context->verificationUrl,
+                ]
+            );
+            
             $this->messageBus->dispatch($emailMessage);
+            
+            $this->emailNotificationService->logEmailSent(
+                $user,
+                EmailTypeEnum::REGISTRATION,
+                null,
+                $this->translator->trans('pteroca.email.registration.subject')
+            );
+            
+            if ($context->verificationUrl !== null) {
+                $this->emailNotificationService->logEmailSent(
+                    $user,
+                    EmailTypeEnum::EMAIL_VERIFICATION,
+                    null,
+                    $this->translator->trans('pteroca.email.verification.subject', ['%siteName%' => $context->siteName])
+                );
+            }
         } catch (\Exception $exception) {
             $this->logger->error('Failed to send registration email', [
                 'exception' => $exception,
@@ -137,19 +211,36 @@ class RegistrationService
         }
     }
 
-    private function createVerificationToken(UserInterface $user): string
+    private function buildRegistrationEmailContext(UserInterface $user): RegistrationEmailContextDTO
     {
-        $now = new DateTimeImmutable();
-        $token = $this->jwtConfiguration->builder()
-            ->issuedBy(self::JWT_ISSUER)
-            ->issuedAt($now)
-            ->withClaim('uid', $user->getId())
-            ->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
-        return $token->toString();
+        $verificationMode = $this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
+        $siteName = $this->settingService->getSetting(SettingEnum::SITE_TITLE->value);
+        $siteUrl = $this->settingService->getSetting(SettingEnum::SITE_URL->value);
+        
+        $verificationUrl = null;
+        if ($verificationMode !== EmailVerificationValueEnum::DISABLED->value) {
+            $verificationToken = $this->emailVerificationService->createVerificationToken($user);
+            $verificationUrl = sprintf('%s/verify-email?token=%s', $siteUrl, urlencode($verificationToken));
+        }
+        
+        return new RegistrationEmailContextDTO(
+            user: $user,
+            siteName: $siteName,
+            siteUrl: $siteUrl,
+            verificationUrl: $verificationUrl,
+        );
     }
+
 
     public function userExists(string $email): bool
     {
         return !empty($this->userRepository->findOneBy(['email' => $email]));
+    }
+
+    public function getEmailVerificationMode(): string
+    {
+        return EmailVerificationValueEnum::tryFrom(
+            $this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value)
+        )?->value ?? EmailVerificationValueEnum::DISABLED->value;
     }
 }

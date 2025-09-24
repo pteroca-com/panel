@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: 'Fout tijdens het verbinden met de Pterodactyl API.'
     dont_have_permission: 'U bent niet bevoegd om deze functie te gebruiken.'
     experimental_feature: 'Deze functie is experimenteel en werkt mogelijk niet correct.'
+    or_resend_verification_email: 'of klik hier om de verificatie-e-mail opnieuw te verzenden.'
   login:
     title: 'Aanmelden'
     email_address: 'Email adres'
@@ -16,6 +17,7 @@ pteroca:
     sign_in: 'Inloggen'
     invalid_captcha: 'Ongeldige CAPTCHA-verificatie.'
     user_blocked: 'Uw account is geblokkeerd.'
+    invalid_credentials: 'Ongeldig e-mailadres of wachtwoord.'
     dont_have_account_yet: "Heeft u nog geen account? Registreer nu!"
     subtitle: 'Log in op uw account'
   register:
@@ -107,6 +109,7 @@ pteroca:
     amount_hint: 'Voer het bedrag in dat u wilt opladen.'
     view_transaction_history: 'Bekijk transactiegeschiedenis'
     view_all_payments_description: 'Toont alle betalingen die op uw account zijn gedaan.'
+    amount_must_be_positive: 'The amount must be positive.'
   product:
     information: 'Informatie'
     ram: 'Geheugen'
@@ -277,6 +280,10 @@ pteroca:
     server_installing: 'Server wordt geïnstalleerd'
     server_installing_message: 'Uw server wordt momenteel geïnstalleerd en is over enkele minuten beschikbaar. Wacht alstublieft tot het installatieproces is voltooid.'
     server_installing_description: 'Het installatieproces kan enkele minuten duren, afhankelijk van de geselecteerde software en serverspecificaties.'
+    server_suspended: 'Server opgeschort'
+    server_suspended_message: 'Uw server is momenteel opgeschort en kan niet worden geopend.'
+    server_suspended_description: 'Deze server is opgeschort vanwege een administratieve actie of beleidsschending. Neem contact op met de ondersteuning voor hulp.'
+    suspended_expired_description: 'Deze server is opgeschort omdat hij is verlopen op %expireDate% en niet is verlengd. Om de server te herstellen, verleng hem alstublieft.'
     rules: 'Regels'
     data_validation_error: 'Fout tijdens validatie. Controleer of aan alle regels is voldaan.'
     enable_auto_renewal: 'Schakel automatische verlenging in voor deze server'
@@ -537,6 +544,7 @@ pteroca:
     entity_add: 'Entiteit toegevoegd'
     entity_edit: 'Entiteit bewerkt'
     entity_delete: 'Entiteit verwijderd'
+    entity_restore: 'Entiteit hersteld'
     user_registered: 'Gebruiker geregistreerd'
     user_verify_email: 'E-mailadres geverifieerd'
     voucher_redeemed: 'Voucher ingewisseld'
@@ -589,6 +597,14 @@ pteroca:
     discount_value_invalid: 'De kortingswaarde is ongeldig. Maximum is 100 (%).'
     voucher_type_invalid: 'Deze voucher kan niet worden gebruikt voor dit type betaling.'
     invalid_voucher_type: 'Ongeldig voucher type.'
+  email_types:
+    email_verification: 'E-mail verificatie'
+    payment_success: 'Betalingsbevestiging'
+    purchased_product: 'Product aankoop'
+    registration: 'Registratie bevestiging'
+    renew_product: 'Product verlenging'
+    reset_password: 'Wachtwoord reset'
+    server_suspended: 'Server opschorting'
   crud:
     category:
       name: 'Categorienaam'
@@ -822,10 +838,19 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl gebruiker ID'
       created_at: 'Aangemaakt op'
       updated_at: 'Laatste activiteit'
+      deleted_at: 'Verwijderd op'
       avatar: 'Profielafbeelding'
       repeat_password: 'Herhaal wachtwoord'
       repeat_password_hint: 'Voer het wachtwoord opnieuw in ter bevestiging.'
       passwords_must_match: 'Wachtwoorden moeten overeenkomen.'
+      deleted_successfully: 'Gebruiker succesvol verwijderd.'
+      restored_successfully: 'Gebruiker succesvol hersteld.'
+      account_restored: 'Het gebruikersaccount is hersteld van een eerder verwijderd account.'
+      created_successfully: 'De gebruiker is succesvol aangemaakt.'
+      restore_error: 'Fout bij het herstellen van de gebruiker.'
+      restore: 'Herstellen'
+      pterodactyl_user_not_found: 'Gebruiker niet gevonden in Pterodactyl, maar succesvol verwijderd uit PteroCA.'
+      cannot_delete_user_with_active_servers: 'Kan gebruiker met {{ count }} actieve server(s) niet verwijderen. Verwijder of schort de servers eerst op.'
     payment:
       session_id: 'Sessie-ID'
       status: 'Status'
@@ -890,6 +915,14 @@ pteroca:
       user: 'Gebruiker'
       ip_address: 'IP-adres'
       server: 'Server'
+    email_log:
+      email_log: 'E-mail log'
+      email_logs: 'E-mail logs'
+      email_type: 'E-mail type'
+      metadata: 'E-mail metadata'
+      sent_at: 'Verzonden op'
+      user: 'Gebruiker'
+      server: 'Server'
     menu:
       menu: 'Menu'
       dashboard: 'Dashboard'
@@ -912,6 +945,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: 'Betalingen'
       logs: 'Logboeken'
+      email_logs: 'E-mail logs'
       server_logs: 'Server logboeken'
       overview: 'Overzicht'
       server_builds: 'Servers'
@@ -931,6 +965,7 @@ pteroca:
     server_user:
       user_not_exist: 'Gebruiker met e-mailadres {{ email }} bestaat niet in het systeem. De gebruiker moet zich eerst registreren.'
       user_already_added: 'Gebruiker met e-mailadres {{ email }} is al toegevoegd aan deze server.'
+      user_not_verified: 'Gebruiker met e-mailadres {{ email }} heeft zijn e-mailadres niet geverifieerd en kan niet als subgebruiker worden toegevoegd.'
       cannot_modify_yourself: 'U kunt deze actie niet op uzelf uitvoeren: {{ action }}.'
       modify_permissions: 'machtigingen wijzigen'
       delete_yourself_from_server: 'uzelf van de server verwijderen'
@@ -951,6 +986,18 @@ pteroca:
       best_regards: 'Met vriendelijke groet'
       visit_website: 'Bezoek onze website:'
       copyright: 'Alle rechten voorbehouden.'
+    verification:
+      subject: "E-mail verificatie - %siteName%"
+      title: "E-mail verificatie"
+      hello: "Hallo %name%!"
+      message: "Bedankt voor het registreren bij %siteName%. Verificeer je e-mailadres door op de onderstaande knop te klikken."
+      verify_button: "Verificeer e-mailadres"
+      alternative_text: "Als de knop niet werkt, kunt u ook de volgende link kopiëren en plakken in uw browser:"
+      footer_text: "Als u geen account heeft aangemaakt bij %siteName%, kunt u deze e-mail veilig negeren."
+      resend_too_soon: "U kunt de verificatie-e-mail slechts één keer per %minutes% minuten opnieuw verzenden. Probeer het later opnieuw."
+      resend_success: "De verificatie-e-mail is naar uw e-mailadres verzonden."
+      not_logged_in: "U moet ingelogd zijn om de verificatie-e-mail opnieuw te verzenden."
+      already_verified: "Uw e-mailadres is al geverifieerd."
     pricing:
       slot_format: '{{ slots }} slots × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -958,8 +1005,11 @@ pteroca:
     registration:
       subject: 'Registratie'
       welcome: 'Welkom bij onze dienst! Bedankt voor het registreren.'
+      account_ready: 'Uw account is klaar voor gebruik. U kunt nu inloggen op uw account en beginnen met het gebruik van onze diensten.'
+      email_verification_required: 'E-mail verificatie vereist'
       confirm_email: 'Bevestig je e-mailadres door op onderstaande link te klikken:'
       confirm_email_button: 'Bevestig e-mailadres'
+      alternative_text: 'Als de knop niet werkt, kunt u ook de volgende link kopiëren en plakken in uw browser:'
       if_not_registered: 'Als u niet voor onze site aangemeld bent, kunt u deze e-mail negeren.'
     recovery:
       subject: 'Wachtwoord opnieuw instellen'
@@ -994,6 +1044,21 @@ pteroca:
       subject: 'Server Schorsing'
       server_suspended: 'We informeren u dat een van uw servers is opgeschort omdat het niet vernieuwd is.'
       extend_server: 'Om de server te herstellen, verleng deze in het klantenpaneel.'
+      server_details: 'Server gegevens'
+      server_name: 'Server: %serverName%'
+      suspension_date: 'Opgeschort op: %suspensionDate%'
+      auto_delete_warning: 'Belangrijk: Uw server wordt automatisch verwijderd na %days% dagen (%deleteDate%) als deze niet wordt verlengd.'
+      panel_access: 'Toegang tot paneel'
+  verification:
+    title: 'E-mail verificatie vereist'
+    subtitle: 'Verificeer uw e-mailadres om door te gaan'
+    required: 'E-mail verificatie vereist'
+    description: 'U moet uw e-mailadres verifiëren voordat u toegang heeft tot deze functie.'
+    sent_to: 'Verificatie-e-mail verzonden naar'
+    resend: 'Verificatie-e-mail opnieuw verzenden'
+    resend_success: 'Verificatie-e-mail is verzonden!'
+    back_to_panel: 'Terug naar paneel'
+    help_text: 'Controleer uw inbox en spam-map voor de verificatielink.'
   admin:
     overview:
       title: 'Beheerder Overzicht'

@@ -5,6 +5,7 @@ pteroca:
     pterodactyl_error: '与 Pterodactyl 面板通信时发生错误。'
     dont_have_permission: '您没有权限执行此操作。'
     experimental_feature: '此功能为实验性功能，可能无法正常工作。'
+    or_resend_verification_email: '或点击此处重新发送验证邮件。'
 
   login:
     title: '登录'
@@ -17,6 +18,7 @@ pteroca:
     sign_in: '登录'
     invalid_captcha: 'CAPTCHA 验证无效。'
     user_blocked: '您的账户已被锁定。'
+    invalid_credentials: '电子邮件或密码无效。'
     dont_have_account_yet: '还没有账户？注册！'
     subtitle: '登录您的账户'
 
@@ -111,6 +113,7 @@ pteroca:
     amount_hint: '输入您想要充值的金额。'
     view_transaction_history: '查看交易记录'
     view_all_payments_description: '显示您账户上进行的所有支付。'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: '信息'
@@ -310,6 +313,10 @@ pteroca:
     server_installing: '服务器正在安装'
     server_installing_message: '您的服务器正在安装，几分钟后即可使用。请耐心等待安装过程完成。'
     server_installing_description: '安装过程可能需要几分钟，具体取决于所选软件和服务器规格。'
+    server_suspended: '服务器已暂停'
+    server_suspended_message: '您的服务器当前已暂停，无法访问。'
+    server_suspended_description: '此服务器因管理操作或违反政策而被暂停。请联系支持以获取帮助。'
+    suspended_expired_description: '此服务器因于 %expireDate% 到期且未续订而被暂停。要恢复服务器，请续订它。'
     enable_auto_renewal: '启用此服务器的自动续费'
     auto_renewal_tooltip: '如果启用，服务器将根据选定的周期自动续费。付款将从您的账户余额中扣除。'
     rules: '规则'
@@ -568,6 +575,7 @@ pteroca:
     entity_add: '添加实体'
     entity_edit: '编辑实体'
     entity_delete: '删除实体'
+    entity_restore: '实体已恢复'
     user_registered: '账户注册'
     user_verify_email: '验证电子邮件'
     voucher_redeemed: '代金券已兑换'
@@ -599,6 +607,15 @@ pteroca:
     discount_value_invalid: '折扣值无效。最大可用值为100(%).'
     voucher_type_invalid: '此优惠券不可用于此支付方式.'
     invalid_voucher_type: '无效的优惠券类型.'
+
+  email_types:
+    email_verification: '电子邮件验证'
+    payment_success: '付款确认'
+    purchased_product: '产品购买'
+    registration: '注册确认'
+    renew_product: '产品续订'
+    reset_password: '密码重置'
+    server_suspended: '服务器暂停'
 
   crud:
     category:
@@ -833,10 +850,19 @@ pteroca:
       pterodactyl_user_id: 'Pterodactyl 用户 ID'
       created_at: '创建于'
       updated_at: '更新于'
+      deleted_at: '删除于'
       avatar: '头像'
       repeat_password: '重复密码'
       repeat_password_hint: '请再次输入密码以确认。'
       passwords_must_match: '两次输入的密码必须一致。'
+      deleted_successfully: '用户删除成功。'
+      restored_successfully: '用户恢复成功。'
+      account_restored: '用户账户已从之前删除的账户中恢复。'
+      created_successfully: '用户已成功创建。'
+      restore_error: '恢复用户时出错。'
+      restore: '恢复'
+      pterodactyl_user_not_found: '在 Pterodactyl 中未找到用户，但在 PteroCA 中已成功删除。'
+      cannot_delete_user_with_active_servers: '无法删除拥有 {{ count }} 个活跃服务器的用户。请先删除或暂停这些服务器。'
     payment:
       session_id: '会话 ID'
       status: '状态'
@@ -865,6 +891,14 @@ pteroca:
       created_at: '创建于'
       user: '用户'
       ip_address: 'IP 地址'
+      server: '服务器'
+    email_log:
+      email_log: '电子邮件日志'
+      email_logs: '电子邮件日志'
+      email_type: '电子邮件类型'
+      metadata: '电子邮件元数据'
+      sent_at: '发送时间'
+      user: '用户'
       server: '服务器'
     voucher:
       voucher: '优惠券'
@@ -923,6 +957,7 @@ pteroca:
       phpmyadmin: 'PHPMyAdmin'
       payments: '支付'
       logs: '日志'
+      email_logs: '电子邮件日志'
       server_logs: '服务器日志'
       overview: '概览'
       server_builds: '服务器'
@@ -942,6 +977,7 @@ pteroca:
     server_user:
       user_not_exist: '邮箱{{ email }}的用户不存在于系统中。用户必须先注册。'
       user_already_added: '邮箱{{ email }}的用户已添加到此服务器。'
+      user_not_verified: '邮箱{{ email }}的用户尚未验证电子邮件地址，无法添加为子用户。'
       cannot_modify_yourself: '您不能对自己执行此操作：{{ action }}。'
       modify_permissions: '修改权限'
       delete_yourself_from_server: '从服务器删除自己'
@@ -963,6 +999,18 @@ pteroca:
       best_regards: '此致'
       visit_website: '访问我们的网站：'
       copyright: '版权所有。'
+    verification:
+      subject: "电子邮件验证 - %siteName%"
+      title: "电子邮件验证"
+      hello: "您好 %name%！"
+      message: "感谢您在 %siteName% 注册。请点击下方按钮验证您的电子邮件地址。"
+      verify_button: "验证电子邮件地址"
+      alternative_text: "如果按钮不起作用，您也可以将以下链接复制并粘贴到您的浏览器中："
+      footer_text: "如果您未在 %siteName% 创建账户，您可以安全地忽略此邮件。"
+      resend_too_soon: "您只能每 %minutes% 分钟重新发送验证邮件一次。请稍后再试。"
+      resend_success: "验证邮件已发送到您的电子邮件地址。"
+      not_logged_in: "您必须登录才能重新发送验证邮件。"
+      already_verified: "您的电子邮件地址已验证。"
     pricing:
       slot_format: '{{ slots }} 个插槽 × {{ price }} {{ currency }} = {{ total }} {{ currency }}'
       static_format: '{{ price }} {{ currency }}'
@@ -970,8 +1018,11 @@ pteroca:
     registration:
       subject: '注册'
       welcome: '欢迎使用我们的服务！感谢您的注册。'
+      account_ready: '您的账户已准备就绪。您现在可以登录您的账户并开始使用我们的服务。'
+      email_verification_required: '需要电子邮件验证'
       confirm_email: '请点击以下链接确认您的电子邮件地址：'
       confirm_email_button: '确认电子邮件地址'
+      alternative_text: '如果按钮不起作用，您也可以将以下链接复制并粘贴到您的浏览器中：'
       if_not_registered: '如果您未在我们的网站上注册，请忽略此消息。'
     recovery:
       subject: '密码重置'
@@ -1006,6 +1057,22 @@ pteroca:
       subject: '服务器暂停'
       server_suspended: '我们通知您，您的一个服务器已被暂停，因为它未续订。'
       extend_server: '要恢复服务器，请在客户面板中续订它。'
+      server_details: '服务器详情'
+      server_name: '服务器：%serverName%'
+      suspension_date: '暂停日期：%suspensionDate%'
+      auto_delete_warning: '重要提示：如果未续费，您的服务器将在 %days% 天后（%deleteDate%）自动删除。'
+      panel_access: '访问面板'
+
+  verification:
+    title: '需要电子邮件验证'
+    subtitle: '请验证您的电子邮件地址以继续'
+    required: '需要电子邮件验证'
+    description: '您必须先验证您的电子邮件地址才能访问此功能。'
+    sent_to: '验证邮件发送至'
+    resend: '重新发送验证邮件'
+    resend_success: '验证邮件已发送！'
+    back_to_panel: '返回面板'
+    help_text: '请检查您的收件箱和垃圾邮件文件夹以获取验证链接。'
 
   admin:
     overview:

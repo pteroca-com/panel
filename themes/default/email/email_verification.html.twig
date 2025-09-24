@@ -1,0 +1,24 @@
+{% trans_default_domain 'messages' %}
+{% set title = 'pteroca.email.verification.title'|trans %}
+{% include 'email/header.html.twig' %}
+
+<p>
+    {{ 'pteroca.email.verification.message'|trans({'%siteName%': siteName}) }}
+</p>
+
+<p style="text-align: center; margin: 30px 0;">
+    <a href="{{ verificationUrl }}" class="button">
+        {{ 'pteroca.email.verification.verify_button'|trans }}
+    </a>
+</p>
+
+<p>
+    {{ 'pteroca.email.verification.alternative_text'|trans }}<br>
+    <a href="{{ verificationUrl }}">{{ verificationUrl }}</a>
+</p>
+
+<p style="font-size: 12px; color: #666;">
+    {{ 'pteroca.email.verification.footer_text'|trans({'%siteName%': siteName, '%siteUrl%': siteUrl}) }}
+</p>
+
+{% include 'email/footer.html.twig' %}
