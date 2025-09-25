@@ -817,6 +817,9 @@ pteroca:
         pterodactyl_sso_secret: 'Clave secreta de inicio de sesión SSO de Pterodactyl'
         show_pterodactyl_logs_in_server_activity: 'Mostrar registros de Pterodactyl en la actividad del servidor'
         current_theme: 'Tema actual del panel'
+        renewal_notification_enabled: 'Habilitar notificaciones de renovación'
+        renewal_notification_min_period_hours: 'Frecuencia mínima de notificación (en horas)'
+        renewal_notification_on_demand_min_hours: 'Horas mínimas antes de enviar la notificación bajo demanda'
       template:
         name: 'Nombre de la plantilla'
         description: 'Descripción de la plantilla'

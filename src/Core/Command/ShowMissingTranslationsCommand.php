@@ -56,17 +56,17 @@ class ShowMissingTranslationsCommand extends Command
 
         if (empty($missingKeys)) {
             $io->success('No missing translations found.');
+            return Command::SUCCESS;
         } else {
-            $io->warning(sprintf('Found %d missing translations in "%s":', count($missingKeys), $compareFile));
+            $io->error(sprintf('Found %d missing translations in "%s":', count($missingKeys), $compareFile));
 
             $missingKeys = array_filter($missingKeys, function($key) {
                 return !empty(trim($key));
             });
 
             $io->writeln(implode(', ', $missingKeys));
+            return Command::FAILURE;
         }
-
-        return Command::SUCCESS;
     }
 
     private function findMissingKeys(array $mainData, array $compareData, string $prefix = ''): array

@@ -817,6 +817,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO लॉगिन गुप्त कुंजी'
         show_pterodactyl_logs_in_server_activity: 'सर्वर गतिविधि में Pterodactyl लॉग्स दिखाएं'
         current_theme: 'पैनल की वर्तमान थीम'
+        renewal_notification_enabled: 'नवीकरण सूचनाएं सक्षम करें'
+        renewal_notification_min_period_hours: 'अधिसूचना न्यूनतम आवृत्ति (घंटों में)'
+        renewal_notification_on_demand_min_hours: 'अधिसूचना भेजने से पहले मांग पर न्यूनतम घंटे'
       template:
         name: 'टेम्पलेट का नाम'
         description: 'टेम्पलेट विवरण'

@@ -805,6 +805,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO login geheime sleutel'
         show_pterodactyl_logs_in_server_activity: 'Toon Pterodactyl logs in server activiteit'
         current_theme: 'Huidig thema van het paneel'
+        renewal_notification_enabled: 'Hernieuwingsmeldingen inschakelen'
+        renewal_notification_min_period_hours: 'Minimale meldingsfrequentie (in uren)'
+        renewal_notification_on_demand_min_hours: 'Minimum aantal uren voor het verzenden van melding op aanvraag'
       template:
         name: 'Sjabloonnaam'
         description: 'Sjabloonbeschrijving'

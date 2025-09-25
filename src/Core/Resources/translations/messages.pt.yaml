@@ -818,6 +818,9 @@ pteroca:
         pterodactyl_sso_enabled: 'Habilitar login Single Sign-On com o painel Pterodactyl (A chave secreta SSO deve ser definida)'
         pterodactyl_sso_secret: 'Chave secreta de login SSO do Pterodactyl'
         current_theme: 'Tema atual do painel'
+        renewal_notification_enabled: 'Ativar notificações de renovação'
+        renewal_notification_min_period_hours: 'Frequência mínima de notificações (em horas)'
+        renewal_notification_on_demand_min_hours: 'Horas mínimas antes do envio da notificação sob demanda'
         show_pterodactyl_logs_in_server_activity: 'Mostrar logs do Pterodactyl na atividade do servidor'
       template:
         name: 'Nome do modelo'

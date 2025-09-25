@@ -817,6 +817,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO 登录密钥'
         show_pterodactyl_logs_in_server_activity: '在服务器活动中显示 Pterodactyl 日志'
         current_theme: '当前面板的主题'
+        renewal_notification_enabled: '启用续订通知'
+        renewal_notification_min_period_hours: '通知最小频率（小时）'
+        renewal_notification_on_demand_min_hours: '发送通知前按需最小小时数'
       template:
         name: '模板名称'
         description: '模板描述'
