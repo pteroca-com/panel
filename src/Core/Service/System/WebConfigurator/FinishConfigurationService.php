@@ -56,15 +56,19 @@ class FinishConfigurationService
             $data = $this->clearEmailSettings($data);
         }
 
-        $isPterodactylApiConnectionValidated = $this->pterodactylConnectionVerificationService->validateConnection(
-            $data['pterodactyl_panel_url'],
-            $data['pterodactyl_panel_api_key'],
-        );
-        if (!$isPterodactylApiConnectionValidated->isVerificationSuccessful) {
-            return new ConfiguratorVerificationResult(
-                false,
-                $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_error'),
+        if (!empty($data['pterodactyl_panel_url']) && !empty($data['pterodactyl_panel_api_key'])) {
+            $isPterodactylApiConnectionValidated = $this->pterodactylConnectionVerificationService->validateConnection(
+                $data['pterodactyl_panel_url'],
+                $data['pterodactyl_panel_api_key'],
             );
+            if (!$isPterodactylApiConnectionValidated->isVerificationSuccessful) {
+                return new ConfiguratorVerificationResult(
+                    false,
+                    $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_error'),
+                );
+            }
+        } else {
+            $data = $this->clearPterodactylSettings($data);
         }
 
         $this->saveConfigurationSettings($data);
@@ -116,6 +120,14 @@ class FinishConfigurationService
             'email_smtp_username',
             'email_smtp_password',
             'email_smtp_from',
+        ]));
+    }
+
+    private function clearPterodactylSettings(array $data): array
+    {
+        return array_diff_key($data, array_flip([
+            'pterodactyl_panel_url',
+            'pterodactyl_panel_api_key',
         ]));
     }
 }

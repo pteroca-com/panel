@@ -144,6 +144,23 @@
             })
         })
 
+        document.addEventListener('click', function(e) {
+            const overrideButton = e.target.closest('.btn-override-settings')
+            if (overrideButton) {
+                const step = overrideButton.getAttribute('data-step')
+                showPterodactylForm(parseInt(step))
+                return
+            }
+
+            const nextConfiguredButton = e.target.closest('.btn-next-configured')
+            if (nextConfiguredButton) {
+                if (!nextConfiguredButton.disabled) {
+                    setCurrentStep(currentStep + 1)
+                }
+                return
+            }
+        })
+
         skipButtons.forEach(skipButton => {
             skipButton.addEventListener('click', function() {
                 setCurrentStep(currentStep + 1)
@@ -161,6 +178,90 @@
             document.querySelector('div[data-step="' + step + '"]')?.classList.remove('d-none')
             currentStep = step
             document.getElementById('current-step').innerText = currentStep
+
+            if (step === 2) {
+                checkExistingPterodactylSettings()
+            }
+        }
+
+        function checkExistingPterodactylSettings() {
+            const validateEndpointUrl = '{{ path('first_configuration_validate_step') }}'
+            const formData = new FormData()
+            formData.append('step', 2)
+            formData.append('checkExistingSettings', 'true')
+            formData.append('language', languageSelect.value)
+
+            resetStepError(2)
+
+            fetch(validateEndpointUrl, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    response.json().then(data => {
+                        showPterodactylAlreadyConfigured()
+                        handleStepSuccess(2, data.message)
+                        enableNextButtonConfigured(2)
+                    })
+                } else {
+                    showPterodactylForm(2)
+                }
+            }).catch(() => {
+                showPterodactylForm(2)
+            })
+        }
+
+        function showPterodactylAlreadyConfigured() {
+            const alreadyConfiguredDiv = document.querySelector('.pterodactyl-already-configured[data-step="2"]')
+            const form = document.querySelector('form[data-step="2"]')
+            
+            if (alreadyConfiguredDiv) {
+                alreadyConfiguredDiv.classList.remove('d-none')
+            }
+            if (form) {
+                form.classList.add('d-none')
+            }
+        }
+
+        function enableNextButtonConfigured(step) {
+            const btnNextConfigured = document.querySelector('.btn-next-configured[data-step="' + step + '"]')
+            if (btnNextConfigured) {
+                btnNextConfigured.disabled = false
+            }
+        }
+
+        function showPterodactylForm(step) {
+            const alreadyConfiguredDiv = document.querySelector('.pterodactyl-already-configured[data-step="' + step + '"]')
+            const form = document.querySelector('form[data-step="' + step + '"]')
+            
+            if (alreadyConfiguredDiv) {
+                alreadyConfiguredDiv.classList.add('d-none')
+            }
+            if (form) {
+                form.classList.remove('d-none')
+            }
+            resetStepError(step)
+            disableNextButton(step)
+        }
+
+        function enableNextButton(step) {
+            const form = document.querySelector('form[data-step="' + step + '"]')
+            if (form) {
+                const submitButton = form.querySelector('button[type="submit"]')
+                if (submitButton) {
+                    submitButton.disabled = false
+                }
+            }
+        }
+
+        function disableNextButton(step) {
+            const form = document.querySelector('form[data-step="' + step + '"]')
+            if (form) {
+                const submitButton = form.querySelector('button[type="submit"]')
+                if (submitButton) {
+                    submitButton.disabled = true
+                }
+            }
         }
 
         function validateStep(step) {
