@@ -1160,7 +1160,6 @@ pteroca:
       pterodactyl_addon_not_detected: 'API-Verbindung wurde hergestellt, aber das PteroCA Pterodactyl Addon ist nicht auf Ihrem Pterodactyl Panel installiert. Bitte installieren Sie es, bevor Sie fortfahren.'
       email_checking_smtp_connection: 'Überprüfe die Verbindung zum SMTP-Server...'
       email_smtp_connection_success: 'Erfolgreich mit dem SMTP-Server verbunden.'
-      user_already_exists_in_local_database: 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits in der lokalen Datenbank.'
       user_already_exists_in_pterodactyl: 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits in Pterodactyl. Verwenden Sie eine andere E-Mail-Adresse.'
       user_validation_success: 'Benutzervalidierung erfolgreich.'
       user_checking_account_creation: 'Überprüfe, ob das Konto erstellt werden kann...'
@@ -1168,6 +1167,7 @@ pteroca:
       pterodactyl_not_configured: 'Pterodactyl ist noch nicht konfiguriert'
       pterodactyl_already_configured: 'Bestehende Pterodactyl-Konfiguration erkannt. Sie können diesen Schritt überspringen oder die vorhandenen Einstellungen überschreiben.'
       override_settings: 'Einstellungen überschreiben'
+      user_already_exists_in_local_database: 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits in der lokalen Datenbank.'
 
   error:
     404:
