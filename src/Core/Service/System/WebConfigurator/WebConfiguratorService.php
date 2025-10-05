@@ -75,11 +75,15 @@ class WebConfiguratorService
 
     private function validateAdminAccountStep(array $data): ConfiguratorVerificationResult
     {
-        $pterodactylPanelUrl = $data['pterodactyl_panel_url'] 
-            ?? $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
-        $pterodactylApiKey = $data['pterodactyl_panel_api_key']
-            ?? $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value);
-            
+        $useExistingPterodactylSettings = !empty($data['useExistingPterodactylSettings']) 
+            && $data['useExistingPterodactylSettings'] === 'true';
+        $pterodactylPanelUrl = !$useExistingPterodactylSettings 
+            ? $data['pterodactyl_panel_url'] 
+            : $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+        $pterodactylApiKey = !$useExistingPterodactylSettings
+            ? $data['pterodactyl_panel_api_key']
+            : $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value);
+
         return $this->userValidationService->validateUserDoesNotExist(
             $data['admin_email'],
             $pterodactylPanelUrl,

@@ -78,7 +78,8 @@
 {% block body_javascript %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let currentStep = 0
+        let currentStep = 0,
+            useExistingPterodactylSettings = false
 
         const stepCount = 5,
             forms = document.querySelectorAll('form[data-step]'),
@@ -154,9 +155,9 @@
 
             const nextConfiguredButton = e.target.closest('.btn-next-configured')
             if (nextConfiguredButton) {
-                if (!nextConfiguredButton.disabled) {
-                    setCurrentStep(currentStep + 1)
-                }
+                e.preventDefault()
+                const form = document.querySelector('form[data-step="2"]')
+                form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
                 return
             }
         })
@@ -180,29 +181,23 @@
             document.getElementById('current-step').innerText = currentStep
 
             if (step === 2) {
-                checkExistingPterodactylSettings()
+                checkIfPterodactylConfigured()
             }
         }
 
-        function checkExistingPterodactylSettings() {
+        function checkIfPterodactylConfigured() {
             const validateEndpointUrl = '{{ path('first_configuration_validate_step') }}'
             const formData = new FormData()
             formData.append('step', 2)
             formData.append('checkExistingSettings', 'true')
             formData.append('language', languageSelect.value)
 
-            resetStepError(2)
-
             fetch(validateEndpointUrl, {
                 method: 'POST',
                 body: formData
             }).then(response => {
                 if (response.ok) {
-                    response.json().then(data => {
-                        showPterodactylAlreadyConfigured()
-                        handleStepSuccess(2, data.message)
-                        enableNextButtonConfigured(2)
-                    })
+                    showPterodactylAlreadyConfigured()
                 } else {
                     showPterodactylForm(2)
                 }
@@ -213,35 +208,40 @@
 
         function showPterodactylAlreadyConfigured() {
             const alreadyConfiguredDiv = document.querySelector('.pterodactyl-already-configured[data-step="2"]')
-            const form = document.querySelector('form[data-step="2"]')
+            const formFields = document.querySelectorAll('.pterodactyl-form-fields')
+            const overrideButton = document.querySelector('.btn-override-settings[data-step="2"]')
             
             if (alreadyConfiguredDiv) {
                 alreadyConfiguredDiv.classList.remove('d-none')
             }
-            if (form) {
-                form.classList.add('d-none')
+            formFields.forEach(field => {
+                field.classList.add('d-none')
+            })
+            if (overrideButton) {
+                overrideButton.classList.remove('d-none')
             }
         }
 
-        function enableNextButtonConfigured(step) {
-            const btnNextConfigured = document.querySelector('.btn-next-configured[data-step="' + step + '"]')
-            if (btnNextConfigured) {
-                btnNextConfigured.disabled = false
-            }
-        }
 
         function showPterodactylForm(step) {
             const alreadyConfiguredDiv = document.querySelector('.pterodactyl-already-configured[data-step="' + step + '"]')
-            const form = document.querySelector('form[data-step="' + step + '"]')
+            const formFields = document.querySelectorAll('.pterodactyl-form-fields')
+            const overrideButton = document.querySelector('.btn-override-settings[data-step="' + step + '"]')
+            const textError = document.querySelector('.text-error[data-step="' + step + '"]')
             
             if (alreadyConfiguredDiv) {
                 alreadyConfiguredDiv.classList.add('d-none')
             }
-            if (form) {
-                form.classList.remove('d-none')
+            formFields.forEach(field => {
+                field.classList.remove('d-none')
+            })
+            if (overrideButton) {
+                overrideButton.classList.add('d-none')
             }
-            resetStepError(step)
-            disableNextButton(step)
+            if (textError) {
+                textError.classList.add('d-none')
+            }
+            enableNextButton(step)
         }
 
         function enableNextButton(step) {
@@ -269,20 +269,34 @@
                 form = document.querySelector('form[data-step="' + step + '"]'),
                 formData = new FormData(form)
 
-            // For step 5 (user validation), we also need Pterodactyl API data from step 2
-            if (step === 5) {
-                const pterodactylForm = document.querySelector('form[data-step="2"]')
-                if (pterodactylForm) {
-                    const pterodactylUrlInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_url"]')
-                    const pterodactylApiKeyInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_api_key"]')
-                    
-                    if (pterodactylUrlInput && pterodactylUrlInput.value) {
-                        formData.append('pterodactyl_panel_url', pterodactylUrlInput.value)
+            switch (step) {
+                case 2:
+                    const alreadyConfiguredDiv = document.querySelector('.pterodactyl-already-configured[data-step="' + step + '"]')
+                    useExistingPterodactylSettings = alreadyConfiguredDiv && !alreadyConfiguredDiv.classList.contains('d-none')
+                    if (useExistingPterodactylSettings) {
+                        formData.delete('pterodactyl_panel_url')
+                        formData.delete('pterodactyl_panel_api_key')
+                        formData.append('checkExistingSettings', 'true')
                     }
-                    if (pterodactylApiKeyInput && pterodactylApiKeyInput.value) {
-                        formData.append('pterodactyl_panel_api_key', pterodactylApiKeyInput.value)
+                    break
+                case 5:
+                    if (useExistingPterodactylSettings) {
+                        formData.append('useExistingPterodactylSettings', 'true')
+                    } else {
+                        const pterodactylForm = document.querySelector('form[data-step="2"]')
+                        if (pterodactylForm) {
+                            const pterodactylUrlInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_url"]')
+                            const pterodactylApiKeyInput = pterodactylForm.querySelector('input[name="pterodactyl_panel_api_key"]')
+                            
+                            if (pterodactylUrlInput && pterodactylUrlInput.value) {
+                                formData.append('pterodactyl_panel_url', pterodactylUrlInput.value)
+                            }
+                            if (pterodactylApiKeyInput && pterodactylApiKeyInput.value) {
+                                formData.append('pterodactyl_panel_api_key', pterodactylApiKeyInput.value)
+                            }
+                        }
                     }
-                }
+                    break
             }
 
             formData.append('step', step)
@@ -307,6 +321,12 @@
                     formData.append(element.name, element.value)
                 })
             })
+
+            if (useExistingPterodactylSettings) {
+                formData.append('useExistingPterodactylSettings', 'true')
+                formData.delete('pterodactyl_panel_url')
+                formData.delete('pterodactyl_panel_api_key')
+            }
 
             fetch(sendConfigurationEndpointUrl, {
                 method: 'POST',

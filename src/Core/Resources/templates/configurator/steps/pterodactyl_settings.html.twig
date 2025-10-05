@@ -16,38 +16,23 @@
             <i class="fas fa-check-circle me-2"></i>
             {{ 'pteroca.first_configuration.messages.pterodactyl_already_configured'|trans }}
         </div>
-
-        <div class="col-12 text-center text-secondary mb-4 text-error" data-step="2">
-            <i class="fas fa-spinner fa-spin me-2 step-icon-loading" data-step="2"></i>
-            <i class="fas fa-check-circle me-2 step-icon-success d-none" data-step="2" style="color: #28a745;"></i>
-            <i class="fas fa-times-circle me-2 step-icon-error d-none" data-step="2" style="color: #dc3545;"></i>
-            <span class="step-message" data-step="2">{{ 'pteroca.first_configuration.messages.pterodactyl_checking_api_connection'|trans }}</span>
-        </div>
-
-        <div class="form-group">
-            <button type="button" class="btn btn-lg btn-block configuration-previous-step float-start me-2">{{ 'pteroca.first_configuration.back'|trans }}</button>
-            <button type="button" class="btn btn-secondary btn-override-settings float-start me-2" data-step="2">
-                {{ 'pteroca.first_configuration.messages.override_settings'|trans }}
-            </button>
-            <button type="button" class="btn btn-primary btn-lg btn-block float-end me-2 btn-next-configured" data-step="2" disabled>{{ 'pteroca.first_configuration.next'|trans }}</button>
-        </div>
     </div>
 
     <form data-step="2">
-        <div class="form-group">
+        <div class="form-group pterodactyl-form-fields">
             <label class="form-control-label required" for="pterodactyl_panel_url">{{ 'pteroca.first_configuration.pterodactyl_panel_url'|trans }}</label>
             <div class="form-widget">
-                <input type="url" id="pterodactyl_panel_url" name="pterodactyl_panel_url" class="form-control" value="" required autofocus autocomplete="pterodactyl_panel_url">
+                <input type="url" id="pterodactyl_panel_url" name="pterodactyl_panel_url" class="form-control" value="" autofocus autocomplete="pterodactyl_panel_url">
                 <div class="form-text">
                     {{ 'pteroca.first_configuration.pterodactyl_panel_url_help'|trans }}
                 </div>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group pterodactyl-form-fields">
             <label class="form-control-label required" for="pterodactyl_panel_api_key">{{ 'pteroca.first_configuration.pterodactyl_panel_api_key'|trans }}</label>
             <div class="form-widget">
-                <input type="password" id="pterodactyl_panel_api_key" name="pterodactyl_panel_api_key" class="form-control" value="" required autofocus autocomplete="pterodactyl_panel_api_key">
+                <input type="password" id="pterodactyl_panel_api_key" name="pterodactyl_panel_api_key" class="form-control" value="" autofocus autocomplete="pterodactyl_panel_api_key">
                 <div class="form-text">
                     {{ 'pteroca.first_configuration.pterodactyl_panel_api_key_help'|trans }}
                 </div>
@@ -63,6 +48,9 @@
 
         <div class="form-group">
             <button type="button" class="btn btn-lg btn-block configuration-previous-step float-start me-2">{{ 'pteroca.first_configuration.back'|trans }}</button>
+            <button type="button" class="btn btn-secondary btn-override-settings float-start me-2 d-none" data-step="2">
+                {{ 'pteroca.first_configuration.messages.override_settings'|trans }}
+            </button>
             <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
         </div>
     </form>

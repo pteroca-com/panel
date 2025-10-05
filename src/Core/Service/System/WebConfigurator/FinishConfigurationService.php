@@ -56,19 +56,21 @@ class FinishConfigurationService
             $data = $this->clearEmailSettings($data);
         }
 
-        if (!empty($data['pterodactyl_panel_url']) && !empty($data['pterodactyl_panel_api_key'])) {
-            $isPterodactylApiConnectionValidated = $this->pterodactylConnectionVerificationService->validateConnection(
-                $data['pterodactyl_panel_url'],
-                $data['pterodactyl_panel_api_key'],
-            );
-            if (!$isPterodactylApiConnectionValidated->isVerificationSuccessful) {
-                return new ConfiguratorVerificationResult(
-                    false,
-                    $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_error'),
-                );
-            }
-        } else {
+        if (!empty($data['useExistingPterodactylSettings']) && $data['useExistingPterodactylSettings'] === 'true') {
+            $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+            $pterodactylApiKey = $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value);
             $data = $this->clearPterodactylSettings($data);
+        } else {
+            $pterodactylUrl = $data['pterodactyl_panel_url'] ?? '';
+            $pterodactylApiKey = $data['pterodactyl_panel_api_key'] ?? '';
+        }
+
+        $isPterodactylConnectionValid = $this->validatePterodactylConnection($pterodactylUrl, $pterodactylApiKey);
+        if (!$isPterodactylConnectionValid) {
+            return new ConfiguratorVerificationResult(
+                false,
+                $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_api_error'),
+            );
         }
 
         $this->saveConfigurationSettings($data);
@@ -129,5 +131,12 @@ class FinishConfigurationService
             'pterodactyl_panel_url',
             'pterodactyl_panel_api_key',
         ]));
+    }
+
+    private function validatePterodactylConnection(string $url, string $apiKey): bool
+    {
+        $result = $this->pterodactylConnectionVerificationService->validateConnection($url, $apiKey);
+
+        return $result->isVerificationSuccessful;
     }
 }
