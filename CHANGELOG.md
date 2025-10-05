@@ -2,6 +2,19 @@
 
 ---
 
+## [0.5.9] - 2025-10-05
+
+### Added
+- Added missing translations to improve localization coverage.  
+
+### Changed
+- Improved project configurator and prepared groundwork for the upcoming all-in-one installation support.  
+
+### Fixed
+- Fixed pipeline responsible for detecting missing translations.  
+
+---
+
 ## [0.5.8] - 2025-09-24
 
 ### Added

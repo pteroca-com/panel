@@ -49,23 +49,46 @@ class WebConfiguratorService
         }
 
         return match ((int) $data['step']) {
-            2 => $this->pterodactylConnectionVerificationService->validateConnection(
-                    $data['pterodactyl_panel_url'],
-                    $data['pterodactyl_panel_api_key'],
-                ),
+            2 => $this->validatePterodactylStep($data),
             3 => $this->emailConnectionVerificationService->validateConnection(
                 $data['email_smtp_username'],
                 $data['email_smtp_password'],
                 $data['email_smtp_server'],
                 $data['email_smtp_port'],
             ),
-            5 => $this->userValidationService->validateUserDoesNotExist(
-                $data['admin_email'],
-                $data['pterodactyl_panel_url'],
-                $data['pterodactyl_panel_api_key'],
-            ),
+            5 => $this->validateAdminAccountStep($data),
             default => new ConfiguratorVerificationResult(true),
         };
+    }
+
+    private function validatePterodactylStep(array $data): ConfiguratorVerificationResult
+    {
+        if (!empty($data['checkExistingSettings']) && $data['checkExistingSettings'] === 'true') {
+            return $this->pterodactylConnectionVerificationService->validateExistingConnection();
+        }
+
+        return $this->pterodactylConnectionVerificationService->validateConnection(
+            $data['pterodactyl_panel_url'] ?? '',
+            $data['pterodactyl_panel_api_key'] ?? '',
+        );
+    }
+
+    private function validateAdminAccountStep(array $data): ConfiguratorVerificationResult
+    {
+        $useExistingPterodactylSettings = !empty($data['useExistingPterodactylSettings']) 
+            && $data['useExistingPterodactylSettings'] === 'true';
+        $pterodactylPanelUrl = !$useExistingPterodactylSettings 
+            ? $data['pterodactyl_panel_url'] 
+            : $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+        $pterodactylApiKey = !$useExistingPterodactylSettings
+            ? $data['pterodactyl_panel_api_key']
+            : $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value);
+
+        return $this->userValidationService->validateUserDoesNotExist(
+            $data['admin_email'],
+            $pterodactylPanelUrl,
+            $pterodactylApiKey,
+        );
     }
 
     public function finishConfiguration(array $data): ConfiguratorVerificationResult

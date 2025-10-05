@@ -45,20 +45,20 @@ class UserService
                 'password' => $plainPassword,
             ]);
             $user->setPterodactylUserId($createdUser->id);
-
-            try {
-                $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
-                $user->setPterodactylUserApiKey($pterodactylClientApiKey);
-            } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
-                $this->pterodactylService->getApi()->users->delete($createdUser->id);
-                $this->logger->error('Failed to create Pterodactyl client API key during user creation', [
-                    'exception' => $exception,
-                    'user' => $user,
-                ]);
-                throw new Exception($this->translator->trans('pteroca.system.pterodactyl_error'));
-            }
         } catch (Exception $exception) {
             $this->logger->error('Failed to create Pterodactyl account during user creation', [
+                'exception' => $exception,
+                'user' => $user,
+            ]);
+            throw new Exception($this->translator->trans('pteroca.system.pterodactyl_error'));
+        }
+
+        try {
+            $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
+            $user->setPterodactylUserApiKey($pterodactylClientApiKey);
+        } catch (CouldNotCreatePterodactylClientApiKeyException|Exception $exception) {
+            $this->pterodactylService->getApi()->users->delete($createdUser->id);
+            $this->logger->error('Failed to create Pterodactyl client API key during user creation', [
                 'exception' => $exception,
                 'user' => $user,
             ]);

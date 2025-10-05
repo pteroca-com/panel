@@ -817,6 +817,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO लॉगिन गुप्त कुंजी'
         show_pterodactyl_logs_in_server_activity: 'सर्वर गतिविधि में Pterodactyl लॉग्स दिखाएं'
         current_theme: 'पैनल की वर्तमान थीम'
+        renewal_notification_enabled: 'नवीकरण सूचनाएं सक्षम करें'
+        renewal_notification_min_period_hours: 'अधिसूचना न्यूनतम आवृत्ति (घंटों में)'
+        renewal_notification_on_demand_min_hours: 'अधिसूचना भेजने से पहले मांग पर न्यूनतम घंटे'
       template:
         name: 'टेम्पलेट का नाम'
         description: 'टेम्पलेट विवरण'
@@ -1170,6 +1173,10 @@ pteroca:
       user_validation_success: 'उपयोगकर्ता सत्यापन सफल।'
       user_checking_account_creation: 'जांच की जा रही है कि क्या खाता बनाया जा सकता है...'
       validation_error: 'स्टेप को सत्यापित करते समय त्रुटि हुई। कृपया फिर से कोशिश करें।'
+      pterodactyl_not_configured: 'Pterodactyl अभी तक कॉन्फ़िगर नहीं किया गया है'
+      pterodactyl_already_configured: 'मौजूदा Pterodactyl कॉन्फ़िगरेशन का पता चला। आप इस चरण को छोड़ सकते हैं या मौजूदा सेटिंग्स को ओवरराइड कर सकते हैं।'
+      override_settings: 'सेटिंग्स ओवरराइड करें'
+      user_already_exists_in_local_database: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही स्थानीय डेटाबेस में मौजूद है।'
 
   error:
     404:
