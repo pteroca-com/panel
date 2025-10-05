@@ -1170,6 +1170,7 @@ pteroca:
       pterodactyl_addon_not_detected: "La connexion API a été établie, mais l'addon PteroCA Pterodactyl n'est pas installé sur votre panneau Pterodactyl. Veuillez l'installer avant de continuer."
       email_checking_smtp_connection: 'Vérification de la connexion au serveur SMTP...'
       email_smtp_connection_success: 'Connexion réussie au serveur SMTP.'
+      user_already_exists_in_local_database: 'Un utilisateur avec cette adresse e-mail existe déjà dans la base de données locale.'
       user_already_exists_in_pterodactyl: 'Un utilisateur avec cette adresse e-mail existe déjà dans Pterodactyl. Veuillez utiliser une adresse e-mail différente.'
       user_validation_success: 'Validation de l''utilisateur réussie.'
       user_checking_account_creation: 'Vérification si le compte peut être créé...'

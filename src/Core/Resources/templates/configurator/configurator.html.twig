@@ -106,7 +106,7 @@
                     .then(response => {
                         if (response.ok) {
                             if (currentStep === stepCount) {
-                                return sendConfiguration()
+                                return sendConfiguration(submitButton)
                             }
 
                             response.json().then(response => {
@@ -220,6 +220,7 @@
             if (overrideButton) {
                 overrideButton.classList.remove('d-none')
             }
+            useExistingPterodactylSettings = true
         }
 
 
@@ -242,6 +243,7 @@
                 textError.classList.add('d-none')
             }
             enableNextButton(step)
+            useExistingPterodactylSettings = false
         }
 
         function enableNextButton(step) {
@@ -271,8 +273,6 @@
 
             switch (step) {
                 case 2:
-                    const alreadyConfiguredDiv = document.querySelector('.pterodactyl-already-configured[data-step="' + step + '"]')
-                    useExistingPterodactylSettings = alreadyConfiguredDiv && !alreadyConfiguredDiv.classList.contains('d-none')
                     if (useExistingPterodactylSettings) {
                         formData.delete('pterodactyl_panel_url')
                         formData.delete('pterodactyl_panel_api_key')
@@ -308,7 +308,7 @@
             })
         }
 
-        function sendConfiguration() {
+        function sendConfiguration(submitButton) {
             const sendConfigurationEndpointUrl = '{{ path('first_configuration_finish') }}',
                 successUrl = '{{ path('app_login') }}',
                 allForms = document.querySelectorAll('form'),
@@ -334,7 +334,17 @@
             }).then(response => {
                 if (response.ok) {
                     window.location.href = successUrl
+                } else {
+                    submitButton.disabled = false
+                    return response.json().then(data => {
+                        handleStepError(5, data.message || '{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                    }).catch(() => {
+                        handleStepError(5, '{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                    })
                 }
+            }).catch(() => {
+                handleStepError(5, '{{ 'pteroca.first_configuration.messages.validation_error'|trans }}')
+                submitButton.disabled = false
             })
         }
 

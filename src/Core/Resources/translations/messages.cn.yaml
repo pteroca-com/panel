@@ -1169,6 +1169,7 @@ pteroca:
       pterodactyl_addon_not_detected: 'API 连接已建立，但您的 Pterodactyl 面板未安装 PteroCA Pterodactyl 插件。请在继续之前安装它。'
       email_checking_smtp_connection: '正在检查 SMTP 服务器连接...'
       email_smtp_connection_success: '成功连接到 SMTP 服务器。'
+      user_already_exists_in_local_database: '此电子邮件地址的用户已在本地数据库中存在。'
       user_already_exists_in_pterodactyl: '此邮箱地址的用户已在 Pterodactyl 中存在。请使用其他邮箱地址。'
       user_validation_success: '用户验证成功。'
       user_checking_account_creation: '正在检查是否可以创建账户...'

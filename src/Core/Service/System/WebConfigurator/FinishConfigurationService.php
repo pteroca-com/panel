@@ -57,15 +57,11 @@ class FinishConfigurationService
         }
 
         if (!empty($data['useExistingPterodactylSettings']) && $data['useExistingPterodactylSettings'] === 'true') {
-            $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
-            $pterodactylApiKey = $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value);
-            $data = $this->clearPterodactylSettings($data);
-        } else {
-            $pterodactylUrl = $data['pterodactyl_panel_url'] ?? '';
-            $pterodactylApiKey = $data['pterodactyl_panel_api_key'] ?? '';
+            $data['pterodactyl_panel_url'] = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+            $data['pterodactyl_panel_api_key'] = $this->settingService->getSetting(SettingEnum::PTERODACTYL_API_KEY->value);
         }
 
-        $isPterodactylConnectionValid = $this->validatePterodactylConnection($pterodactylUrl, $pterodactylApiKey);
+        $isPterodactylConnectionValid = $this->validatePterodactylConnection($data['pterodactyl_panel_url'], $data['pterodactyl_panel_api_key']);
         if (!$isPterodactylConnectionValid) {
             return new ConfiguratorVerificationResult(
                 false,
@@ -74,7 +70,14 @@ class FinishConfigurationService
         }
 
         $this->saveConfigurationSettings($data);
-        $this->createAdminAccount($data);
+
+        if (!$this->createAdminAccount($data)) {
+            return new ConfiguratorVerificationResult(
+                false,
+                $this->translator->trans('pteroca.first_configuration.messages.validation_error'),
+            );
+        }
+
         $this->disableConfigurator();
 
         return new ConfiguratorVerificationResult(true);
@@ -85,14 +88,16 @@ class FinishConfigurationService
         $settingsMap = array_merge(self::REQUIRED_SETTINGS_MAP, self::OPTIONAL_SETTINGS_MAP);
 
         foreach ($settingsMap as $setting => $key) {
-            $this->settingService->saveSetting($setting, $data[$key] ?? '');
+            $preparedValue = $data[$key] ?? '';
+            $preparedValue = is_string($preparedValue) ? trim($preparedValue) : $preparedValue;
+            $this->settingService->saveSetting($setting, $preparedValue);
         }
     }
 
-    private function createAdminAccount(array $data): void
+    private function createAdminAccount(array $data): bool
     {
         if (empty($data['admin_email']) || empty($data['admin_password'])) {
-            return;
+            return false;
         }
 
         $user = new User();
@@ -100,13 +105,15 @@ class FinishConfigurationService
         $user->setSurname('Admin');
         $user->setEmail($data['admin_email']);
 
-        $this->registrationService->registerUser(
+        $registerResult = $this->registrationService->registerUser(
             $user,
             $data['admin_password'],
             [UserRoleEnum::ROLE_ADMIN->name],
             true,
             false,
         );
+
+        return $registerResult->success;
     }
 
     private function disableConfigurator(): void
@@ -122,14 +129,6 @@ class FinishConfigurationService
             'email_smtp_username',
             'email_smtp_password',
             'email_smtp_from',
-        ]));
-    }
-
-    private function clearPterodactylSettings(array $data): array
-    {
-        return array_diff_key($data, array_flip([
-            'pterodactyl_panel_url',
-            'pterodactyl_panel_api_key',
         ]));
     }
 

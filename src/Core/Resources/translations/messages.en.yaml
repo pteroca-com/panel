@@ -1167,6 +1167,7 @@ pteroca:
       override_settings: 'Override settings'
       email_checking_smtp_connection: 'Checking the connection to the SMTP server...'
       email_smtp_connection_success: 'Successfully connected to the SMTP server.'
+      user_already_exists_in_local_database: 'A user with this email address already exists in the local database.'
       user_already_exists_in_pterodactyl: 'A user with this email address already exists in Pterodactyl. Please use a different email address.'
       user_validation_success: 'User validation successful.'
       user_checking_account_creation: 'Checking if account can be created...'

@@ -1169,6 +1169,7 @@ pteroca:
       pterodactyl_addon_not_detected: 'API कनेक्शन स्थापित हो गया है, लेकिन आपके Pterodactyl पैनल पर PteroCA Pterodactyl Addon इंस्टॉल नहीं है। कृपया जारी रखने से पहले इसे इंस्टॉल करें।'
       email_checking_smtp_connection: "SMTP सर्वर कनेक्शन की जाँच की जा रही है..."
       email_smtp_connection_success: "SMTP सर्वर से सफलतापूर्वक कनेक्ट हो गया।"
+      user_already_exists_in_local_database: "इस ईमेल पते वाला उपयोगकर्ता पहले से ही स्थानीय डेटाबेस में मौजूद है।"
       user_already_exists_in_pterodactyl: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही Pterodactyl में मौजूद है। कृपया एक अलग ईमेल पता उपयोग करें।'
       user_validation_success: 'उपयोगकर्ता सत्यापन सफल।'
       user_checking_account_creation: 'जांच की जा रही है कि क्या खाता बनाया जा सकता है...'
