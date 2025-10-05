@@ -1175,6 +1175,9 @@ pteroca:
       user_validation_success: 'Validação do usuário bem-sucedida.'
       user_checking_account_creation: 'Verificando se a conta pode ser criada...'
       validation_error: 'Ocorreu um erro ao validar a etapa. Tente novamente.'
+      pterodactyl_not_configured: 'Pterodactyl ainda não está configurado'
+      pterodactyl_already_configured: 'Configuração existente do Pterodactyl detectada. Você pode pular esta etapa ou substituir as configurações existentes.'
+      override_settings: 'Substituir configurações'
 
   error:
     404:

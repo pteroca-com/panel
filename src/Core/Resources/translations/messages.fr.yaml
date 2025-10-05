@@ -1174,6 +1174,9 @@ pteroca:
       user_validation_success: 'Validation de l''utilisateur réussie.'
       user_checking_account_creation: 'Vérification si le compte peut être créé...'
       validation_error: 'Une erreur s''est produite lors de la validation de l''étape. Veuillez réessayer.'
+      pterodactyl_not_configured: 'Pterodactyl n''est pas encore configuré'
+      pterodactyl_already_configured: 'Configuration Pterodactyl existante détectée. Vous pouvez ignorer cette étape ou remplacer les paramètres existants.'
+      override_settings: 'Remplacer les paramètres'
       admin_account_alert: "N'oubliez pas de créer un compte administrateur sécurisé et de conserver vos identifiants en lieu sûr."
 
   error:

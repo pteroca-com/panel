@@ -1173,6 +1173,9 @@ pteroca:
       user_validation_success: '用户验证成功。'
       user_checking_account_creation: '正在检查是否可以创建账户...'
       validation_error: '验证步骤时发生错误。请重试。'
+      pterodactyl_not_configured: 'Pterodactyl 尚未配置'
+      pterodactyl_already_configured: '检测到现有的 Pterodactyl 配置。您可以跳过此步骤或覆盖现有设置。'
+      override_settings: '覆盖设置'
 
   error:
     404:

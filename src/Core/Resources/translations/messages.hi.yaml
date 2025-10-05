@@ -1173,6 +1173,9 @@ pteroca:
       user_validation_success: 'उपयोगकर्ता सत्यापन सफल।'
       user_checking_account_creation: 'जांच की जा रही है कि क्या खाता बनाया जा सकता है...'
       validation_error: 'स्टेप को सत्यापित करते समय त्रुटि हुई। कृपया फिर से कोशिश करें।'
+      pterodactyl_not_configured: 'Pterodactyl अभी तक कॉन्फ़िगर नहीं किया गया है'
+      pterodactyl_already_configured: 'मौजूदा Pterodactyl कॉन्फ़िगरेशन का पता चला। आप इस चरण को छोड़ सकते हैं या मौजूदा सेटिंग्स को ओवरराइड कर सकते हैं।'
+      override_settings: 'सेटिंग्स ओवरराइड करें'
 
   error:
     404:

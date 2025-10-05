@@ -1165,6 +1165,9 @@ pteroca:
       user_validation_success: 'Проверка пользователя прошла успешно.'
       user_checking_account_creation: 'Проверка возможности создания аккаунта...'
       validation_error: 'Произошла ошибка при проверке шага. Попробуйте еще раз.'
+      pterodactyl_not_configured: 'Pterodactyl еще не настроен'
+      pterodactyl_already_configured: 'Обнаружена существующая конфигурация Pterodactyl. Вы можете пропустить этот шаг или переопределить существующие настройки.'
+      override_settings: 'Переопределить настройки'
 
   error:
     404:

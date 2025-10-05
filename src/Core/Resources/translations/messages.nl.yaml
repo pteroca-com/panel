@@ -1157,6 +1157,9 @@ pteroca:
       user_validation_success: 'Gebruikersvalidatie succesvol.'
       user_checking_account_creation: 'Controleren of het account kan worden aangemaakt...'
       validation_error: 'Er is een fout opgetreden bij het valideren van de stap. Probeer het opnieuw.'
+      pterodactyl_not_configured: 'Pterodactyl is nog niet geconfigureerd'
+      pterodactyl_already_configured: 'Bestaande Pterodactyl-configuratie gedetecteerd. U kunt deze stap overslaan of de bestaande instellingen overschrijven.'
+      override_settings: 'Instellingen overschrijven'
 
   error:
     404:
