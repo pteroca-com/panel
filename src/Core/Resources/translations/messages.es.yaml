@@ -821,6 +821,9 @@ pteroca:
         pterodactyl_sso_secret: 'Clave secreta de inicio de sesión SSO de Pterodactyl'
         show_pterodactyl_logs_in_server_activity: 'Mostrar registros de Pterodactyl en la actividad del servidor'
         current_theme: 'Tema actual del panel'
+        renewal_notification_enabled: 'Habilitar notificaciones de renovación'
+        renewal_notification_min_period_hours: 'Frecuencia mínima de notificación (en horas)'
+        renewal_notification_on_demand_min_hours: 'Horas mínimas antes de enviar la notificación bajo demanda'
       template:
         name: 'Nombre de la plantilla'
         description: 'Descripción de la plantilla'
@@ -1174,6 +1177,10 @@ pteroca:
       user_validation_success: 'Validación de usuario exitosa.'
       user_checking_account_creation: 'Verificando si la cuenta puede ser creada...'
       validation_error: 'Ocurrió un error durante la validación del paso. Por favor, inténtelo de nuevo.'
+      pterodactyl_not_configured: 'Pterodactyl aún no está configurado'
+      pterodactyl_already_configured: 'Configuración de Pterodactyl existente detectada. Puede omitir este paso o anular la configuración existente.'
+      override_settings: 'Anular configuración'
+      user_already_exists_in_local_database: 'Un usuario con esta dirección de correo electrónico ya existe en la base de datos local.'
 
   error:
     404:

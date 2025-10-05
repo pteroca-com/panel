@@ -821,6 +821,9 @@ pteroca:
         pterodactyl_sso_secret: 'Sekretny klucz logowania SSO Pterodactyl'
         show_pterodactyl_logs_in_server_activity: 'Wyświetlaj logi z Pterodactyla w aktywności serwera'
         current_theme: 'Aktualny motyw panelu'
+        renewal_notification_enabled: 'Włącz powiadomienia o odnowieniu'
+        renewal_notification_min_period_hours: 'Minimalna częstotliwość powiadomień (w godzinach)'
+        renewal_notification_on_demand_min_hours: 'Minimalna liczba godzin przed wysłaniem powiadomienia na żądanie'
       template:
         name: 'Nazwa szablonu'
         description: 'Opis szablonu'
@@ -1174,6 +1177,10 @@ pteroca:
       user_validation_success: 'Walidacja użytkownika pomyślna.'
       user_checking_account_creation: 'Sprawdzanie czy konto może zostać utworzone...'
       validation_error: 'Wystąpił błąd podczas walidacji kroku. Proszę spróbować ponownie.'
+      pterodactyl_not_configured: 'Pterodactyl nie jest jeszcze skonfigurowany'
+      pterodactyl_already_configured: 'Wykryto istniejącą konfigurację Pterodactyl. Możesz pominąć ten krok lub zastąpić istniejące ustawienia.'
+      override_settings: 'Zastąp ustawienia'
+      user_already_exists_in_local_database: 'Użytkownik o tym adresie e-mail już istnieje w lokalnej bazie danych.'
 
   error:
     404:

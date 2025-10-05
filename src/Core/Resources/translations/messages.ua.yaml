@@ -820,6 +820,9 @@ pteroca:
         pterodactyl_sso_enabled: 'Увімкнути вхід Single Sign-On у панелі Pterodactyl (необхідно встановити секрет SSO)'
         pterodactyl_sso_secret: 'Секретний ключ для входу в Pterodactyl SSO'
         current_theme: 'Поточна тема панелі'
+        renewal_notification_enabled: 'Увімкнути сповіщення про поновлення'
+        renewal_notification_min_period_hours: 'Мінімальна частота сповіщень (у годинах)'
+        renewal_notification_on_demand_min_hours: 'Мінімальна кількість годин перед надсиланням сповіщення на запит'
         show_pterodactyl_logs_in_server_activity: 'Показувати логи Pterodactyl в активності сервера'
       template:
         name: 'Назва шаблону'
@@ -1174,6 +1177,10 @@ pteroca:
       user_validation_success: 'Перевірка користувача успішна.'
       user_checking_account_creation: 'Перевірка можливості створення облікового запису...'
       validation_error: 'Помилка під час перевірки кроку. Спробуйте ще раз.'
+      pterodactyl_not_configured: 'Pterodactyl ще не налаштований'
+      pterodactyl_already_configured: 'Виявлено існуючу конфігурацію Pterodactyl. Ви можете пропустити цей крок або перевизначити існуючі налаштування.'
+      override_settings: 'Перевизначити налаштування'
+      user_already_exists_in_local_database: 'Користувач із такою адресою електронної пошти вже існує в локальній базі даних.'
 
   error:
     404:

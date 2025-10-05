@@ -805,6 +805,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO login geheime sleutel'
         show_pterodactyl_logs_in_server_activity: 'Toon Pterodactyl logs in server activiteit'
         current_theme: 'Huidig thema van het paneel'
+        renewal_notification_enabled: 'Hernieuwingsmeldingen inschakelen'
+        renewal_notification_min_period_hours: 'Minimale meldingsfrequentie (in uren)'
+        renewal_notification_on_demand_min_hours: 'Minimum aantal uren voor het verzenden van melding op aanvraag'
       template:
         name: 'Sjabloonnaam'
         description: 'Sjabloonbeschrijving'
@@ -1154,6 +1157,10 @@ pteroca:
       user_validation_success: 'Gebruikersvalidatie succesvol.'
       user_checking_account_creation: 'Controleren of het account kan worden aangemaakt...'
       validation_error: 'Er is een fout opgetreden bij het valideren van de stap. Probeer het opnieuw.'
+      pterodactyl_not_configured: 'Pterodactyl is nog niet geconfigureerd'
+      pterodactyl_already_configured: 'Bestaande Pterodactyl-configuratie gedetecteerd. U kunt deze stap overslaan of de bestaande instellingen overschrijven.'
+      override_settings: 'Instellingen overschrijven'
+      user_already_exists_in_local_database: 'Een gebruiker met dit e-mailadres bestaat al in de lokale database.'
 
   error:
     404:
