@@ -16,6 +16,7 @@ pteroca:
     sign_in: 'Войти'
     invalid_captcha: 'Неверная CAPTCHA.'
     user_blocked: 'Ваша учётная запись заблокирована.'
+    invalid_credentials: 'Неверный адрес электронной почты или пароль.'
     dont_have_account_yet: "Еще нет аккаунта? Зарегистрируйтесь сейчас!"
     subtitle: 'Войдите в свой аккаунт'
     email_placeholder: 'ваш@email.com'
@@ -109,6 +110,7 @@ pteroca:
     amount_hint: 'Введите сумму, которую вы хотите пополнить.'
     view_transaction_history: 'Посмотреть историю транзакций'
     view_all_payments_description: 'Показывает все платежи, совершенные на вашем аккаунте.'
+    amount_must_be_positive: 'The amount must be positive.'
   product:
     information: 'Информация'
     ram: 'ОЗУ'
@@ -809,6 +811,9 @@ pteroca:
         pterodactyl_sso_enabled: 'Включить вход через Single Sign-On в панели Pterodactyl (необходимо установить секрет SSO)'
         pterodactyl_sso_secret: 'Секретный ключ для входа в Pterodactyl SSO'
         current_theme: 'Текущая тема панели'
+        renewal_notification_enabled: 'Включить уведомления о продлении'
+        renewal_notification_min_period_hours: 'Минимальная частота уведомлений (в часах)'
+        renewal_notification_on_demand_min_hours: 'Минимальное количество часов перед отправкой уведомления по запросу'
         show_pterodactyl_logs_in_server_activity: 'Показывать логи Pterodactyl в активности сервера'
       template:
         name: 'Название шаблона'
@@ -850,6 +855,8 @@ pteroca:
       passwords_must_match: 'Пароли должны совпадать.'
       deleted_successfully: 'Пользователь успешно удален.'
       restored_successfully: 'Пользователь успешно восстановлен.'
+      account_restored: 'Учетная запись пользователя была восстановлена из ранее удаленной учетной записи.'
+      created_successfully: 'Пользователь успешно создан.'
       restore_error: 'Ошибка при восстановлении пользователя.'
       restore: 'Восстановить'
       pterodactyl_user_not_found: 'Пользователь не найден в Pterodactyl, но успешно удален из PteroCA.'
@@ -1158,6 +1165,10 @@ pteroca:
       user_validation_success: 'Проверка пользователя прошла успешно.'
       user_checking_account_creation: 'Проверка возможности создания аккаунта...'
       validation_error: 'Произошла ошибка при проверке шага. Попробуйте еще раз.'
+      pterodactyl_not_configured: 'Pterodactyl еще не настроен'
+      pterodactyl_already_configured: 'Обнаружена существующая конфигурация Pterodactyl. Вы можете пропустить этот шаг или переопределить существующие настройки.'
+      override_settings: 'Переопределить настройки'
+      user_already_exists_in_local_database: 'Пользователь с таким адресом электронной почты уже существует в локальной базе данных.'
 
   error:
     404:

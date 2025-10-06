@@ -18,6 +18,7 @@ pteroca:
     sign_in: '登录'
     invalid_captcha: 'CAPTCHA 验证无效。'
     user_blocked: '您的账户已被锁定。'
+    invalid_credentials: '电子邮件或密码无效。'
     dont_have_account_yet: '还没有账户？注册！'
     subtitle: '登录您的账户'
 
@@ -112,6 +113,7 @@ pteroca:
     amount_hint: '输入您想要充值的金额。'
     view_transaction_history: '查看交易记录'
     view_all_payments_description: '显示您账户上进行的所有支付。'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: '信息'
@@ -815,6 +817,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO 登录密钥'
         show_pterodactyl_logs_in_server_activity: '在服务器活动中显示 Pterodactyl 日志'
         current_theme: '当前面板的主题'
+        renewal_notification_enabled: '启用续订通知'
+        renewal_notification_min_period_hours: '通知最小频率（小时）'
+        renewal_notification_on_demand_min_hours: '发送通知前按需最小小时数'
       template:
         name: '模板名称'
         description: '模板描述'
@@ -855,6 +860,8 @@ pteroca:
       passwords_must_match: '两次输入的密码必须一致。'
       deleted_successfully: '用户删除成功。'
       restored_successfully: '用户恢复成功。'
+      account_restored: '用户账户已从之前删除的账户中恢复。'
+      created_successfully: '用户已成功创建。'
       restore_error: '恢复用户时出错。'
       restore: '恢复'
       pterodactyl_user_not_found: '在 Pterodactyl 中未找到用户，但在 PteroCA 中已成功删除。'
@@ -1166,6 +1173,10 @@ pteroca:
       user_validation_success: '用户验证成功。'
       user_checking_account_creation: '正在检查是否可以创建账户...'
       validation_error: '验证步骤时发生错误。请重试。'
+      pterodactyl_not_configured: 'Pterodactyl 尚未配置'
+      pterodactyl_already_configured: '检测到现有的 Pterodactyl 配置。您可以跳过此步骤或覆盖现有设置。'
+      override_settings: '覆盖设置'
+      user_already_exists_in_local_database: '具有此电子邮件地址的用户已在本地数据库中存在。'
 
   error:
     404:

@@ -4,8 +4,8 @@ namespace App\Core\Controller\Panel\Setting;
 
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
-use App\Core\Repository\SettingOptionRepository;
 use App\Core\Repository\SettingRepository;
+use App\Core\Repository\SettingOptionRepository;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\LocaleService;
 use App\Core\Service\SettingService;
@@ -30,15 +30,7 @@ class EmailSettingCrudController extends AbstractSettingCrudController
         LocaleService $localeService,
         private readonly EmailConnectionVerificationService $emailConnectionVerificationService,
     ) {
-        parent::__construct(
-            $panelCrudService,
-            $requestStack,
-            $translator,
-            $settingRepository,
-            $settingOptionRepository,
-            $settingService,
-            $localeService,
-        );
+        parent::__construct($panelCrudService, $requestStack, $translator, $settingRepository, $settingOptionRepository, $settingService, $localeService);
     }
 
     public function configureCrud(Crud $crud): Crud

@@ -61,7 +61,6 @@ class UpdateOrchestrator implements HandlerInterface
     {
         $this->io = $io;
         
-        // Set IO for all services
         $this->gitService->setIo($io);
         $this->composerService->setIo($io);
         $this->databaseService->setIo($io);
@@ -75,7 +74,6 @@ class UpdateOrchestrator implements HandlerInterface
     {
         $this->options = array_merge($this->options, $options);
 
-        // Set options for all services
         $this->gitService->setOptions($this->options);
         $this->composerService->setOptions($this->options);
         $this->databaseService->setOptions($this->options);
@@ -88,7 +86,6 @@ class UpdateOrchestrator implements HandlerInterface
     public function handle(): void
     {
         try {
-            // Acquire update lock first
             $this->lockManager->acquireLock();
 
             if ($this->options['dry-run']) {
@@ -97,21 +94,20 @@ class UpdateOrchestrator implements HandlerInterface
                 return;
             }
 
-            // Pre-flight validation
             $this->executeAtomicStep('Validating update environment', fn() => $this->validateEnvironment());
             
-            // Capture initial system state
+            if ($this->hasError) {
+                return;
+            }
+
             $this->executeAtomicStep('Capturing system state', fn() => $this->captureInitialState());
 
-            // Create backup unless skipped
             if (!$this->options['skip-backup']) {
                 $this->executeAtomicStep('Creating database backup', fn() => $this->createBackup());
             }
 
-            // Show warning and confirm
             $this->showWarningMessage();
 
-            // Execute update steps with rollback capability
             $this->executeAtomicStep('Configuring Git environment', fn() => $this->gitService->ensureGitSafeDirectory());
             $this->executeAtomicStep('Stashing local changes', fn() => $this->gitService->stashChanges());
             $this->executeAtomicStep('Pulling changes from repository', fn() => $this->gitService->pullChanges());
@@ -121,13 +117,11 @@ class UpdateOrchestrator implements HandlerInterface
             $this->executeAtomicStep('Clearing application cache', fn() => $this->systemService->clearCache());
             $this->executeAtomicStep('Adjusting file permissions', fn() => $this->systemService->adjustFilePermissions());
 
-            // Clear state on success
             $this->stateManager->clearState();
-
         } catch (\Exception $e) {
             $this->hasError = true;
             $this->io->error('Update failed: ' . $e->getMessage());
-            
+
             if (!$this->options['dry-run']) {
                 $this->rollbackService->performCompleteRollback();
             }
@@ -158,7 +152,6 @@ class UpdateOrchestrator implements HandlerInterface
 
     private function showDryRunPreview(): void
     {
-        // Even in dry-run mode, we should configure Git safe directory for version detection
         $this->gitService->ensureGitSafeDirectory();
         
         $this->io->section('Update Process Preview');
@@ -236,7 +229,6 @@ class UpdateOrchestrator implements HandlerInterface
             foreach ($failedChecks as $check => $result) {
                 $this->io->text("  • $check: {$result['message']}");
                 
-                // Show detailed information for failed checks
                 if (isset($result['details']) && !empty($result['details'])) {
                     if (isset($result['details']['issues']) && !empty($result['details']['issues'])) {
                         foreach ($result['details']['issues'] as $issue) {
@@ -254,7 +246,6 @@ class UpdateOrchestrator implements HandlerInterface
                 }
             }
             
-            // Show warnings as well for context
             $warningChecks = array_filter($validationResults, fn($r) => $r['status'] === 'warning');
             if (!empty($warningChecks)) {
                 $this->io->newLine();
@@ -270,7 +261,6 @@ class UpdateOrchestrator implements HandlerInterface
         if ($summary['warnings'] > 0) {
             $this->io->warning("{$summary['warnings']} warning(s) found during validation.");
             
-            // Show warning details in non-verbose mode too
             $warningChecks = array_filter($validationResults, fn($r) => $r['status'] === 'warning');
             foreach ($warningChecks as $check => $result) {
                 $this->io->text("  • $check: {$result['message']}");
@@ -301,7 +291,6 @@ class UpdateOrchestrator implements HandlerInterface
             $this->io->success("Database backup created: {$this->backupPath} ({$backupSizeMB}MB)");
         }
 
-        // Add rollback action for backup cleanup on failure
         $this->rollbackService->addRollbackAction(function() {
             if ($this->backupPath && file_exists($this->backupPath)) {
                 $this->io->text('Keeping database backup for manual recovery: ' . $this->backupPath);

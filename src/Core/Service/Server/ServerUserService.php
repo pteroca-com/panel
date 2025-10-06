@@ -11,7 +11,6 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\ServerLogService;
-use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\SettingService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

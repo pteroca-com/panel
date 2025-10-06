@@ -181,6 +181,9 @@ class CreateServerService extends AbstractActionServerService
             ->setAllowChangeEgg($product->getAllowChangeEgg());
 
         $this->serverProductRepository->save($entityServerProduct);
+        
+        $server->setServerProduct($entityServerProduct);
+        $this->serverRepository->save($server);
 
         return $entityServerProduct;
     }

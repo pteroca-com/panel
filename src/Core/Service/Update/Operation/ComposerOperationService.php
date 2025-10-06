@@ -25,7 +25,6 @@ class ComposerOperationService
     {
         $isDev = strtolower($_ENV['APP_ENV'] ?? '') === 'dev';
         
-        // If --force-composer option is enabled, use --ignore-platform-reqs immediately
         if ($this->options['force-composer'] ?? false) {
             $this->io->note('Using --force-composer option: installing dependencies with --ignore-platform-reqs');
             $this->installWithIgnorePlatform($isDev);
@@ -41,7 +40,6 @@ class ComposerOperationService
         if ($returnCode !== 0) {
             $outputString = implode("\n", $output);
             
-            // Check if the error is related to platform dependencies
             if ($this->isPlatformDependencyError($outputString)) {
                 $this->io->warning('Composer installation failed due to platform requirements.');
                 $this->io->text('This typically happens when the server is missing PHP extensions or has different PHP version requirements.');
@@ -51,11 +49,9 @@ class ComposerOperationService
                     return;
                 }
                 
-                // User chose not to continue
                 throw new \RuntimeException('Update aborted due to composer dependency issues.');
             }
             
-            // For other composer errors, show the output and fail
             throw new \RuntimeException('Failed to install composer dependencies. Composer output: ' . $outputString);
         }
     }

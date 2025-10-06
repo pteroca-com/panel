@@ -18,6 +18,7 @@ pteroca:
     sign_in: 'साइन इन करें'
     invalid_captcha: 'अमान्य CAPTCHA सत्यापन।'
     user_blocked: 'आपका खाता ब्लॉक कर दिया गया है।'
+    invalid_credentials: 'अमान्य ईमेल या पासवर्ड।'
     dont_have_account_yet: "अभी तक खाता नहीं है? अभी पंजीकरण करें!"
     subtitle: 'अपने खाते में लॉगिन करें'
 
@@ -112,6 +113,7 @@ pteroca:
     amount_hint: 'वह राशि दर्ज करें जिसे आप रिचार्ज करना चाहते हैं।'
     view_transaction_history: 'लेन-देन इतिहास देखें'
     view_all_payments_description: 'आपके खाते पर किए गए सभी भुगतान दिखाता है।'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: 'जानकारी'
@@ -815,6 +817,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO लॉगिन गुप्त कुंजी'
         show_pterodactyl_logs_in_server_activity: 'सर्वर गतिविधि में Pterodactyl लॉग्स दिखाएं'
         current_theme: 'पैनल की वर्तमान थीम'
+        renewal_notification_enabled: 'नवीकरण सूचनाएं सक्षम करें'
+        renewal_notification_min_period_hours: 'अधिसूचना न्यूनतम आवृत्ति (घंटों में)'
+        renewal_notification_on_demand_min_hours: 'अधिसूचना भेजने से पहले मांग पर न्यूनतम घंटे'
       template:
         name: 'टेम्पलेट का नाम'
         description: 'टेम्पलेट विवरण'
@@ -855,6 +860,8 @@ pteroca:
       passwords_must_match: 'पासवर्ड मेल खाना चाहिए।'
       deleted_successfully: 'उपयोगकर्ता सफलतापूर्वक हटाया गया।'
       restored_successfully: 'उपयोगकर्ता सफलतापूर्वक बहाल किया गया।'
+      account_restored: 'उपयोगकर्ता खाता पहले हटाए गए खाते से पुनर्स्थापित किया गया है।'
+      created_successfully: 'उपयोगकर्ता सफलतापूर्वक बनाया गया है।'
       restore_error: 'उपयोगकर्ता को बहाल करने में त्रुटि।'
       restore: 'बहाल करें'
       pterodactyl_user_not_found: 'Pterodactyl में उपयोगकर्ता नहीं मिला, लेकिन PteroCA से सफलतापूर्वक हटाया गया।'
@@ -1166,6 +1173,10 @@ pteroca:
       user_validation_success: 'उपयोगकर्ता सत्यापन सफल।'
       user_checking_account_creation: 'जांच की जा रही है कि क्या खाता बनाया जा सकता है...'
       validation_error: 'स्टेप को सत्यापित करते समय त्रुटि हुई। कृपया फिर से कोशिश करें।'
+      pterodactyl_not_configured: 'Pterodactyl अभी तक कॉन्फ़िगर नहीं किया गया है'
+      pterodactyl_already_configured: 'मौजूदा Pterodactyl कॉन्फ़िगरेशन का पता चला। आप इस चरण को छोड़ सकते हैं या मौजूदा सेटिंग्स को ओवरराइड कर सकते हैं।'
+      override_settings: 'सेटिंग्स ओवरराइड करें'
+      user_already_exists_in_local_database: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही स्थानीय डेटाबेस में मौजूद है।'
 
   error:
     404:

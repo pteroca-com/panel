@@ -18,6 +18,7 @@ pteroca:
     sign_in: 'Anmelden'
     invalid_captcha: 'Ungültige CAPTCHA-Überprüfung.'
     user_blocked: 'Ihr Konto wurde gesperrt.'
+    invalid_credentials: 'Ungültige E-Mail oder Passwort.'
     dont_have_account_yet: "Sie haben noch kein Konto? Jetzt registrieren!"
     subtitle: 'Melden Sie sich in Ihrem Konto an'
 
@@ -110,6 +111,7 @@ pteroca:
     amount_hint: 'Geben Sie den Betrag ein, den Sie aufladen möchten.'
     view_transaction_history: 'Transaktionshistorie anzeigen'
     view_all_payments_description: 'Zeigen Sie alle Zahlungen an, die auf Ihrem Konto getätigt wurden.'
+    amount_must_be_positive: 'The amount must be positive.'
   product:
     information: 'Informationen'
     ram: 'RAM'
@@ -809,6 +811,9 @@ pteroca:
         pterodactyl_sso_secret: 'Pterodactyl SSO Login Geheimschlüssel'
         show_pterodactyl_logs_in_server_activity: 'Pterodactyl-Logs in der Serveraktivität anzeigen'
         current_theme: 'Aktuelles Theme des Panels'
+        renewal_notification_enabled: 'Erneuerungsbenachrichtigungen aktivieren'
+        renewal_notification_min_period_hours: 'Minimale Benachrichtigungshäufigkeit (in Stunden)'
+        renewal_notification_on_demand_min_hours: 'Mindeststunden vor dem Senden der Benachrichtigung auf Anfrage'
       template:
         name: 'Vorlagenname'
         description: 'Vorlagenbeschreibung'
@@ -849,6 +854,8 @@ pteroca:
       passwords_must_match: 'Die Passwörter müssen übereinstimmen.'
       deleted_successfully: 'Benutzer erfolgreich gelöscht.'
       restored_successfully: 'Benutzer erfolgreich wiederhergestellt.'
+      account_restored: 'Benutzerkonto wurde von einem zuvor gelöschten Konto wiederhergestellt.'
+      created_successfully: 'Benutzer wurde erfolgreich erstellt.'
       restore_error: 'Fehler beim Wiederherstellen des Benutzers.'
       restore: 'Wiederherstellen'
       pterodactyl_user_not_found: 'Benutzer nicht in Pterodactyl gefunden, aber erfolgreich aus PteroCA gelöscht.'
@@ -1157,6 +1164,10 @@ pteroca:
       user_validation_success: 'Benutzervalidierung erfolgreich.'
       user_checking_account_creation: 'Überprüfe, ob das Konto erstellt werden kann...'
       validation_error: 'Fehler beim Validieren des Schritts. Bitte versuchen Sie es erneut.'
+      pterodactyl_not_configured: 'Pterodactyl ist noch nicht konfiguriert'
+      pterodactyl_already_configured: 'Bestehende Pterodactyl-Konfiguration erkannt. Sie können diesen Schritt überspringen oder die vorhandenen Einstellungen überschreiben.'
+      override_settings: 'Einstellungen überschreiben'
+      user_already_exists_in_local_database: 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits in der lokalen Datenbank.'
 
   error:
     404:

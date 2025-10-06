@@ -16,6 +16,7 @@ pteroca:
     sign_in: 'Se connecter'
     invalid_captcha: 'Vérification CAPTCHA invalide.'
     user_blocked: 'Votre compte a été bloqué.'
+    invalid_credentials: 'Adresse e-mail ou mot de passe invalide.'
     dont_have_account_yet: 'Vous n’avez pas encore de compte ? Inscrivez-vous !'
     subtitle: 'Connectez-vous à votre compte'
     email_placeholder: 'votre@email.com'
@@ -111,6 +112,7 @@ pteroca:
     amount_hint: 'Entrez le montant que vous souhaitez recharger.'
     view_transaction_history: 'Voir l''historique des transactions'
     view_all_payments_description: 'Affiche tous les paiements effectués sur votre compte.'
+    amount_must_be_positive: 'The amount must be positive.'
     payment_is_not_configured: 'Le système de paiement n’est pas configuré. Contactez l’administrateur.'
 
   product:
@@ -816,6 +818,9 @@ pteroca:
         pterodactyl_sso_secret: 'Clé secrète de connexion SSO de Pterodactyl'
         show_pterodactyl_logs_in_server_activity: 'Afficher les journaux de Pterodactyl dans l''activité du serveur'
         current_theme: 'Thème actuel du panneau'
+        renewal_notification_enabled: 'Activer les notifications de renouvellement'
+        renewal_notification_min_period_hours: 'Fréquence minimale des notifications (en heures)'
+        renewal_notification_on_demand_min_hours: 'Heures minimales avant l''envoi de la notification à la demande'
       template:
         name: 'Nom du modèle'
         description: 'Description du modèle'
@@ -856,6 +861,8 @@ pteroca:
       passwords_must_match: 'Les mots de passe doivent correspondre.'
       deleted_successfully: 'Utilisateur supprimé avec succès.'
       restored_successfully: 'Utilisateur restauré avec succès.'
+      account_restored: "Le compte utilisateur a été restauré à partir d'un compte précédemment supprimé."
+      created_successfully: "L'utilisateur a été créé avec succès."
       restore_error: 'Erreur lors de la restauration de l''utilisateur.'
       restore: 'Restaurer'
       pterodactyl_user_not_found: 'Utilisateur non trouvé dans Pterodactyl, mais supprimé avec succès de PteroCA.'
@@ -1167,6 +1174,10 @@ pteroca:
       user_validation_success: 'Validation de l''utilisateur réussie.'
       user_checking_account_creation: 'Vérification si le compte peut être créé...'
       validation_error: 'Une erreur s''est produite lors de la validation de l''étape. Veuillez réessayer.'
+      pterodactyl_not_configured: 'Pterodactyl n''est pas encore configuré'
+      pterodactyl_already_configured: 'Configuration Pterodactyl existante détectée. Vous pouvez ignorer cette étape ou remplacer les paramètres existants.'
+      override_settings: 'Remplacer les paramètres'
+      user_already_exists_in_local_database: 'Un utilisateur avec cette adresse e-mail existe déjà dans la base de données locale.'
       admin_account_alert: "N'oubliez pas de créer un compte administrateur sécurisé et de conserver vos identifiants en lieu sûr."
 
   error:

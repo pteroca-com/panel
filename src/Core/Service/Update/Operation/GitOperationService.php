@@ -33,12 +33,10 @@ class GitOperationService
             $this->io->text('Checking Git safe directory configuration...');
         }
         
-        // Check if current directory is already in safe.directory
         exec('git config --global --get-all safe.directory 2>/dev/null', $safeDirectories, $returnCode);
         
         $needsConfig = true;
         foreach ($safeDirectories as $safeDir) {
-            // Check if current directory or any parent directory is already configured
             if ($safeDir === $currentDir || $safeDir === '*') {
                 $needsConfig = false;
                 break;
@@ -114,7 +112,6 @@ class GitOperationService
 
     public function pullChanges(): void
     {
-        // Validate we're on the main branch before attempting update
         $this->validateCurrentBranch();
         
         if ($this->options['verbose'] ?? false) {

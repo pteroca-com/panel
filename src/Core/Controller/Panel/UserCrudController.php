@@ -149,11 +149,6 @@ class UserCrudController extends AbstractPanelController
 
     public function configureActions(Actions $actions): Actions
     {
-        $restoreAction = Action::new('restore', $this->translator->trans('pteroca.crud.user.restore'))
-            ->linkToCrudAction('restoreUser')
-            ->setCssClass('btn text-success')
-            ->displayIf(fn ($entity) => $entity instanceof UserInterface && $entity->isDeleted());
-
         return $actions
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.user.add')))
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel($this->translator->trans('pteroca.crud.user.add')))
@@ -161,9 +156,7 @@ class UserCrudController extends AbstractPanelController
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
             ->remove(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_INDEX, $restoreAction)
             ->update(Crud::PAGE_DETAIL, Action::DELETE, fn (Action $action) => $action->displayIf(fn ($entity) => $entity instanceof UserInterface && !$entity->isDeleted()))
-            ->add(Crud::PAGE_DETAIL, $restoreAction)
             ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => $action->displayIf(fn ($entity) => $entity instanceof UserInterface && !$entity->isDeleted()));
     }
 
@@ -202,7 +195,14 @@ class UserCrudController extends AbstractPanelController
     {
         if ($entityInstance instanceof UserInterface) {
             try {
-                $this->userService->createUserWithPterodactylAccount($entityInstance, $entityInstance->getPlainPassword());
+                $result = $this->userService->createOrRestoreUser($entityInstance, $entityInstance->getPlainPassword());
+
+                if ($result['action'] === 'restored') {
+                    $this->addFlash('success', $this->translator->trans('pteroca.crud.user.account_restored'));
+                    $entityInstance = $result['user'];
+                } else {
+                    $this->addFlash('success', $this->translator->trans('pteroca.crud.user.created_successfully'));
+                }
             } catch (Exception) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
                 return;
@@ -232,14 +232,14 @@ class UserCrudController extends AbstractPanelController
                 'user' => $entityInstance,
                 'deletedAt' => null
             ]);
-            
+
             if ($activeServersCount > 0) {
                 $this->addFlash('danger', $this->translator->trans('pteroca.crud.user.cannot_delete_user_with_active_servers', ['count' => $activeServersCount]));
                 return;
             }
-            
+
             $pterodactylUserNotFound = false;
-            
+
             try {
                 $this->userService->deleteUserFromPterodactyl($entityInstance);
             } catch (PterodactylUserNotFoundException) {
@@ -248,53 +248,24 @@ class UserCrudController extends AbstractPanelController
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
                 return;
             }
-            
+
             $entityInstance->softDelete();
             $entityManager->persist($entityInstance);
             $entityManager->flush();
-            
+
             $this->logService->logAction($entityInstance, LogActionEnum::ENTITY_DELETE, [
                 'deleted_by' => $this->getUser()->getEmail(),
             ]);
-            
+
             if ($pterodactylUserNotFound) {
                 $this->addFlash('warning', $this->translator->trans('pteroca.crud.user.pterodactyl_user_not_found'));
             } else {
                 $this->addFlash('success', $this->translator->trans('pteroca.crud.user.deleted_successfully'));
             }
-            
+
             return;
         }
 
         parent::deleteEntity($entityManager, $entityInstance);
-    }
-
-    public function restoreUser(EntityManagerInterface $entityManager): Response
-    {
-        $request = $this->container->get('request_stack')->getCurrentRequest();
-        $entityId = $request->query->get('entityId');
-        
-        $user = $entityManager->getRepository(User::class)->find($entityId);
-        
-        if (!$user instanceof UserInterface || !$user->isDeleted()) {
-            $this->addFlash('danger', $this->translator->trans('pteroca.crud.user.restore_error'));
-            return $this->redirect($request->headers->get('referer'));
-        }
-
-        try {
-            $user->restore();
-            $entityManager->persist($user);
-            $entityManager->flush();
-            
-            $this->logService->logAction($user, LogActionEnum::ENTITY_RESTORE, [
-                'restored_by' => $this->getUser()->getEmail(),
-            ]);
-            
-            $this->addFlash('success', $this->translator->trans('pteroca.crud.user.restored_successfully'));
-        } catch (Exception) {
-            $this->addFlash('danger', $this->translator->trans('pteroca.crud.user.restore_error'));
-        }
-        
-        return $this->redirect($request->headers->get('referer'));
     }
 }

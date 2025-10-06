@@ -73,10 +73,9 @@ class UpdateSystemCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
-        // Show enhanced header with safety warnings
+
         $this->showUpdateHeader($io, $input);
-        
+
         $options = [
             'force-composer' => $input->getOption('force-composer'),
             'dry-run' => $input->getOption('dry-run'),
@@ -86,7 +85,6 @@ class UpdateSystemCommand extends Command
             'timeout' => (int)$input->getOption('timeout'),
         ];
 
-        // Warn about dangerous options
         if ($options['skip-backup'] && !$options['dry-run']) {
             $io->warning('WARNING: Database backup is disabled. This is dangerous and not recommended.');
             if (!$io->confirm('Are you absolutely sure you want to continue without backup?', false)) {
@@ -94,8 +92,7 @@ class UpdateSystemCommand extends Command
                 return Command::SUCCESS;
             }
         }
-        
-        // Create handler with dependencies
+
         $updateSystemHandler = new UpdateSystemHandler(
             $this->connection,
             $this->lockManager,
@@ -104,7 +101,7 @@ class UpdateSystemCommand extends Command
             $this->validationService,
             $this->filesystem
         );
-        
+
         try {
             $updateSystemHandler
                 ->setIo($io)
@@ -124,15 +121,15 @@ class UpdateSystemCommand extends Command
                 ));
                 return Command::SUCCESS;
             }
-            
+
         } catch (\Exception $e) {
             $io->error('Update failed: ' . $e->getMessage());
-            
+
             if ($options['verbose']) {
                 $io->text('Stack trace:');
                 $io->text($e->getTraceAsString());
             }
-            
+
             return Command::FAILURE;
         }
     }
@@ -140,7 +137,7 @@ class UpdateSystemCommand extends Command
     private function showUpdateHeader(SymfonyStyle $io, InputInterface $input): void
     {
         $io->title('PteroCA System Update');
-        
+
         if (!$input->getOption('dry-run')) {
             $io->note([
                 'This command will update your PteroCA installation.',
@@ -156,12 +153,11 @@ class UpdateSystemCommand extends Command
                 'For a preview without making changes, use --dry-run'
             ]);
         }
-        
-        // Show current system info
+
         $currentVersion = $this->getCurrentVersion();
         $phpVersion = PHP_VERSION;
         $environment = $_ENV['APP_ENV'] ?? 'prod';
-        
+
         $io->table(['System Information', 'Value'], [
             ['Current Version', $currentVersion],
             ['PHP Version', $phpVersion],

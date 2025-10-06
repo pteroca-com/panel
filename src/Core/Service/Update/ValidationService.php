@@ -143,7 +143,6 @@ class ValidationService
         $issues = [];
         
         foreach ($criticalPaths as $path) {
-            // Create directory if it doesn't exist
             if (!$this->filesystem->exists($path) && str_contains($path, 'var/')) {
                 try {
                     $this->filesystem->mkdir($path, 0755);
@@ -163,7 +162,6 @@ class ValidationService
             }
         }
 
-        // Test write permissions with temporary file
         $testFile = $rootPath . '/permission_test_' . uniqid() . '.tmp';
         try {
             file_put_contents($testFile, 'test');
@@ -187,7 +185,6 @@ class ValidationService
         try {
             $this->connection->executeQuery('SELECT 1');
             
-            // Check if migrations table exists
             $schemaManager = $this->connection->createSchemaManager();
             $tables = $schemaManager->listTableNames();
             
@@ -223,7 +220,6 @@ class ValidationService
     {
         $issues = [];
         
-        // Check if git is installed
         $process = new Process(['git', '--version']);
         $process->run();
         
@@ -235,7 +231,6 @@ class ValidationService
             ];
         }
 
-        // Check if we're in a git repository
         $process = new Process(['git', 'rev-parse', '--git-dir']);
         $process->run();
         
@@ -243,7 +238,6 @@ class ValidationService
             $issues[] = 'Not in a git repository';
         }
 
-        // Check remote origin
         $process = new Process(['git', 'remote', 'get-url', 'origin']);
         $process->run();
         
@@ -252,7 +246,6 @@ class ValidationService
         } else {
             $remoteUrl = trim($process->getOutput());
             
-            // Test connection to remote
             $process = new Process(['git', 'ls-remote', '--exit-code', '--heads', 'origin']);
             $process->setTimeout(10);
             $process->run();
@@ -262,7 +255,6 @@ class ValidationService
             }
         }
 
-        // Check for uncommitted changes
         $process = new Process(['git', 'status', '--porcelain']);
         $process->run();
         
@@ -326,7 +318,6 @@ class ValidationService
 
     public function validateComposerEnvironment(): array
     {
-        // Check if composer is installed
         $process = new Process(['composer', '--version']);
         $process->run();
         
@@ -338,7 +329,6 @@ class ValidationService
             ];
         }
 
-        // Check composer.json and composer.lock
         $rootPath = dirname(__DIR__, 4);
         $composerJson = $rootPath . '/composer.json';
         $composerLock = $rootPath . '/composer.lock';
@@ -353,7 +343,6 @@ class ValidationService
             $issues[] = 'composer.lock not found - run "composer install" first';
         }
 
-        // Check if composer can validate the setup
         $warnings = [];
         if (empty($issues)) {
             $process = new Process(['composer', 'validate', '--no-check-publish']);
@@ -363,20 +352,15 @@ class ValidationService
             $composerOutput = trim($process->getErrorOutput() ?: $process->getOutput());
             
             if (!$process->isSuccessful()) {
-                // Check if it's just warnings or actual errors
                 if (stripos($composerOutput, 'is valid, but with a few warnings') !== false) {
-                    // These are just warnings, not blocking errors
                     $warnings[] = 'Composer has warnings (non-blocking): ' . $composerOutput;
                 } else {
-                    // These are actual errors
                     $issues[] = 'Composer validation failed: ' . ($composerOutput ?: 'Unknown error');
                 }
             } elseif ($composerOutput && stripos($composerOutput, 'warning') !== false) {
-                // Even successful validation might have warnings
                 $warnings[] = 'Composer warnings: ' . $composerOutput;
             }
 
-            // Check for platform requirements only if we have no critical issues
             if (empty($issues)) {
                 $process2 = new Process(['composer', 'check-platform-reqs']);
                 $process2->setTimeout(15);
@@ -385,7 +369,6 @@ class ValidationService
                 if (!$process2->isSuccessful()) {
                     $platformOutput = trim($process2->getErrorOutput() ?: $process2->getOutput());
                     if ($platformOutput) {
-                        // Platform requirements issues are usually critical
                         if (stripos($platformOutput, 'requires') !== false || stripos($platformOutput, 'missing') !== false) {
                             $issues[] = 'Platform requirements check failed: ' . $platformOutput;
                         } else {
@@ -396,7 +379,6 @@ class ValidationService
             }
         }
 
-        // Determine final status
         if (!empty($issues)) {
             $status = 'error';
             $message = 'Composer environment has critical issues';
@@ -467,7 +449,6 @@ class ValidationService
 
     public function isMaintenanceModeAvailable(): array
     {
-        // Check if we can enable maintenance mode
         $process = new Process(['php', 'bin/console', 'list']);
         $process->setTimeout(10);
         $process->run();

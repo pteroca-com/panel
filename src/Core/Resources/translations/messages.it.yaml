@@ -18,6 +18,7 @@ pteroca:
     sign_in: 'Accedi'
     invalid_captcha: 'Verifica CAPTCHA non valida.'
     user_blocked: 'Il tuo account è stato bloccato.'
+    invalid_credentials: 'E-mail o password non validi.'
     dont_have_account_yet: 'Non hai ancora un account? Registrati!'
     subtitle: 'Accedi al tuo account'
 
@@ -112,6 +113,7 @@ pteroca:
     amount_hint: 'Inserisci l''importo che desideri ricaricare.'
     view_transaction_history: 'Visualizza storico transazioni'
     view_all_payments_description: 'Mostra tutti i pagamenti effettuati sul tuo account.'
+    amount_must_be_positive: 'The amount must be positive.'
 
   product:
     information: 'Informazioni'
@@ -815,6 +817,9 @@ pteroca:
         pterodactyl_sso_secret: 'Chiave segreta di accesso SSO di Pterodactyl'
         show_pterodactyl_logs_in_server_activity: 'Mostra i log di Pterodactyl nell''attività del server'
         current_theme: 'Tema attuale del pannello'
+        renewal_notification_enabled: 'Abilita notifiche di rinnovo'
+        renewal_notification_min_period_hours: 'Frequenza minima delle notifiche (in ore)'
+        renewal_notification_on_demand_min_hours: 'Ore minime prima dell''invio della notifica su richiesta'
       template:
         name: 'Nome del modello'
         description: 'Descrizione del modello'
@@ -855,6 +860,8 @@ pteroca:
       passwords_must_match: 'Le password devono corrispondere.'
       deleted_successfully: 'Utente eliminato con successo.'
       restored_successfully: 'Utente ripristinato con successo.'
+      account_restored: "L'account utente è stato ripristinato da un account precedentemente eliminato."
+      created_successfully: "L'utente è stato creato con successo."
       restore_error: 'Errore durante il ripristino dell''utente.'
       restore: 'Ripristina'
       pterodactyl_user_not_found: 'Utente non trovato in Pterodactyl, ma eliminato con successo da PteroCA.'
@@ -1166,6 +1173,10 @@ pteroca:
       user_validation_success: 'Validazione utente completata con successo.'
       user_checking_account_creation: 'Controllo se l''account può essere creato...'
       validation_error: 'Errore durante la validazione del passaggio. Riprova.'
+      pterodactyl_not_configured: 'Pterodactyl non è ancora configurato'
+      pterodactyl_already_configured: 'Rilevata configurazione Pterodactyl esistente. Puoi saltare questo passaggio o sovrascrivere le impostazioni esistenti.'
+      override_settings: 'Sovrascrivi impostazioni'
+      user_already_exists_in_local_database: 'Un utente con questo indirizzo email esiste già nel database locale.'
 
   error:
     404:

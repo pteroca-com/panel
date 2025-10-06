@@ -66,7 +66,6 @@ class UpdateRollbackService
         $this->io->section('Performing Complete System Rollback');
 
         try {
-            // Execute rollback actions in reverse order
             foreach (array_reverse($this->rollbackActions) as $rollbackAction) {
                 try {
                     $rollbackAction();
@@ -75,26 +74,20 @@ class UpdateRollbackService
                 }
             }
 
-            // Restore database backup if available
             if ($this->backupPath && $this->backupService->validateBackup($this->backupPath)) {
                 if ($this->io->confirm('Restore database from backup?', false)) {
                     $this->restoreDatabaseFromBackup();
                 }
             }
 
-            // Restore git state if we have initial state
             $this->restoreGitState();
 
-            // Restore stashed changes if any
             if ($this->gitService->isStashed()) {
                 $this->gitService->applyStashedChanges();
             }
 
-            // Clear cache to ensure clean state
             $this->clearCacheForRollback();
-
             $this->io->warning('System rollback completed. Please verify system state manually.');
-            
         } catch (\Exception $e) {
             $this->io->error('Rollback failed: ' . $e->getMessage());
             $this->io->text('Manual intervention may be required.');
@@ -110,12 +103,8 @@ class UpdateRollbackService
         $this->io->note('Attempting to rollback changes...');
         
         try {
-            // Rollback Git changes
             $this->gitService->rollbackGitChanges();
-            
-            // Clear rollback actions on successful simple rollback
             $this->rollbackActions = [];
-            
         } catch (\Exception $e) {
             $this->io->error('Simple rollback failed: ' . $e->getMessage());
             throw $e;
@@ -139,7 +128,6 @@ class UpdateRollbackService
     public function rollbackComposer(): void
     {
         try {
-            // Attempt to restore composer.lock from git
             exec('git checkout HEAD -- composer.lock', $output, $returnCode);
             
             if ($returnCode === 0) {
