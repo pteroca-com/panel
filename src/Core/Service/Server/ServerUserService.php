@@ -2,17 +2,18 @@
 
 namespace App\Core\Service\Server;
 
-use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
-use App\Core\Entity\ServerSubuser;
-use App\Core\Enum\EmailVerificationValueEnum;
-use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Enum\SettingEnum;
-use App\Core\Repository\ServerSubuserRepository;
+use App\Core\Entity\ServerSubuser;
+use App\Core\Contract\UserInterface;
+use App\Core\Service\SettingService;
+use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Logs\ServerLogService;
-use App\Core\Service\SettingService;
+use App\Core\Enum\EmailVerificationValueEnum;
+use App\Core\Repository\ServerSubuserRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 class ServerUserService
 {
