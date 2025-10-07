@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Core\Event\User;
+namespace App\Core\Event\User\Registration;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-class UserEmailVerifiedEvent extends Event
+class UserCreatedEvent extends Event
 {
     private string $eventId;
     private \DateTimeImmutable $occurredAt;

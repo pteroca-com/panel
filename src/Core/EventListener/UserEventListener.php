@@ -3,9 +3,9 @@
 namespace App\Core\EventListener;
 
 use App\Core\Entity\User;
-use App\Core\Event\User\UserAboutToBeCreatedEvent;
-use App\Core\Event\User\UserCreatedEvent;
-use App\Core\Event\User\UserRegisteredEvent;
+use App\Core\Event\User\Registration\UserAboutToBeCreatedEvent;
+use App\Core\Event\User\Registration\UserCreatedEvent;
+use App\Core\Event\User\Registration\UserRegisteredEvent;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;

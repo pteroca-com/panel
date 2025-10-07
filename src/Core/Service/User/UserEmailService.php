@@ -5,7 +5,7 @@ namespace App\Core\Service\User;
 use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\SettingEnum;
-use App\Core\Event\User\UserEmailVerificationRequestedEvent;
+use App\Core\Event\User\Registration\UserEmailVerificationRequestedEvent;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Email\EmailNotificationService;

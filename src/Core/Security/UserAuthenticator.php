@@ -2,6 +2,8 @@
 
 namespace App\Core\Security;
 
+use App\Core\Event\User\Authentication\UserLoginAttemptedEvent;
+use App\Core\Event\User\Authentication\UserLoginValidatedEvent;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Captcha\CaptchaService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -18,6 +20,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -33,12 +36,23 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
         private readonly CaptchaService $captchaService,
         private readonly TranslatorInterface   $translator,
         private readonly UserRepository        $userRepository,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function authenticate(Request $request): Passport
     {
         $email = $request->request->get('email', '');
         $recaptchaResponse = $request->request->getString('g-recaptcha-response');
+
+        // Emit UserLoginAttemptedEvent
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        $loginAttemptedEvent = new UserLoginAttemptedEvent($email, $context);
+        $this->eventDispatcher->dispatch($loginAttemptedEvent);
 
         if ($this->captchaService->isCaptchaEnabled()
             && !$this->captchaService->validateCaptcha($recaptchaResponse)) {
@@ -53,6 +67,12 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             if ($user->isBlocked()) {
                 throw new CustomUserMessageAuthenticationException($this->translator->trans('pteroca.login.user_blocked'));
             }
+        }
+
+        // Emit UserLoginValidatedEvent (po walidacjach, przed sprawdzeniem hasła)
+        if (!empty($user)) {
+            $loginValidatedEvent = new UserLoginValidatedEvent($email, $user->getId(), $context);
+            $this->eventDispatcher->dispatch($loginValidatedEvent);
         }
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);

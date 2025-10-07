@@ -1,25 +1,28 @@
 <?php
 
-namespace App\Core\Event\User;
+namespace App\Core\Event\User\Registration;
 
-use App\Core\Event\AbstractDomainEvent;
 use App\Core\Event\StoppableEventTrait;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class UserRegistrationRequestedEvent extends Event
+class UserRegistrationValidatedEvent extends Event
 {
     use StoppableEventTrait;
 
     private string $eventId;
     private \DateTimeImmutable $occurredAt;
     private string $schemaVersion = 'v1';
+    private array $roles;
 
     public function __construct(
         private readonly string $email,
-        private readonly array $context = [] // ip, userAgent, locale, source, referralCode, consents
+        private readonly string $normalizedEmail,
+        array $roles = ['ROLE_USER'],
+        private readonly array $context = []
     ) {
         $this->eventId = \Symfony\Component\Uid\Uuid::v4()->toString();
         $this->occurredAt = new \DateTimeImmutable();
+        $this->roles = $roles;
     }
 
     public function getEmail(): string
@@ -27,29 +30,24 @@ class UserRegistrationRequestedEvent extends Event
         return $this->email;
     }
 
+    public function getNormalizedEmail(): string
+    {
+        return $this->normalizedEmail;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
     public function getContext(): array
     {
         return $this->context;
-    }
-
-    public function getIp(): ?string
-    {
-        return $this->context['ip'] ?? null;
-    }
-
-    public function getUserAgent(): ?string
-    {
-        return $this->context['userAgent'] ?? null;
-    }
-
-    public function getLocale(): ?string
-    {
-        return $this->context['locale'] ?? null;
-    }
-
-    public function getSource(): ?string
-    {
-        return $this->context['source'] ?? null;
     }
 
     public function getEventId(): string

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Event\User;
+namespace App\Core\Event\User\Registration;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Event\StoppableEventTrait;

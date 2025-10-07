@@ -2,21 +2,37 @@
 
 namespace App\Core\Controller;
 
+use App\Core\Event\User\Authentication\UserLoginRequestedEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class AuthorizationController extends AbstractController
 {
     #[Route(path: '/login', name: 'app_login')]
     public function login(
         AuthenticationUtils $authenticationUtils,
+        EventDispatcherInterface $eventDispatcher,
+        Request $request,
     ): Response
     {
          if ($this->getUser()) {
              return $this->redirectToRoute('panel');
          }
+
+        // Emit UserLoginRequestedEvent tylko dla niezalogowanych użytkowników
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+            'referer' => $request->headers->get('referer'),
+        ];
+        
+        $loginRequestedEvent = new UserLoginRequestedEvent($context);
+        $eventDispatcher->dispatch($loginRequestedEvent);
 
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();

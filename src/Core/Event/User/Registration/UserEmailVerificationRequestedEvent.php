@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Core\Event\User;
+namespace App\Core\Event\User\Registration;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-class UserCreatedEvent extends Event
+class UserEmailVerificationRequestedEvent extends Event
 {
     private string $eventId;
     private \DateTimeImmutable $occurredAt;
@@ -13,6 +13,7 @@ class UserCreatedEvent extends Event
     public function __construct(
         private readonly int $userId,
         private readonly string $email,
+        private readonly string $verificationToken,
         private readonly array $context = []
     ) {
         $this->eventId = \Symfony\Component\Uid\Uuid::v4()->toString();
@@ -27,6 +28,11 @@ class UserCreatedEvent extends Event
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function getVerificationToken(): string
+    {
+        return $this->verificationToken;
     }
 
     public function getContext(): array

@@ -2,8 +2,8 @@
 
 namespace App\Core\EventSubscriber\User;
 
-use App\Core\Event\User\UserRegisteredEvent;
-use App\Core\Event\User\UserRegistrationFailedEvent;
+use App\Core\Event\User\Registration\UserRegisteredEvent;
+use App\Core\Event\User\Registration\UserRegistrationFailedEvent;
 use App\Core\Service\User\UserEmailService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

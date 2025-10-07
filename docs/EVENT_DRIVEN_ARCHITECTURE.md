@@ -279,9 +279,66 @@ Przy testowaniu procesów z eventami:
 2. **Testuj subscribery osobno** od logiki biznesowej
 3. **Sprawdzaj transakcyjność** - czy eventy są emitowane w odpowiednich momentach
 
-## Migracja do Event-Driven
+## Procesy Obsługiwane przez EDA
 
-Proces rejestracji został przepisany na EDA. Kolejne procesy do migracji:
+### ✅ Rejestracja Użytkownika
+
+**Lokalizacja eventów:** `src/Core/Event/User/Registration/`
+
+**Eventy:**
+1. `UserRegistrationRequestedEvent` (pre) - żądanie rejestracji
+2. `UserRegistrationValidatedEvent` (pre) - po walidacji formularza
+3. `UserAboutToBeCreatedEvent` (pre-persist) - przed persist
+4. `UserCreatedEvent` (post-persist) - po persist, w transakcji
+5. `UserRegisteredEvent` (post-commit) - po commit
+6. `UserEmailVerificationRequestedEvent` (post-commit) - wysłano link weryfikacyjny
+7. `UserEmailVerifiedEvent` (post-commit) - email zweryfikowany
+8. `UserRegistrationFailedEvent` (error) - błąd rejestracji
+
+**Subscriber:** `UserRegistrationSubscriber`
+
+---
+
+### ✅ Logowanie Użytkownika
+
+**Lokalizacja eventów:** `src/Core/Event/User/Authentication/`
+
+**Eventy:**
+1. `UserLoginRequestedEvent` (pre) - wyświetlenie formularza logowania (GET)
+2. `UserLoginAttemptedEvent` (pre) - próba logowania (POST)
+3. `UserLoginValidatedEvent` (pre) - po walidacji CAPTCHA i user checks
+4. `UserAuthenticationSuccessfulEvent` (post) - po udanej autentykacji
+5. `UserLoggedInEvent` (post-commit) - po utworzeniu sesji
+6. `UserAuthenticationFailedEvent` (error) - nieudane logowanie
+7. `UserLoggedOutEvent` (post) - wylogowanie
+
+**Listener:** `AuthenticationEventListener` - nasłuchuje na Symfony Security events  
+**Subscriber:** `UserAuthenticationSubscriber` - logging
+
+**Flow:**
+```
+GET /login (niezalogowany)
+  → UserLoginRequestedEvent
+
+POST /login
+  → UserLoginAttemptedEvent
+  → CAPTCHA validation
+  → User validation (deleted/blocked)
+  → UserLoginValidatedEvent
+  → Symfony Security sprawdza hasło
+  
+  Jeśli SUCCESS:
+    → UserAuthenticationSuccessfulEvent (via AuthenticationEventListener)
+    → Symfony tworzy sesję
+    → UserLoggedInEvent (via AuthenticationEventListener)
+    
+  Jeśli FAILURE:
+    → UserAuthenticationFailedEvent (via AuthenticationEventListener)
+```
+
+---
+
+### Kolejne Procesy do Migracji
 
 - [ ] Tworzenie serwera
 - [ ] Płatności
