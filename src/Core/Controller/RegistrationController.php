@@ -4,12 +4,15 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\User;
 use App\Core\Contract\UserInterface;
+use App\Core\Event\Form\FormSubmitEvent;
+use App\Core\Event\View\ViewDataEvent;
 use App\Core\Form\RegistrationFormType;
 use App\Core\Enum\EmailVerificationValueEnum;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Core\Service\Mailer\EmailVerificationService;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Core\Service\Authorization\RegistrationService;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -23,6 +26,7 @@ class RegistrationController extends AbstractController
         private readonly RegistrationService $registrationService,
         private readonly TranslatorInterface $translator,
         private readonly EmailVerificationService $emailVerificationService,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     #[Route('/register', name: 'app_register')]
@@ -41,17 +45,48 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $registerActionResult = $this->registrationService
-                ->registerUser($user, $form->get('plainPassword')->getData());
-
-            if (!$registerActionResult->success) {
-                $registrationErrors[] = $registerActionResult->error;
+            // Przygotuj dane formularza dla pluginów
+            $formData = [
+                'email' => $user->getEmail(),
+                'name' => $user->getName(),
+                'surname' => $user->getSurname(),
+                'plainPassword' => $form->get('plainPassword')->getData(),
+            ];
+            
+            // Dodaj pola unmapped (z pluginów)
+            foreach ($form->all() as $fieldName => $field) {
+                if ($field->getConfig()->getOption('mapped') === false && $fieldName !== 'plainPassword') {
+                    $formData[$fieldName] = $field->getData();
+                }
+            }
+            
+            $context = [
+                'ip' => $request->getClientIp(),
+                'userAgent' => $request->headers->get('User-Agent'),
+                'locale' => $request->getLocale(),
+            ];
+            
+            // Emit FormSubmitEvent dla pluginów
+            $submitEvent = new FormSubmitEvent('registration', $formData, $context);
+            $this->eventDispatcher->dispatch($submitEvent);
+            
+            if ($submitEvent->isPropagationStopped()) {
+                // Plugin zatrzymał submit
+                $registrationErrors[] = $this->translator->trans('pteroca.register.plugin_validation_failed');
             } else {
-                return $userAuthenticator->authenticateUser(
-                    $registerActionResult->user,
-                    $authenticator,
-                    $request
-                );
+                // Kontynuuj rejestrację
+                $registerActionResult = $this->registrationService
+                    ->registerUser($user, $submitEvent->getFormValue('plainPassword'));
+
+                if (!$registerActionResult->success) {
+                    $registrationErrors[] = $registerActionResult->error;
+                } else {
+                    return $userAuthenticator->authenticateUser(
+                        $registerActionResult->user,
+                        $authenticator,
+                        $request
+                    );
+                }
             }
         }
 
@@ -60,10 +95,25 @@ class RegistrationController extends AbstractController
             $registrationErrors = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
         }
 
-        return $this->render('panel/registration/register.html.twig', [
+        // Przygotuj dane widoku
+        $viewData = [
             'registrationForm' => $form->createView(),
-            'errors' => $registrationErrors,
-        ]);
+            'errors' => $registrationErrors ?? [],
+        ];
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // Emit ViewDataEvent dla pluginów
+        $viewEvent = new ViewDataEvent('registration', $viewData, null, $context);
+        $this->eventDispatcher->dispatch($viewEvent);
+
+        return $this->render('panel/registration/register.html.twig', 
+            $viewEvent->getViewData()
+        );
     }
 
     #[Route('/verify-email', name: 'app_verify_email')]

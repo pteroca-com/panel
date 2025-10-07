@@ -2,21 +2,19 @@
 
 namespace App\Core\Event\User\Registration;
 
-use Symfony\Contracts\EventDispatcher\Event;
+use App\Core\Event\AbstractDomainEvent;
 
-class UserCreatedEvent extends Event
+
+class UserCreatedEvent extends AbstractDomainEvent
 {
-    private string $eventId;
-    private \DateTimeImmutable $occurredAt;
-    private string $schemaVersion = 'v1';
 
     public function __construct(
         private readonly int $userId,
         private readonly string $email,
-        private readonly array $context = []
+        private readonly array $context = [],
+        private readonly ?string $eventId = null,
     ) {
-        $this->eventId = \Symfony\Component\Uid\Uuid::v4()->toString();
-        $this->occurredAt = new \DateTimeImmutable();
+        parent::__construct($eventId);
     }
 
     public function getUserId(): int
@@ -32,20 +30,5 @@ class UserCreatedEvent extends Event
     public function getContext(): array
     {
         return $this->context;
-    }
-
-    public function getEventId(): string
-    {
-        return $this->eventId;
-    }
-
-    public function getOccurredAt(): \DateTimeImmutable
-    {
-        return $this->occurredAt;
-    }
-
-    public function getSchemaVersion(): string
-    {
-        return $this->schemaVersion;
     }
 }

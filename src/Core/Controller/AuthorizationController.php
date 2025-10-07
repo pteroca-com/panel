@@ -3,6 +3,7 @@
 namespace App\Core\Controller;
 
 use App\Core\Event\User\Authentication\UserLoginRequestedEvent;
+use App\Core\Event\View\ViewDataEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,7 +38,8 @@ class AuthorizationController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('panel/login/login.html.twig', [
+        // Przygotuj dane widoku
+        $viewData = [
             'error' => $error,
             'last_username' => $lastUsername,
             'csrf_token_intention' => 'authenticate',
@@ -49,7 +51,15 @@ class AuthorizationController extends AbstractController
             'remember_me_enabled' => true,
             'remember_me_parameter' => 'custom_remember_me_param',
             'remember_me_checked' => true,
-        ]);
+        ];
+        
+        // Emit ViewDataEvent dla pluginów
+        $viewEvent = new ViewDataEvent('login', $viewData, null, $context);
+        $eventDispatcher->dispatch($viewEvent);
+
+        return $this->render('panel/login/login.html.twig', 
+            $viewEvent->getViewData()
+        );
     }
 
     #[Route(path: '/logout', name: 'app_logout')]

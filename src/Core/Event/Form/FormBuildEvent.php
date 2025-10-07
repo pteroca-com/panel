@@ -1,25 +1,29 @@
 <?php
 
-namespace App\Core\Event\User\Registration;
+namespace App\Core\Event\Form;
 
 use App\Core\Event\AbstractDomainEvent;
-use App\Core\Event\StoppableEventTrait;
+use Symfony\Component\Form\FormBuilderInterface;
 
-class UserRegistrationRequestedEvent extends AbstractDomainEvent
+class FormBuildEvent extends AbstractDomainEvent
 {
-    use StoppableEventTrait;
-
     public function __construct(
-        private readonly string $email,
-        private readonly array $context = [], // ip, userAgent, locale, source, referralCode, consents
-        private readonly ?string $eventId = null,
+        private readonly FormBuilderInterface $form,
+        private readonly string $formType,
+        private readonly array $context = [],
+        ?string $eventId = null,
     ) {
         parent::__construct($eventId);
     }
 
-    public function getEmail(): string
+    public function getForm(): FormBuilderInterface
     {
-        return $this->email;
+        return $this->form;
+    }
+
+    public function getFormType(): string
+    {
+        return $this->formType;
     }
 
     public function getContext(): array
@@ -40,10 +44,5 @@ class UserRegistrationRequestedEvent extends AbstractDomainEvent
     public function getLocale(): ?string
     {
         return $this->context['locale'] ?? null;
-    }
-
-    public function getSource(): ?string
-    {
-        return $this->context['source'] ?? null;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Core\Form;
 
 use App\Core\Entity\User;
+use App\Core\Event\Form\FormBuildEvent;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -14,12 +15,14 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationFormType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -95,6 +98,15 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ]);
+        
+        // Emit FormBuildEvent dla pluginów
+        $context = [
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
+            'userAgent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
+        ];
+        
+        $formBuildEvent = new FormBuildEvent($builder, 'registration', $context);
+        $this->eventDispatcher->dispatch($formBuildEvent);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -25,6 +25,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Event\Dashboard\DashboardAccessedEvent;
 use App\Core\Event\Dashboard\DashboardDataLoadedEvent;
+use App\Core\Event\View\ViewDataEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\ServerService;
@@ -99,7 +100,8 @@ class DashboardController extends AbstractDashboardController
         );
         $this->eventDispatcher->dispatch($dashboardDataLoadedEvent);
 
-        return $this->render('panel/dashboard/dashboard.html.twig', [
+        // Przygotuj dane widoku
+        $viewData = [
             'servers' => $servers,
             'user' => $user,
             'logs' => $logs,
@@ -107,7 +109,15 @@ class DashboardController extends AbstractDashboardController
             'motdTitle' => $motdTitle,
             'motdMessage' => $motdMessage,
             'pterodactylPanelUrl' => $pterodactylPanelUrl,
-        ]);
+        ];
+        
+        // Emit ViewDataEvent dla pluginów
+        $viewEvent = new ViewDataEvent('dashboard', $viewData, $user, $context);
+        $this->eventDispatcher->dispatch($viewEvent);
+
+        return $this->render('panel/dashboard/dashboard.html.twig', 
+            $viewEvent->getViewData()
+        );
     }
 
     public function configureDashboard(): Dashboard

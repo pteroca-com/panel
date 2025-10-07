@@ -2,23 +2,19 @@
 
 namespace App\Core\Event\User\Registration;
 
+use App\Core\Event\AbstractDomainEvent;
 use App\Core\Contract\UserInterface;
 use App\Core\Event\StoppableEventTrait;
-use Symfony\Contracts\EventDispatcher\Event;
 
-class UserAboutToBeCreatedEvent extends Event
+class UserAboutToBeCreatedEvent extends AbstractDomainEvent
 {
     use StoppableEventTrait;
 
-    private string $eventId;
-    private \DateTimeImmutable $occurredAt;
-    private string $schemaVersion = 'v1';
-
     public function __construct(
-        private readonly UserInterface $user
+        private readonly UserInterface $user,
+        private readonly ?string $eventId = null,
     ) {
-        $this->eventId = \Symfony\Component\Uid\Uuid::v4()->toString();
-        $this->occurredAt = new \DateTimeImmutable();
+        parent::__construct($eventId);
     }
 
     public function getUser(): UserInterface
@@ -34,20 +30,5 @@ class UserAboutToBeCreatedEvent extends Event
     public function getRoles(): array
     {
         return $this->user->getRoles();
-    }
-
-    public function getEventId(): string
-    {
-        return $this->eventId;
-    }
-
-    public function getOccurredAt(): \DateTimeImmutable
-    {
-        return $this->occurredAt;
-    }
-
-    public function getSchemaVersion(): string
-    {
-        return $this->schemaVersion;
     }
 }
