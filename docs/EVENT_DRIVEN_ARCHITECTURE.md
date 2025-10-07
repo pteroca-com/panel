@@ -338,8 +338,45 @@ POST /login
 
 ---
 
+---
+
+### ✅ Dashboard Użytkownika
+
+**Lokalizacja eventów:** `src/Core/Event/Dashboard/`
+
+**Eventy:**
+1. `DashboardAccessedEvent` (post) - wejście na dashboard
+2. `DashboardDataLoadedEvent` (post) - po załadowaniu danych
+
+**Subscriber:** Brak - eventy są emitowane tylko dla pluginów
+
+**Flow:**
+```
+GET /panel
+  → DashboardAccessedEvent
+  → Pobieranie danych (serwery, logi, MOTD)
+  → DashboardDataLoadedEvent
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics i tracking użycia dashboardu (przez pluginy)
+- Monitoring wydajności ładowania (przez pluginy)
+- Pluginy mogą dodać custom widgets/notifications
+- Personalizacja dashboardu (przez pluginy)
+- Performance tracking (przez pluginy)
+
+**Charakterystyka:**
+- Minimalistyczne podejście (tylko 2 eventy)
+- Read-only view - brak operacji zapisu
+- Brak built-in subscriberów - tylko dla pluginów
+- Fokus na rozszerzalność przez pluginy
+
+---
+
 ### Kolejne Procesy do Migracji
 
+- [ ] Admin Overview (OverviewController)
 - [ ] Tworzenie serwera
 - [ ] Płatności
 - [ ] Zarządzanie użytkownikami

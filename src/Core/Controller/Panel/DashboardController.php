@@ -23,6 +23,8 @@ use App\Core\Entity\VoucherUsage;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Event\Dashboard\DashboardAccessedEvent;
+use App\Core\Event\Dashboard\DashboardDataLoadedEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\ServerService;
@@ -36,9 +38,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DashboardController extends AbstractDashboardController
@@ -53,21 +57,55 @@ class DashboardController extends AbstractDashboardController
         private readonly SystemVersionService $systemVersionService,
         private readonly TemplateManager $templateManager,
         private readonly ServerService $serverService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RequestStack $requestStack,
     ) {}
 
     #[Route('/panel', name: 'panel')]
     public function index(): Response
     {
         $user = $this->getUser();
+        $request = $this->requestStack->getCurrentRequest();
+        
+        // Emit DashboardAccessedEvent
+        $context = [
+            'ip' => $request?->getClientIp(),
+            'userAgent' => $request?->headers->get('User-Agent'),
+            'locale' => $request?->getLocale(),
+        ];
+        
+        $dashboardAccessedEvent = new DashboardAccessedEvent(
+            $user->getId(),
+            $user->getRoles(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($dashboardAccessedEvent);
+        
+        // Pobieranie danych
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+        $servers = $this->serverService->getServersWithAccess($user);
+        $logs = $this->logService->getLogsByUser($user, 5);
+        $motdEnabled = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value);
+        $motdTitle = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_TITLE->value);
+        $motdMessage = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_MESSAGE->value);
+        
+        // Emit DashboardDataLoadedEvent
+        $dashboardDataLoadedEvent = new DashboardDataLoadedEvent(
+            $user->getId(),
+            count($servers),
+            count($logs),
+            (bool)$motdEnabled,
+            $context
+        );
+        $this->eventDispatcher->dispatch($dashboardDataLoadedEvent);
 
         return $this->render('panel/dashboard/dashboard.html.twig', [
-            'servers' => $this->serverService->getServersWithAccess($user),
+            'servers' => $servers,
             'user' => $user,
-            'logs' => $this->logService->getLogsByUser($user, 5),
-            'motdEnabled' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value),
-            'motdTitle' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_TITLE->value),
-            'motdMessage' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_MESSAGE->value),
+            'logs' => $logs,
+            'motdEnabled' => $motdEnabled,
+            'motdTitle' => $motdTitle,
+            'motdMessage' => $motdMessage,
             'pterodactylPanelUrl' => $pterodactylPanelUrl,
         ]);
     }
