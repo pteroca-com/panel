@@ -7,3 +7,9 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # Exclude events from autowiring - they are created manually, not by DI container
+    App\Core\Event\:
+        resource: '../src/Core/Event/*'
+        autowire: false
+        autoconfigure: false

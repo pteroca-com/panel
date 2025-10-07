@@ -110,7 +110,6 @@ class FinishConfigurationService
             $data['admin_password'],
             [UserRoleEnum::ROLE_ADMIN->name],
             true,
-            false,
         );
 
         return $registerResult->success;

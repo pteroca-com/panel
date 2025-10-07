@@ -6,7 +6,6 @@ use App\Core\Contract\UserInterface;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Exception\PterodactylUserNotFoundException;
 use App\Core\Repository\UserRepository;
-use App\Core\Service\Pterodactyl\PterodactylAccountService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
 use App\Core\Service\Pterodactyl\PterodactylUsernameService;
@@ -21,7 +20,6 @@ class UserService
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly PterodactylUsernameService $usernameService,
-        private readonly PterodactylAccountService $pterodactylAccountService,
         private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
         private readonly UserRepository $userRepository,
         private readonly TranslatorInterface $translator,
@@ -94,9 +92,15 @@ class UserService
             try {
                 if ($existingDeletedUser->getPterodactylUserId()) {
                     $this->updateUserInPterodactyl($existingDeletedUser, $plainPassword);
-                } else {
-                    $this->createUserWithPterodactylAccount($existingDeletedUser, $plainPassword);
+
+                    return ['action' => 'restored', 'user' => $existingDeletedUser];
                 }
+            } catch (Exception) {}
+
+            try {
+                $this->createUserWithPterodactylAccount($existingDeletedUser, $plainPassword);
+
+                return ['action' => 'restored', 'user' => $existingDeletedUser];
             } catch (Exception $exception) {
                 $this->logger->error('Failed to restore user in Pterodactyl', [
                     'exception' => $exception,
@@ -104,8 +108,6 @@ class UserService
                 ]);
                 throw new Exception($this->translator->trans('pteroca.system.pterodactyl_error'));
             }
-
-            return ['action' => 'restored', 'user' => $existingDeletedUser];
         } else {
             $this->createUserWithPterodactylAccount($user, $plainPassword);
             return ['action' => 'created', 'user' => $user];
