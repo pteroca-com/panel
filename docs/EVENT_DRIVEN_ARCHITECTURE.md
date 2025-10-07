@@ -374,9 +374,265 @@ GET /panel
 
 ---
 
+---
+
+### ✅ Generyczny System Eventów dla Formularzy i Widoków
+
+**Lokalizacja eventów:** `src/Core/Event/Form/` i `src/Core/Event/View/`
+
+PteroCA wykorzystuje **generyczny system eventów** umożliwiający pluginom modyfikację formularzy i danych widoków w **CAŁEJ aplikacji**.
+
+**Eventy generyczne:**
+1. **FormBuildEvent** - dodawanie pól do formularzy
+2. **FormSubmitEvent** - walidacja i modyfikacja danych formularza
+3. **ViewDataEvent** - modyfikacja danych widoku przed renderem
+
+**Różnica od eventów domenowych:** Eventy generyczne są **uniwersalne** i działają dla wszystkich formularzy/widoków, podczas gdy eventy domenowe (np. `UserRegisteredEvent`) opisują konkretne zdarzenia biznesowe.
+
+---
+
+#### **1. FormBuildEvent - Budowanie Formularzy**
+
+**Lokalizacja:** `src/Core/Event/Form/FormBuildEvent.php`
+
+**Kiedy:** Emitowany w `buildForm()` każdego FormType  
+**Typ:** Generyczny event  
+**Payload:**
+- `FormBuilderInterface $form` (mutable)
+- `string $formType` ('registration', 'login', 'profile', etc.)
+- `array $context` (ip, userAgent, locale)
+
+**Zastosowanie:**
+- Pluginy mogą dodawać własne pola do **dowolnych formularzy**
+- Pola mogą być `mapped => false` (nie zapisywane do encji)
+- Plugin sam obsługuje zapis swoich pól
+- **Cross-cutting:** Plugin może dodać pole do WSZYSTKICH formularzy naraz
+
+**Przykład użycia w FormType:**
+```php
+public function buildForm(FormBuilderInterface $builder, array $options): void
+{
+    // Standardowe pola formularza
+    $builder->add('email', EmailType::class, [...]);
+    
+    // Emit FormBuildEvent dla pluginów
+    $event = new FormBuildEvent($builder, 'registration', $context);
+    $this->eventDispatcher->dispatch($event);
+}
+```
+
+**Przykład subscribera pluginu:**
+```php
+class MyPluginFormSubscriber implements EventSubscriberInterface
+{
+    public function onFormBuild(FormBuildEvent $event): void
+    {
+        if ($event->getFormType() === 'registration') {
+            $event->getForm()->add('newsletter', CheckboxType::class, [
+                'label' => 'Subscribe to newsletter',
+                'required' => false,
+                'mapped' => false,
+            ]);
+        }
+    }
+}
+```
+
+---
+
+#### **2. FormSubmitEvent - Walidacja i Przetwarzanie Danych**
+
+**Lokalizacja:** `src/Core/Event/Form/FormSubmitEvent.php`
+
+**Kiedy:** Emitowany po `$form->handleRequest()` i `$form->isSubmitted()`, przed zapisem  
+**Typ:** Generyczny event  
+**Payload:**
+- `string $formType` ('registration', 'login', etc.)
+- `array $formData` (mutable) - zawiera dane formularza + pola z pluginów
+- `array $context` (ip, userAgent, locale)
+
+**Cechy:**
+- `StoppableEventTrait` - plugin może zatrzymać proces przez `stopPropagation()`
+
+**Zastosowanie:**
+- Pluginy mogą **walidować dane formularza** przed zapisem
+- Pluginy mogą **modyfikować dane** (np. normalizacja)
+- Pluginy mogą **zatrzymać submit** jeśli walidacja nie przejdzie
+- Plugin może **zapisać własne dane** do własnych tabel
+- **Cross-cutting:** Plugin może walidować WSZYSTKIE formularze naraz (np. CAPTCHA)
+
+**Różnica od eventów domenowych:** `FormSubmitEvent` jest emitowany **przed logiką biznesową**, podczas gdy `UserRegisteredEvent` jest emitowany **po zapisie do bazy**
+
+**Przykład użycia w kontrolerze:**
+```php
+if ($form->isSubmitted() && $form->isValid()) {
+    $formData = [
+        'email' => $user->getEmail(),
+        // ... inne pola
+    ];
+    
+    // Dodaj pola z pluginów (unmapped)
+    foreach ($form->all() as $fieldName => $field) {
+        if ($field->getConfig()->getOption('mapped') === false) {
+            $formData[$fieldName] = $field->getData();
+        }
+    }
+    
+    // Emit FormSubmitEvent
+    $submitEvent = new FormSubmitEvent('registration', $formData, $context);
+    $this->eventDispatcher->dispatch($submitEvent);
+    
+    if ($submitEvent->isPropagationStopped()) {
+        // Plugin zatrzymał submit
+        $errors[] = 'Plugin validation failed';
+    } else {
+        // Kontynuuj z zmodyfikowanymi danymi
+        $this->service->process($submitEvent->getFormData());
+    }
+}
+```
+
+**Przykład subscribera pluginu:**
+```php
+class MyPluginValidationSubscriber implements EventSubscriberInterface
+{
+    public function onFormSubmit(FormSubmitEvent $event): void
+    {
+        if ($event->getFormType() === 'registration') {
+            $newsletter = $event->getFormValue('newsletter');
+            
+            if ($newsletter) {
+                // Zapisz subskrypcję
+                $this->newsletterService->subscribe($event->getFormValue('email'));
+            }
+            
+            // Opcjonalnie zatrzymaj submit
+            if (!$this->customValidation($event->getFormData())) {
+                $event->stopPropagation();
+            }
+        }
+    }
+}
+```
+
+---
+
+#### **3. ViewDataEvent - Modyfikacja Danych Widoku**
+
+**Lokalizacja:** `src/Core/Event/View/ViewDataEvent.php`
+
+**Kiedy:** Emitowany przed `$this->render()` w kontrolerze, po przygotowaniu danych  
+**Typ:** Generyczny event  
+**Payload:**
+- `string $viewName` ('dashboard', 'registration', 'login', etc.)
+- `array $viewData` (mutable) - dane przekazywane do template Twig
+- `?UserInterface $user` - zalogowany użytkownik (jeśli jest)
+- `array $context` (ip, userAgent, locale)
+
+**Zastosowanie:**
+- Pluginy mogą **dodawać własne dane** do widoku (widgets, notifications, banners)
+- Pluginy mogą **modyfikować istniejące dane** (np. wzbogacić dane o dodatkowe info)
+- Pluginy mogą **dodawać tracking scripts** do wszystkich widoków
+- Pluginy mogą **personalizować widok** na podstawie użytkownika
+- **Cross-cutting:** Plugin może modyfikować WSZYSTKIE widoki naraz
+
+**Różnica od eventów domenowych:** `ViewDataEvent` służy do modyfikacji **UI/presentacji**, podczas gdy eventy domenowe (np. `DashboardAccessedEvent`) służą do **logiki biznesowej/analytics**
+
+**Przykład użycia w kontrolerze:**
+```php
+public function index(): Response
+{
+    // Przygotuj dane widoku
+    $viewData = [
+        'servers' => $servers,
+        'user' => $user,
+        'logs' => $logs,
+    ];
+    
+    // Emit ViewDataEvent dla pluginów
+    $viewEvent = new ViewDataEvent('dashboard', $viewData, $user, $context);
+    $this->eventDispatcher->dispatch($viewEvent);
+    
+    return $this->render('...', $viewEvent->getViewData());
+}
+```
+
+**Przykład subscribera pluginu:**
+```php
+class MyPluginDashboardSubscriber implements EventSubscriberInterface
+{
+    public function onViewData(ViewDataEvent $event): void
+    {
+        // Dodaj widget tylko do dashboardu
+        if ($event->getViewName() === 'dashboard' && $event->getUser()) {
+            $event->setViewData('my_plugin_widget', [
+                'title' => 'My Plugin Stats',
+                'data' => $this->getPluginStats($event->getUser()),
+            ]);
+        }
+        
+        // Dodaj tracking do WSZYSTKICH widoków
+        $event->setViewData('plugin_tracking_id', $this->generateTrackingId());
+    }
+}
+```
+
+---
+
+#### **Implementacje w Projekcie:**
+
+**Formularze:**
+- ✅ `RegistrationFormType` - emit `FormBuildEvent`
+- ✅ `RegistrationController::register()` - emit `FormSubmitEvent` + `ViewDataEvent`
+- ✅ `LoginFormType` - emit `FormBuildEvent`
+- ✅ `AuthorizationController::login()` - emit `ViewDataEvent`
+
+**Widoki:**
+- ✅ `DashboardController::index()` - emit `ViewDataEvent`
+- ✅ `RegistrationController::register()` - emit `ViewDataEvent`
+- ✅ `AuthorizationController::login()` - emit `ViewDataEvent`
+
+**Form Themes:**
+- ✅ `themes/default/form/bootstrap_5_custom.html.twig` - custom rendering dla Bootstrap 5
+- ✅ Konfiguracja w `config/packages/twig.yaml`
+
+**Dynamiczne Renderowanie:**
+- ✅ `themes/default/panel/registration/register.html.twig` - używa `form_row()` zamiast hardkodu
+- ✅ `themes/default/panel/login/login.html.twig` - używa `form_row()` + hardkodowany CSRF token
+
+**CSRF w Formularzach:**
+- ✅ **Rejestracja:** CSRF token automatyczny przez `form_end()` 
+- ✅ **Logowanie:** CSRF token hardkodowany (`<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">`)
+  - `LoginFormType` ma `csrf_protection: false` (UserAuthenticator obsługuje walidację)
+  - Hybrydowe podejście: Symfony Forms dla pól + hardkodowany CSRF dla kompatybilności z UserAuthenticator
+
+**Docelowo:**
+- Wszystkie FormTypes będą emitowały `FormBuildEvent`
+- Wszystkie kontrolery będą emitowały `ViewDataEvent` przed renderem
+
+---
+
+#### **Kiedy Używać Eventów Generycznych vs Domenowych:**
+
+| **Potrzeba Pluginu** | **Użyj Eventu** |
+|---|------|
+| Dodać pole do formularza rejestracji | `FormBuildEvent` (formType='registration') |
+| Walidować dane formularza przed zapisem | `FormSubmitEvent` (formType='registration') |
+| Wysłać welcome email po rejestracji | `UserRegisteredEvent` (domenowy) |
+| Dodać widget do dashboardu | `ViewDataEvent` (viewName='dashboard') |
+| Dodać tracking do wszystkich widoków | `ViewDataEvent` (wszystkie viewName) |
+| Nadać bonusowe kredyty po weryfikacji | `UserEmailVerifiedEvent` (domenowy) |
+| Dodać CAPTCHA do wszystkich formularzy | `FormBuildEvent` (wszystkie formType) |
+| Integracja z CRM po rejestracji | `UserRegisteredEvent` (domenowy) |
+
+**Wniosek:** Eventy **generyczne** służą do modyfikacji **UI i formularzy**, eventy **domenowe** służą do **logiki biznesowej i integracji**.
+
+---
+
 ### Kolejne Procesy do Migracji
 
 - [ ] Admin Overview (OverviewController)
+- [ ] Dodanie FormBuildEvent i ViewDataEvent do pozostałych formularzy i kontrolerów
 - [ ] Tworzenie serwera
 - [ ] Płatności
 - [ ] Zarządzanie użytkownikami

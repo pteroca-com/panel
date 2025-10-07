@@ -3,6 +3,9 @@ twig:
     paths:
         '%kernel.project_dir%/src/Core/Resources/templates': core_templates
         '%kernel.project_dir%/themes/default': default_theme
+    form_themes:
+        - 'bootstrap_5_layout.html.twig'
+        - 'form/bootstrap_5_custom.html.twig'
 
 when@test:
     twig:

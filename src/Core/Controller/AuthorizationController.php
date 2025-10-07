@@ -4,6 +4,7 @@ namespace App\Core\Controller;
 
 use App\Core\Event\User\Authentication\UserLoginRequestedEvent;
 use App\Core\Event\View\ViewDataEvent;
+use App\Core\Form\LoginFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,7 @@ class AuthorizationController extends AbstractController
              return $this->redirectToRoute('panel');
          }
 
-        // Emit UserLoginRequestedEvent tylko dla niezalogowanych użytkowników
+        // Context dla eventów
         $context = [
             'ip' => $request->getClientIp(),
             'userAgent' => $request->headers->get('User-Agent'),
@@ -32,25 +33,30 @@ class AuthorizationController extends AbstractController
             'referer' => $request->headers->get('referer'),
         ];
         
+        // Emit UserLoginRequestedEvent
         $loginRequestedEvent = new UserLoginRequestedEvent($context);
         $eventDispatcher->dispatch($loginRequestedEvent);
 
+        // Utwórz formularz logowania
+        $form = $this->createForm(LoginFormType::class);
+        
+        // Pobierz błędy i ostatnią nazwę użytkownika
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
+        // Ustaw domyślną wartość email jeśli jest
+        if ($lastUsername) {
+            $form->get('email')->setData($lastUsername);
+        }
+
         // Przygotuj dane widoku
         $viewData = [
+            'loginForm' => $form->createView(),
             'error' => $error,
             'last_username' => $lastUsername,
-            'csrf_token_intention' => 'authenticate',
-            'target_path' => $this->generateUrl('panel'),
-            'username_parameter' => 'email',
-            'password_parameter' => 'password',
+            'action' => $this->generateUrl('app_login'),
             'forgot_password_enabled' => true,
             'forgot_password_path' => $this->generateUrl('app_forgot_password_request'),
-            'remember_me_enabled' => true,
-            'remember_me_parameter' => 'custom_remember_me_param',
-            'remember_me_checked' => true,
         ];
         
         // Emit ViewDataEvent dla pluginów

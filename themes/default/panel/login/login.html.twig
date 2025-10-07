@@ -17,11 +17,6 @@
 
 {% block wrapper_wrapper %}
     {% set page_title = block('page_title') %}
-    {% set _username_label = username_label is defined ? username_label|trans : 'login_page.username'|trans({}, 'EasyAdminBundle') %}
-    {% set _password_label = password_label is defined ? password_label|trans : 'login_page.password'|trans({}, 'EasyAdminBundle') %}
-    {% set _forgot_password_label = forgot_password_label is defined ? forgot_password_label|trans : 'login_page.forgot_password'|trans({}, 'EasyAdminBundle') %}
-    {% set _remember_me_label = remember_me_label is defined ? remember_me_label|trans : 'login_page.remember_me'|trans({}, 'EasyAdminBundle') %}
-    {% set _sign_in_label = sign_in_label is defined ? sign_in_label|trans : 'login_page.sign_in'|trans({}, 'EasyAdminBundle') %}
 
     <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
         <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
@@ -56,68 +51,18 @@
                     {% endif %}
 
                     <!-- Login Form -->
-                    <form method="post" action="{{ action|default('') }}">
-                        {% if csrf_token_intention|default(false) %}
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token(csrf_token_intention) }}">
-                        {% endif %}
-
-                        <input type="hidden" name="{{ target_path_parameter|default('_target_path') }}" value="/" />
-
-                        <!-- Email Field -->
-                        <div class="mb-3">
-                            <label for="username" class="form-label fw-semibold">
-                                <i class="fas fa-envelope me-1 text-muted"></i>
-                                {{ 'pteroca.login.email_address'|trans }}
-                            </label>
-                            <input 
-                                type="email" 
-                                id="username" 
-                                name="{{ username_parameter|default('_username') }}" 
-                                class="form-control form-control-lg" 
-                                value="{{ last_username|default('') }}" 
-                                placeholder="{{ 'pteroca.login.email_placeholder'|trans }}"
-                                required 
-                                autofocus 
-                                autocomplete="username"
-                            >
-                        </div>
-
-                        <!-- Password Field -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-semibold">
-                                <i class="fas fa-lock me-1 text-muted"></i>
-                                {{ 'pteroca.login.password'|trans }}
-                            </label>
-                            <div class="input-group input-group-lg">
-                                <input 
-                                    type="password" 
-                                    id="password" 
-                                    name="{{ password_parameter|default('_password') }}" 
-                                    class="form-control form-control-lg" 
-                                    placeholder="{{ 'pteroca.login.password_placeholder'|trans }}"
-                                    required 
-                                    autocomplete="current-password"
-                                >
-                                <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword()">
-                                    <i class="fas fa-eye" id="togglePasswordIcon"></i>
-                                </span>
-                            </div>
-                        </div>
+                    {{ form_start(loginForm, {'action': action|default(path('app_login')), 'method': 'POST', 'attr': {'novalidate': 'novalidate'}}) }}
+                        
+                        {# Renderuj pola email i password #}
+                        {{ form_row(loginForm.email) }}
+                        {{ form_row(loginForm.password) }}
 
                         <!-- Remember Me & Forgot Password -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            {% if remember_me_enabled|default(false) %}
+                            {% if loginForm.remember_me is defined %}
                                 <div class="form-check">
-                                    <input 
-                                        class="form-check-input" 
-                                        type="checkbox" 
-                                        id="remember_me" 
-                                        name="{{ remember_me_parameter|default('_remember_me') }}" 
-                                        {{ remember_me_checked|default(false) ? 'checked' }}
-                                    >
-                                    <label class="form-check-label text-muted small" for="remember_me">
-                                        {{ 'pteroca.login.remember_me'|trans }}
-                                    </label>
+                                    {{ form_widget(loginForm.remember_me, {'attr': {'class': 'form-check-input'}}) }}
+                                    {{ form_label(loginForm.remember_me, null, {'label_attr': {'class': 'form-check-label text-muted small'}}) }}
                                 </div>
                             {% else %}
                                 <div></div>
@@ -137,6 +82,16 @@
                             </div>
                         {% endif %}
 
+                        {# Renderuj wszystkie dodatkowe pola z pluginów #}
+                        {% for field in loginForm %}
+                            {% if field.vars.name not in ['email', 'password', 'remember_me', '_token'] %}
+                                {{ form_row(field) }}
+                            {% endif %}
+                        {% endfor %}
+
+                        {# Hardkodowany CSRF token - obsługiwany przez UserAuthenticator #}
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
                         <!-- Submit Button -->
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg fw-semibold">
@@ -144,7 +99,7 @@
                                 {{ 'pteroca.login.sign_in'|trans }}
                             </button>
                         </div>
-                    </form>
+                    {{ form_end(loginForm) }}
 
                     <!-- Register Link -->
                     <div class="text-center">
@@ -172,18 +127,18 @@
 
     <!-- JavaScript for password toggle -->
     <script>
-        function togglePassword() {
-            const passwordField = document.getElementById('password');
-            const toggleIcon = document.getElementById('togglePasswordIcon');
+        function togglePasswordField(element) {
+            const passwordField = element.previousElementSibling;
+            const icon = element.querySelector('i');
             
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
                 passwordField.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
     </script>

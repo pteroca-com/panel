@@ -45,6 +45,13 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => $translations['email_address'],
                 'required' => true,
+                'attr' => [
+                    'placeholder' => 'pteroca.register.email_placeholder',
+                    'autocomplete' => 'email',
+                ],
+                'label_attr' => [
+                    'label_icon' => 'fas fa-envelope',
+                ],
                 'constraints' => [
                     new NotBlank(['message' => $translations['email_required']]),
                     new Length(['max' => 180]),
@@ -52,8 +59,16 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('name', TextType::class, [
-                'label' => $translations['email_address'],
+                'label' => $translations['please_enter_name'],
                 'required' => true,
+                'attr' => [
+                    'placeholder' => 'pteroca.register.name_placeholder',
+                    'autocomplete' => 'given-name',
+                    'autofocus' => true,
+                ],
+                'label_attr' => [
+                    'label_icon' => 'fas fa-user',
+                ],
                 'constraints' => [
                     new NotBlank(['message' => $translations['please_enter_name']]),
                     new Length([
@@ -66,6 +81,13 @@ class RegistrationFormType extends AbstractType
             ->add('surname', TextType::class, [
                 'label' => $translations['please_enter_surname'],
                 'required' => true,
+                'attr' => [
+                    'placeholder' => 'pteroca.register.surname_placeholder',
+                    'autocomplete' => 'family-name',
+                ],
+                'label_attr' => [
+                    'label_icon' => 'fas fa-user',
+                ],
                 'constraints' => [
                     new NotBlank(['message' => $translations['please_enter_surname']]),
                     new Length([
@@ -78,7 +100,14 @@ class RegistrationFormType extends AbstractType
             ->add('plainPassword', PasswordType::class, [
                 'label' => $translations['please_enter_password'],
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
+                'attr' => [
+                    'autocomplete' => 'new-password',
+                    'placeholder' => 'pteroca.register.password_placeholder',
+                    'show_toggle_password' => true,
+                ],
+                'label_attr' => [
+                    'label_icon' => 'fas fa-lock',
+                ],
                 'constraints' => [
                     new NotBlank(['message' => $translations['please_enter_password']]),
                     new Length([
@@ -90,6 +119,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'label' => $translations['accept_terms'],
+                'label_html' => true,
                 'mapped' => false,
                 'required' => true,
                 'constraints' => [

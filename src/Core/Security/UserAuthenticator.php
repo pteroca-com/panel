@@ -41,7 +41,11 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $email = $request->request->get('email', '');
+        // Pobierz dane z formularza - może być w 'login_form[email]' lub 'email'
+        $formData = $request->request->all();
+        $email = $formData['login_form']['email'] ?? $request->request->get('email', '');
+        $password = $formData['login_form']['password'] ?? $request->request->get('password', '');
+        $csrfToken = $formData['login_form']['_token'] ?? $request->request->get('_csrf_token', '');
         $recaptchaResponse = $request->request->getString('g-recaptcha-response');
 
         // Emit UserLoginAttemptedEvent
@@ -82,12 +86,12 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             new RememberMeBadge(),
         ];
         if (!$disableCsrf) {
-            $badges[] = new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token'));
+            $badges[] = new CsrfTokenBadge('authenticate', $csrfToken);
         }
 
         return new Passport(
             new UserBadge($email),
-            new PasswordCredentials($request->request->get('password', '')),
+            new PasswordCredentials($password),
             $badges,
         );
     }
