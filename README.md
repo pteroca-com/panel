@@ -11,7 +11,9 @@
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/pteroca-com/panel)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/pteroca-com/panel/symfony.yml?branch=main)
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/pteroca-com/panel)
-![GitHub License](https://img.shields.io/github/license/pteroca-com/panel) ![GitHub Repo stars](https://img.shields.io/github/stars/pteroca-com/panel)
+![GitHub License](https://img.shields.io/github/license/pteroca-com/panel)
+![Discord](https://img.shields.io/discord/1330902668826382367?logo=discord&logoColor=white&label=Discord&labelColor=blue)
+![GitHub Repo stars](https://img.shields.io/github/stars/pteroca-com/panel)
 
 **PteroCA** is a modern, open-source client area and management panel built for **hosting providers** using the Pterodactyl platform.
 It offers advanced billing, live server controls, and deep customization - all through a fast, multilingual, and user-friendly interface.
