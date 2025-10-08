@@ -182,6 +182,14 @@ class Product implements ProductInterface
         return $this->deletedAt;
     }
 
+    // TODO add to interface?
+    public function getPrices(): Collection
+    {
+        return $this->prices->filter(function (ProductPriceInterface $price) {
+            return $price->getDeletedAt() === null;
+        });
+    }
+
     public function setStaticPrices(iterable $prices): self
     {
         foreach ($this->getStaticPrices() as $existingPrice) {

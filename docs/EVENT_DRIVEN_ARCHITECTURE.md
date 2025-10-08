@@ -668,6 +668,110 @@ GET /servers
 
 ---
 
+---
+
+### ✅ Store (Sklep)
+
+**Lokalizacja eventów:** `src/Core/Event/Store/`
+
+**3 przepływy:**
+1. **Store Index** (`/store`) - główna strona sklepu z kategoriami i produktami
+2. **Store Category** (`/store/category?id=X`) - produkty w kategorii
+3. **Store Product** (`/store/product?id=X`) - szczegóły produktu
+
+---
+
+#### **1. Store Index - Główna strona sklepu**
+
+**Eventy:**
+- `StoreAccessedEvent` (post) - wejście na `/store`
+- `StoreDataLoadedEvent` (post) - po załadowaniu kategorii i produktów
+
+**Flow:**
+```
+GET /store
+  → StoreAccessedEvent (userId może być null - niezalogowany użytkownik)
+  → Pobieranie kategorii (StoreService::getCategories)
+  → Pobieranie produktów (StoreService::getCategoryProducts)
+  → StoreDataLoadedEvent (payload: categories, products, categoriesCount, productsCount)
+  → ViewDataEvent (viewName='store_index')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics - tracking odwiedzin sklepu (przez pluginy)
+- Monitoring użycia - ile kategorii/produktów jest wyświetlanych (przez pluginy)
+- Performance tracking (przez pluginy)
+- Pluginy mogą dodać custom filtering/sorting produktów
+- Pluginy mogą dodać banery/promocje do widoku sklepu
+
+---
+
+#### **2. Store Category - Produkty w kategorii**
+
+**Eventy:**
+- `StoreCategoryAccessedEvent` (post) - wejście na kategorię
+- `StoreCategoryDataLoadedEvent` (post) - po załadowaniu produktów
+
+**Flow:**
+```
+GET /store/category?id=X
+  → Walidacja istnienia kategorii (404 jeśli brak)
+  → StoreCategoryAccessedEvent (payload: userId, categoryId, categoryName)
+  → Pobieranie produktów (StoreService::getCategoryProducts)
+  → StoreCategoryDataLoadedEvent (payload: userId, categoryId, products, productsCount)
+  → ViewDataEvent (viewName='store_category')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics - które kategorie są najpopularniejsze (przez pluginy)
+- Tracking nawigacji użytkownika (przez pluginy)
+- A/B testing kategorii (przez pluginy)
+- Pluginy mogą dodać custom sorting/filtering
+- Pluginy mogą personalizować produkty w kategorii
+
+---
+
+#### **3. Store Product - Szczegóły produktu**
+
+**Eventy:**
+- `StoreProductViewedEvent` (post) - wyświetlenie produktu
+- `StoreProductDataLoadedEvent` (post) - po załadowaniu szczegółów
+
+**Flow:**
+```
+GET /store/product?id=X
+  → Walidacja istnienia produktu (404 jeśli brak)
+  → StoreService::prepareProduct (dodaje metadata, ścieżki do obrazków)
+  → StoreProductViewedEvent (payload: userId, productId, productName, productPrices)
+  → Pobieranie eggs (StoreService::getProductEggs)
+  → StoreProductDataLoadedEvent (payload: userId, productId, product, eggs, eggsCount)
+  → ViewDataEvent (viewName='store_product')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics - które produkty są najpopularniejsze (przez pluginy)
+- Tracking product views - conversion funnel (przez pluginy)
+- Recommendations - "często oglądane razem" (przez pluginy)
+- Dynamic pricing - pluginy mogą modyfikować ceny przed wyświetleniem
+- Custom upsells/cross-sells (przez pluginy)
+
+---
+
+**Charakterystyka:**
+- ✅ **Minimalistyczne** - 2 eventy domenowe per flow + ViewDataEvent
+- ✅ **E-commerce specific** - tracking views, prices, recommendations
+- ✅ **Może być niezalogowany** - userId może być null (publiczny sklep)
+- ✅ **Brak built-in subscriberów** - tylko dla pluginów
+- ✅ **Fokus na rozszerzalność** przez pluginy
+- ✅ **Spójność** z Dashboard i My Servers
+
+**Uwaga:** `StoreProductViewedEvent` zawiera `Collection` cen (`productPrices`), ponieważ produkt może mieć wiele wariantów cenowych (static, dynamic, slot-based), które użytkownik może konfigurować.
+
+---
+
 ### Kolejne Procesy do Migracji
 
 - [ ] Admin Overview (OverviewController)
