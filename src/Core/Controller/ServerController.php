@@ -10,35 +10,30 @@ use App\Core\Event\View\ViewDataEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
+use App\Core\Trait\EventContextTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ServerController extends AbstractController
 {
+    use EventContextTrait;
+
     #[Route('/servers', name: 'servers')]
     public function servers(
         Request $request,
         ServerService $serverService,
-        EventDispatcherInterface $eventDispatcher,
     ): Response
     {
         $this->checkPermission();
-        
-        // Context dla eventów
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        $context = $this->buildMinimalEventContext($request);
+
         // 1. Emit ServersListAccessedEvent
-        $accessedEvent = new ServersListAccessedEvent(
+        $this->dispatchEvent(new ServersListAccessedEvent(
             $this->getUser()->getId(),
             $context
-        );
-        $eventDispatcher->dispatch($accessedEvent);
+        ));
         
         // Pobierz serwery
         $imagePath = $this->getParameter('products_base_path') . '/';
@@ -48,30 +43,28 @@ class ServerController extends AbstractController
             }
             return $server;
         }, $serverService->getServersWithAccess($this->getUser()));
-        
+
         // 2. Emit ServersListDataLoadedEvent
-        $dataLoadedEvent = new ServersListDataLoadedEvent(
+        $this->dispatchEvent(new ServersListDataLoadedEvent(
             $this->getUser()->getId(),
             $servers,
             count($servers),
             $context
-        );
-        $eventDispatcher->dispatch($dataLoadedEvent);
+        ));
         
         // 3. Przygotuj dane widoku
         $viewData = [
             'servers' => $servers,
         ];
-        
+
         // 4. Emit ViewDataEvent (generyczny)
-        $viewEvent = new ViewDataEvent(
+        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
             'servers_list',
             $viewData,
             $this->getUser(),
             $context
-        );
-        $eventDispatcher->dispatch($viewEvent);
-        
+        ));
+
         // 5. Render z danymi z ViewDataEvent (mogą być zmodyfikowane przez pluginy)
         return $this->render('panel/servers/servers.html.twig', $viewEvent->getViewData());
     }

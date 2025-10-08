@@ -56,29 +56,19 @@ class CartController extends AbstractController
             ? $request->request->all()
             : $request->query->all();
         $currency = $settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
-
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
-
-        if (
-            empty($requestPayload['currency'])
+        $isRequestInvalid = empty($requestPayload['currency'])
             || empty($requestPayload['amount'])
-            || strtolower($currency) !== strtolower($requestPayload['currency'])
-        ) {
-            return $this->redirectToRoute('panel', [
-                'routeName' => 'recharge_balance',
-            ]);
-        }
+            || strtolower($currency) !== strtolower($requestPayload['currency']);
+        $amount = (float) ($requestPayload['amount'] ?? 0);
 
-        $amount = (float) $requestPayload['amount'];
-        if ($amount <= 0) {
+        if (!$isRequestInvalid && $amount <= 0) {
             $this->addFlash('danger', $this->translator->trans('pteroca.recharge.amount_must_be_positive'));
             return $this->redirectToRoute('panel', [
                 'routeName' => 'recharge_balance',
             ]);
         }
         
-        // 1. Emit CartTopUpPageAccessedEvent
         $this->dispatchEvent(new CartTopUpPageAccessedEvent(
             $this->getUser()->getId(),
             $amount,
@@ -97,7 +87,6 @@ class CartController extends AbstractController
                     $this->generateUrl('stripe_cancel', [], 0)
                 );
                 
-                // 2. Emit CartPaymentRedirectEvent (POST only)
                 $this->dispatchEvent(new CartPaymentRedirectEvent(
                     $this->getUser()->getId(),
                     $amount,
@@ -111,7 +100,6 @@ class CartController extends AbstractController
                 $this->addFlash('danger', $exception->getMessage());
             }
         } else {
-            // 3. Emit CartTopUpDataLoadedEvent (GET only)
             $this->dispatchEvent(new CartTopUpDataLoadedEvent(
                 $this->getUser()->getId(),
                 $amount,
@@ -120,12 +108,10 @@ class CartController extends AbstractController
             ));
         }
         
-        // 4. Przygotuj dane widoku
         $viewData = [
             'request' => $requestPayload,
         ];
         
-        // 5. Emit ViewDataEvent
         $viewEvent = $this->dispatchEvent(new ViewDataEvent(
             'cart_topup',
             $viewData,
@@ -141,10 +127,7 @@ class CartController extends AbstractController
     {
         $product = $this->getProductByRequest($request);
 
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
-
-        // 1. Emit CartConfigurePageAccessedEvent
         $this->dispatchEvent(new CartConfigurePageAccessedEvent(
             $this->getUser()->getId(),
             $product->getId(),
@@ -152,12 +135,10 @@ class CartController extends AbstractController
             $context
         ));
         
+        $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
         $preparedEggs = $this->storeService->getProductEggs($product);
         $requestData = $request->query->all();
-
-        $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
-        
-        // 2. Emit CartConfigureDataLoadedEvent
+    
         $this->dispatchEvent(new CartConfigureDataLoadedEvent(
             $this->getUser()->getId(),
             $product->getId(),
@@ -166,7 +147,6 @@ class CartController extends AbstractController
             $context
         ));
         
-        // 3. Przygotuj dane widoku
         $viewData = [
             'product' => $product,
             'eggs' => $preparedEggs,
@@ -176,7 +156,6 @@ class CartController extends AbstractController
             'initialSlots' => $requestData['slots'] ?? null,
         ];
         
-        // 4. Emit ViewDataEvent
         $viewEvent = $this->dispatchEvent(new ViewDataEvent(
             'cart_configure',
             $viewData,
@@ -202,10 +181,7 @@ class CartController extends AbstractController
         $autoRenewal = $request->request->getBoolean('auto-renewal');
         $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
 
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
-
-        // 1. Emit CartBuyRequestedEvent
         $this->dispatchEvent(new CartBuyRequestedEvent(
             $this->getUser()->getId(),
             $product->getId(),
@@ -226,7 +202,6 @@ class CartController extends AbstractController
                 $slots
             );
 
-            // CreateServerService emituje eventy domenowe wewnętrznie
             $createServerService->createServer(
                 $product,
                 $eggId,
@@ -257,11 +232,8 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
-
-        // Buduj context dla eventów
+        
         $context = $this->buildMinimalEventContext($request);
-
-        // 1. Emit CartRenewPageAccessedEvent
         $this->dispatchEvent(new CartRenewPageAccessedEvent(
             $this->getUser()->getId(),
             $server->getId(),
@@ -276,7 +248,6 @@ class CartController extends AbstractController
             $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
         }
         
-        // 2. Emit CartRenewDataLoadedEvent
         $this->dispatchEvent(new CartRenewDataLoadedEvent(
             $this->getUser()->getId(),
             $server->getId(),
@@ -286,7 +257,6 @@ class CartController extends AbstractController
             $context
         ));
         
-        // 3. Przygotuj dane widoku
         $viewData = [
             'server' => $server,
             'isOwner' => $isOwner,
@@ -294,7 +264,6 @@ class CartController extends AbstractController
             'serverSlots' => $serverSlots ?? null,
         ];
         
-        // 4. Emit ViewDataEvent
         $viewEvent = $this->dispatchEvent(new ViewDataEvent(
             'cart_renew',
             $viewData,
@@ -313,10 +282,7 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
-
         $voucherCode = $request->request->getString('voucher');
-
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
 
         try {
@@ -325,7 +291,6 @@ class CartController extends AbstractController
                 $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
             }
             
-            // 1. Emit CartRenewBuyRequestedEvent
             $this->dispatchEvent(new CartRenewBuyRequestedEvent(
                 $this->getUser()->getId(),
                 $server->getId(),
@@ -342,7 +307,6 @@ class CartController extends AbstractController
                 $serverSlots ?? null
             );
 
-            // RenewServerService emituje eventy domenowe wewnętrznie
             $renewServerService->renewServer(
                 $server,
                 $this->getUser(),

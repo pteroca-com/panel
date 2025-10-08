@@ -26,25 +26,18 @@ class AuthorizationController extends AbstractController
              return $this->redirectToRoute('panel');
          }
 
-        // Buduj context dla eventów
         $context = $this->buildEventContext($request);
-
-        // Emit UserLoginRequestedEvent
         $this->dispatchEvent(new UserLoginRequestedEvent($context));
 
-        // Utwórz formularz logowania
         $form = $this->createForm(LoginFormType::class);
         
-        // Pobierz błędy i ostatnią nazwę użytkownika
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        // Ustaw domyślną wartość email jeśli jest
         if ($lastUsername) {
             $form->get('email')->setData($lastUsername);
         }
 
-        // Przygotuj dane widoku
         $viewData = [
             'loginForm' => $form->createView(),
             'error' => $error,
@@ -54,7 +47,6 @@ class AuthorizationController extends AbstractController
             'forgot_password_path' => $this->generateUrl('app_forgot_password_request'),
         ];
         
-        // Emit ViewDataEvent dla pluginów
         $viewEvent = $this->dispatchEvent(new ViewDataEvent('login', $viewData, null, $context));
 
         return $this->render('panel/login/login.html.twig',

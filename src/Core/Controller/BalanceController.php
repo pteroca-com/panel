@@ -35,10 +35,7 @@ class BalanceController extends AbstractController
     ): Response {
         $this->checkPermission();
 
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
-
-        // 1. Emit BalanceRechargePageAccessedEvent
         $this->dispatchEvent(new BalanceRechargePageAccessedEvent(
             $this->getUser()->getId(),
             $this->getUser()->getBalance(),
@@ -61,13 +58,11 @@ class BalanceController extends AbstractController
                 'data' => $currency,
             ]);
         
-        // Emit FormBuildEvent dla pluginów
         $this->dispatchEvent(new FormBuildEvent($formBuilder, 'balance_recharge', $context));
         
         $form = $formBuilder->getForm();
         $form->handleRequest($request);
         
-        // 2. Emit BalanceRechargeFormDataLoadedEvent
         $this->dispatchEvent(new BalanceRechargeFormDataLoadedEvent(
             $this->getUser()->getId(),
             $this->getUser()->getBalance(),
@@ -75,13 +70,11 @@ class BalanceController extends AbstractController
             $context
         ));
         
-        // 3. Przygotuj dane widoku
         $viewData = [
             'form' => $form->createView(),
             'balance' => $this->getUser()->getBalance(),
         ];
         
-        // 4. Emit ViewDataEvent
         $viewEvent = $this->dispatchEvent(new ViewDataEvent(
             'balance_recharge',
             $viewData,
@@ -99,10 +92,7 @@ class BalanceController extends AbstractController
 
         $sessionId = $request->query->get('session_id');
 
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
-
-        // 1. Emit BalancePaymentCallbackAccessedEvent
         $this->dispatchEvent(new BalancePaymentCallbackAccessedEvent(
             $this->getUser()->getId(),
             $sessionId,
@@ -115,7 +105,6 @@ class BalanceController extends AbstractController
             return $this->redirectToRechargeBalance();
         }
 
-        // PaymentService emituje eventy domenowe wewnętrznie
         $error = $this->paymentService->finalizePayment($this->getUser(), $sessionId);
         if (!empty($error)) {
             $this->addFlash('danger', $error);
@@ -132,10 +121,7 @@ class BalanceController extends AbstractController
     {
         $this->checkPermission();
 
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
-
-        // Emit BalancePaymentCallbackAccessedEvent
         $this->dispatchEvent(new BalancePaymentCallbackAccessedEvent(
             $this->getUser()->getId(),
             null,

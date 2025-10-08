@@ -68,16 +68,13 @@ class DashboardController extends AbstractDashboardController
         $user = $this->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
-        // Buduj context dla eventów
         $context = $this->buildNullableEventContext($request);
-
         $this->dispatchEvent(new DashboardAccessedEvent(
             $user->getId(),
             $user->getRoles(),
             $context
         ));
         
-        // Pobieranie danych
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
         $servers = $this->serverService->getServersWithAccess($user);
         $logs = $this->logService->getLogsByUser($user, 5);
@@ -85,7 +82,6 @@ class DashboardController extends AbstractDashboardController
         $motdTitle = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_TITLE->value);
         $motdMessage = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_MESSAGE->value);
         
-        // Emit DashboardDataLoadedEvent
         $this->dispatchEvent(new DashboardDataLoadedEvent(
             $user->getId(),
             count($servers),
@@ -94,7 +90,6 @@ class DashboardController extends AbstractDashboardController
             $context
         ));
 
-        // Przygotuj dane widoku
         $viewData = [
             'servers' => $servers,
             'user' => $user,
@@ -105,7 +100,6 @@ class DashboardController extends AbstractDashboardController
             'pterodactylPanelUrl' => $pterodactylPanelUrl,
         ];
         
-        // Emit ViewDataEvent dla pluginów
         $viewEvent = $this->dispatchEvent(new ViewDataEvent('dashboard', $viewData, $user, $context));
 
         return $this->render('panel/dashboard/dashboard.html.twig',
