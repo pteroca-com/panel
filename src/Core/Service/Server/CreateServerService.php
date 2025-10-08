@@ -11,7 +11,15 @@ use App\Core\Entity\ServerProduct;
 use App\Core\Entity\ServerProductPrice;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\ProductPriceTypeEnum;
+use App\Core\Enum\SettingEnum;
 use App\Core\Enum\VoucherTypeEnum;
+use App\Core\Event\Server\ServerPurchaseValidatedEvent;
+use App\Core\Event\Server\ServerAboutToBeCreatedEvent;
+use App\Core\Event\Server\ServerCreatedOnPterodactylEvent;
+use App\Core\Event\Server\ServerEntityCreatedEvent;
+use App\Core\Event\Server\ServerProductCreatedEvent;
+use App\Core\Event\Server\ServerBalanceChargedEvent;
+use App\Core\Event\Server\ServerPurchaseCompletedEvent;
 use App\Core\Repository\ServerProductPriceRepository;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
@@ -20,8 +28,10 @@ use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use App\Core\Service\SettingService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 
@@ -37,6 +47,8 @@ class CreateServerService extends AbstractActionServerService
         private readonly LogService $logService,
         private readonly VoucherPaymentService $voucherPaymentService,
         private readonly TranslatorInterface $translator,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly SettingService $settingService,
         UserRepository $userRepository,
         ProductPriceCalculatorService $productPriceCalculatorService,
         LoggerInterface $logger,
@@ -62,8 +74,42 @@ class CreateServerService extends AbstractActionServerService
                 VoucherTypeEnum::SERVER_DISCOUNT,
             );
         }
+        
+        // 1. Emit ServerPurchaseValidatedEvent (po walidacji vouchera)
+        $validatedEvent = new ServerPurchaseValidatedEvent(
+            $user->getId(),
+            $product->getId(),
+            $eggId,
+            $priceId,
+            $slots
+        );
+        $this->eventDispatcher->dispatch($validatedEvent);
+        
+        // 2. Emit ServerAboutToBeCreatedEvent (przed tworzeniem, stoppable)
+        $aboutToBeCreatedEvent = new ServerAboutToBeCreatedEvent(
+            $user->getId(),
+            $product->getId(),
+            $serverName,
+            $eggId,
+            $slots
+        );
+        $this->eventDispatcher->dispatch($aboutToBeCreatedEvent);
+        
+        // Sprawdzenie czy event został zatrzymany (np. przez fraud detection)
+        if ($aboutToBeCreatedEvent->isPropagationStopped()) {
+            throw new \Exception($this->translator->trans('pteroca.store.server_creation_blocked'));
+        }
 
         $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user, $slots);
+        
+        // 3. Emit ServerCreatedOnPterodactylEvent (po utworzeniu na Pterodactyl)
+        $createdOnPterodactylEvent = new ServerCreatedOnPterodactylEvent(
+            $user->getId(),
+            $createdPterodactylServer->get('id'),
+            $createdPterodactylServer->get('identifier'),
+            $product->getId()
+        );
+        $this->eventDispatcher->dispatch($createdOnPterodactylEvent);
 
         $createdEntityServer = $this->createEntityServer(
             $createdPterodactylServer,
@@ -72,10 +118,46 @@ class CreateServerService extends AbstractActionServerService
             $priceId,
             $autoRenewal
         );
+        
+        // 4. Emit ServerEntityCreatedEvent (po zapisie Server do bazy)
+        $entityCreatedEvent = new ServerEntityCreatedEvent(
+            $createdEntityServer->getId(),
+            $user->getId(),
+            $createdEntityServer->getPterodactylServerId(),
+            $createdEntityServer->getExpiresAt()
+        );
+        $this->eventDispatcher->dispatch($entityCreatedEvent);
+        
         $createdEntityServerProduct = $this->createEntityServerProduct($createdEntityServer, $product);
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
-
+        
+        // 5. Emit ServerProductCreatedEvent (po zapisie ServerProduct)
+        $productCreatedEvent = new ServerProductCreatedEvent(
+            $createdEntityServerProduct->getId(),
+            $createdEntityServer->getId(),
+            $product->getId()
+        );
+        $this->eventDispatcher->dispatch($productCreatedEvent);
+        
+        // Zapisz stary balans przed update
+        $oldBalance = $user->getBalance();
         $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots);
+        $newBalance = $user->getBalance();
+        
+        // Oblicz cenę do eventu (różnica balansów)
+        $finalPrice = $oldBalance - $newBalance;
+        
+        // 6. Emit ServerBalanceChargedEvent (po odjęciu środków)
+        $balanceChargedEvent = new ServerBalanceChargedEvent(
+            $user->getId(),
+            $oldBalance,
+            $newBalance,
+            $createdEntityServer->getId(),
+            $finalPrice,
+            $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value)
+        );
+        $this->eventDispatcher->dispatch($balanceChargedEvent);
+        
         $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
             $user,
             $createdEntityServer,
@@ -95,6 +177,15 @@ class CreateServerService extends AbstractActionServerService
                 'server' => $createdEntityServer,
             ],
         );
+        
+        // 7. Emit ServerPurchaseCompletedEvent (po całym procesie)
+        $purchaseCompletedEvent = new ServerPurchaseCompletedEvent(
+            $createdEntityServer->getId(),
+            $user->getId(),
+            $product->getId(),
+            $finalPrice
+        );
+        $this->eventDispatcher->dispatch($purchaseCompletedEvent);
 
         return $createdEntityServer;
     }

@@ -3,6 +3,11 @@
 namespace App\Core\Controller;
 
 use App\Core\Enum\SettingEnum;
+use App\Core\Event\Balance\BalanceRechargePageAccessedEvent;
+use App\Core\Event\Balance\BalanceRechargeFormDataLoadedEvent;
+use App\Core\Event\Balance\BalancePaymentCallbackAccessedEvent;
+use App\Core\Event\Form\FormBuildEvent;
+use App\Core\Event\View\ViewDataEvent;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\SettingService;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -10,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BalanceController extends AbstractController
@@ -18,6 +24,7 @@ class BalanceController extends AbstractController
         private readonly PaymentService $paymentService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -26,11 +33,25 @@ class BalanceController extends AbstractController
         Request $request,
     ): Response {
         $this->checkPermission();
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // 1. Emit BalanceRechargePageAccessedEvent
+        $accessedEvent = new BalanceRechargePageAccessedEvent(
+            $this->getUser()->getId(),
+            $this->getUser()->getBalance(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($accessedEvent);
 
         $currency = $this->settingService
             ->getSetting(SettingEnum::CURRENCY_NAME->value);
 
-        $form = $this->createFormBuilder()
+        $formBuilder = $this->createFormBuilder()
             ->add('amount', MoneyType::class, [
                 'currency' => $currency,
                 'label' => sprintf(
@@ -41,27 +62,70 @@ class BalanceController extends AbstractController
             ])
             ->add('currency', HiddenType::class, [
                 'data' => $currency,
-            ])
-            ->getForm();
-
+            ]);
+        
+        // Emit FormBuildEvent dla pluginów
+        $formBuildEvent = new FormBuildEvent($formBuilder, 'balance_recharge', $context);
+        $this->eventDispatcher->dispatch($formBuildEvent);
+        
+        $form = $formBuilder->getForm();
         $form->handleRequest($request);
-
-        return $this->render('panel/wallet/recharge.html.twig', [
+        
+        // 2. Emit BalanceRechargeFormDataLoadedEvent
+        $dataLoadedEvent = new BalanceRechargeFormDataLoadedEvent(
+            $this->getUser()->getId(),
+            $this->getUser()->getBalance(),
+            $currency,
+            $context
+        );
+        $this->eventDispatcher->dispatch($dataLoadedEvent);
+        
+        // 3. Przygotuj dane widoku
+        $viewData = [
             'form' => $form->createView(),
             'balance' => $this->getUser()->getBalance(),
-        ]);
+        ];
+        
+        // 4. Emit ViewDataEvent
+        $viewEvent = new ViewDataEvent(
+            'balance_recharge',
+            $viewData,
+            $this->getUser(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($viewEvent);
+
+        return $this->render('panel/wallet/recharge.html.twig', $viewEvent->getViewData());
     }
 
     #[Route('/wallet/recharge/success', name: 'stripe_success')]
     public function success(Request $request): Response
     {
         $this->checkPermission();
+        
         $sessionId = $request->query->get('session_id');
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // 1. Emit BalancePaymentCallbackAccessedEvent
+        $callbackEvent = new BalancePaymentCallbackAccessedEvent(
+            $this->getUser()->getId(),
+            $sessionId,
+            'success',
+            $context
+        );
+        $this->eventDispatcher->dispatch($callbackEvent);
+        
         if (empty($sessionId)) {
             $this->addFlash('danger', $this->translator->trans('pteroca.recharge.invalid_session_id'));
             return $this->redirectToRechargeBalance();
         }
 
+        // PaymentService emituje eventy domenowe wewnętrznie
         $error = $this->paymentService->finalizePayment($this->getUser(), $sessionId);
         if (!empty($error)) {
             $this->addFlash('danger', $error);
@@ -74,9 +138,25 @@ class BalanceController extends AbstractController
     }
 
     #[Route('/wallet/recharge/cancel', name: 'stripe_cancel')]
-    public function cancel(): Response
+    public function cancel(Request $request): Response
     {
         $this->checkPermission();
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // Emit BalancePaymentCallbackAccessedEvent
+        $callbackEvent = new BalancePaymentCallbackAccessedEvent(
+            $this->getUser()->getId(),
+            null,
+            'cancel',
+            $context
+        );
+        $this->eventDispatcher->dispatch($callbackEvent);
+        
         $this->addFlash('danger', $this->translator->trans('pteroca.recharge.payment_canceled'));
 
         return $this->redirectToRechargeBalance();

@@ -7,6 +7,16 @@ use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Event\Cart\CartTopUpPageAccessedEvent;
+use App\Core\Event\Cart\CartTopUpDataLoadedEvent;
+use App\Core\Event\Cart\CartPaymentRedirectEvent;
+use App\Core\Event\Cart\CartConfigurePageAccessedEvent;
+use App\Core\Event\Cart\CartConfigureDataLoadedEvent;
+use App\Core\Event\Cart\CartBuyRequestedEvent;
+use App\Core\Event\Cart\CartRenewPageAccessedEvent;
+use App\Core\Event\Cart\CartRenewDataLoadedEvent;
+use App\Core\Event\Cart\CartRenewBuyRequestedEvent;
+use App\Core\Event\View\ViewDataEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Payment\PaymentService;
@@ -19,6 +29,7 @@ use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CartController extends AbstractController
@@ -29,6 +40,7 @@ class CartController extends AbstractController
         private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly TranslatorInterface $translator,
         private readonly ServerSlotPricingService $serverSlotPricingService,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     #[Route('/cart/topup', name: 'cart_topup', methods: ['GET', 'POST'])]
@@ -43,6 +55,12 @@ class CartController extends AbstractController
             ? $request->request->all()
             : $request->query->all();
         $currency = $settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
 
         if (
             empty($requestPayload['currency'])
@@ -61,6 +79,15 @@ class CartController extends AbstractController
                 'routeName' => 'recharge_balance',
             ]);
         }
+        
+        // 1. Emit CartTopUpPageAccessedEvent
+        $accessedEvent = new CartTopUpPageAccessedEvent(
+            $this->getUser()->getId(),
+            $amount,
+            $currency,
+            $context
+        );
+        $this->eventDispatcher->dispatch($accessedEvent);
 
         if ($request->isMethod('POST')) {
             try {
@@ -72,35 +99,104 @@ class CartController extends AbstractController
                     $this->generateUrl('stripe_success', [], 0) . '?session_id={CHECKOUT_SESSION_ID}',
                     $this->generateUrl('stripe_cancel', [], 0)
                 );
+                
+                // 2. Emit CartPaymentRedirectEvent (POST only)
+                $redirectEvent = new CartPaymentRedirectEvent(
+                    $this->getUser()->getId(),
+                    $amount,
+                    $currency,
+                    $paymentUrl,
+                    $context
+                );
+                $this->eventDispatcher->dispatch($redirectEvent);
 
                 return $this->redirect($paymentUrl);
             } catch (\Exception $exception) {
                 $this->addFlash('danger', $exception->getMessage());
             }
+        } else {
+            // 3. Emit CartTopUpDataLoadedEvent (GET only)
+            $dataLoadedEvent = new CartTopUpDataLoadedEvent(
+                $this->getUser()->getId(),
+                $amount,
+                $currency,
+                $context
+            );
+            $this->eventDispatcher->dispatch($dataLoadedEvent);
         }
-
-        return $this->render('panel/cart/topup.html.twig', [
+        
+        // 4. Przygotuj dane widoku
+        $viewData = [
             'request' => $requestPayload,
-        ]);
+        ];
+        
+        // 5. Emit ViewDataEvent
+        $viewEvent = new ViewDataEvent(
+            'cart_topup',
+            $viewData,
+            $this->getUser(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($viewEvent);
+
+        return $this->render('panel/cart/topup.html.twig', $viewEvent->getViewData());
     }
 
     #[Route('/cart/configure', name: 'cart_configure')]
     public function configure(Request $request): Response
     {
         $product = $this->getProductByRequest($request);
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // 1. Emit CartConfigurePageAccessedEvent
+        $accessedEvent = new CartConfigurePageAccessedEvent(
+            $this->getUser()->getId(),
+            $product->getId(),
+            $product->getName(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($accessedEvent);
+        
         $preparedEggs = $this->storeService->getProductEggs($product);
-        $request = $request->query->all();
+        $requestData = $request->query->all();
 
         $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
-
-        return $this->render('panel/cart/configure.html.twig', [
+        
+        // 2. Emit CartConfigureDataLoadedEvent
+        $dataLoadedEvent = new CartConfigureDataLoadedEvent(
+            $this->getUser()->getId(),
+            $product->getId(),
+            $preparedEggs,
+            $hasSlotPrices,
+            $context
+        );
+        $this->eventDispatcher->dispatch($dataLoadedEvent);
+        
+        // 3. Przygotuj dane widoku
+        $viewData = [
             'product' => $product,
             'eggs' => $preparedEggs,
-            'request' => $request,
+            'request' => $requestData,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
             'hasSlotPrices' => $hasSlotPrices,
-            'initialSlots' => $request['slots'] ?? null,
-        ]);
+            'initialSlots' => $requestData['slots'] ?? null,
+        ];
+        
+        // 4. Emit ViewDataEvent
+        $viewEvent = new ViewDataEvent(
+            'cart_configure',
+            $viewData,
+            $this->getUser(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($viewEvent);
+
+        return $this->render('panel/cart/configure.html.twig', $viewEvent->getViewData());
     }
 
     #[Route('/cart/buy', name: 'cart_buy', methods: ['POST'])]
@@ -117,6 +213,25 @@ class CartController extends AbstractController
         $serverName = $request->request->getString('server-name');
         $autoRenewal = $request->request->getBoolean('auto-renewal');
         $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // 1. Emit CartBuyRequestedEvent
+        $buyRequestedEvent = new CartBuyRequestedEvent(
+            $this->getUser()->getId(),
+            $product->getId(),
+            $eggId,
+            $priceId,
+            $serverName,
+            $autoRenewal,
+            $slots,
+            $context
+        );
+        $this->eventDispatcher->dispatch($buyRequestedEvent);
 
         try {
             $this->storeService->validateBoughtProduct(
@@ -127,6 +242,7 @@ class CartController extends AbstractController
                 $slots
             );
 
+            // CreateServerService emituje eventy domenowe wewnętrznie
             $createServerService->createServer(
                 $product,
                 $eggId,
@@ -157,19 +273,58 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // 1. Emit CartRenewPageAccessedEvent
+        $accessedEvent = new CartRenewPageAccessedEvent(
+            $this->getUser()->getId(),
+            $server->getId(),
+            $server->getServerProduct()->getName(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($accessedEvent);
+        
         $isOwner = $server->getUser() === $this->getUser();
         $hasSlotPrices = $this->serverSlotPricingService->hasSlotPricing($server);
 
         if ($hasSlotPrices) {
             $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
         }
-
-        return $this->render('panel/cart/renew.html.twig', [
+        
+        // 2. Emit CartRenewDataLoadedEvent
+        $dataLoadedEvent = new CartRenewDataLoadedEvent(
+            $this->getUser()->getId(),
+            $server->getId(),
+            $isOwner,
+            $hasSlotPrices,
+            $serverSlots ?? null,
+            $context
+        );
+        $this->eventDispatcher->dispatch($dataLoadedEvent);
+        
+        // 3. Przygotuj dane widoku
+        $viewData = [
             'server' => $server,
             'isOwner' => $isOwner,
             'hasSlotPrices' => $hasSlotPrices,
             'serverSlots' => $serverSlots ?? null,
-        ]);
+        ];
+        
+        // 4. Emit ViewDataEvent
+        $viewEvent = new ViewDataEvent(
+            'cart_renew',
+            $viewData,
+            $this->getUser(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($viewEvent);
+
+        return $this->render('panel/cart/renew.html.twig', $viewEvent->getViewData());
     }
 
     #[Route('/cart/renew/buy', name: 'cart_renew_buy', methods: ['POST'])]
@@ -180,12 +335,30 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
+        
+        $voucherCode = $request->request->getString('voucher');
+        
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
 
         try {
             $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
             if ($hasActiveSlotPricing) {
                 $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
             }
+            
+            // 1. Emit CartRenewBuyRequestedEvent
+            $renewBuyRequestedEvent = new CartRenewBuyRequestedEvent(
+                $this->getUser()->getId(),
+                $server->getId(),
+                $voucherCode ?: null,
+                $serverSlots ?? null,
+                $context
+            );
+            $this->eventDispatcher->dispatch($renewBuyRequestedEvent);
 
             $this->storeService->validateBoughtProduct(
                 $server->getServerProduct(),
@@ -195,10 +368,11 @@ class CartController extends AbstractController
                 $serverSlots ?? null
             );
 
+            // RenewServerService emituje eventy domenowe wewnętrznie
             $renewServerService->renewServer(
                 $server,
                 $this->getUser(),
-                $request->request->getString('voucher'),
+                $voucherCode,
                 $serverSlots ?? null,
             );
 

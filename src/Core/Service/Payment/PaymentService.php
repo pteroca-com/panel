@@ -10,6 +10,10 @@ use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\VoucherTypeEnum;
+use App\Core\Event\Balance\BalanceAboutToBeAddedEvent;
+use App\Core\Event\Balance\BalanceAddedEvent;
+use App\Core\Event\Balance\BalancePaymentValidatedEvent;
+use App\Core\Event\Balance\PaymentFinalizedEvent;
 use App\Core\Exception\PaymentExpiredException;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Provider\Payment\PaymentProviderInterface;
@@ -21,6 +25,7 @@ use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use App\Core\Service\Voucher\VoucherPaymentService;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentService
@@ -36,6 +41,7 @@ class PaymentService
         private readonly UserVerificationService $userVerificationService,
         private readonly VoucherPaymentService $voucherPaymentService,
         private readonly EmailNotificationService $emailNotificationService,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function createPayment(
@@ -111,6 +117,16 @@ class PaymentService
         if (empty($payment)) {;
             return $this->translator->trans('pteroca.recharge.payment_not_found');
         }
+        
+        // 1. Emit BalancePaymentValidatedEvent (pre)
+        $validatedEvent = new BalancePaymentValidatedEvent(
+            $user->getId(),
+            $sessionId,
+            $payment->getBalanceAmount(),
+            $session->getCurrency(),
+            $session->getPaymentStatus()
+        );
+        $this->eventDispatcher->dispatch($validatedEvent);
 
         if ($payment->getStatus() === $session->getPaymentStatus()) {
             return $this->translator->trans('pteroca.recharge.payment_already_processed');
@@ -118,16 +134,47 @@ class PaymentService
 
         if ($session->getPaymentStatus() === $this->paymentProvider::PAID_STATUS) {
             $amount = $payment->getBalanceAmount();
-            $newBalance = $user->getBalance() + $amount;
-            $user->setBalance($newBalance);
+            $oldBalance = $user->getBalance();
+            $newBalance = $oldBalance + $amount;
+            
+            // 2. Emit BalanceAboutToBeAddedEvent (pre, stoppable)
+            $aboutToBeAddedEvent = new BalanceAboutToBeAddedEvent(
+                $user->getId(),
+                $amount,
+                $oldBalance,
+                $newBalance
+            );
+            $this->eventDispatcher->dispatch($aboutToBeAddedEvent);
+            
+            if ($aboutToBeAddedEvent->isPropagationStopped()) {
+                return $aboutToBeAddedEvent->getRejectionReason() 
+                    ?? $this->translator->trans('pteroca.recharge.payment_rejected_by_plugin');
+            }
+            
+            // Użyj zmodyfikowanej kwoty (plugin mógł dodać bonus)
+            $finalAmount = $aboutToBeAddedEvent->getAmount();
+            $finalNewBalance = $oldBalance + $finalAmount;
+            
+            $user->setBalance($finalNewBalance);
             $this->userRepository->save($user);
+            
+            // 3. Emit BalanceAddedEvent (post-commit)
+            $balanceAddedEvent = new BalanceAddedEvent(
+                $user->getId(),
+                $finalAmount,
+                $oldBalance,
+                $finalNewBalance,
+                $payment->getId(),
+                $session->getCurrency()
+            );
+            $this->eventDispatcher->dispatch($balanceAddedEvent);
 
             $emailMessage = new SendEmailMessage(
                 $user->getEmail(),
                 $this->translator->trans('pteroca.email.payment.subject'),
                 'email/payment_success.html.twig',
                 [
-                    'amount' => $amount,
+                    'amount' => $finalAmount,
                     'currency' => $session->getCurrency(),
                     'internalCurrency' => $this->settingService
                         ->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value),
@@ -146,12 +193,23 @@ class PaymentService
             $this->logService->logAction(
                 $user,
                 LogActionEnum::BOUGHT_BALANCE,
-                ['amount' => $amount, 'currency' => $session->getCurrency(), 'newBalance' => $newBalance]
+                ['amount' => $finalAmount, 'currency' => $session->getCurrency(), 'newBalance' => $finalNewBalance]
             );
         }
 
         $payment->setStatus($session->getPaymentStatus());
         $this->paymentRepository->save($payment);
+        
+        // 4. Emit PaymentFinalizedEvent (post-commit)
+        $paymentFinalizedEvent = new PaymentFinalizedEvent(
+            $payment->getId(),
+            $user->getId(),
+            $payment->getAmount(),
+            $session->getCurrency(),
+            $payment->getBalanceAmount(),
+            $sessionId
+        );
+        $this->eventDispatcher->dispatch($paymentFinalizedEvent);
 
         return null;
     }

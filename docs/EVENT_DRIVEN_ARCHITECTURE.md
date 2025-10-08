@@ -772,12 +772,517 @@ GET /store/product?id=X
 
 ---
 
+---
+
+### ✅ Balance (Doładowanie Portfela)
+
+**Lokalizacja eventów:** `src/Core/Event/Balance/`
+
+**3 przepływy:**
+1. **Balance Recharge** (`/wallet/recharge`) - formularz doładowania portfela
+2. **Payment Success** (`/wallet/recharge/success`) - callback po udanej płatności
+3. **Payment Cancel** (`/wallet/recharge/cancel`) - callback po anulowaniu płatności
+
+---
+
+#### **1. Balance Recharge - Formularz Doładowania**
+
+**Eventy:**
+- `BalanceRechargePageAccessedEvent` (post) - wejście na stronę doładowania
+- `BalanceRechargeFormDataLoadedEvent` (post) - po załadowaniu danych formularza
+
+**Flow:**
+```
+GET /wallet/recharge
+  → BalanceRechargePageAccessedEvent (userId, currentBalance)
+  → Pobranie waluty z settings
+  → Budowa formularza
+  → FormBuildEvent (formType='balance_recharge')
+  → BalanceRechargeFormDataLoadedEvent (userId, balance, currency)
+  → ViewDataEvent (viewName='balance_recharge')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics - tracking odwiedzin strony recharge (przez pluginy)
+- Pluginy mogą dodać pola do formularza (voucher code, payment methods)
+- Monitoring użycia (przez pluginy)
+- Pluginy mogą personalizować formularz
+
+---
+
+#### **2. Payment Success - Udana Płatność**
+
+**UWAGA:** Główna logika płatności jest w `PaymentService::finalizePayment()` - tutaj są emitowane **domenowe eventy płatności**, a nie w kontrolerze!
+
+**Eventy w kontrolerze:**
+- `BalancePaymentCallbackAccessedEvent` (post) - callback z payment gateway
+
+**Eventy w PaymentService (DOMENOWE):**
+- `BalancePaymentValidatedEvent` (pre) - po walidacji sesji
+- `BalanceAboutToBeAddedEvent` (pre, stoppable) - przed dodaniem środków
+- `BalanceAddedEvent` (post-commit) - po dodaniu środków do portfela
+- `PaymentFinalizedEvent` (post-commit) - po zapisie Payment
+
+**Flow:**
+```
+GET /wallet/recharge/success?session_id=XXX
+  → BalancePaymentCallbackAccessedEvent (callbackType='success')
+  → Walidacja sessionId
+  → PaymentService::finalizePayment()
+    → Pobranie sesji z payment gateway
+    → BalancePaymentValidatedEvent (pre) - walidacja płatności
+    → BalanceAboutToBeAddedEvent (pre, stoppable) - plugin może modyfikować kwotę lub zatrzymać
+    → Dodanie środków do portfela (user->setBalance)
+    → BalanceAddedEvent (post-commit) - po zapisie
+    → Wysłanie emaila + logging
+    → PaymentFinalizedEvent (post-commit) - po zapisie Payment
+  → Flash message + redirect
+```
+
+**Zastosowanie:**
+- **Welcome Bonus Plugin:** dodaje 10% bonusu przy pierwszej płatności (modyfikuje `BalanceAboutToBeAddedEvent`)
+- **Fraud Detection Plugin:** blokuje podejrzane płatności (zatrzymuje `BalanceAboutToBeAddedEvent`)
+- **Analytics Plugin:** tracking płatności (`BalanceAddedEvent`)
+- **Accounting Plugin:** integracja z systemem księgowym (`PaymentFinalizedEvent`)
+- **CRM Integration:** synchronizacja z CRM (`PaymentFinalizedEvent`)
+
+---
+
+#### **3. Payment Cancel - Anulowana Płatność**
+
+**Event:**
+- `BalancePaymentCallbackAccessedEvent` (callbackType='cancel')
+
+**Flow:**
+```
+GET /wallet/recharge/cancel
+  → BalancePaymentCallbackAccessedEvent (callbackType='cancel', sessionId=null)
+  → Flash message + redirect
+```
+
+**Zastosowanie:**
+- Tracking anulowanych płatności (przez pluginy)
+- Analytics (przez pluginy)
+
+---
+
+**Charakterystyka:**
+- ✅ **Eventy domenowe w serwisie** - nie tylko w kontrolerze (PaymentService)
+- ✅ **Pre/post pattern** dla operacji finansowych
+- ✅ **Stoppable events** - pluginy mogą zatrzymać proces
+- ✅ **Modyfikowalne kwoty** - pluginy mogą dodać bonusy
+- ✅ **FormBuildEvent + ViewDataEvent** - spójność z resztą systemu
+- ✅ **Security audit** - tracking callback'ów z payment gateway
+
+**Różnica od Store/Dashboard:**
+- ❌ **Nie tylko read-only** - `success()` wykonuje operacje zapisu
+- ✅ **Eventy w serwisie** - logika biznesowa w PaymentService, nie w kontrolerze
+- ✅ **Operacje finansowe** wymagają pre/post eventów z możliwością veto
+
+**Przykłady dla pluginów:**
+
+```php
+// Welcome Bonus Plugin
+class WelcomeBonusSubscriber implements EventSubscriberInterface
+{
+    public function onBalanceAboutToBeAdded(BalanceAboutToBeAddedEvent $event): void
+    {
+        if ($this->isFirstPayment($event->getUserId())) {
+            $bonus = $event->getAmount() * 0.10;
+            $event->setAmount($event->getAmount() + $bonus);
+        }
+    }
+}
+
+// Fraud Detection Plugin
+class FraudDetectionSubscriber implements EventSubscriberInterface
+{
+    public function onBalanceAboutToBeAdded(BalanceAboutToBeAddedEvent $event): void
+    {
+        if ($this->isSuspiciousPayment($event->getUserId(), $event->getAmount())) {
+            $event->stopPropagation();
+            $event->setRejected(true, 'Payment flagged as suspicious');
+        }
+    }
+}
+```
+
+---
+
+---
+
+### ✅ Cart (Koszyk i Zakupy)
+
+**Lokalizacja eventów:** `src/Core/Event/Cart/`
+
+**5 przepływów:**
+1. **Cart Top Up** (`/cart/topup`) - doładowanie portfela (GET + POST)
+2. **Cart Configure** (`/cart/configure`) - konfiguracja produktu przed zakupem
+3. **Cart Buy** (`/cart/buy`) - zakup nowego serwera
+4. **Cart Renew** (`/cart/renew`) - podgląd przedłużenia serwera
+5. **Cart Renew Buy** (`/cart/renew/buy`) - przedłużenie serwera
+
+---
+
+#### **1. Cart Top Up - Doładowanie Portfela**
+
+**Eventy:**
+- `CartTopUpPageAccessedEvent` (post) - wejście na stronę (GET lub POST)
+- `CartTopUpDataLoadedEvent` (post) - załadowanie danych formularza (GET only)
+- `CartPaymentRedirectEvent` (post) - redirect do payment gateway (POST only)
+- `ViewDataEvent` - modyfikacja danych widoku
+
+**Flow (GET):**
+```
+GET /cart/topup?amount=100&currency=USD
+  → Walidacja parametrów (amount, currency)
+  → CartTopUpPageAccessedEvent (userId, amount, currency, context)
+  → CartTopUpDataLoadedEvent (userId, amount, currency, context)
+  → ViewDataEvent (viewName='cart_topup')
+  → Render template
+```
+
+**Flow (POST):**
+```
+POST /cart/topup
+  → Walidacja parametrów (amount, currency)
+  → CartTopUpPageAccessedEvent (userId, amount, currency, context)
+  → PaymentService::createPayment() (tworzy sesję Stripe)
+  → CartPaymentRedirectEvent (userId, amount, currency, paymentUrl, context)
+  → Redirect do Stripe
+```
+
+**Zastosowanie:**
+- Analytics - tracking doładowań portfela (przez pluginy)
+- Fraud detection - blokowanie podejrzanych transakcji (przez pluginy)
+- Dynamic pricing - pluginy mogą modyfikować kwoty/waluty
+- Tracking redirectów do payment gateway (przez pluginy)
+
+---
+
+#### **2. Cart Configure - Konfiguracja Produktu**
+
+**Eventy:**
+- `CartConfigurePageAccessedEvent` (post) - wejście na stronę konfiguracji
+- `CartConfigureDataLoadedEvent` (post) - po załadowaniu danych produktu
+- `ViewDataEvent` - modyfikacja danych widoku
+
+**Flow:**
+```
+GET /cart/configure?id=X
+  → Walidacja istnienia produktu (404 jeśli brak)
+  → CartConfigurePageAccessedEvent (userId, productId, productName, context)
+  → Pobieranie eggs (StoreService::getProductEggs)
+  → Sprawdzanie slot pricing (ServerSlotPricingService)
+  → CartConfigureDataLoadedEvent (userId, productId, eggs, hasSlotPrices, context)
+  → ViewDataEvent (viewName='cart_configure')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics - które produkty są najczęściej konfigurowane (przez pluginy)
+- Personalizacja - pluginy mogą modyfikować dostępne opcje
+- A/B testing konfiguratorów (przez pluginy)
+- Custom upsells podczas konfiguracji (przez pluginy)
+
+---
+
+#### **3. Cart Buy - Zakup Nowego Serwera**
+
+**Eventy:**
+- `CartBuyRequestedEvent` (post) - żądanie zakupu serwera
+- **Eventy domenowe w CreateServerService** (7 eventów - patrz sekcja "Server Purchase")
+
+**Flow:**
+```
+POST /cart/buy
+  → CartBuyRequestedEvent (userId, productId, eggId, priceId, serverName, autoRenewal, slots, context)
+  → StoreService::validateBoughtProduct()
+  → CreateServerService::createServer()
+    → [7 eventów domenowych - patrz sekcja "Server Purchase"]
+  → Flash message + redirect
+```
+
+**Zastosowanie:**
+- Analytics - tracking zakupów (przez pluginy)
+- Anti-fraud - pluginy mogą zatrzymać podejrzane zakupy
+- Komisje/rewards - pluginy mogą przyznać punkty za zakup
+
+**UWAGA:** Główne eventy domenowe są emitowane w `CreateServerService::createServer()`, nie w kontrolerze! `CartBuyRequestedEvent` to tylko "intent" zakupu.
+
+---
+
+#### **4. Cart Renew - Podgląd Przedłużenia**
+
+**Eventy:**
+- `CartRenewPageAccessedEvent` (post) - wejście na stronę przedłużenia
+- `CartRenewDataLoadedEvent` (post) - po załadowaniu danych serwera
+- `ViewDataEvent` - modyfikacja danych widoku
+
+**Flow:**
+```
+GET /cart/renew?id=X
+  → Walidacja istnienia serwera (404 jeśli brak)
+  → CartRenewPageAccessedEvent (userId, serverId, productName, context)
+  → Sprawdzanie czy user jest owner
+  → Sprawdzanie slot pricing
+  → CartRenewDataLoadedEvent (userId, serverId, isOwner, hasSlotPrices, serverSlots, context)
+  → ViewDataEvent (viewName='cart_renew')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics - tracking odwiedzin strony renew (przez pluginy)
+- Retention - pluginy mogą dodać incentives do przedłużenia
+- Personalizacja - custom offers dla długoletnich klientów (przez pluginy)
+
+---
+
+#### **5. Cart Renew Buy - Przedłużenie Serwera**
+
+**Eventy:**
+- `CartRenewBuyRequestedEvent` (post) - żądanie przedłużenia
+- **Eventy domenowe w RenewServerService** (6 eventów - patrz sekcja "Server Renewal")
+
+**Flow:**
+```
+POST /cart/renew/buy
+  → Sprawdzanie slot pricing
+  → CartRenewBuyRequestedEvent (userId, serverId, voucherCode, serverSlots, context)
+  → StoreService::validateBoughtProduct()
+  → RenewServerService::renewServer()
+    → [6 eventów domenowych - patrz sekcja "Server Renewal"]
+  → Flash message + redirect
+```
+
+**Zastosowanie:**
+- Analytics - tracking renewals (przez pluginy)
+- Anti-fraud - pluginy mogą zatrzymać podejrzane przedłużenia
+- Loyalty rewards - pluginy mogą przyznać bonusy za długoterminowe przedłużenia
+
+**UWAGA:** Główne eventy domenowe są emitowane w `RenewServerService::renewServer()`, nie w kontrolerze! `CartRenewBuyRequestedEvent` to tylko "intent" przedłużenia.
+
+---
+
+**Charakterystyka Cart Events:**
+- ✅ **Hybrydowe podejście** - eventy w kontrolerze (intent) + eventy w serwisach (domenowe)
+- ✅ **GET/POST pattern** - różne eventy dla różnych metod HTTP
+- ✅ **Spójność z ViewDataEvent** - wszystkie widoki emitują ViewDataEvent
+- ✅ **Brak built-in subscriberów** - tylko dla pluginów
+- ✅ **Fokus na rozszerzalność** przez pluginy
+- ✅ **Delegacja do serwisów** - kontroler emituje "intent", serwis emituje "domain events"
+
+**Różnica od Balance Events:**
+- ❌ Cart nie emituje eventów domenowych w kontrolerze (tylko intent)
+- ✅ Domenowe eventy są w CreateServerService i RenewServerService
+- ✅ Separacja: kontroler = intent, serwis = domain logic
+
+---
+
+---
+
+### ✅ Server Purchase (Tworzenie Serwera)
+
+**Lokalizacja eventów:** `src/Core/Event/Server/`
+
+**Serwis:** `CreateServerService::createServer()`
+
+**7 eventów domenowych:**
+
+1. **ServerPurchaseValidatedEvent** (pre)
+   - **Kiedy:** Po walidacji vouchera, przed tworzeniem serwera
+   - **Payload:** userId, productId, eggId, priceId, slots
+   - **Zastosowanie:** Fraud detection, anti-abuse, custom walidacje
+
+2. **ServerAboutToBeCreatedEvent** (pre, stoppable)
+   - **Kiedy:** Przed createPterodactylServer()
+   - **Payload:** userId, productId, serverName, eggId, slots
+   - **Zastosowanie:** Veto creation (np. fraud detection), modyfikacja nazwy serwera
+   - **Stoppable:** Tak - plugin może zatrzymać proces
+
+3. **ServerCreatedOnPterodactylEvent** (post)
+   - **Kiedy:** Po utworzeniu serwera na Pterodactyl
+   - **Payload:** userId, pterodactylServerId, pterodactylServerIdentifier, productId
+   - **Zastosowanie:** Integracje z zewnętrznymi systemami, monitoring
+
+4. **ServerEntityCreatedEvent** (post)
+   - **Kiedy:** Po zapisie Server do bazy (postPersist)
+   - **Payload:** serverId, userId, pterodactylServerId, expiresAt
+   - **Zastosowanie:** Inicjalizacja dodatkowych tabel, tracking
+
+5. **ServerProductCreatedEvent** (post)
+   - **Kiedy:** Po zapisie ServerProduct do bazy
+   - **Payload:** serverProductId, serverId, productId
+   - **Zastosowanie:** Integracje, archiwizacja
+
+6. **ServerBalanceChargedEvent** (post-commit)
+   - **Kiedy:** Po odjęciu środków z portfela
+   - **Payload:** userId, oldBalance, newBalance, serverId, finalPrice, currency
+   - **Zastosowanie:** Accounting, invoicing, audit trail
+
+7. **ServerPurchaseCompletedEvent** (post-commit)
+   - **Kiedy:** Po całym procesie (email, logging)
+   - **Payload:** serverId, userId, productId, finalPrice
+   - **Zastosowanie:** Analytics, webhooks, CRM integracje, rewards
+
+**Flow:**
+```
+CreateServerService::createServer()
+  → Walidacja vouchera
+  → ServerPurchaseValidatedEvent
+  → ServerAboutToBeCreatedEvent (stoppable - może zatrzymać proces)
+  → createPterodactylServer()
+  → ServerCreatedOnPterodactylEvent
+  → createEntityServer() + persist
+  → ServerEntityCreatedEvent
+  → createEntityServerProduct()
+  → ServerProductCreatedEvent
+  → updateUserBalance()
+  → ServerBalanceChargedEvent
+  → Email + logging
+  → ServerPurchaseCompletedEvent
+```
+
+**Charakterystyka:**
+- ✅ **Pre/post pattern** dla operacji finansowych
+- ✅ **Stoppable event** - ServerAboutToBeCreatedEvent może zatrzymać proces
+- ✅ **Transakcyjność** - eventy emitowane w odpowiednich momentach
+- ✅ **Audit trail** - ServerBalanceChargedEvent zawiera pełne dane finansowe
+- ✅ **Multi-step process** - każdy krok ma swój event
+
+**Zastosowanie dla pluginów:**
+```php
+// Fraud Detection Plugin
+class FraudDetectionSubscriber implements EventSubscriberInterface
+{
+    public function onServerAboutToBeCreated(ServerAboutToBeCreatedEvent $event): void
+    {
+        if ($this->isSuspiciousUser($event->getUserId())) {
+            $event->stopPropagation();
+            throw new \Exception('Server creation blocked by fraud detection');
+        }
+    }
+}
+
+// Welcome Server Plugin
+class WelcomeServerSubscriber implements EventSubscriberInterface
+{
+    public function onServerPurchaseCompleted(ServerPurchaseCompletedEvent $event): void
+    {
+        if ($this->isFirstServer($event->getUserId())) {
+            $this->giveWelcomeBonus($event->getUserId());
+        }
+    }
+}
+```
+
+---
+
+---
+
+### ✅ Server Renewal (Przedłużenie Serwera)
+
+**Lokalizacja eventów:** `src/Core/Event/Server/`
+
+**Serwis:** `RenewServerService::renewServer()`
+
+**6 eventów domenowych:**
+
+1. **ServerRenewalValidatedEvent** (pre)
+   - **Kiedy:** Po walidacji vouchera, przed przedłużeniem
+   - **Payload:** userId, serverId, priceId, slots
+   - **Zastosowanie:** Fraud detection, custom walidacje
+
+2. **ServerAboutToBeRenewedEvent** (pre, stoppable)
+   - **Kiedy:** Przed setExpiresAt()
+   - **Payload:** userId, serverId, oldExpiresAt, newExpiresAt, slots
+   - **Zastosowanie:** Veto renewal (np. fraud detection), modyfikacja dat
+   - **Stoppable:** Tak - plugin może zatrzymać proces
+
+3. **ServerExpirationExtendedEvent** (post)
+   - **Kiedy:** Po setExpiresAt()
+   - **Payload:** serverId, userId, oldExpiresAt, newExpiresAt
+   - **Zastosowanie:** Tracking zmian dat wygaśnięcia, monitoring
+
+4. **ServerUnsuspendedEvent** (post, conditional)
+   - **Kiedy:** Po unsuspendServer() - tylko jeśli serwer był suspended
+   - **Payload:** serverId, userId, pterodactylServerId
+   - **Zastosowanie:** Monitoring unsuspend operations, integracje
+
+5. **ServerRenewalBalanceChargedEvent** (post-commit, conditional)
+   - **Kiedy:** Po odjęciu środków - tylko jeśli chargeBalance=true
+   - **Payload:** userId, oldBalance, newBalance, serverId, finalPrice, currency
+   - **Zastosowanie:** Accounting, invoicing, audit trail
+
+6. **ServerRenewalCompletedEvent** (post-commit)
+   - **Kiedy:** Po całym procesie (email, logging)
+   - **Payload:** serverId, userId, finalPrice, newExpiresAt
+   - **Zastosowanie:** Analytics, webhooks, CRM integracje
+
+**Flow:**
+```
+RenewServerService::renewServer()
+  → Walidacja vouchera
+  → ServerRenewalValidatedEvent
+  → Obliczanie nowej daty wygaśnięcia
+  → ServerAboutToBeRenewedEvent (stoppable - może zatrzymać proces)
+  → setExpiresAt()
+  → ServerExpirationExtendedEvent
+  → [JEŚLI suspended] unsuspendServer()
+  → [JEŚLI suspended] ServerUnsuspendedEvent
+  → [JEŚLI chargeBalance] updateUserBalance()
+  → [JEŚLI chargeBalance] ServerRenewalBalanceChargedEvent
+  → Email + logging
+  → ServerRenewalCompletedEvent
+```
+
+**Charakterystyka:**
+- ✅ **Conditional events** - ServerUnsuspendedEvent i ServerRenewalBalanceChargedEvent są warunkowe
+- ✅ **Pre/post pattern** dla operacji finansowych
+- ✅ **Stoppable event** - ServerAboutToBeRenewedEvent może zatrzymać proces
+- ✅ **ON_DEMAND support** - jeśli serwer offline, nie pobiera opłat (chargeBalance=false)
+- ✅ **Audit trail** - ServerRenewalBalanceChargedEvent zawiera pełne dane finansowe
+
+**Różnica od Server Purchase:**
+- ✅ Conditional events (unsuspend, balance charge)
+- ✅ Mniej eventów (6 vs 7) - brak ServerCreatedOnPterodactyl i ServerProduct events
+- ✅ ON_DEMAND pricing support - nie zawsze pobiera opłaty
+
+**Zastosowanie dla pluginów:**
+```php
+// Auto-renewal Discount Plugin
+class AutoRenewalDiscountSubscriber implements EventSubscriberInterface
+{
+    public function onServerRenewalValidated(ServerRenewalValidatedEvent $event): void
+    {
+        if ($this->hasAutoRenewal($event->getServerId())) {
+            // Plugin może modyfikować cenę w ServerRenewalBalanceChargedEvent
+        }
+    }
+}
+
+// Loyalty Rewards Plugin
+class LoyaltyRewardsSubscriber implements EventSubscriberInterface
+{
+    public function onServerRenewalCompleted(ServerRenewalCompletedEvent $event): void
+    {
+        $renewCount = $this->getRenewalCount($event->getServerId());
+        if ($renewCount % 10 === 0) {
+            $this->giveLoyaltyBonus($event->getUserId());
+        }
+    }
+}
+```
+
+---
+
+---
+
 ### Kolejne Procesy do Migracji
 
 - [ ] Admin Overview (OverviewController)
 - [ ] Dodanie FormBuildEvent i ViewDataEvent do pozostałych formularzy i kontrolerów
-- [ ] Tworzenie serwera
-- [ ] Płatności
 - [ ] Zarządzanie użytkownikami
 - [ ] Zarządzanie serwerami
 

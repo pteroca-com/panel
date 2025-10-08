@@ -18,8 +18,8 @@ abstract class AbstractActionServerService
         private readonly UserRepository $userRepository,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly VoucherPaymentService $voucherPaymentService,
-        private readonly ProductPriceCalculatorService $productPriceCalculatorService,
-        private readonly TranslatorInterface $translator,
+        protected readonly ProductPriceCalculatorService $productPriceCalculatorService,
+        protected readonly TranslatorInterface $translator,
         private readonly LoggerInterface $logger,
     ) {}
 
