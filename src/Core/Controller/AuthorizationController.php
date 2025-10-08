@@ -11,15 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class AuthorizationController extends AbstractController
 {
     use EventContextTrait;
+
     #[Route(path: '/login', name: 'app_login')]
     public function login(
         AuthenticationUtils $authenticationUtils,
-        EventDispatcherInterface $eventDispatcher,
         Request $request,
     ): Response
     {
@@ -31,8 +30,7 @@ class AuthorizationController extends AbstractController
         $context = $this->buildEventContext($request);
 
         // Emit UserLoginRequestedEvent
-        $loginRequestedEvent = new UserLoginRequestedEvent($context);
-        $eventDispatcher->dispatch($loginRequestedEvent);
+        $this->dispatchEvent(new UserLoginRequestedEvent($context));
 
         // Utwórz formularz logowania
         $form = $this->createForm(LoginFormType::class);
@@ -57,10 +55,9 @@ class AuthorizationController extends AbstractController
         ];
         
         // Emit ViewDataEvent dla pluginów
-        $viewEvent = new ViewDataEvent('login', $viewData, null, $context);
-        $eventDispatcher->dispatch($viewEvent);
+        $viewEvent = $this->dispatchEvent(new ViewDataEvent('login', $viewData, null, $context));
 
-        return $this->render('panel/login/login.html.twig', 
+        return $this->render('panel/login/login.html.twig',
             $viewEvent->getViewData()
         );
     }

@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Core\Service\Mailer\EmailVerificationService;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Core\Service\Authorization\RegistrationService;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -24,12 +23,11 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 class RegistrationController extends AbstractController
 {
     use EventContextTrait;
-    
+
     public function __construct(
         private readonly RegistrationService $registrationService,
         private readonly TranslatorInterface $translator,
         private readonly EmailVerificationService $emailVerificationService,
-        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     #[Route('/register', name: 'app_register')]
@@ -67,8 +65,7 @@ class RegistrationController extends AbstractController
             $context = $this->buildMinimalEventContext($request);
 
             // Emit FormSubmitEvent dla pluginów
-            $submitEvent = new FormSubmitEvent('registration', $formData, $context);
-            $this->eventDispatcher->dispatch($submitEvent);
+            $submitEvent = $this->dispatchEvent(new FormSubmitEvent('registration', $formData, $context));
             
             if ($submitEvent->isPropagationStopped()) {
                 // Plugin zatrzymał submit
@@ -105,10 +102,9 @@ class RegistrationController extends AbstractController
         $context = $this->buildMinimalEventContext($request);
 
         // Emit ViewDataEvent dla pluginów
-        $viewEvent = new ViewDataEvent('registration', $viewData, null, $context);
-        $this->eventDispatcher->dispatch($viewEvent);
+        $viewEvent = $this->dispatchEvent(new ViewDataEvent('registration', $viewData, null, $context));
 
-        return $this->render('panel/registration/register.html.twig', 
+        return $this->render('panel/registration/register.html.twig',
             $viewEvent->getViewData()
         );
     }

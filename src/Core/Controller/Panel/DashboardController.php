@@ -44,7 +44,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DashboardController extends AbstractDashboardController
@@ -60,7 +59,6 @@ class DashboardController extends AbstractDashboardController
         private readonly SystemVersionService $systemVersionService,
         private readonly TemplateManager $templateManager,
         private readonly ServerService $serverService,
-        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
     ) {}
 
@@ -73,12 +71,11 @@ class DashboardController extends AbstractDashboardController
         // Buduj context dla eventów
         $context = $this->buildNullableEventContext($request);
 
-        $dashboardAccessedEvent = new DashboardAccessedEvent(
+        $this->dispatchEvent(new DashboardAccessedEvent(
             $user->getId(),
             $user->getRoles(),
             $context
-        );
-        $this->eventDispatcher->dispatch($dashboardAccessedEvent);
+        ));
         
         // Pobieranie danych
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
@@ -89,14 +86,13 @@ class DashboardController extends AbstractDashboardController
         $motdMessage = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_MESSAGE->value);
         
         // Emit DashboardDataLoadedEvent
-        $dashboardDataLoadedEvent = new DashboardDataLoadedEvent(
+        $this->dispatchEvent(new DashboardDataLoadedEvent(
             $user->getId(),
             count($servers),
             count($logs),
             (bool)$motdEnabled,
             $context
-        );
-        $this->eventDispatcher->dispatch($dashboardDataLoadedEvent);
+        ));
 
         // Przygotuj dane widoku
         $viewData = [
@@ -110,10 +106,9 @@ class DashboardController extends AbstractDashboardController
         ];
         
         // Emit ViewDataEvent dla pluginów
-        $viewEvent = new ViewDataEvent('dashboard', $viewData, $user, $context);
-        $this->eventDispatcher->dispatch($viewEvent);
+        $viewEvent = $this->dispatchEvent(new ViewDataEvent('dashboard', $viewData, $user, $context));
 
-        return $this->render('panel/dashboard/dashboard.html.twig', 
+        return $this->render('panel/dashboard/dashboard.html.twig',
             $viewEvent->getViewData()
         );
     }

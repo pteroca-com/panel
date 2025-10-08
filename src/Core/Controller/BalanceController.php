@@ -16,17 +16,16 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BalanceController extends AbstractController
 {
     use EventContextTrait;
+
     public function __construct(
         private readonly PaymentService $paymentService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
-        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -40,12 +39,11 @@ class BalanceController extends AbstractController
         $context = $this->buildMinimalEventContext($request);
 
         // 1. Emit BalanceRechargePageAccessedEvent
-        $accessedEvent = new BalanceRechargePageAccessedEvent(
+        $this->dispatchEvent(new BalanceRechargePageAccessedEvent(
             $this->getUser()->getId(),
             $this->getUser()->getBalance(),
             $context
-        );
-        $this->eventDispatcher->dispatch($accessedEvent);
+        ));
 
         $currency = $this->settingService
             ->getSetting(SettingEnum::CURRENCY_NAME->value);
@@ -64,20 +62,18 @@ class BalanceController extends AbstractController
             ]);
         
         // Emit FormBuildEvent dla pluginów
-        $formBuildEvent = new FormBuildEvent($formBuilder, 'balance_recharge', $context);
-        $this->eventDispatcher->dispatch($formBuildEvent);
+        $this->dispatchEvent(new FormBuildEvent($formBuilder, 'balance_recharge', $context));
         
         $form = $formBuilder->getForm();
         $form->handleRequest($request);
         
         // 2. Emit BalanceRechargeFormDataLoadedEvent
-        $dataLoadedEvent = new BalanceRechargeFormDataLoadedEvent(
+        $this->dispatchEvent(new BalanceRechargeFormDataLoadedEvent(
             $this->getUser()->getId(),
             $this->getUser()->getBalance(),
             $currency,
             $context
-        );
-        $this->eventDispatcher->dispatch($dataLoadedEvent);
+        ));
         
         // 3. Przygotuj dane widoku
         $viewData = [
@@ -86,13 +82,12 @@ class BalanceController extends AbstractController
         ];
         
         // 4. Emit ViewDataEvent
-        $viewEvent = new ViewDataEvent(
+        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
             'balance_recharge',
             $viewData,
             $this->getUser(),
             $context
-        );
-        $this->eventDispatcher->dispatch($viewEvent);
+        ));
 
         return $this->render('panel/wallet/recharge.html.twig', $viewEvent->getViewData());
     }
@@ -108,13 +103,12 @@ class BalanceController extends AbstractController
         $context = $this->buildMinimalEventContext($request);
 
         // 1. Emit BalancePaymentCallbackAccessedEvent
-        $callbackEvent = new BalancePaymentCallbackAccessedEvent(
+        $this->dispatchEvent(new BalancePaymentCallbackAccessedEvent(
             $this->getUser()->getId(),
             $sessionId,
             'success',
             $context
-        );
-        $this->eventDispatcher->dispatch($callbackEvent);
+        ));
         
         if (empty($sessionId)) {
             $this->addFlash('danger', $this->translator->trans('pteroca.recharge.invalid_session_id'));
@@ -142,13 +136,12 @@ class BalanceController extends AbstractController
         $context = $this->buildMinimalEventContext($request);
 
         // Emit BalancePaymentCallbackAccessedEvent
-        $callbackEvent = new BalancePaymentCallbackAccessedEvent(
+        $this->dispatchEvent(new BalancePaymentCallbackAccessedEvent(
             $this->getUser()->getId(),
             null,
             'cancel',
             $context
-        );
-        $this->eventDispatcher->dispatch($callbackEvent);
+        ));
         
         $this->addFlash('danger', $this->translator->trans('pteroca.recharge.payment_canceled'));
 
