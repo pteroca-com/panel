@@ -10,6 +10,7 @@ use App\Core\Event\Form\FormBuildEvent;
 use App\Core\Event\View\ViewDataEvent;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\SettingService;
+use App\Core\Trait\EventContextTrait;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BalanceController extends AbstractController
 {
+    use EventContextTrait;
     public function __construct(
         private readonly PaymentService $paymentService,
         private readonly SettingService $settingService,
@@ -33,13 +35,10 @@ class BalanceController extends AbstractController
         Request $request,
     ): Response {
         $this->checkPermission();
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
+
         // 1. Emit BalanceRechargePageAccessedEvent
         $accessedEvent = new BalanceRechargePageAccessedEvent(
             $this->getUser()->getId(),
@@ -102,15 +101,12 @@ class BalanceController extends AbstractController
     public function success(Request $request): Response
     {
         $this->checkPermission();
-        
+
         $sessionId = $request->query->get('session_id');
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
+
         // 1. Emit BalancePaymentCallbackAccessedEvent
         $callbackEvent = new BalancePaymentCallbackAccessedEvent(
             $this->getUser()->getId(),
@@ -141,13 +137,10 @@ class BalanceController extends AbstractController
     public function cancel(Request $request): Response
     {
         $this->checkPermission();
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
+
         // Emit BalancePaymentCallbackAccessedEvent
         $callbackEvent = new BalancePaymentCallbackAccessedEvent(
             $this->getUser()->getId(),

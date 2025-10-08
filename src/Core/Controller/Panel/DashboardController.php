@@ -32,6 +32,7 @@ use App\Core\Service\Server\ServerService;
 use App\Core\Service\SettingService;
 use App\Core\Service\System\SystemVersionService;
 use App\Core\Service\Template\TemplateManager;
+use App\Core\Trait\EventContextTrait;
 use App\Core\Trait\GetUserTrait;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -49,6 +50,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DashboardController extends AbstractDashboardController
 {
     use GetUserTrait;
+    use EventContextTrait;
 
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -67,14 +69,10 @@ class DashboardController extends AbstractDashboardController
     {
         $user = $this->getUser();
         $request = $this->requestStack->getCurrentRequest();
-        
-        // Emit DashboardAccessedEvent
-        $context = [
-            'ip' => $request?->getClientIp(),
-            'userAgent' => $request?->headers->get('User-Agent'),
-            'locale' => $request?->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildNullableEventContext($request);
+
         $dashboardAccessedEvent = new DashboardAccessedEvent(
             $user->getId(),
             $user->getRoles(),

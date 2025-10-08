@@ -46,7 +46,7 @@ class CreateServerService extends AbstractActionServerService
         private readonly ServerProductPriceRepository $serverProductPriceRepository,
         private readonly LogService $logService,
         private readonly VoucherPaymentService $voucherPaymentService,
-        private readonly TranslatorInterface $translator,
+        TranslatorInterface $translator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly SettingService $settingService,
         UserRepository $userRepository,

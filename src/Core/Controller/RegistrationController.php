@@ -8,6 +8,7 @@ use App\Core\Event\Form\FormSubmitEvent;
 use App\Core\Event\View\ViewDataEvent;
 use App\Core\Form\RegistrationFormType;
 use App\Core\Enum\EmailVerificationValueEnum;
+use App\Core\Trait\EventContextTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,6 +23,8 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class RegistrationController extends AbstractController
 {
+    use EventContextTrait;
+    
     public function __construct(
         private readonly RegistrationService $registrationService,
         private readonly TranslatorInterface $translator,
@@ -59,13 +62,10 @@ class RegistrationController extends AbstractController
                     $formData[$fieldName] = $field->getData();
                 }
             }
-            
-            $context = [
-                'ip' => $request->getClientIp(),
-                'userAgent' => $request->headers->get('User-Agent'),
-                'locale' => $request->getLocale(),
-            ];
-            
+
+            // Buduj context dla eventów
+            $context = $this->buildMinimalEventContext($request);
+
             // Emit FormSubmitEvent dla pluginów
             $submitEvent = new FormSubmitEvent('registration', $formData, $context);
             $this->eventDispatcher->dispatch($submitEvent);
@@ -100,13 +100,10 @@ class RegistrationController extends AbstractController
             'registrationForm' => $form->createView(),
             'errors' => $registrationErrors ?? [],
         ];
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
+
         // Emit ViewDataEvent dla pluginów
         $viewEvent = new ViewDataEvent('registration', $viewData, null, $context);
         $this->eventDispatcher->dispatch($viewEvent);

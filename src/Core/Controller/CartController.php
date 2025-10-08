@@ -25,6 +25,7 @@ use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\SettingService;
 use App\Core\Service\StoreService;
+use App\Core\Trait\EventContextTrait;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +35,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CartController extends AbstractController
 {
+    use EventContextTrait;
     public function __construct(
         private readonly StoreService $storeService,
         private readonly ServerRepository $serverRepository,
@@ -55,12 +57,9 @@ class CartController extends AbstractController
             ? $request->request->all()
             : $request->query->all();
         $currency = $settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
 
         if (
             empty($requestPayload['currency'])
@@ -146,13 +145,10 @@ class CartController extends AbstractController
     public function configure(Request $request): Response
     {
         $product = $this->getProductByRequest($request);
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
+
         // 1. Emit CartConfigurePageAccessedEvent
         $accessedEvent = new CartConfigurePageAccessedEvent(
             $this->getUser()->getId(),
@@ -213,13 +209,10 @@ class CartController extends AbstractController
         $serverName = $request->request->getString('server-name');
         $autoRenewal = $request->request->getBoolean('auto-renewal');
         $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
+
         // 1. Emit CartBuyRequestedEvent
         $buyRequestedEvent = new CartBuyRequestedEvent(
             $this->getUser()->getId(),
@@ -273,13 +266,10 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
+
         // 1. Emit CartRenewPageAccessedEvent
         $accessedEvent = new CartRenewPageAccessedEvent(
             $this->getUser()->getId(),
@@ -335,14 +325,11 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
-        
+
         $voucherCode = $request->request->getString('voucher');
-        
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
+
+        // Buduj context dla eventów
+        $context = $this->buildMinimalEventContext($request);
 
         try {
             $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
