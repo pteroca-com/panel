@@ -3,6 +3,7 @@
 namespace App\Core\Form;
 
 use App\Core\Event\Form\FormBuildEvent;
+use App\Core\Service\Event\EventContextService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -19,6 +20,7 @@ class LoginFormType extends AbstractType
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
+        private readonly EventContextService $eventContextService,
     ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -59,14 +61,9 @@ class LoginFormType extends AbstractType
             ])
         ;
 
-        // Emit FormBuildEvent dla pluginów
         $request = $this->requestStack->getCurrentRequest();
-        $context = [
-            'ip' => $request?->getClientIp(),
-            'userAgent' => $request?->headers->get('User-Agent'),
-            'locale' => $request?->getLocale(),
-        ];
-        
+        $context = $this->eventContextService->buildNullableContext($request);
+
         $event = new FormBuildEvent($builder, 'login', $context);
         $this->eventDispatcher->dispatch($event);
     }

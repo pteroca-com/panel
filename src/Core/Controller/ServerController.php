@@ -28,14 +28,11 @@ class ServerController extends AbstractController
         $this->checkPermission();
 
         $context = $this->buildMinimalEventContext($request);
-
-        // 1. Emit ServersListAccessedEvent
         $this->dispatchEvent(new ServersListAccessedEvent(
             $this->getUser()->getId(),
             $context
         ));
         
-        // Pobierz serwery
         $imagePath = $this->getParameter('products_base_path') . '/';
         $servers = array_map(function (Server $server) use ($imagePath) {
             if (!empty($server->getServerProduct()->getOriginalProduct()?->getImagePath())) {
@@ -44,7 +41,6 @@ class ServerController extends AbstractController
             return $server;
         }, $serverService->getServersWithAccess($this->getUser()));
 
-        // 2. Emit ServersListDataLoadedEvent
         $this->dispatchEvent(new ServersListDataLoadedEvent(
             $this->getUser()->getId(),
             $servers,
@@ -52,12 +48,10 @@ class ServerController extends AbstractController
             $context
         ));
         
-        // 3. Przygotuj dane widoku
         $viewData = [
             'servers' => $servers,
         ];
 
-        // 4. Emit ViewDataEvent (generyczny)
         $viewEvent = $this->dispatchEvent(new ViewDataEvent(
             'servers_list',
             $viewData,
@@ -65,7 +59,6 @@ class ServerController extends AbstractController
             $context
         ));
 
-        // 5. Render z danymi z ViewDataEvent (mogą być zmodyfikowane przez pluginy)
         return $this->render('panel/servers/servers.html.twig', $viewEvent->getViewData());
     }
 

@@ -118,7 +118,6 @@ class PaymentService
             return $this->translator->trans('pteroca.recharge.payment_not_found');
         }
         
-        // 1. Emit BalancePaymentValidatedEvent (pre)
         $validatedEvent = new BalancePaymentValidatedEvent(
             $user->getId(),
             $sessionId,
@@ -137,7 +136,6 @@ class PaymentService
             $oldBalance = $user->getBalance();
             $newBalance = $oldBalance + $amount;
             
-            // 2. Emit BalanceAboutToBeAddedEvent (pre, stoppable)
             $aboutToBeAddedEvent = new BalanceAboutToBeAddedEvent(
                 $user->getId(),
                 $amount,
@@ -151,14 +149,12 @@ class PaymentService
                     ?? $this->translator->trans('pteroca.recharge.payment_rejected_by_plugin');
             }
             
-            // Użyj zmodyfikowanej kwoty (plugin mógł dodać bonus)
             $finalAmount = $aboutToBeAddedEvent->getAmount();
             $finalNewBalance = $oldBalance + $finalAmount;
             
             $user->setBalance($finalNewBalance);
             $this->userRepository->save($user);
             
-            // 3. Emit BalanceAddedEvent (post-commit)
             $balanceAddedEvent = new BalanceAddedEvent(
                 $user->getId(),
                 $finalAmount,
@@ -200,7 +196,6 @@ class PaymentService
         $payment->setStatus($session->getPaymentStatus());
         $this->paymentRepository->save($payment);
         
-        // 4. Emit PaymentFinalizedEvent (post-commit)
         $paymentFinalizedEvent = new PaymentFinalizedEvent(
             $payment->getId(),
             $user->getId(),

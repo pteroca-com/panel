@@ -46,7 +46,6 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Przygotuj dane formularza dla pluginów
             $formData = [
                 'email' => $user->getEmail(),
                 'name' => $user->getName(),
@@ -54,24 +53,18 @@ class RegistrationController extends AbstractController
                 'plainPassword' => $form->get('plainPassword')->getData(),
             ];
             
-            // Dodaj pola unmapped (z pluginów)
             foreach ($form->all() as $fieldName => $field) {
                 if ($field->getConfig()->getOption('mapped') === false && $fieldName !== 'plainPassword') {
                     $formData[$fieldName] = $field->getData();
                 }
             }
 
-            // Buduj context dla eventów
             $context = $this->buildMinimalEventContext($request);
-
-            // Emit FormSubmitEvent dla pluginów
             $submitEvent = $this->dispatchEvent(new FormSubmitEvent('registration', $formData, $context));
             
             if ($submitEvent->isPropagationStopped()) {
-                // Plugin zatrzymał submit
                 $registrationErrors[] = $this->translator->trans('pteroca.register.plugin_validation_failed');
             } else {
-                // Kontynuuj rejestrację
                 $registerActionResult = $this->registrationService
                     ->registerUser($user, $submitEvent->getFormValue('plainPassword'));
 
@@ -92,16 +85,12 @@ class RegistrationController extends AbstractController
             $registrationErrors = array_map(fn ($error) => $error->getMessage(), iterator_to_array($errors));
         }
 
-        // Przygotuj dane widoku
         $viewData = [
             'registrationForm' => $form->createView(),
             'errors' => $registrationErrors ?? [],
         ];
 
-        // Buduj context dla eventów
         $context = $this->buildMinimalEventContext($request);
-
-        // Emit ViewDataEvent dla pluginów
         $viewEvent = $this->dispatchEvent(new ViewDataEvent('registration', $viewData, null, $context));
 
         return $this->render('panel/registration/register.html.twig',

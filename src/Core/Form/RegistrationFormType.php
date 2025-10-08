@@ -4,12 +4,14 @@ namespace App\Core\Form;
 
 use App\Core\Entity\User;
 use App\Core\Event\Form\FormBuildEvent;
+use App\Core\Service\Event\EventContextService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
@@ -23,6 +25,8 @@ class RegistrationFormType extends AbstractType
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly EventContextService $eventContextService,
+        private readonly RequestStack $requestStack,
     ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -129,12 +133,9 @@ class RegistrationFormType extends AbstractType
                 ],
             ]);
         
-        // Emit FormBuildEvent dla pluginów
-        $context = [
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
-            'userAgent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
-        ];
-        
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $this->eventContextService->buildNullableContext($request);
+
         $formBuildEvent = new FormBuildEvent($builder, 'registration', $context);
         $this->eventDispatcher->dispatch($formBuildEvent);
     }

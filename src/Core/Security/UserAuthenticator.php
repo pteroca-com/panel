@@ -6,6 +6,7 @@ use App\Core\Event\User\Authentication\UserLoginAttemptedEvent;
 use App\Core\Event\User\Authentication\UserLoginValidatedEvent;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Captcha\CaptchaService;
+use App\Core\Service\Event\EventContextService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,24 +38,18 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
         private readonly TranslatorInterface   $translator,
         private readonly UserRepository        $userRepository,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly EventContextService $eventContextService,
     ) {}
 
     public function authenticate(Request $request): Passport
     {
-        // Pobierz dane z formularza - może być w 'login_form[email]' lub 'email'
         $formData = $request->request->all();
         $email = $formData['login_form']['email'] ?? $request->request->get('email', '');
         $password = $formData['login_form']['password'] ?? $request->request->get('password', '');
         $csrfToken = $formData['login_form']['_token'] ?? $request->request->get('_csrf_token', '');
         $recaptchaResponse = $request->request->getString('g-recaptcha-response');
 
-        // Emit UserLoginAttemptedEvent
-        $context = [
-            'ip' => $request->getClientIp(),
-            'userAgent' => $request->headers->get('User-Agent'),
-            'locale' => $request->getLocale(),
-        ];
-        
+        $context = $this->eventContextService->buildMinimalContext($request);
         $loginAttemptedEvent = new UserLoginAttemptedEvent($email, $context);
         $this->eventDispatcher->dispatch($loginAttemptedEvent);
 
@@ -73,7 +68,6 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             }
         }
 
-        // Emit UserLoginValidatedEvent (po walidacjach, przed sprawdzeniem hasła)
         if (!empty($user)) {
             $loginValidatedEvent = new UserLoginValidatedEvent($email, $user->getId(), $context);
             $this->eventDispatcher->dispatch($loginValidatedEvent);

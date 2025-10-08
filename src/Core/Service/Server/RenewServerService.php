@@ -65,7 +65,6 @@ class RenewServerService extends AbstractActionServerService
         
         $selectedPrice = $server->getServerProduct()->getSelectedPrice();
         
-        // 1. Emit ServerRenewalValidatedEvent (po walidacji vouchera)
         $validatedEvent = new ServerRenewalValidatedEvent(
             $user->getId(),
             $server->getId(),
