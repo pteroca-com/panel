@@ -4,33 +4,76 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Event\Server\ServersListAccessedEvent;
+use App\Core\Event\Server\ServersListDataLoadedEvent;
+use App\Core\Event\View\ViewDataEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ServerController extends AbstractController
 {
     #[Route('/servers', name: 'servers')]
     public function servers(
+        Request $request,
         ServerService $serverService,
+        EventDispatcherInterface $eventDispatcher,
     ): Response
     {
         $this->checkPermission();
+        
+        // Context dla eventów
+        $context = [
+            'ip' => $request->getClientIp(),
+            'userAgent' => $request->headers->get('User-Agent'),
+            'locale' => $request->getLocale(),
+        ];
+        
+        // 1. Emit ServersListAccessedEvent
+        $accessedEvent = new ServersListAccessedEvent(
+            $this->getUser()->getId(),
+            $context
+        );
+        $eventDispatcher->dispatch($accessedEvent);
+        
+        // Pobierz serwery
         $imagePath = $this->getParameter('products_base_path') . '/';
-
         $servers = array_map(function (Server $server) use ($imagePath) {
             if (!empty($server->getServerProduct()->getOriginalProduct()?->getImagePath())) {
                 $server->imagePath = $imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath();
             }
             return $server;
         }, $serverService->getServersWithAccess($this->getUser()));
-
-        return $this->render('panel/servers/servers.html.twig', [
+        
+        // 2. Emit ServersListDataLoadedEvent
+        $dataLoadedEvent = new ServersListDataLoadedEvent(
+            $this->getUser()->getId(),
+            $servers,
+            count($servers),
+            $context
+        );
+        $eventDispatcher->dispatch($dataLoadedEvent);
+        
+        // 3. Przygotuj dane widoku
+        $viewData = [
             'servers' => $servers,
-        ]);
+        ];
+        
+        // 4. Emit ViewDataEvent (generyczny)
+        $viewEvent = new ViewDataEvent(
+            'servers_list',
+            $viewData,
+            $this->getUser(),
+            $context
+        );
+        $eventDispatcher->dispatch($viewEvent);
+        
+        // 5. Render z danymi z ViewDataEvent (mogą być zmodyfikowane przez pluginy)
+        return $this->render('panel/servers/servers.html.twig', $viewEvent->getViewData());
     }
 
     #[Route('/server', name: 'server')]

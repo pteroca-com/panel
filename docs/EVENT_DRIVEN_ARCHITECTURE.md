@@ -629,6 +629,45 @@ class MyPluginDashboardSubscriber implements EventSubscriberInterface
 
 ---
 
+---
+
+### ✅ My Servers (Lista Serwerów Użytkownika)
+
+**Lokalizacja eventów:** `src/Core/Event/Server/`
+
+**Eventy:**
+1. `ServersListAccessedEvent` (post) - wejście na stronę `/servers`
+2. `ServersListDataLoadedEvent` (post) - po załadowaniu listy serwerów
+
+**Subscriber:** Brak - eventy są emitowane tylko dla pluginów
+
+**Flow:**
+```
+GET /servers
+  → ServersListAccessedEvent
+  → Pobieranie serwerów użytkownika (ServerService::getServersWithAccess)
+  → Dodawanie ścieżek do obrazków produktów
+  → ServersListDataLoadedEvent (payload: servers, serversCount)
+  → ViewDataEvent (viewName='servers_list')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics i tracking odwiedzin strony serwerów (przez pluginy)
+- Monitoring użycia - ile serwerów użytkownik ma (przez pluginy)
+- Performance tracking ładowania listy (przez pluginy)
+- Pluginy mogą dodać custom widgets/statystyki do widoku
+- Pluginy mogą modyfikować dane serwerów przed wyświetleniem
+
+**Charakterystyka:**
+- Minimalistyczne podejście (tylko 2 eventy domenowe + ViewDataEvent)
+- Read-only view - brak operacji zapisu
+- Brak built-in subscriberów - tylko dla pluginów
+- Fokus na rozszerzalność przez pluginy
+- Spójność z DashboardAccessedEvent/DashboardDataLoadedEvent
+
+---
+
 ### Kolejne Procesy do Migracji
 
 - [ ] Admin Overview (OverviewController)
