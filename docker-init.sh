@@ -16,7 +16,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! docker compose version &> /dev/null; then
     echo "❌ Error: Docker Compose is not installed!"
     echo ""
     echo "Please install Docker Compose first:"
@@ -170,7 +170,7 @@ if [ -z "$DB_VOLUME_EXISTS" ] || [ ! -f ".env" ]; then
                 ;;
             3)
                 echo "ℹ️  Installation cancelled - keeping existing .env"
-                echo "   You can manually run: docker-compose -f $COMPOSE_FILE up -d"
+                echo "   You can manually run: docker compose -f $COMPOSE_FILE up -d"
                 exit 0
                 ;;
             *)
@@ -216,7 +216,7 @@ if grep -q "APP_SECRET=$" .env; then
 fi
 
 echo "🏗️  Building containers..."
-docker-compose -f $COMPOSE_FILE build
+docker compose -f $COMPOSE_FILE build
 
 # Set environment variables for docker-compose
 export MYSQL_PASSWORD=$DB_PASSWORD
@@ -225,20 +225,16 @@ export DATABASE_URL="mysql://user:$DB_PASSWORD@db:3306/pteroca?serverVersion=8.0
 
 echo "🚀 Starting environment..."
 if [ "$ENVIRONMENT" = "dev" ]; then
-    docker-compose -f $COMPOSE_FILE up -d db phpmyadmin
+    docker compose -f $COMPOSE_FILE up -d db phpmyadmin
 else
-    docker-compose -f $COMPOSE_FILE up -d db
+    docker compose -f $COMPOSE_FILE up -d db
 fi
 
 echo "⏳ Waiting for database to be ready..."
 sleep 10
 
 echo "🌐 Starting web server (with automatic migrations)..."
-docker-compose -f $COMPOSE_FILE up -d web
-
-echo "🔧 Setting proper permissions..."
-docker-compose -f "$COMPOSE_FILE" exec web chown -R www-data:www-data /app/var /app/public/uploads 2>/dev/null || true
-docker-compose -f "$COMPOSE_FILE" exec web chmod -R 775 /app/var /app/public/uploads 2>/dev/null || true
+docker compose -f $COMPOSE_FILE up -d web
 
 echo "✅ Environment ready!"
 echo "🌐 Web application: http://localhost:$WEB_PORT"
@@ -249,9 +245,9 @@ echo "   - Password: $DB_PASSWORD"
 echo "🌍 Timezone: inherited from host"
 echo ""
 echo "📝 Usage:"
-echo "   Stop: docker-compose -f $COMPOSE_FILE down"
-echo "   Logs: docker-compose -f $COMPOSE_FILE logs -f"
-echo "   Restart: docker-compose -f $COMPOSE_FILE restart"
+echo "   Stop: docker compose -f $COMPOSE_FILE down"
+echo "   Logs: docker compose -f $COMPOSE_FILE logs -f"
+echo "   Restart: docker compose -f $COMPOSE_FILE restart"
 echo ""
 if [ "$ENVIRONMENT" = "dev" ]; then
     echo "🧪 PHPMyAdmin: http://localhost:8080"
@@ -274,6 +270,6 @@ echo "   🔄 Command: php /app/bin/console app:cron-job-schedule"
 echo ""
 echo "🎯 Next steps to complete installation:"
 echo "   Option 1: Web wizard installer at http://localhost:$WEB_PORT/first-configuration"
-echo "   Option 2: CLI command: docker-compose -f $COMPOSE_FILE exec web php bin/console app:configure-system"
+echo "   Option 2: CLI command: docker compose -f $COMPOSE_FILE exec web php bin/console app:configure-system"
 echo ""
 echo "🎉 Installation complete! Visit the web wizard to finalize setup."
