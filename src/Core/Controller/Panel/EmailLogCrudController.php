@@ -12,10 +12,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EmailLogCrudController extends AbstractPanelController
@@ -36,16 +36,20 @@ class EmailLogCrudController extends AbstractPanelController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('emailType', $this->translator->trans('pteroca.crud.email_log.email_type'))
+            ChoiceField::new('emailType', $this->translator->trans('pteroca.crud.email_log.email_type'))
+                ->setChoices(array_combine(
+                    array_map(fn($case) => $this->translator->trans('pteroca.email_types.' . $case->value), EmailTypeEnum::cases()),
+                    EmailTypeEnum::cases()
+                ))
                 ->setDisabled()
-                ->formatValue(fn ($value) => $this->translator->trans('pteroca.email_types.' . strtolower($value))),
+                ->renderAsBadges(),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.email_log.user'))
                 ->setDisabled(),
             AssociationField::new('server', $this->translator->trans('pteroca.crud.email_log.server'))
                 ->setDisabled(),
             CodeEditorField::new('metadata', $this->translator->trans('pteroca.crud.email_log.metadata'))
                 ->setDisabled()
-                ->formatValue(fn ($value) => $value === '[]' || empty($value) ? '' : json_encode(json_decode($value), JSON_PRETTY_PRINT)),
+                ->formatValue(fn ($value) => empty($value) ? '' : json_encode($value, JSON_PRETTY_PRINT)),
             DateTimeField::new('sentAt', $this->translator->trans('pteroca.crud.email_log.sent_at'))
                 ->setDisabled(),
         ];
