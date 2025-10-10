@@ -36,8 +36,6 @@ class ComposerOperationService
             $isDev ? '' : '--no-dev'
         );
 
-        dd($composerCommand);
-
         exec($composerCommand, $output, $returnCode);
         if ($returnCode !== 0) {
             $outputString = implode("\n", $output);
