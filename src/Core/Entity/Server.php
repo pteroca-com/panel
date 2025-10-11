@@ -22,6 +22,9 @@ class Server
     #[ORM\Column(type: 'string')]
     private string $pterodactylServerIdentifier;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $name = null;
+
     #[ORM\OneToOne(targetEntity: ServerProduct::class, mappedBy: 'server', cascade: ['persist', 'remove'])]
     private ServerProduct $serverProduct;
 
@@ -74,6 +77,17 @@ class Server
     public function setPterodactylServerIdentifier(string $pterodactylServerIdentifier): self
     {
         $this->pterodactylServerIdentifier = $pterodactylServerIdentifier;
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
         return $this;
     }
 
