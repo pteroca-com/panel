@@ -35,10 +35,13 @@ COPY . .
 
 # Install dependencies
 ARG APP_ENV=prod
+ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN if [ "$APP_ENV" = "dev" ]; then \
-        composer install --optimize-autoloader --no-interaction --no-scripts; \
+        composer install --optimize-autoloader --no-interaction --no-scripts && \
+        composer dump-autoload --optimize --classmap-authoritative; \
     else \
-        composer install --no-dev --optimize-autoloader --no-interaction --no-scripts; \
+        composer install --no-dev --optimize-autoloader --no-interaction --no-scripts && \
+        composer dump-autoload --optimize --no-dev --classmap-authoritative; \
     fi
 
 # Configure Nginx
@@ -60,10 +63,9 @@ RUN echo "* * * * * www-data php /app/bin/console app:cron-job-schedule >> /dev/
 # Set permissions
 RUN chown -R www-data:www-data /app \
     && chmod -R 755 /app \
-    && chmod -R 777 var/ \
-    && mkdir -p public/uploads \
-    && chown -R www-data:www-data public/uploads \
-    && chmod -R 775 public/uploads
+    && mkdir -p var public/uploads \
+    && chown -R www-data:www-data var public/uploads \
+    && chmod -R 775 var public/uploads
 
 # Expose port
 EXPOSE 80

@@ -22,7 +22,7 @@
                                     <i class="fas fa-server text-primary fs-5"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1 fw-bold">{{ server.serverProduct.name }} #{{ server.getPterodactylServerIdentifier }}</h6>
+                                    <h6 class="mb-1 fw-bold">{{ server.name ?: server.serverProduct.name }} #{{ server.getPterodactylServerIdentifier }}</h6>
                                     <div class="d-flex align-items-center">
                                         {% if not server.isSuspended %}
                                             <span class="badge badge-success me-2">{{ 'pteroca.servers.active'|trans }}</span>

@@ -1,5 +1,24 @@
 # Changelog
 
+--
+
+## [0.5.10] - 2025-10-12
+
+### Added
+- Added automatic Docker installation script - available at [pteroca.com/scripts/docker_installer.sh](https://pteroca.com/scripts/docker_installer.sh).  
+- Integrated Docker-based installation method into daily automated test runs to ensure long-term reliability and prevent future breakages.  
+
+### Changed
+- Updated entire installation documentation section to reflect new Docker setup method.  
+- Improved updater process - enhanced dependency installation handling via Composer and improved permission management during updates.  
+- Updated `README.md` with latest setup and contribution instructions.  
+
+### Fixed
+- Fixed server name display - the user-defined server name is now shown consistently across the panel.  
+- Fixed special character escaping in the Egg Manager.  
+- Fixed Docker architecture - installation via Docker now works flawlessly.  
+- Fixed HTTP 500 error occurring when viewing email logs with non-empty metadata in Email Log CRUD.  
+
 ---
 
 ## [0.5.9] - 2025-10-05
