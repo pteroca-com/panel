@@ -245,6 +245,15 @@
             return table.outerHTML;
         }
 
+        function escAttr(s) {
+            return String(s ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;');
+        }
+
         function getInputName(eggId, variableId, name) {
             let inputName = `eggs_configuration[${eggId}]`;
             if (variableId && isNaN(variableId) === false) {
@@ -260,7 +269,8 @@
             if (options) {
                 return createSelect(value, eggId, options, name);
             }
-            return `<input type="text" value="${value}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control" onchange="saveEggsConfigurationToHiddenField()">`;
+            const v = escAttr(value);
+            return `<input type="text" value="${v}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control" onchange="saveEggsConfigurationToHiddenField()">`;
         }
 
         function createCheckbox(checked, eggId, variableId, name) {
@@ -277,11 +287,13 @@
         function createSelect(value, eggId, options, name) {
             let select = `<select name="${getInputName(eggId, 'docker_image', name)}" class="form-control" style="font-size: 14px;" onchange="saveEggsConfigurationToHiddenField()">`;
             for (const [key, option] of Object.entries(options)) {
-                select += `<option value="${option}" ${value === key ? 'selected' : ''}>${option}</option>`;
+                const optVal = escAttr(option);
+                const selected = (value === key) ? 'selected' : '';
+                select += `<option value="${optVal}" ${selected}>${optVal}</option>`;
             }
             select += '</select>';
             return select;
-        }
+        }   
 
         function hasSlotPrices() {
             let slotPricesContainer = document.querySelector('#Product_slotPrices');
