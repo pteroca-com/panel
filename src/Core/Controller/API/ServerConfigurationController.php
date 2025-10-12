@@ -102,6 +102,11 @@ class ServerConfigurationController extends APIAbstractController
             $variableData['value'] ?? null,
         );
 
+        $serverConfigurationDetailsService->updateServerEntityName(
+            $server, 
+            $variableData['key'],
+        );
+
         $this->serverLogService->logServerAction(
             $this->getUser(),
             $server,

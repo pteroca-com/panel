@@ -55,6 +55,10 @@ class ServerCrudController extends AbstractPanelController
                 ->onlyOnForms(),
             TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
                 ->setDisabled(),
+            TextField::new('name', $this->translator->trans('pteroca.crud.server.name'))
+                ->formatValue(function ($value, Server $entity) {
+                    return $value ?: $entity->getServerProduct()->getName();
+                }),
             AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product_server_build'))
                 ->setDisabled(),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user'))
@@ -66,7 +70,7 @@ class ServerCrudController extends AbstractPanelController
                 ->hideOnIndex(),
 
             NumberField::new('serverProduct.diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
-                ->onlyOnIndex(),
+                ->onlyOnDetail(),
             NumberField::new('serverProduct.memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
                 ->onlyOnIndex(),
             NumberField::new('serverProduct.io', $this->translator->trans('pteroca.crud.product.io'))
