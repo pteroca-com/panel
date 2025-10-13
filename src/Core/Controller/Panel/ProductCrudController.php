@@ -44,14 +44,14 @@ class ProductCrudController extends AbstractPanelController
 
     public function __construct(
         PanelCrudService $panelCrudService,
+        RequestStack $requestStack,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
-        private readonly RequestStack $requestStack,
         private readonly ProductCopyService $productCopyService,
         private readonly AdminUrlGenerator $adminUrlGenerator,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
     }
 
     public static function getEntityFqcn(): string

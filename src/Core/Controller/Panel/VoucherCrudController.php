@@ -21,15 +21,17 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 
 class VoucherCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
+        RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
     }
 
     public static function getEntityFqcn(): string

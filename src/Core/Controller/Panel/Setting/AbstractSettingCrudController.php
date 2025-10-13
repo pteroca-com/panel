@@ -43,14 +43,14 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
 
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly RequestStack $requestStack,
+        RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingRepository $settingRepository,
         private readonly SettingOptionRepository $settingOptionRepository,
         private readonly SettingService $settingService,
         private readonly LocaleService $localeService,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
         $this->currentEntity = $this->getSettingEntity();
     }
 

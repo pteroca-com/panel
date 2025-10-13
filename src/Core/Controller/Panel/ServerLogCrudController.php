@@ -17,14 +17,16 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ServerLogCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
+        RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
     }
 
     public static function getEntityFqcn(): string

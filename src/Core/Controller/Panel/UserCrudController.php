@@ -25,6 +25,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use App\Core\Exception\PterodactylUserNotFoundException;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -34,11 +35,12 @@ class UserCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
+        RequestStack $requestStack,
         private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
         private readonly LogService $logService,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
     }
 
     public static function getEntityFqcn(): string

@@ -9,6 +9,9 @@ use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\PaymentStatusEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Event\Payment\PaymentContinueFailedEvent;
+use App\Core\Event\Payment\PaymentContinuedEvent;
+use App\Core\Event\Payment\PaymentContinueRequestedEvent;
 use App\Core\Exception\PaymentExpiredException;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Payment\PaymentService;
@@ -27,17 +30,19 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserPaymentCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
+        RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingService $settingService,
         private readonly PaymentService $paymentService,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
     }
 
     public static function getEntityFqcn(): string
@@ -52,9 +57,47 @@ class UserPaymentCrudController extends AbstractPanelController
             throw new \Exception('Invalid entity type');
         }
 
+        $request = $context->getRequest();
+        $eventContext = $this->buildMinimalEventContext($request);
+
+        // Dispatch PaymentContinueRequestedEvent
+        $requestedEvent = new PaymentContinueRequestedEvent(
+            $entity,
+            $this->getUser(),
+            $eventContext
+        );
+        $requestedEvent = $this->dispatchEvent($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $this->addFlash('danger', $this->translator->trans('pteroca.crud.payment.continue_blocked'));
+            return $this->redirectToRoute('panel', [
+                'crudAction' => 'index',
+                'crudControllerFqcn' => self::class,
+            ]);
+        }
+
         try {
             $continuePaymentUrl = $this->paymentService->continuePayment($entity->getSessionId());
+
+            // Dispatch PaymentContinuedEvent
+            $continuedEvent = new PaymentContinuedEvent(
+                $entity,
+                $continuePaymentUrl,
+                $this->getUser(),
+                $eventContext
+            );
+            $this->dispatchEvent($continuedEvent);
+
         } catch (PaymentExpiredException $e) {
+            // Dispatch PaymentContinueFailedEvent
+            $failedEvent = new PaymentContinueFailedEvent(
+                $entity,
+                $e->getMessage(),
+                $this->getUser(),
+                $eventContext
+            );
+            $this->dispatchEvent($failedEvent);
+
             $this->addFlash('danger', $e->getMessage());
             return $this->redirectToRoute('panel', [
                 'crudAction' => 'index',

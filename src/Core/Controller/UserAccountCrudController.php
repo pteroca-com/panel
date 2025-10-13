@@ -6,6 +6,9 @@ use App\Core\Controller\Panel\AbstractPanelController;
 use App\Core\Entity\Panel\UserAccount;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Event\User\Account\PterodactylAccountSyncedEvent;
+use App\Core\Event\User\Account\UserAccountUpdateRequestedEvent;
+use App\Core\Event\User\Account\UserAccountUpdatedEvent;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -34,8 +38,9 @@ class UserAccountCrudController extends AbstractPanelController
         private readonly TranslatorInterface $translator,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         PanelCrudService $panelCrudService,
+        RequestStack $requestStack,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
     }
 
     public static function getEntityFqcn(): string
@@ -143,6 +148,10 @@ class UserAccountCrudController extends AbstractPanelController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof UserAccount) {
+            // Pobierz request i zbuduj context
+            $request = $this->container->get('request_stack')->getCurrentRequest();
+            $eventContext = $request ? $this->buildMinimalEventContext($request) : [];
+
             // Sprawdź, czy hasła się zgadzają
             if ($entityInstance->getPlainPassword() && $entityInstance->getRepeatPassword()) {
                 if ($entityInstance->getPlainPassword() !== $entityInstance->getRepeatPassword()) {
@@ -150,9 +159,25 @@ class UserAccountCrudController extends AbstractPanelController
                 }
             }
 
-            if ($plainPassword = $entityInstance->getPlainPassword()) {
+            $plainPassword = $entityInstance->getPlainPassword();
+
+            // Dispatch UserAccountUpdateRequestedEvent
+            $updateRequestedEvent = new UserAccountUpdateRequestedEvent(
+                $entityInstance,
+                $plainPassword,
+                $eventContext
+            );
+            $updateRequestedEvent = $this->dispatchEvent($updateRequestedEvent);
+
+            if ($updateRequestedEvent->isPropagationStopped()) {
+                throw new \RuntimeException($this->translator->trans('pteroca.crud.user.update_blocked'));
+            }
+
+            $passwordWasChanged = false;
+            if ($plainPassword) {
                 $hashedPassword = $this->passwordHasher->hashPassword($entityInstance, $plainPassword);
                 $entityInstance->setPassword($hashedPassword);
+                $passwordWasChanged = true;
             }
 
             $pterodactylAccount = $this->pterodactylApplicationService
@@ -176,10 +201,30 @@ class UserAccountCrudController extends AbstractPanelController
                         $entityInstance->getPterodactylUserId(),
                         $pterodactylAccountDetails
                     );
-            }
-        }
 
-        parent::updateEntity($entityManager, $entityInstance);
+                // Dispatch PterodactylAccountSyncedEvent
+                $pterodactylSyncedEvent = new PterodactylAccountSyncedEvent(
+                    $entityInstance,
+                    $entityInstance->getPterodactylUserId(),
+                    $plainPassword !== null,
+                    $eventContext
+                );
+                $this->dispatchEvent($pterodactylSyncedEvent);
+            }
+
+            // Call parent to handle the CrudEntity events
+            parent::updateEntity($entityManager, $entityInstance);
+
+            // Dispatch UserAccountUpdatedEvent
+            $accountUpdatedEvent = new UserAccountUpdatedEvent(
+                $entityInstance,
+                $passwordWasChanged,
+                $eventContext
+            );
+            $this->dispatchEvent($accountUpdatedEvent);
+        } else {
+            parent::updateEntity($entityManager, $entityInstance);
+        }
     }
 
     private function validateAccount(AdminContext $context)

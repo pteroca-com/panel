@@ -24,6 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ServerCrudController extends AbstractPanelController
 {
@@ -32,12 +33,13 @@ class ServerCrudController extends AbstractPanelController
 
     public function __construct(
         PanelCrudService $panelCrudService,
+        RequestStack $requestStack,
         private readonly UpdateServerService $updateServerService,
         private readonly DeleteServerService $deleteServerService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
     ) {
-        parent::__construct($panelCrudService);
+        parent::__construct($panelCrudService, $requestStack);
     }
 
     public static function getEntityFqcn(): string
