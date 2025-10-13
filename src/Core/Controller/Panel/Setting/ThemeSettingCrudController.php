@@ -31,7 +31,7 @@ class ThemeSettingCrudController extends AbstractSettingCrudController
 
     public function __construct(
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         SettingRepository $settingRepository,
         SettingOptionRepository $settingOptionRepository,
         SettingService $settingService,

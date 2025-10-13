@@ -35,7 +35,7 @@ class UserCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
         private readonly LogService $logService,

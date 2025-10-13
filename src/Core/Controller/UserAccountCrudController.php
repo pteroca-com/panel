@@ -38,7 +38,7 @@ class UserAccountCrudController extends AbstractPanelController
         private readonly TranslatorInterface $translator,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -119,7 +119,7 @@ class UserAccountCrudController extends AbstractPanelController
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
-        $queryBuilder->where('entity.email = :email');
+        $queryBuilder->andWhere('entity.email = :email');
         $queryBuilder->setParameter('email', $this->getUser()->getEmail());
 
         return $queryBuilder;

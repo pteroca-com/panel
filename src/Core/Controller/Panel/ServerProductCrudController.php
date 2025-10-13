@@ -50,7 +50,7 @@ class ServerProductCrudController extends AbstractPanelController
 
     public function __construct(
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly UpdateServerService $updateServerService,
         private readonly SettingService $settingService,

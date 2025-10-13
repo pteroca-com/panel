@@ -24,7 +24,7 @@ class CategoryCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($panelCrudService, $requestStack);

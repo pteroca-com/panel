@@ -37,7 +37,7 @@ class UserPaymentCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingService $settingService,
         private readonly PaymentService $paymentService,
@@ -194,7 +194,7 @@ class UserPaymentCrudController extends AbstractPanelController
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
-        $queryBuilder->where('entity.user = :user');
+        $queryBuilder->andWhere('entity.user = :user');
         $queryBuilder->setParameter('user', $this->getUser());
 
         return $queryBuilder;

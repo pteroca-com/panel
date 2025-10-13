@@ -22,7 +22,7 @@ class EmailSettingCrudController extends AbstractSettingCrudController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingRepository $settingRepository,
         SettingOptionRepository $settingOptionRepository,

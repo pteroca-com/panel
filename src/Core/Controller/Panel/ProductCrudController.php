@@ -44,7 +44,7 @@ class ProductCrudController extends AbstractPanelController
 
     public function __construct(
         PanelCrudService $panelCrudService,
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
