@@ -3,12 +3,11 @@
 namespace App\Core\Controller;
 
 use App\Core\Entity\User;
-use App\Core\Contract\UserInterface;
-use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\ViewNameEnum;
-use App\Core\Event\Form\FormSubmitEvent;
+use App\Core\Contract\UserInterface;
 use App\Core\Form\RegistrationFormType;
-use App\Core\Trait\EventContextTrait;
+use App\Core\Event\Form\FormSubmitEvent;
+use App\Core\Enum\EmailVerificationValueEnum;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,9 +18,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
-class RegistrationController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
+class RegistrationController extends AbstractController
 {
-    use EventContextTrait;
 
     public function __construct(
         private readonly RegistrationService $registrationService,

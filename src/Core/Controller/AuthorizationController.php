@@ -5,8 +5,6 @@ namespace App\Core\Controller;
 use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\User\Authentication\UserLoginRequestedEvent;
 use App\Core\Form\LoginFormType;
-use App\Core\Trait\EventContextTrait;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,8 +12,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AuthorizationController extends AbstractController
 {
-    use EventContextTrait;
-
     #[Route(path: '/login', name: 'app_login')]
     public function login(
         AuthenticationUtils $authenticationUtils,

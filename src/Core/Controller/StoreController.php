@@ -17,7 +17,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreController extends AbstractController
 {
-
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly StoreService $storeService,
