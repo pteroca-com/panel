@@ -2,15 +2,14 @@
 
 namespace App\Core\Controller;
 
+use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\Store\StoreAccessedEvent;
 use App\Core\Event\Store\StoreDataLoadedEvent;
 use App\Core\Event\Store\StoreCategoryAccessedEvent;
 use App\Core\Event\Store\StoreCategoryDataLoadedEvent;
 use App\Core\Event\Store\StoreProductViewedEvent;
 use App\Core\Event\Store\StoreProductDataLoadedEvent;
-use App\Core\Event\View\ViewDataEvent;
 use App\Core\Service\StoreService;
-use App\Core\Trait\EventContextTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,7 +17,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreController extends AbstractController
 {
-    use EventContextTrait;
 
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -30,37 +28,23 @@ class StoreController extends AbstractController
     {
         $this->checkPermission();
 
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new StoreAccessedEvent(
-            $this->getUser()?->getId(),
-            $context
-        ));
+        $this->dispatchSimpleEvent(StoreAccessedEvent::class, $request);
 
         $categories = $this->storeService->getCategories();
         $products = $this->storeService->getCategoryProducts();
 
-        $this->dispatchEvent(new StoreDataLoadedEvent(
-            $this->getUser()?->getId(),
-            $categories,
-            $products,
-            count($categories),
-            count($products),
-            $context
-        ));
+        $this->dispatchDataEvent(
+            StoreDataLoadedEvent::class,
+            $request,
+            [$categories, $products, count($categories), count($products)]
+        );
 
         $viewData = [
             'categories' => $categories,
             'products' => $products,
         ];
 
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'store_index',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
-
-        return $this->render('panel/store/index.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::STORE_INDEX, 'panel/store/index.html.twig', $viewData, $request);
     }
 
     #[Route('/store/category', name: 'store_category')]
@@ -69,43 +53,31 @@ class StoreController extends AbstractController
         $this->checkPermission();
         $categoryId = $request->query->getInt('id');
 
-        $context = $this->buildMinimalEventContext($request);
-
         $category = $this->storeService->getCategory($categoryId);
         if (empty($category)) {
             throw $this->createNotFoundException($this->translator->trans('pteroca.store.category_not_found'));
         }
 
-        $this->dispatchEvent(new StoreCategoryAccessedEvent(
-            $this->getUser()?->getId(),
-            $categoryId,
-            $category->getName(),
-            $context
-        ));
+        $this->dispatchDataEvent(
+            StoreCategoryAccessedEvent::class,
+            $request,
+            [$categoryId, $category->getName()]
+        );
 
         $products = $this->storeService->getCategoryProducts($category);
 
-        $this->dispatchEvent(new StoreCategoryDataLoadedEvent(
-            $this->getUser()?->getId(),
-            $categoryId,
-            $products,
-            count($products),
-            $context
-        ));
+        $this->dispatchDataEvent(
+            StoreCategoryDataLoadedEvent::class,
+            $request,
+            [$categoryId, $products, count($products)]
+        );
 
         $viewData = [
             'category' => $category,
             'products' => $products,
         ];
 
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'store_category',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
-
-        return $this->render('panel/store/list.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::STORE_CATEGORY, 'panel/store/list.html.twig', $viewData, $request);
     }
 
     #[Route('/store/product', name: 'store_product')]
@@ -114,7 +86,6 @@ class StoreController extends AbstractController
         $this->checkPermission();
 
         $productId = $request->query->getInt('id');
-        $context = $this->buildMinimalEventContext($request);
         $product = $this->storeService->getActiveProduct($productId);
 
         if (empty($product)) {
@@ -122,36 +93,24 @@ class StoreController extends AbstractController
         }
 
         $product = $this->storeService->prepareProduct($product);
-        $this->dispatchEvent(new StoreProductViewedEvent(
-            $this->getUser()?->getId(),
-            $productId,
-            $product->getName(),
-            $product->getPrices(),
-            $context
-        ));
+        $this->dispatchDataEvent(
+            StoreProductViewedEvent::class,
+            $request,
+            [$productId, $product->getName(), $product->getPrices()]
+        );
 
         $preparedEggs = $this->storeService->getProductEggs($product);
-        $this->dispatchEvent(new StoreProductDataLoadedEvent(
-            $this->getUser()?->getId(),
-            $productId,
-            $product,
-            $preparedEggs,
-            count($preparedEggs),
-            $context
-        ));
+        $this->dispatchDataEvent(
+            StoreProductDataLoadedEvent::class,
+            $request,
+            [$productId, $product, $preparedEggs, count($preparedEggs)]
+        );
 
         $viewData = [
             'product' => $product,
             'eggs' => $preparedEggs,
         ];
 
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'store_product',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
-
-        return $this->render('panel/store/product.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::STORE_PRODUCT, 'panel/store/product.html.twig', $viewData, $request);
     }
 }

@@ -23,9 +23,9 @@ use App\Core\Entity\VoucherUsage;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\Dashboard\DashboardAccessedEvent;
 use App\Core\Event\Dashboard\DashboardDataLoadedEvent;
-use App\Core\Event\View\ViewDataEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\ServerService;
@@ -68,27 +68,24 @@ class DashboardController extends AbstractDashboardController
         $user = $this->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
-        $context = $this->buildNullableEventContext($request);
-        $this->dispatchEvent(new DashboardAccessedEvent(
-            $user->getId(),
-            $user->getRoles(),
-            $context
-        ));
-        
+        $this->dispatchDataEvent(
+            DashboardAccessedEvent::class,
+            $request,
+            [$user->getRoles()]
+        );
+
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
         $servers = $this->serverService->getServersWithAccess($user);
         $logs = $this->logService->getLogsByUser($user, 5);
         $motdEnabled = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value);
         $motdTitle = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_TITLE->value);
         $motdMessage = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_MESSAGE->value);
-        
-        $this->dispatchEvent(new DashboardDataLoadedEvent(
-            $user->getId(),
-            count($servers),
-            count($logs),
-            (bool)$motdEnabled,
-            $context
-        ));
+
+        $this->dispatchDataEvent(
+            DashboardDataLoadedEvent::class,
+            $request,
+            [count($servers), count($logs), (bool)$motdEnabled]
+        );
 
         $viewData = [
             'servers' => $servers,
@@ -99,12 +96,10 @@ class DashboardController extends AbstractDashboardController
             'motdMessage' => $motdMessage,
             'pterodactylPanelUrl' => $pterodactylPanelUrl,
         ];
-        
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent('dashboard', $viewData, $user, $context));
 
-        return $this->render('panel/dashboard/dashboard.html.twig',
-            $viewEvent->getViewData()
-        );
+        $viewEvent = $this->prepareViewDataEvent(ViewNameEnum::DASHBOARD, $viewData, $request);
+
+        return $this->render('panel/dashboard/dashboard.html.twig', $viewEvent->getViewData());
     }
 
     public function configureDashboard(): Dashboard

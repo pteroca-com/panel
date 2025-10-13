@@ -2,8 +2,11 @@
 
 namespace App\Core\Trait;
 
-use App\Core\Service\Event\EventContextService;
+use App\Core\Enum\ViewNameEnum;
+use App\Core\Event\View\ViewDataEvent;
 use Symfony\Component\HttpFoundation\Request;
+use App\Core\Service\Event\EventContextService;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 trait EventContextTrait
@@ -11,13 +14,13 @@ trait EventContextTrait
     private ?EventContextService $eventContextService = null;
     private ?EventDispatcherInterface $eventDispatcher = null;
 
-    #[\Symfony\Contracts\Service\Attribute\Required]
+    #[Required]
     public function setEventContextService(EventContextService $eventContextService): void
     {
         $this->eventContextService = $eventContextService;
     }
 
-    #[\Symfony\Contracts\Service\Attribute\Required]
+    #[Required]
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->eventDispatcher = $eventDispatcher;
@@ -41,6 +44,64 @@ trait EventContextTrait
     protected function dispatchEvent(object $event): object
     {
         return $this->getEventDispatcher()->dispatch($event);
+    }
+
+    protected function dispatchSimpleEvent(
+        string $eventClass,
+        Request $request,
+    ): object {
+        $context = $this->buildMinimalEventContext($request);
+
+        return $this->dispatchEvent(
+            new $eventClass(
+                $this->getUser()?->getId(),
+                $context
+            )
+        );
+    }
+
+    protected function dispatchDataEvent(
+        string $eventClass,
+        Request $request,
+        array $eventData
+    ): object {
+        $context = $this->buildMinimalEventContext($request);
+
+        return $this->dispatchEvent(
+            new $eventClass(
+                $this->getUser()?->getId(),
+                ...array_merge($eventData, [$context])
+            )
+        );
+    }
+
+    protected function dispatchContextEvent(
+        string $eventClass,
+        Request $request
+    ): object {
+        $context = $this->buildMinimalEventContext($request);
+
+        return $this->dispatchEvent(
+            new $eventClass($context)
+        );
+    }
+
+    protected function prepareViewDataEvent(
+        ViewNameEnum $viewName,
+        array $viewData,
+        Request $request
+    ): ViewDataEvent
+    {
+        $context = $this->buildMinimalEventContext($request);
+
+        $viewEvent = new ViewDataEvent(
+            $viewName->value,
+            $viewData,
+            $this->getUser(),
+            $context
+        );
+
+        return $this->dispatchEvent($viewEvent);
     }
 
     private function getEventContextService(): EventContextService

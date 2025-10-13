@@ -4,20 +4,18 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\Server\ServersListAccessedEvent;
 use App\Core\Event\Server\ServersListDataLoadedEvent;
-use App\Core\Event\View\ViewDataEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
-use App\Core\Trait\EventContextTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ServerController extends AbstractController
 {
-    use EventContextTrait;
 
     #[Route('/servers', name: 'servers')]
     public function servers(
@@ -27,12 +25,8 @@ class ServerController extends AbstractController
     {
         $this->checkPermission();
 
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new ServersListAccessedEvent(
-            $this->getUser()->getId(),
-            $context
-        ));
-        
+        $this->dispatchSimpleEvent(ServersListAccessedEvent::class, $request);
+
         $imagePath = $this->getParameter('products_base_path') . '/';
         $servers = array_map(function (Server $server) use ($imagePath) {
             if (!empty($server->getServerProduct()->getOriginalProduct()?->getImagePath())) {
@@ -41,25 +35,17 @@ class ServerController extends AbstractController
             return $server;
         }, $serverService->getServersWithAccess($this->getUser()));
 
-        $this->dispatchEvent(new ServersListDataLoadedEvent(
-            $this->getUser()->getId(),
-            $servers,
-            count($servers),
-            $context
-        ));
-        
+        $this->dispatchDataEvent(
+            ServersListDataLoadedEvent::class,
+            $request,
+            [$servers, count($servers)]
+        );
+
         $viewData = [
             'servers' => $servers,
         ];
 
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'servers_list',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
-
-        return $this->render('panel/servers/servers.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::SERVERS_LIST, 'panel/servers/servers.html.twig', $viewData, $request);
     }
 
     #[Route('/server', name: 'server')]

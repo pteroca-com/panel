@@ -4,10 +4,10 @@ namespace App\Core\Controller;
 
 use App\Core\Entity\User;
 use App\Core\Contract\UserInterface;
-use App\Core\Event\Form\FormSubmitEvent;
-use App\Core\Event\View\ViewDataEvent;
-use App\Core\Form\RegistrationFormType;
 use App\Core\Enum\EmailVerificationValueEnum;
+use App\Core\Enum\ViewNameEnum;
+use App\Core\Event\Form\FormSubmitEvent;
+use App\Core\Form\RegistrationFormType;
 use App\Core\Trait\EventContextTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,11 +16,10 @@ use App\Core\Service\Mailer\EmailVerificationService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Core\Service\Authorization\RegistrationService;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
-class RegistrationController extends AbstractController
+class RegistrationController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
     use EventContextTrait;
 
@@ -90,12 +89,7 @@ class RegistrationController extends AbstractController
             'errors' => $registrationErrors ?? [],
         ];
 
-        $context = $this->buildMinimalEventContext($request);
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent('registration', $viewData, null, $context));
-
-        return $this->render('panel/registration/register.html.twig',
-            $viewEvent->getViewData()
-        );
+        return $this->renderWithEvent(ViewNameEnum::REGISTRATION, 'panel/registration/register.html.twig', $viewData, $request);
     }
 
     #[Route('/verify-email', name: 'app_verify_email')]

@@ -3,14 +3,13 @@
 namespace App\Core\Controller;
 
 use App\Core\Enum\SettingEnum;
+use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\Balance\BalanceRechargePageAccessedEvent;
 use App\Core\Event\Balance\BalanceRechargeFormDataLoadedEvent;
 use App\Core\Event\Balance\BalancePaymentCallbackAccessedEvent;
 use App\Core\Event\Form\FormBuildEvent;
-use App\Core\Event\View\ViewDataEvent;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\SettingService;
-use App\Core\Trait\EventContextTrait;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +19,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BalanceController extends AbstractController
 {
-    use EventContextTrait;
 
     public function __construct(
         private readonly PaymentService $paymentService,
@@ -35,12 +33,11 @@ class BalanceController extends AbstractController
     ): Response {
         $this->checkPermission();
 
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new BalanceRechargePageAccessedEvent(
-            $this->getUser()->getId(),
-            $this->getUser()->getBalance(),
-            $context
-        ));
+        $this->dispatchDataEvent(
+            BalanceRechargePageAccessedEvent::class,
+            $request,
+            [$this->getUser()->getBalance()]
+        );
 
         $currency = $this->settingService
             ->getSetting(SettingEnum::CURRENCY_NAME->value);
@@ -57,32 +54,25 @@ class BalanceController extends AbstractController
             ->add('currency', HiddenType::class, [
                 'data' => $currency,
             ]);
-        
+
+        $context = $this->buildMinimalEventContext($request);
         $this->dispatchEvent(new FormBuildEvent($formBuilder, 'balance_recharge', $context));
-        
+
         $form = $formBuilder->getForm();
         $form->handleRequest($request);
-        
-        $this->dispatchEvent(new BalanceRechargeFormDataLoadedEvent(
-            $this->getUser()->getId(),
-            $this->getUser()->getBalance(),
-            $currency,
-            $context
-        ));
-        
+
+        $this->dispatchDataEvent(
+            BalanceRechargeFormDataLoadedEvent::class,
+            $request,
+            [$this->getUser()->getBalance(), $currency]
+        );
+
         $viewData = [
             'form' => $form->createView(),
             'balance' => $this->getUser()->getBalance(),
         ];
-        
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'balance_recharge',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
 
-        return $this->render('panel/wallet/recharge.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::BALANCE_RECHARGE, 'panel/wallet/recharge.html.twig', $viewData, $request);
     }
 
     #[Route('/wallet/recharge/success', name: 'stripe_success')]
@@ -92,14 +82,12 @@ class BalanceController extends AbstractController
 
         $sessionId = $request->query->get('session_id');
 
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new BalancePaymentCallbackAccessedEvent(
-            $this->getUser()->getId(),
-            $sessionId,
-            'success',
-            $context
-        ));
-        
+        $this->dispatchDataEvent(
+            BalancePaymentCallbackAccessedEvent::class,
+            $request,
+            [$sessionId, 'success']
+        );
+
         if (empty($sessionId)) {
             $this->addFlash('danger', $this->translator->trans('pteroca.recharge.invalid_session_id'));
             return $this->redirectToRechargeBalance();
@@ -121,14 +109,12 @@ class BalanceController extends AbstractController
     {
         $this->checkPermission();
 
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new BalancePaymentCallbackAccessedEvent(
-            $this->getUser()->getId(),
-            null,
-            'cancel',
-            $context
-        ));
-        
+        $this->dispatchDataEvent(
+            BalancePaymentCallbackAccessedEvent::class,
+            $request,
+            [null, 'cancel']
+        );
+
         $this->addFlash('danger', $this->translator->trans('pteroca.recharge.payment_canceled'));
 
         return $this->redirectToRechargeBalance();

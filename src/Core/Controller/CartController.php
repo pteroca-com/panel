@@ -7,6 +7,7 @@ use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\Cart\CartTopUpPageAccessedEvent;
 use App\Core\Event\Cart\CartTopUpDataLoadedEvent;
 use App\Core\Event\Cart\CartPaymentRedirectEvent;
@@ -16,7 +17,6 @@ use App\Core\Event\Cart\CartBuyRequestedEvent;
 use App\Core\Event\Cart\CartRenewPageAccessedEvent;
 use App\Core\Event\Cart\CartRenewDataLoadedEvent;
 use App\Core\Event\Cart\CartRenewBuyRequestedEvent;
-use App\Core\Event\View\ViewDataEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Payment\PaymentService;
@@ -25,7 +25,6 @@ use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\SettingService;
 use App\Core\Service\StoreService;
-use App\Core\Trait\EventContextTrait;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +33,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CartController extends AbstractController
 {
-    use EventContextTrait;
 
     public function __construct(
         private readonly StoreService $storeService,
@@ -56,7 +54,6 @@ class CartController extends AbstractController
             ? $request->request->all()
             : $request->query->all();
         $currency = $settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
-        $context = $this->buildMinimalEventContext($request);
         $isRequestInvalid = empty($requestPayload['currency'])
             || empty($requestPayload['amount'])
             || strtolower($currency) !== strtolower($requestPayload['currency']);
@@ -68,13 +65,12 @@ class CartController extends AbstractController
                 'routeName' => 'recharge_balance',
             ]);
         }
-        
-        $this->dispatchEvent(new CartTopUpPageAccessedEvent(
-            $this->getUser()->getId(),
-            $amount,
-            $currency,
-            $context
-        ));
+
+        $this->dispatchDataEvent(
+            CartTopUpPageAccessedEvent::class,
+            $request,
+            [$amount, $currency]
+        );
 
         if ($request->isMethod('POST')) {
             try {
@@ -86,40 +82,30 @@ class CartController extends AbstractController
                     $this->generateUrl('stripe_success', [], 0) . '?session_id={CHECKOUT_SESSION_ID}',
                     $this->generateUrl('stripe_cancel', [], 0)
                 );
-                
-                $this->dispatchEvent(new CartPaymentRedirectEvent(
-                    $this->getUser()->getId(),
-                    $amount,
-                    $currency,
-                    $paymentUrl,
-                    $context
-                ));
+
+                $this->dispatchDataEvent(
+                    CartPaymentRedirectEvent::class,
+                    $request,
+                    [$amount, $currency, $paymentUrl]
+                );
 
                 return $this->redirect($paymentUrl);
             } catch (\Exception $exception) {
                 $this->addFlash('danger', $exception->getMessage());
             }
         } else {
-            $this->dispatchEvent(new CartTopUpDataLoadedEvent(
-                $this->getUser()->getId(),
-                $amount,
-                $currency,
-                $context
-            ));
+            $this->dispatchDataEvent(
+                CartTopUpDataLoadedEvent::class,
+                $request,
+                [$amount, $currency]
+            );
         }
         
         $viewData = [
             'request' => $requestPayload,
         ];
-        
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'cart_topup',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
 
-        return $this->render('panel/cart/topup.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::CART_TOPUP, 'panel/cart/topup.html.twig', $viewData, $request);
     }
 
     #[Route('/cart/configure', name: 'cart_configure')]
@@ -127,26 +113,22 @@ class CartController extends AbstractController
     {
         $product = $this->getProductByRequest($request);
 
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new CartConfigurePageAccessedEvent(
-            $this->getUser()->getId(),
-            $product->getId(),
-            $product->getName(),
-            $context
-        ));
-        
+        $this->dispatchDataEvent(
+            CartConfigurePageAccessedEvent::class,
+            $request,
+            [$product->getId(), $product->getName()]
+        );
+
         $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
         $preparedEggs = $this->storeService->getProductEggs($product);
         $requestData = $request->query->all();
-    
-        $this->dispatchEvent(new CartConfigureDataLoadedEvent(
-            $this->getUser()->getId(),
-            $product->getId(),
-            $preparedEggs,
-            $hasSlotPrices,
-            $context
-        ));
-        
+
+        $this->dispatchDataEvent(
+            CartConfigureDataLoadedEvent::class,
+            $request,
+            [$product->getId(), $preparedEggs, $hasSlotPrices]
+        );
+
         $viewData = [
             'product' => $product,
             'eggs' => $preparedEggs,
@@ -155,15 +137,8 @@ class CartController extends AbstractController
             'hasSlotPrices' => $hasSlotPrices,
             'initialSlots' => $requestData['slots'] ?? null,
         ];
-        
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'cart_configure',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
 
-        return $this->render('panel/cart/configure.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::CART_CONFIGURE, 'panel/cart/configure.html.twig', $viewData, $request);
     }
 
     #[Route('/cart/buy', name: 'cart_buy', methods: ['POST'])]
@@ -181,17 +156,11 @@ class CartController extends AbstractController
         $autoRenewal = $request->request->getBoolean('auto-renewal');
         $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
 
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new CartBuyRequestedEvent(
-            $this->getUser()->getId(),
-            $product->getId(),
-            $eggId,
-            $priceId,
-            $serverName,
-            $autoRenewal,
-            $slots,
-            $context
-        ));
+        $this->dispatchDataEvent(
+            CartBuyRequestedEvent::class,
+            $request,
+            [$product->getId(), $eggId, $priceId, $serverName, $autoRenewal, $slots]
+        );
 
         try {
             $this->storeService->validateBoughtProduct(
@@ -232,46 +201,34 @@ class CartController extends AbstractController
     ): Response
     {
         $server = $this->getServerByRequest($request);
-        
-        $context = $this->buildMinimalEventContext($request);
-        $this->dispatchEvent(new CartRenewPageAccessedEvent(
-            $this->getUser()->getId(),
-            $server->getId(),
-            $server->getServerProduct()->getName(),
-            $context
-        ));
-        
+
+        $this->dispatchDataEvent(
+            CartRenewPageAccessedEvent::class,
+            $request,
+            [$server->getId(), $server->getServerProduct()->getName()]
+        );
+
         $isOwner = $server->getUser() === $this->getUser();
         $hasSlotPrices = $this->serverSlotPricingService->hasSlotPricing($server);
 
         if ($hasSlotPrices) {
             $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
         }
-        
-        $this->dispatchEvent(new CartRenewDataLoadedEvent(
-            $this->getUser()->getId(),
-            $server->getId(),
-            $isOwner,
-            $hasSlotPrices,
-            $serverSlots ?? null,
-            $context
-        ));
-        
+
+        $this->dispatchDataEvent(
+            CartRenewDataLoadedEvent::class,
+            $request,
+            [$server->getId(), $isOwner, $hasSlotPrices, $serverSlots ?? null]
+        );
+
         $viewData = [
             'server' => $server,
             'isOwner' => $isOwner,
             'hasSlotPrices' => $hasSlotPrices,
             'serverSlots' => $serverSlots ?? null,
         ];
-        
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent(
-            'cart_renew',
-            $viewData,
-            $this->getUser(),
-            $context
-        ));
 
-        return $this->render('panel/cart/renew.html.twig', $viewEvent->getViewData());
+        return $this->renderWithEvent(ViewNameEnum::CART_RENEW, 'panel/cart/renew.html.twig', $viewData, $request);
     }
 
     #[Route('/cart/renew/buy', name: 'cart_renew_buy', methods: ['POST'])]
@@ -283,21 +240,18 @@ class CartController extends AbstractController
     {
         $server = $this->getServerByRequest($request);
         $voucherCode = $request->request->getString('voucher');
-        $context = $this->buildMinimalEventContext($request);
 
         try {
             $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
             if ($hasActiveSlotPricing) {
                 $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
             }
-            
-            $this->dispatchEvent(new CartRenewBuyRequestedEvent(
-                $this->getUser()->getId(),
-                $server->getId(),
-                $voucherCode ?: null,
-                $serverSlots ?? null,
-                $context
-            ));
+
+            $this->dispatchDataEvent(
+                CartRenewBuyRequestedEvent::class,
+                $request,
+                [$server->getId(), $voucherCode ?: null, $serverSlots ?? null]
+            );
 
             $this->storeService->validateBoughtProduct(
                 $server->getServerProduct(),

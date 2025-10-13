@@ -2,8 +2,8 @@
 
 namespace App\Core\Controller;
 
+use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\User\Authentication\UserLoginRequestedEvent;
-use App\Core\Event\View\ViewDataEvent;
 use App\Core\Form\LoginFormType;
 use App\Core\Trait\EventContextTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,8 +26,7 @@ class AuthorizationController extends AbstractController
              return $this->redirectToRoute('panel');
          }
 
-        $context = $this->buildEventContext($request);
-        $this->dispatchEvent(new UserLoginRequestedEvent($context));
+        $this->dispatchContextEvent(UserLoginRequestedEvent::class, $request);
 
         $form = $this->createForm(LoginFormType::class);
         
@@ -46,12 +45,8 @@ class AuthorizationController extends AbstractController
             'forgot_password_enabled' => true,
             'forgot_password_path' => $this->generateUrl('app_forgot_password_request'),
         ];
-        
-        $viewEvent = $this->dispatchEvent(new ViewDataEvent('login', $viewData, null, $context));
 
-        return $this->render('panel/login/login.html.twig',
-            $viewEvent->getViewData()
-        );
+        return $this->renderWithEvent(ViewNameEnum::LOGIN, 'panel/login/login.html.twig', $viewData, $request);
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
