@@ -310,7 +310,8 @@ Przy testowaniu procesów z eventami:
 4. `UserAuthenticationSuccessfulEvent` (post) - po udanej autentykacji
 5. `UserLoggedInEvent` (post-commit) - po utworzeniu sesji
 6. `UserAuthenticationFailedEvent` (error) - nieudane logowanie
-7. `UserLoggedOutEvent` (post) - wylogowanie
+7. `UserLogoutRequestedEvent` (pre) - żądanie wylogowania
+8. `UserLoggedOutEvent` (post) - wylogowanie
 
 **Listener:** `AuthenticationEventListener` - nasłuchuje na Symfony Security events  
 **Subscriber:** `UserAuthenticationSubscriber` - logging
@@ -326,14 +327,21 @@ POST /login
   → User validation (deleted/blocked)
   → UserLoginValidatedEvent
   → Symfony Security sprawdza hasło
-  
+
   Jeśli SUCCESS:
     → UserAuthenticationSuccessfulEvent (via AuthenticationEventListener)
     → Symfony tworzy sesję
     → UserLoggedInEvent (via AuthenticationEventListener)
-    
+
   Jeśli FAILURE:
     → UserAuthenticationFailedEvent (via AuthenticationEventListener)
+
+GET /logout
+  → Symfony Security przechwytuje request
+  → UserLogoutRequestedEvent (via AuthenticationEventListener)
+  → LogService loguje LOGOUT
+  → UserLoggedOutEvent (via AuthenticationEventListener)
+  → Symfony niszczy sesję
 ```
 
 ---
@@ -1274,6 +1282,49 @@ class LoyaltyRewardsSubscriber implements EventSubscriberInterface
     }
 }
 ```
+
+---
+
+---
+
+### ✅ Static Pages (Strony Statyczne)
+
+**Lokalizacja eventów:** `src/Core/Event/Page/`
+
+**Eventy:**
+1. `PageAccessedEvent` (post) - wejście na stronę statyczną
+2. `PageDataLoadedEvent` (post) - po załadowaniu contentu strony
+
+**Subscriber:** Brak - eventy są emitowane tylko dla pluginów
+
+**Flow:**
+```
+GET /terms-of-service
+  → PageAccessedEvent (pageType='terms_of_service', userId może być null)
+  → Pobieranie contentu z SettingService
+  → PageDataLoadedEvent (hasContent, contentLength)
+  → ViewDataEvent (viewName='terms_of_service')
+  → Render template
+```
+
+**Zastosowanie:**
+- Analytics - tracking odwiedzin stron statycznych (przez pluginy)
+- GDPR compliance - logowanie akceptacji ToS (przez pluginy)
+- Monitoring czy strony statyczne są wypełnione (przez pluginy)
+- Performance tracking (przez pluginy)
+- Pluginy mogą dodać custom content do stron statycznych
+
+**Charakterystyka:**
+- ✅ **Minimalistyczne** - tylko 2 eventy domenowe + ViewDataEvent
+- ✅ **Publiczna strona** - userId może być null (niezalogowany użytkownik)
+- ✅ **Brak built-in subscriberów** - tylko dla pluginów
+- ✅ **Fokus na rozszerzalność** przez pluginy
+- ✅ **Spójność** z Dashboard i Store (read-only views)
+- ✅ **Rozszerzalność** - w przyszłości łatwo dodać Privacy Policy, Cookie Policy
+
+**Typy stron (pageType):**
+- `terms_of_service` - Regulamin (Terms of Service)
+- (W przyszłości: `privacy_policy`, `cookie_policy`, etc.)
 
 ---
 

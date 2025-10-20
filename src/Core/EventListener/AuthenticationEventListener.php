@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 use App\Core\Event\User\Authentication\UserLoggedInEvent;
 use App\Core\Event\User\Authentication\UserLoggedOutEvent;
+use App\Core\Event\User\Authentication\UserLogoutRequestedEvent;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -104,16 +105,28 @@ class AuthenticationEventListener
             return;
         }
 
-        // Log to LogService (przeniesione z LoginListener)
-        $this->logService->logAction($user, LogActionEnum::LOGOUT);
-
         $request = $this->requestStack->getCurrentRequest();
         $sessionId = $request?->getSession()->getId();
 
         $context = [
             'ip' => $request?->getClientIp(),
+            'userAgent' => $request?->headers->get('User-Agent'),
+            'locale' => $request?->getLocale(),
         ];
 
+        // Emit UserLogoutRequestedEvent (pre-event)
+        $logoutRequestedEvent = new UserLogoutRequestedEvent(
+            $user->getId(),
+            $user->getEmail(),
+            $sessionId,
+            $context
+        );
+        $this->eventDispatcher->dispatch($logoutRequestedEvent);
+
+        // Log to LogService (przeniesione z LoginListener)
+        $this->logService->logAction($user, LogActionEnum::LOGOUT);
+
+        // Emit UserLoggedOutEvent (post-event)
         $loggedOutEvent = new UserLoggedOutEvent(
             $user->getId(),
             $user->getEmail(),

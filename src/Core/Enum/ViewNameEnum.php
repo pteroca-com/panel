@@ -15,4 +15,5 @@ enum ViewNameEnum: string
     case STORE_INDEX = 'store_index';
     case STORE_CATEGORY = 'store_category';
     case STORE_PRODUCT = 'store_product';
+    case TERMS_OF_SERVICE = 'terms_of_service';
 }
