@@ -18,4 +18,5 @@ enum ViewNameEnum: string
     case TERMS_OF_SERVICE = 'terms_of_service';
     case PASSWORD_RESET_REQUEST = 'password_reset_request';
     case PASSWORD_RESET = 'password_reset';
+    case EMAIL_VERIFICATION_NOTICE = 'email_verification_notice';
 }

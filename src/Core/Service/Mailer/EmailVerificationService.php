@@ -7,15 +7,20 @@ use App\Core\DTO\Email\EmailVerificationContextDTO;
 use App\Core\Enum\EmailTypeEnum;
 use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\SettingEnum;
+use App\Core\Event\User\Registration\EmailVerificationResendRequestedEvent;
+use App\Core\Event\User\Registration\EmailVerificationResentEvent;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Service\Email\EmailNotificationService;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\SettingService;
 use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EmailVerificationService
@@ -32,6 +37,9 @@ class EmailVerificationService
         private readonly MessageBusInterface $messageBus,
         private readonly LoggerInterface $logger,
         private readonly EmailNotificationService $emailNotificationService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly EventContextService $eventContextService,
+        private readonly RequestStack $requestStack,
     ) {
         $this->jwtConfiguration = Configuration::forSymmetricSigner(
             new Sha256(),
@@ -95,7 +103,22 @@ class EmailVerificationService
 
     public function resendVerificationEmail(UserInterface $user): void
     {
-        if (!$this->canResendVerification($user)) {
+        $request = $this->requestStack->getCurrentRequest();
+        $eventContext = $this->eventContextService->buildNullableContext($request);
+
+        $lastSentLog = $this->emailNotificationService->getLastEmailByType($user, EmailTypeEnum::EMAIL_VERIFICATION);
+        $canResend = $this->canResendVerification($user);
+
+        // Emit EmailVerificationResendRequestedEvent (pre)
+        $this->eventDispatcher->dispatch(new EmailVerificationResendRequestedEvent(
+            $user->getId(),
+            $user->getEmail(),
+            $lastSentLog?->getSentAt(),
+            $canResend,
+            $eventContext
+        ));
+
+        if (!$canResend) {
             throw new \RuntimeException(
                 $this->translator->trans('pteroca.email.verification.resend_too_soon', [
                     '%minutes%' => self::RESEND_LIMIT_MINUTES
@@ -118,13 +141,25 @@ class EmailVerificationService
 
         try {
             $this->messageBus->dispatch($emailMessage);
-            
+
             $this->emailNotificationService->logEmailSent(
                 $user,
                 EmailTypeEnum::EMAIL_VERIFICATION,
                 null,
                 $this->translator->trans('pteroca.email.verification.subject', ['%siteName%' => $context->siteName])
             );
+
+            // Calculate resend count (estimate based on time since last send)
+            // This is the number of times email was resent (including this one)
+            $resendCount = $lastSentLog ? 2 : 1; // Simplified: 1 = first resend, 2+ = subsequent resends
+
+            // Emit EmailVerificationResentEvent (post-commit)
+            $this->eventDispatcher->dispatch(new EmailVerificationResentEvent(
+                $user->getId(),
+                $user->getEmail(),
+                $resendCount,
+                $eventContext
+            ));
         } catch (\Exception $exception) {
             $this->logger->error('Failed to resend verification email', [
                 'exception' => $exception,

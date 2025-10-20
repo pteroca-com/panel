@@ -110,7 +110,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify-notice', name: 'verify_notice')]
-    public function verifyNotice(): Response
+    public function verifyNotice(Request $request): Response
     {
         $user = $this->getUser();
         if ($user instanceof UserInterface && $user->isVerified()) {
@@ -122,7 +122,17 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('panel');
         }
 
-        return $this->render('panel/registration/verify_notice.html.twig');
+        $viewData = [
+            'user' => $user,
+            'verificationMode' => $verificationMode,
+        ];
+
+        return $this->renderWithEvent(
+            ViewNameEnum::EMAIL_VERIFICATION_NOTICE,
+            'panel/registration/verify_notice.html.twig',
+            $viewData,
+            $request
+        );
     }
 
     #[Route('/resend-verification', name: 'resend_verification', methods: ['POST'])]

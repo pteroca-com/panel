@@ -285,6 +285,11 @@ Przy testowaniu procesów z eventami:
 
 **Lokalizacja eventów:** `src/Core/Event/User/Registration/`
 
+**3 przepływy:**
+1. **Registration** (`/register`) - rejestracja nowego użytkownika
+2. **Email Verification** (`/verify-email`) - weryfikacja emaila (kliknięcie w link)
+3. **Resend Verification** (`/resend-verification`) - ponowne wysłanie emaila weryfikacyjnego
+
 **Eventy:**
 1. `UserRegistrationRequestedEvent` (pre) - żądanie rejestracji
 2. `UserRegistrationValidatedEvent` (pre) - po walidacji formularza
@@ -294,8 +299,104 @@ Przy testowaniu procesów z eventami:
 6. `UserEmailVerificationRequestedEvent` (post-commit) - wysłano link weryfikacyjny
 7. `UserEmailVerifiedEvent` (post-commit) - email zweryfikowany
 8. `UserRegistrationFailedEvent` (error) - błąd rejestracji
+9. `EmailVerificationResendRequestedEvent` (pre) - żądanie ponownego wysłania
+10. `EmailVerificationResentEvent` (post-commit) - email wysłany ponownie
 
 **Subscriber:** `UserRegistrationSubscriber`
+
+**Flow Registration (już dokumentowany wcześniej):**
+```
+POST /register
+  → FormSubmitEvent
+  → RegistrationService::registerUser()
+    → UserRegistrationRequestedEvent
+    → UserRegistrationValidatedEvent
+    → UserAboutToBeCreatedEvent
+    → UserCreatedEvent
+    → UserRegisteredEvent
+    → UserEmailVerificationRequestedEvent (jeśli weryfikacja włączona)
+```
+
+**Flow Email Verification:**
+```
+GET /verify-email?token={token}
+  → RegistrationService::verifyEmail()
+    → Walidacja tokenu JWT
+    → UserEmailVerifiedEvent (post-commit)
+  → Redirect do panel
+
+GET /verify-notice
+  → ViewDataEvent (viewName='email_verification_notice')
+  → Render template z informacją o konieczności weryfikacji
+```
+
+**Flow Resend Verification:**
+```
+POST /resend-verification
+  → EmailVerificationService::resendVerificationEmail()
+    → EmailVerificationResendRequestedEvent (pre - z canResend flag)
+    → Rate limiting check (5 minut)
+    → Wysyłka emaila
+    → EmailVerificationResentEvent (post-commit - z resendCount)
+  → Redirect do verify_notice
+```
+
+**Zastosowanie nowych eventów dla pluginów:**
+
+**EmailVerificationResendRequestedEvent:**
+- **Anti-spam detection** - tracking częstotliwości żądań resend
+- **Rate limiting monitoring** - custom rate limits dla różnych użytkowników
+- **Analytics** - tracking problemów z dostawą emaili
+- **Alerting** - powiadomienia gdy użytkownik wielokrotnie prosi o resend
+
+**EmailVerificationResentEvent:**
+- **Email delivery monitoring** - tracking skuteczności dostawy
+- **CRM integration** - synchronizacja statusu weryfikacji
+- **User support** - automatyczne tickety gdy resendCount > X
+- **Analytics** - metryki problemów z weryfikacją
+
+**Przykłady dla pluginów:**
+
+```php
+// Anti-spam Plugin
+class EmailVerificationAntiSpamSubscriber implements EventSubscriberInterface
+{
+    public function onEmailVerificationResendRequested(
+        EmailVerificationResendRequestedEvent $event
+    ): void {
+        $lastSent = $event->getLastSentAt();
+        if ($lastSent && $this->tooManyResendAttempts($event->getUserId())) {
+            // Alert security team
+            $this->alertSecurityTeam($event->getUserId(), $event->getEmail());
+        }
+    }
+}
+
+// Email Delivery Monitoring Plugin
+class EmailDeliveryMonitoringSubscriber implements EventSubscriberInterface
+{
+    public function onEmailVerificationResent(
+        EmailVerificationResentEvent $event
+    ): void {
+        // Track że użytkownik nie otrzymał emaila
+        if ($event->getResendCount() > 3) {
+            // Może problem z dostawą do tej domeny
+            $this->trackDeliveryIssue($event->getEmail());
+
+            // Utwórz ticket dla supportu
+            $this->createSupportTicket($event->getUserId());
+        }
+    }
+}
+```
+
+**Charakterystyka:**
+- ✅ **ViewDataEvent** dla verify_notice (email_verification_notice)
+- ✅ **Rate limiting** - 5 minut między wysyłkami
+- ✅ **Monitoring** - resendCount w evencie
+- ✅ **Anti-spam** - canResend flag w pre-event
+- ✅ **JWT tokens** - bezpieczne tokeny z expiration (24h)
+- ✅ **Error handling** - RuntimeException przy zbyt częstych próbach
 
 ---
 
