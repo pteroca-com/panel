@@ -4,42 +4,97 @@ namespace App\Core\Service\Authorization;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Enum\SettingEnum;
+use App\Core\Event\SSO\SSOFailedEvent;
+use App\Core\Event\SSO\SSOTokenGeneratedEvent;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\SettingService;
 use Firebase\JWT\JWT;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SSOLoginRedirectService
 {
     public function __construct(
         private readonly SettingService $settingService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly EventContextService $eventContextService,
+        private readonly RequestStack $requestStack,
     ) {}
 
     public function createSSOToken(UserInterface $user): string
     {
-        $payload = [
-            'iss' => $this->settingService->getSetting(SettingEnum::SITE_URL->value),
-            'aud' => $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value),
-            'iat' => time(),
-            'exp' => time() + 60,
-            'user' => [
-                'id' => $user->getPterodactylUserId(),
-            ],
-        ];
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $this->eventContextService->buildNullableContext($request);
 
-        $pterodactylSsoSecret = $this->settingService->getSetting(SettingEnum::PTERODACTYL_SSO_SECRET->value);
-        if (empty($pterodactylSsoSecret)) {
-            throw new \Exception('PTERODACTYL_SSO_SECRET is not set');
+        try {
+            $pterodactylSsoSecret = $this->settingService->getSetting(SettingEnum::PTERODACTYL_SSO_SECRET->value);
+            if (empty($pterodactylSsoSecret)) {
+                throw new \Exception('PTERODACTYL_SSO_SECRET is not set');
+            }
+
+            $targetUrl = $this->getPterodactylLoginUrl();
+            $expirationTime = time() + 60;
+
+            $payload = [
+                'iss' => $this->settingService->getSetting(SettingEnum::SITE_URL->value),
+                'aud' => $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value),
+                'iat' => time(),
+                'exp' => $expirationTime,
+                'user' => [
+                    'id' => $user->getPterodactylUserId(),
+                ],
+            ];
+
+            $token = JWT::encode($payload, $pterodactylSsoSecret, 'HS256');
+            $tokenHash = hash('sha256', $token);
+            $expiresAt = (new \DateTimeImmutable())->setTimestamp($expirationTime);
+
+            // Emit SSOTokenGeneratedEvent (post)
+            $this->eventDispatcher->dispatch(new SSOTokenGeneratedEvent(
+                $user->getId(),
+                $user->getPterodactylUserId(),
+                $tokenHash,
+                $expiresAt,
+                $targetUrl,
+                $context
+            ));
+
+            return $token;
+        } catch (\Exception $e) {
+            // Emit SSOFailedEvent (error)
+            $this->eventDispatcher->dispatch(new SSOFailedEvent(
+                $user?->getId(),
+                $e->getMessage(),
+                'token_generation',
+                $context
+            ));
+
+            throw $e;
         }
-
-        return JWT::encode($payload, $pterodactylSsoSecret, 'HS256');
     }
 
     public function getPterodactylLoginUrl(): string
     {
-        $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
-        if (empty($pterodactylUrl)) {
-            throw new \Exception('PTERODACTYL_PANEL_URL is not set');
-        }
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $this->eventContextService->buildNullableContext($request);
 
-        return sprintf('%s/pteroca/authorize', $pterodactylUrl);
+        try {
+            $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
+            if (empty($pterodactylUrl)) {
+                throw new \Exception('PTERODACTYL_PANEL_URL is not set');
+            }
+
+            return sprintf('%s/pteroca/authorize', $pterodactylUrl);
+        } catch (\Exception $e) {
+            // Emit SSOFailedEvent (error)
+            $this->eventDispatcher->dispatch(new SSOFailedEvent(
+                null,
+                $e->getMessage(),
+                'url_validation',
+                $context
+            ));
+
+            throw $e;
+        }
     }
 }

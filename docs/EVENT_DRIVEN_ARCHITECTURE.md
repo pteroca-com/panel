@@ -1557,6 +1557,132 @@ class FraudDetectionSubscriber implements EventSubscriberInterface
 
 ---
 
+### ✅ SSO (Single Sign-On) do Pterodactyl
+
+**SSOLoginRedirectController** - Automatyczne logowanie do panelu Pterodactyl poprzez JWT token (60s expiry).
+
+#### Eventy:
+
+1. **SSORedirectRequestedEvent** (pre) - Przed rozpoczęciem procesu SSO
+   - userId, email, pterodactylUserId, redirectPath, context
+
+2. **SSOTokenGeneratedEvent** (post) - Po wygenerowaniu tokenu JWT
+   - userId, pterodactylUserId, tokenHash (SHA256), expiresAt, targetUrl, context
+
+3. **SSORedirectInitiatedEvent** (post-commit) - Po wyrenderowaniu formularza SSO
+   - userId, pterodactylUserId, redirectPath, targetUrl, context
+
+4. **SSOFailedEvent** (error) - Błąd podczas procesu SSO
+   - userId, email, pterodactylUserId, redirectPath, stage, reason, context
+
+#### Flow:
+
+```
+1. User żąda przekierowania SSO
+   ↓
+2. SSORedirectRequestedEvent (pre) → validator może zablokować
+   ↓
+3. Generowanie tokenu JWT
+   ↓
+4. SSOTokenGeneratedEvent (post) → audit log, security monitoring
+   ↓
+5. Renderowanie formularza z auto-submit
+   ↓
+6. SSORedirectInitiatedEvent (post-commit) → analytics
+   ↓
+7. User zostaje automatycznie przekierowany do Pterodactyl
+```
+
+#### Charakterystyka:
+
+- **ViewDataEvent**: Używany w kontrolerze dla `ViewNameEnum::SSO_REDIRECT`
+- **Security**: Token hash (SHA256) w eventach, nigdy pełny token
+- **Rate Limiting**: Pre-event pozwala na blokowanie zbyt częstych prób SSO
+- **Expiry**: Token JWT ma 60s ważności
+- **Auto-submit**: Formularz automatycznie submittuje się po załadowaniu
+- **Error Handling**: Wszystkie błędy emitują SSOFailedEvent ze szczegółami
+
+#### Przykładowe zastosowania dla pluginów:
+
+**1. SSO Rate Limiting**
+```php
+#[AsEventListener(event: SSORedirectRequestedEvent::class)]
+class SSORateLimitingListener implements EventListenerInterface
+{
+    public function __invoke(SSORedirectRequestedEvent $event): void
+    {
+        $userId = $event->getUserId();
+        $recentAttempts = $this->countRecentAttempts($userId, minutes: 5);
+
+        if ($recentAttempts > 10) {
+            // Można rzucić wyjątek lub zablokować request
+            throw new TooManyRequestsException('Too many SSO attempts');
+        }
+    }
+}
+```
+
+**2. SSO Security Audit**
+```php
+#[AsEventListener(event: SSOTokenGeneratedEvent::class, priority: -100)]
+class SSOSecurityAuditListener implements EventListenerInterface
+{
+    public function __invoke(SSOTokenGeneratedEvent $event): void
+    {
+        $this->securityLogger->info('SSO token generated', [
+            'user_id' => $event->getUserId(),
+            'pterodactyl_user_id' => $event->getPterodactylUserId(),
+            'expires_at' => $event->getExpiresAt()->format('c'),
+            'target_url' => $event->getTargetUrl(),
+            'ip' => $event->getIp(),
+            'user_agent' => $event->getUserAgent(),
+        ]);
+    }
+}
+```
+
+**3. SSO Analytics**
+```php
+#[AsEventListener(event: SSORedirectInitiatedEvent::class, priority: -100)]
+class SSOAnalyticsListener implements EventListenerInterface
+{
+    public function __invoke(SSORedirectInitiatedEvent $event): void
+    {
+        $this->analytics->track('sso_redirect', [
+            'user_id' => $event->getUserId(),
+            'redirect_path' => $event->getRedirectPath(),
+            'locale' => $event->getLocale(),
+        ]);
+    }
+}
+```
+
+**4. SSO Failure Monitoring**
+```php
+#[AsEventListener(event: SSOFailedEvent::class)]
+class SSOFailureMonitoringListener implements EventListenerInterface
+{
+    public function __invoke(SSOFailedEvent $event): void
+    {
+        // Alert jeśli zbyt wiele błędów w krótkim czasie
+        $this->errorMonitoring->trackError('sso_failed', [
+            'stage' => $event->getStage(),
+            'reason' => $event->getReason(),
+            'user_id' => $event->getUserId(),
+            'ip' => $event->getIp(),
+        ]);
+
+        if ($this->isSuspiciousPattern($event)) {
+            $this->securityService->triggerAlert('Potential SSO attack detected');
+        }
+    }
+}
+```
+
+---
+
+---
+
 ### Kolejne Procesy do Migracji
 
 - [ ] Admin Overview (OverviewController)
