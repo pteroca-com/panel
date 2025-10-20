@@ -1330,6 +1330,132 @@ GET /terms-of-service
 
 ---
 
+### ✅ Password Recovery (Resetowanie Hasła)
+
+**Lokalizacja eventów:** `src/Core/Event/PasswordRecovery/`
+
+**2 przepływy:**
+1. **Password Reset Request** (`/reset-password`) - żądanie resetu hasła (formularz email)
+2. **Password Reset** (`/reset-password/{token}`) - zmiana hasła (formularz nowe hasło)
+
+**Eventy:**
+1. `PasswordResetRequestedEvent` (pre) - żądanie resetu hasła
+2. `PasswordResetTokenGeneratedEvent` (post) - wygenerowano token
+3. `PasswordResetEmailSentEvent` (post-commit) - wysłano email z linkiem
+4. `PasswordResetValidatedEvent` (pre) - walidacja tokenu
+5. `PasswordAboutToBeChangedEvent` (pre, stoppable) - przed zmianą hasła
+6. `PasswordChangedEvent` (post-commit) - hasło zmienione
+7. `PasswordResetCompletedEvent` (post-commit) - proces zakończony
+8. `PasswordResetFailedEvent` (error) - błąd w procesie
+
+**Subscriber:** Brak - eventy są emitowane tylko dla pluginów
+
+**Flow Request (żądanie resetu):**
+```
+GET /reset-password
+  → FormBuildEvent (formType='password_reset_request')
+  → ViewDataEvent (viewName='password_reset_request')
+  → Render template
+
+POST /reset-password
+  → FormSubmitEvent (formType='password_reset_request')
+  → PasswordRecoveryService::createRecoveryRequest()
+    → PasswordResetRequestedEvent (pre)
+    → Generowanie tokenu
+    → PasswordResetTokenGeneratedEvent (post)
+    → Zapis do bazy
+    → Wysyłka emaila
+    → PasswordResetEmailSentEvent (post-commit)
+  → Redirect do login
+```
+
+**Flow Reset (zmiana hasła):**
+```
+GET /reset-password/{token}
+  → Walidacja tokenu
+  → FormBuildEvent (formType='password_reset')
+  → ViewDataEvent (viewName='password_reset')
+  → Render template
+
+POST /reset-password/{token}
+  → FormSubmitEvent (formType='password_reset')
+  → PasswordRecoveryService::updateUserPassword()
+    → PasswordResetValidatedEvent (pre)
+    → PasswordAboutToBeChangedEvent (pre, stoppable - może zatrzymać)
+    → Zmiana hasła
+    → PasswordChangedEvent (post-commit)
+    → Oznaczenie tokenu jako użytego
+    → PasswordResetCompletedEvent (post-commit)
+  → Redirect do login
+```
+
+**Flow Error:**
+```
+Exception w createRecoveryRequest() lub updateUserPassword()
+  → PasswordResetFailedEvent (error)
+  → Logging
+  → Re-throw exception
+```
+
+**Zastosowanie:**
+- **Rate limiting** - pluginy mogą ograniczyć częstotliwość żądań resetu (przez `PasswordResetRequestedEvent`)
+- **Anti-fraud detection** - blokowanie podejrzanych prób zmiany hasła (przez `PasswordAboutToBeChangedEvent`)
+- **Security notifications** - wysyłka emaili/SMS po zmianie hasła (przez `PasswordChangedEvent`)
+- **Compliance logging** - audit trail dla GDPR (przez wszystkie eventy)
+- **Analytics** - tracking użycia funkcji resetowania hasła
+- **Custom fields** - pluginy mogą dodać pola do formularzy (przez `FormBuildEvent`)
+
+**Charakterystyka:**
+- ✅ **FormBuildEvent** dla obu formularzy (password_reset_request, password_reset)
+- ✅ **FormSubmitEvent** dla obu formularzy
+- ✅ **ViewDataEvent** dla obu widoków
+- ✅ **Pre/post pattern** dla operacji bezpieczeństwa
+- ✅ **Stoppable event** (`PasswordAboutToBeChangedEvent`) - plugin może zatrzymać
+- ✅ **Error event** dla monitoring i alerting
+- ✅ **Eventy w serwisie** (nie w kontrolerze) - zgodnie z konwencją
+- ✅ **Token hashing** - w eventach używany hash tokenu (bezpieczeństwo)
+
+**Przykłady dla pluginów:**
+
+```php
+// Rate Limiting Plugin
+class RateLimitingSubscriber implements EventSubscriberInterface
+{
+    public function onPasswordResetRequested(PasswordResetRequestedEvent $event): void
+    {
+        if ($this->tooManyAttempts($event->getEmail(), $event->getIp())) {
+            throw new \Exception('Too many password reset attempts');
+        }
+    }
+}
+
+// Security Notification Plugin
+class SecurityNotificationSubscriber implements EventSubscriberInterface
+{
+    public function onPasswordChanged(PasswordChangedEvent $event): void
+    {
+        // Wyślij SMS/Email o zmianie hasła
+        $this->sendSecurityNotification($event->getUserId(), $event->getEmail());
+    }
+}
+
+// Fraud Detection Plugin
+class FraudDetectionSubscriber implements EventSubscriberInterface
+{
+    public function onPasswordAboutToBeChanged(PasswordAboutToBeChangedEvent $event): void
+    {
+        if ($this->isSuspiciousActivity($event->getUserId(), $event->getIp())) {
+            $event->stopPropagation();
+            $event->setRejected(true, 'Suspicious activity detected');
+        }
+    }
+}
+```
+
+---
+
+---
+
 ### Kolejne Procesy do Migracji
 
 - [ ] Admin Overview (OverviewController)

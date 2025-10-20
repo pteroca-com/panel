@@ -2,15 +2,15 @@
 
 namespace App\Core\Controller;
 
+use App\Core\Enum\ViewNameEnum;
+use App\Core\Event\Form\FormSubmitEvent;
 use App\Core\Form\ResetPasswordFormType;
 use App\Core\Form\ResetPasswordRequestFormType;
 use App\Core\Service\Authorization\PasswordRecoveryService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
-
 
 class PasswordRecoveryController extends AbstractController
 {
@@ -26,16 +26,44 @@ class PasswordRecoveryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $email = $form->get('email')->getData();
+            $formData = [
+                'email' => $form->get('email')->getData(),
+            ];
 
-            $this->passwordRecoveryService->createRecoveryRequest($email);
-            $this->addFlash('success', $this->translator->trans('pteroca.recovery.sent_if_exists'));
-            return $this->redirectToRoute('app_login');
+            foreach ($form->all() as $fieldName => $field) {
+                if ($field->getConfig()->getOption('mapped') === false) {
+                    $formData[$fieldName] = $field->getData();
+                }
+            }
+
+            $context = $this->buildMinimalEventContext($request);
+            $submitEvent = $this->dispatchEvent(new FormSubmitEvent('password_reset_request', $formData, $context));
+
+            if ($submitEvent->isPropagationStopped()) {
+                $errors[] = $this->translator->trans('pteroca.recovery.plugin_validation_failed');
+            } else {
+                $this->passwordRecoveryService->createRecoveryRequest($submitEvent->getFormValue('email'));
+                $this->addFlash('success', $this->translator->trans('pteroca.recovery.sent_if_exists'));
+                return $this->redirectToRoute('app_login');
+            }
         }
 
-        return $this->render('panel/reset_password/request.html.twig', [
+        if (empty($errors)) {
+            $formErrors = $form->getErrors(true);
+            $errors = array_map(fn ($error) => $error->getMessage(), iterator_to_array($formErrors));
+        }
+
+        $viewData = [
             'requestForm' => $form->createView(),
-        ]);
+            'errors' => $errors ?? [],
+        ];
+
+        return $this->renderWithEvent(
+            ViewNameEnum::PASSWORD_RESET_REQUEST,
+            'panel/reset_password/request.html.twig',
+            $viewData,
+            $request
+        );
     }
 
     #[Route('/reset-password/{token}', name: 'app_reset_password')]
@@ -48,19 +76,50 @@ class PasswordRecoveryController extends AbstractController
 
         $form = $this->createForm(ResetPasswordFormType::class);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $newPassword = $form->get('newPassword')->getData();
-            if (!$this->passwordRecoveryService->updateUserPassword($token, $newPassword)) {
-                $this->addFlash('danger', $this->translator->trans('pteroca.recovery.invalid_token'));
+            $formData = [
+                'newPassword' => $form->get('newPassword')->getData(),
+                'confirmPassword' => $form->get('confirmPassword')->getData(),
+            ];
+
+            foreach ($form->all() as $fieldName => $field) {
+                if ($field->getConfig()->getOption('mapped') === false) {
+                    $formData[$fieldName] = $field->getData();
+                }
+            }
+
+            $context = $this->buildMinimalEventContext($request);
+            $submitEvent = $this->dispatchEvent(new FormSubmitEvent('password_reset', $formData, $context));
+
+            if ($submitEvent->isPropagationStopped()) {
+                $errors[] = $this->translator->trans('pteroca.recovery.plugin_validation_failed');
             } else {
-                $this->addFlash('success', $this->translator->trans('pteroca.recovery.success_password_changed'));
-                return $this->redirectToRoute('app_login');
+                if (!$this->passwordRecoveryService->updateUserPassword($token, $submitEvent->getFormValue('newPassword'))) {
+                    $this->addFlash('danger', $this->translator->trans('pteroca.recovery.invalid_token'));
+                } else {
+                    $this->addFlash('success', $this->translator->trans('pteroca.recovery.success_password_changed'));
+                    return $this->redirectToRoute('app_login');
+                }
             }
         }
 
-        return $this->render('panel/reset_password/reset.html.twig', [
+        if (empty($errors)) {
+            $formErrors = $form->getErrors(true);
+            $errors = array_map(fn ($error) => $error->getMessage(), iterator_to_array($formErrors));
+        }
+
+        $viewData = [
             'token' => $token,
             'resetForm' => $form->createView(),
-        ]);
+            'errors' => $errors ?? [],
+        ];
+
+        return $this->renderWithEvent(
+            ViewNameEnum::PASSWORD_RESET,
+            'panel/reset_password/reset.html.twig',
+            $viewData,
+            $request
+        );
     }
 }

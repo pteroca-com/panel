@@ -16,4 +16,6 @@ enum ViewNameEnum: string
     case STORE_CATEGORY = 'store_category';
     case STORE_PRODUCT = 'store_product';
     case TERMS_OF_SERVICE = 'terms_of_service';
+    case PASSWORD_RESET_REQUEST = 'password_reset_request';
+    case PASSWORD_RESET = 'password_reset';
 }
