@@ -92,12 +92,33 @@ class ServerDataService
             }
         }
 
-        $pterodactylClientServer = $pterodactylClientApi
-            ?->servers
-            ->get($server->getPterodactylServerIdentifier());
-        $pterodactylClientAccount = $pterodactylClientApi
-            ?->account
-            ->details();
+        try {
+            $pterodactylClientServer = $pterodactylClientApi
+                ?->servers
+                ->get($server->getPterodactylServerIdentifier());
+        } catch (Exception $exception) {
+            $this->logger->error('Failed to get server details from Client API', [
+                'server_id' => $server->getId(),
+                'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString()
+            ]);
+            $pterodactylClientServer = null;
+        }
+
+        try {
+            $pterodactylClientAccount = $pterodactylClientApi
+                ?->account
+                ->details();
+        } catch (Exception $exception) {
+            $this->logger->error('Failed to get account details from Client API', [
+                'server_id' => $server->getId(),
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString()
+            ]);
+            $pterodactylClientAccount = null;
+        }
+
         $productEggsConfiguration = $server->getServerProduct()->getEggsConfiguration();
 
         try {
@@ -149,13 +170,22 @@ class ServerDataService
         }
 
         if ($permissions->hasPermission(ServerPermissionEnum::USER_READ)) {
-            $subusers = $pterodactylClientApi->servers
-                ->http
-                ->get(sprintf(
-                    'servers/%s/users',
-                    $server->getPterodactylServerIdentifier(),
-                ))
-                ->toArray();
+            try {
+                $subusers = $pterodactylClientApi->servers
+                    ->http
+                    ->get(sprintf(
+                        'servers/%s/users',
+                        $server->getPterodactylServerIdentifier(),
+                    ))
+                    ->toArray();
+            } catch (Exception $exception) {
+                $this->logger->error('Failed to get server subusers', [
+                    'server_id' => $server->getId(),
+                    'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                    'error' => $exception->getMessage(),
+                    'trace' => $exception->getTraceAsString()
+                ]);
+            }
         }
 
         if ($permissions->hasPermission(ServerPermissionEnum::ACTIVITY_READ)) {
@@ -164,12 +194,21 @@ class ServerDataService
             $showPterodactylLogs = (bool)$this->settingService->getSetting(SettingEnum::SHOW_PTERODACTYL_LOGS_IN_SERVER_ACTIVITY->value);
 
             if ($showPterodactylLogs) {
-                $pterodactylActivityLogs = $pterodactylClientApi->servers
-                    ->http
-                    ->get(sprintf(
-                        'servers/%s/activity',
-                        $server->getPterodactylServerIdentifier(),
-                    ))->toArray();
+                try {
+                    $pterodactylActivityLogs = $pterodactylClientApi->servers
+                        ->http
+                        ->get(sprintf(
+                            'servers/%s/activity',
+                            $server->getPterodactylServerIdentifier(),
+                        ))->toArray();
+                } catch (Exception $exception) {
+                    $this->logger->error('Failed to get server activity logs', [
+                        'server_id' => $server->getId(),
+                        'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                        'error' => $exception->getMessage(),
+                        'trace' => $exception->getTraceAsString()
+                    ]);
+                }
             }
 
             $activityLogs = $this->serverLogService->getServerLogsWithPagination(

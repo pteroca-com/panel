@@ -43,6 +43,7 @@ class UserService
                 'first_name' => $user->getName(),
                 'last_name' => $user->getSurname(),
                 'password' => $plainPassword,
+                'root_admin' => $user->isAdmin(),
             ]);
             $user->setPterodactylUserId($createdUser->id);
         } catch (Exception $exception) {
@@ -130,6 +131,7 @@ class UserService
                     'email' => $user->getEmail(),
                     'first_name' => $user->getName(),
                     'last_name' => $user->getSurname(),
+                    'root_admin' => $user->isAdmin(),
                 ];
 
                 if ($plainPassword) {
