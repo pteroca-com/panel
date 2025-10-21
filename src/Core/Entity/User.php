@@ -323,6 +323,11 @@ class User implements UserInterface
         return $this;
     }
 
+    public function isAdmin(): bool
+    {
+        return in_array(UserRoleEnum::ROLE_ADMIN->name, $this->getRoles());
+    }
+
     public function __toString(): string
     {
         return $this->email;
