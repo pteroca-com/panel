@@ -20,6 +20,7 @@ security:
         main:
             lazy: true
             provider: users_in_database
+            user_checker: App\Core\Security\UserChecker
             custom_authenticator: App\Core\Security\UserAuthenticator
             logout:
                 path: app_logout

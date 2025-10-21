@@ -113,12 +113,17 @@ class UserService
             $user->setPassword($hashedPassword);
         }
 
+        if ($user->getPterodactylUserId() === null) {
+            $this->createUserWithPterodactylAccount($user, $plainPassword);
+            return;
+        }
+
         try {
             $pterodactylAccount = $this->pterodactylService
                 ->getApi()
                 ->users
                 ->get($user->getPterodactylUserId());
-            
+
             if (!empty($pterodactylAccount->username)) {
                 $pterodactylAccountDetails = [
                     'username' => $pterodactylAccount->username,
@@ -126,17 +131,30 @@ class UserService
                     'first_name' => $user->getName(),
                     'last_name' => $user->getSurname(),
                 ];
-                
+
                 if ($plainPassword) {
                     $pterodactylAccountDetails['password'] = $plainPassword;
                 }
-                
+
                 $this->pterodactylService->getApi()->users->update(
                     $user->getPterodactylUserId(),
                     $pterodactylAccountDetails
                 );
             }
         } catch (Exception $exception) {
+            if (str_contains($exception->getMessage(), 'The resource you are looking for could not be found')) {
+                $this->logger->warning('Pterodactyl user not found during update, creating new account', [
+                    'old_pterodactyl_user_id' => $user->getPterodactylUserId(),
+                    'user_email' => $user->getEmail(),
+                ]);
+
+                $user->setPterodactylUserId(null);
+                $user->setPterodactylUserApiKey(null);
+
+                $this->createUserWithPterodactylAccount($user, $plainPassword);
+                return;
+            }
+
             $this->logger->error('Failed to update Pterodactyl account', [
                 'exception' => $exception,
                 'user' => $user,

@@ -248,7 +248,10 @@ class UserCrudController extends AbstractPanelController
                 $this->addFlash('danger', $this->translator->trans('pteroca.system.pterodactyl_error'));
                 return;
             }
-            
+
+            // Clear Pterodactyl mapping before soft delete to prevent issues during re-registration
+            $entityInstance->setPterodactylUserId(null);
+            $entityInstance->setPterodactylUserApiKey(null);
             $entityInstance->softDelete();
             $entityManager->persist($entityInstance);
             $entityManager->flush();
