@@ -306,17 +306,25 @@ class ProductCrudController extends AbstractPanelController
     {
         /** @var Product $originalProduct */
         $originalProduct = $context->getEntity()->getInstance();
-        
-        $copiedProduct = $this->productCopyService->copyProduct($originalProduct);
-        
+
+        $user = $this->getUser();
+        $request = $this->requestStack->getCurrentRequest();
+        $eventContext = $this->buildMinimalEventContext($request);
+
+        $copiedProduct = $this->productCopyService->copyProduct(
+            $originalProduct,
+            $user->getId(),
+            $eventContext
+        );
+
         $this->addFlash('success', $this->translator->trans('pteroca.crud.product.copy_success'));
-        
+
         $url = $this->adminUrlGenerator
             ->setController(self::class)
             ->setAction(Action::EDIT)
             ->setEntityId($copiedProduct->getId())
             ->generateUrl();
-            
+
         return new RedirectResponse($url);
     }
 }

@@ -1683,12 +1683,237 @@ class SSOFailureMonitoringListener implements EventListenerInterface
 
 ---
 
+### ✅ CRUD Panel Admina (Eventy Generyczne)
+
+Wszystkie kontrolery dziedziczące z `AbstractPanelController` automatycznie emitują generyczne eventy CRUD dla operacji CREATE, READ, UPDATE, DELETE.
+
+**Lokalizacja:** `src/Core/Event/Crud/`
+**Kontroler bazowy:** `src/Core/Controller/Panel/AbstractPanelController.php`
+
+#### Eventy konfiguracyjne:
+
+1. **CrudConfiguredEvent** - Konfiguracja CRUD
+   - **Kiedy:** W metodzie `configureCrud()`
+   - **Payload:** entityFqcn, Crud object (mutable), user, context
+   - **Zastosowanie:** Pluginy mogą modyfikować konfigurację CRUD (templates, permissions, labels)
+
+2. **CrudActionsConfiguredEvent** - Konfiguracja akcji
+   - **Kiedy:** W metodzie `configureActions()`
+   - **Payload:** entityFqcn, Actions object (mutable), user, context
+   - **Zastosowanie:** Pluginy mogą dodawać/usuwać/modyfikować akcje CRUD
+
+3. **CrudFiltersConfiguredEvent** - Konfiguracja filtrów
+   - **Kiedy:** W metodzie `configureFilters()`
+   - **Payload:** entityFqcn, Filters object (mutable), user, context
+   - **Zastosowanie:** Pluginy mogą dodawać własne filtry
+
+4. **CrudFieldsConfiguredEvent** - Konfiguracja pól
+   - **Kiedy:** W metodzie `configureFields()`
+   - **Payload:** entityFqcn, pageName, fields array (mutable), user, context
+   - **Zastosowanie:** Pluginy mogą dodawać własne pola do formularzy
+
+5. **CrudIndexQueryBuiltEvent** - Budowanie query dla listy
+   - **Kiedy:** W metodzie `createIndexQueryBuilder()`
+   - **Payload:** entityFqcn, QueryBuilder (mutable), searchDto, entityDto, fields, filters, user, context
+   - **Zastosowanie:** Pluginy mogą modyfikować query (dodawać WHERE, JOIN, etc.)
+
+#### Eventy operacji CRUD (pre/post pattern):
+
+6. **CrudEntityPersistingEvent** (pre, stoppable) - Przed CREATE
+   - **Kiedy:** Przed `persist()` w `persistEntity()`
+   - **Payload:** entityFqcn, entityInstance, user, context
+   - **Zastosowanie:** Walidacje pluginów, veto tworzenia, modyfikacja danych przed zapisem
+   - **Stoppable:** Tak - plugin może zatrzymać operację
+
+7. **CrudEntityPersistedEvent** (post) - Po CREATE
+   - **Kiedy:** Po `persist()` i `flush()`
+   - **Payload:** entityFqcn, entityInstance, user, context
+   - **Zastosowanie:** Notifications, audit trail, integracje, automatyczne akcje
+   - **Automatyczne logowanie:** Tak (LogActionEnum::ENTITY_ADD)
+
+8. **CrudEntityUpdatingEvent** (pre, stoppable) - Przed UPDATE
+   - **Kiedy:** Przed `updateEntity()` w `updateEntity()`
+   - **Payload:** entityFqcn, entityInstance, user, context
+   - **Zastosowanie:** Walidacje pluginów, veto aktualizacji, modyfikacja danych przed zapisem
+   - **Stoppable:** Tak - plugin może zatrzymać operację
+
+9. **CrudEntityUpdatedEvent** (post) - Po UPDATE
+   - **Kiedy:** Po `updateEntity()` i `flush()`
+   - **Payload:** entityFqcn, entityInstance, user, context
+   - **Zastosowanie:** Notifications, audit trail, cache invalidation, synchronizacja
+   - **Automatyczne logowanie:** Tak (LogActionEnum::ENTITY_EDIT)
+
+10. **CrudEntityDeletingEvent** (pre, stoppable) - Przed DELETE
+    - **Kiedy:** Przed `deleteEntity()` w `deleteEntity()`
+    - **Payload:** entityFqcn, entityInstance, user, context
+    - **Zastosowanie:** Walidacje pluginów, veto usunięcia, backup przed usunięciem
+    - **Stoppable:** Tak - plugin może zatrzymać operację
+
+11. **CrudEntityDeletedEvent** (post) - Po DELETE
+    - **Kiedy:** Po `deleteEntity()` i `flush()`
+    - **Payload:** entityFqcn, entityInstance, user, context
+    - **Zastosowanie:** Cleanup, audit trail, cascade operations
+    - **Automatyczne logowanie:** Tak (LogActionEnum::ENTITY_DELETE)
+
+#### Kontrolery z eventami CRUD:
+
+**Panel Admina** (`src/Core/Controller/Panel/`):
+- UserCrudController - zarządzanie użytkownikami
+- ServerCrudController - zarządzanie serwerami
+- ProductCrudController - zarządzanie produktami
+- VoucherCrudController - zarządzanie voucherami
+- CategoryCrudController - zarządzanie kategoriami
+- PaymentCrudController - zarządzanie płatnościami (admin view)
+- LogCrudController - przeglądanie logów
+- EmailLogCrudController - przeglądanie logów emaili
+- ServerProductCrudController - zarządzanie konfiguracjami serwerów
+- ServerLogCrudController - przeglądanie logów serwerów
+- VoucherUsageCrudController - przeglądanie wykorzystania voucherów
+- AbstractSettingCrudController - wszystkie Settings CRUD Controllers
+
+**User Account** (`src/Core/Controller/`):
+- UserAccountCrudController - ustawienia konta użytkownika
+
+#### Przykłady zastosowań dla pluginów:
+
+**1. Audit Trail Plugin**
+```php
+#[AsEventListener(event: CrudEntityPersistedEvent::class)]
+class AuditTrailListener implements EventListenerInterface
+{
+    public function __invoke(CrudEntityPersistedEvent $event): void
+    {
+        // Loguj wszystkie operacje CREATE w systemie
+        $this->auditLogger->log('entity_created', [
+            'entity_type' => $event->getEntityFqcn(),
+            'entity_id' => $event->getEntityInstance()->getId(),
+            'created_by' => $event->getUserId(),
+            'ip' => $event->getIp(),
+            'user_agent' => $event->getUserAgent(),
+        ]);
+    }
+}
+```
+
+**2. Notification Plugin (filtrowanie po encji)**
+```php
+#[AsEventListener(event: CrudEntityPersistedEvent::class)]
+class UserCreatedNotificationListener implements EventListenerInterface
+{
+    public function __invoke(CrudEntityPersistedEvent $event): void
+    {
+        // Reaguj tylko na tworzenie użytkowników
+        if ($event->getEntityFqcn() === User::class) {
+            $user = $event->getEntityInstance();
+            $this->emailService->sendWelcomeEmail($user);
+        }
+    }
+}
+```
+
+**3. Validation Plugin (veto)**
+```php
+#[AsEventListener(event: CrudEntityDeletingEvent::class)]
+class PreventAdminDeletionListener implements EventListenerInterface
+{
+    public function __invoke(CrudEntityDeletingEvent $event): void
+    {
+        // Zapobiegaj usunięciu głównego admina
+        if ($event->getEntityFqcn() === User::class) {
+            $user = $event->getEntityInstance();
+            if ($this->isMainAdmin($user)) {
+                $event->stopPropagation();
+                throw new \Exception('Cannot delete main admin user');
+            }
+        }
+    }
+}
+```
+
+**4. Custom Fields Plugin**
+```php
+#[AsEventListener(event: CrudFieldsConfiguredEvent::class)]
+class CustomFieldsListener implements EventListenerInterface
+{
+    public function __invoke(CrudFieldsConfiguredEvent $event): void
+    {
+        // Dodaj custom pole tylko do formularza użytkowników
+        if ($event->getEntityFqcn() === User::class && $event->getPageName() === Crud::PAGE_EDIT) {
+            $fields = $event->getFields();
+            $fields[] = TextField::new('customField', 'My Custom Field');
+            $event->setFields($fields);
+        }
+    }
+}
+```
+
+**5. Query Modification Plugin**
+```php
+#[AsEventListener(event: CrudIndexQueryBuiltEvent::class)]
+class HideDeletedEntitiesListener implements EventListenerInterface
+{
+    public function __invoke(CrudIndexQueryBuiltEvent $event): void
+    {
+        // Domyślnie ukryj usunięte encje (soft delete)
+        if ($event->getEntityDto()->hasProperty('deletedAt')) {
+            $qb = $event->getQueryBuilder();
+            $qb->andWhere('entity.deletedAt IS NULL');
+            $event->setQueryBuilder($qb);
+        }
+    }
+}
+```
+
+#### Charakterystyka:
+
+- ✅ **Generyczne** - jeden zestaw eventów dla wszystkich encji CRUD
+- ✅ **Filtrowanie po entityFqcn** - pluginy mogą reagować na konkretne encje
+- ✅ **Pre/post pattern** - pełna kontrola przed i po operacji
+- ✅ **Stoppable pre-events** - pluginy mogą zatrzymać operacje (veto)
+- ✅ **Automatyczne logowanie** - każda operacja jest logowana przez system
+- ✅ **Soft delete support** - automatyczne filtrowanie encji z deletedAt
+- ✅ **Context tracking** - IP, user agent, locale w każdym evencie
+- ✅ **UI extensibility** - pluginy mogą modyfikować UI (pola, filtry, akcje)
+- ✅ **Query customization** - pluginy mogą modyfikować zapytania SQL
+
+#### Flow przykładowy (CREATE):
+
+```
+Admin tworzy nowego użytkownika w panelu
+  ↓
+configureCrud() → CrudConfiguredEvent
+  ↓
+configureActions() → CrudActionsConfiguredEvent
+  ↓
+configureFilters() → CrudFiltersConfiguredEvent
+  ↓
+configureFields() → CrudFieldsConfiguredEvent
+  ↓
+[Admin wypełnia formularz i klika "Save"]
+  ↓
+persistEntity()
+  ↓
+CrudEntityPersistingEvent (pre, stoppable) → plugin może zatrzymać
+  ↓
+[Jeśli NIE zatrzymano]
+  ↓
+parent::persistEntity() → zapis do bazy
+  ↓
+CrudEntityPersistedEvent (post) → notifications, audit
+  ↓
+Automatyczne logowanie (LogActionEnum::ENTITY_ADD)
+```
+
+---
+
+---
+
 ### Kolejne Procesy do Migracji
 
-- [ ] Admin Overview (OverviewController)
-- [ ] Dodanie FormBuildEvent i ViewDataEvent do pozostałych formularzy i kontrolerów
-- [ ] Zarządzanie użytkownikami
-- [ ] Zarządzanie serwerami
+- [ ] Admin Overview (OverviewController) - nie dziedziczy z AbstractPanelController
+- [ ] API Layer - wszystkie kontrolery API
+- [ ] CLI Commands - wszystkie polecenia CLI
+- [ ] Dodanie ViewDataEvent do pozostałych widoków
 
 ## Best Practices
 

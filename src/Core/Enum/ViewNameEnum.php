@@ -20,4 +20,5 @@ enum ViewNameEnum: string
     case PASSWORD_RESET = 'password_reset';
     case EMAIL_VERIFICATION_NOTICE = 'email_verification_notice';
     case SSO_REDIRECT = 'sso_redirect';
+    case ADMIN_OVERVIEW = 'admin_overview';
 }

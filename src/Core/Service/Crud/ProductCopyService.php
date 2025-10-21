@@ -3,11 +3,15 @@
 namespace App\Core\Service\Crud;
 
 use App\Core\Entity\Product;
+use App\Core\Entity\ProductPrice;
+use App\Core\Event\Product\ProductCopiedEvent;
+use App\Core\Event\Product\ProductCopyRequestedEvent;
 use App\Core\Repository\ProductRepository;
 use App\Core\Repository\ProductPriceRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use App\Core\Entity\ProductPrice;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProductCopyService
 {
@@ -16,19 +20,34 @@ class ProductCopyService
         private readonly ProductPriceRepository $productPriceRepository,
         private readonly Filesystem $filesystem,
         private readonly LoggerInterface $logger,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly TranslatorInterface $translator,
         private readonly string $productsDirectory,
         private readonly string $projectDir,
     ) {
     }
 
-    public function copyProduct(Product $originalProduct): Product
+    public function copyProduct(Product $originalProduct, int $userId, array $context = []): Product
     {
+        $requestedEvent = new ProductCopyRequestedEvent(
+            $userId,
+            $originalProduct->getId(),
+            $originalProduct->getName(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Product copy operation was blocked';
+            throw new \RuntimeException($this->translator->trans('pteroca.crud.product.copy_blocked', ['reason' => $reason]));
+        }
+
         $copiedProduct = new Product();
         $copiedProduct->setName($originalProduct->getName() . ' (Copy)');
         $copiedProduct->setDescription($originalProduct->getDescription());
-        $copiedProduct->setIsActive(false); // Domyślnie nieaktywny
+        $copiedProduct->setIsActive(false);
         $copiedProduct->setCategory($originalProduct->getCategory());
-        
+
         if ($originalProduct->getImagePath()) {
             $copiedImagePath = $this->copyImageFile($originalProduct->getImagePath());
             if ($copiedImagePath) {
@@ -41,7 +60,7 @@ class ProductCopyService
                 $copiedProduct->setBannerPath($copiedBannerPath);
             }
         }
-        
+
         $copiedProduct->setDiskSpace($originalProduct->getDiskSpace());
         $copiedProduct->setMemory($originalProduct->getMemory());
         $copiedProduct->setIo($originalProduct->getIo());
@@ -57,9 +76,10 @@ class ProductCopyService
         $copiedProduct->setEggs($originalProduct->getEggs());
         $copiedProduct->setEggsConfiguration($originalProduct->getEggsConfiguration());
         $copiedProduct->setAllowChangeEgg($originalProduct->getAllowChangeEgg());
-        
+
         $this->productRepository->save($copiedProduct, true);
-        
+
+        $pricesCount = 0;
         foreach ($originalProduct->getPrices() as $originalPrice) {
             $copiedPrice = new ProductPrice();
 
@@ -67,12 +87,23 @@ class ProductCopyService
             $copiedPrice->setType($originalPrice->getType());
             $copiedPrice->setUnit($originalPrice->getUnit());
             $copiedPrice->setPrice($originalPrice->getPrice());
-            
+
             $copiedProduct->addPrice($copiedPrice);
             $this->productPriceRepository->save($copiedPrice);
+            $pricesCount++;
         }
         $this->productPriceRepository->flush();
-        
+
+        $copiedEvent = new ProductCopiedEvent(
+            $userId,
+            $originalProduct->getId(),
+            $copiedProduct->getId(),
+            $copiedProduct->getName(),
+            $pricesCount,
+            $context
+        );
+        $this->eventDispatcher->dispatch($copiedEvent);
+
         return $copiedProduct;
     }
 
