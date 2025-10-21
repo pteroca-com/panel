@@ -16,6 +16,7 @@ pteroca:
     sign_in: 'Увійти'
     invalid_captcha: 'Неправильна перевірка CAPTCHA.'
     user_blocked: 'Ваш обліковий запис заблокований.'
+    account_deleted: 'Ваш обліковий запис було видалено.'
     invalid_credentials: 'Неправильна електронна пошта або пароль.'
     dont_have_account_yet: 'Ще немає облікового запису? Зареєструйтеся!'
     subtitle: 'Увійдіть до свого облікового запису'

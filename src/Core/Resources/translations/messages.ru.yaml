@@ -16,6 +16,7 @@ pteroca:
     sign_in: 'Войти'
     invalid_captcha: 'Неверная CAPTCHA.'
     user_blocked: 'Ваша учётная запись заблокирована.'
+    account_deleted: 'Ваша учётная запись была удалена.'
     invalid_credentials: 'Неверный адрес электронной почты или пароль.'
     dont_have_account_yet: "Еще нет аккаунта? Зарегистрируйтесь сейчас!"
     subtitle: 'Войдите в свой аккаунт'
