@@ -16,6 +16,7 @@ pteroca:
     sign_in: 'Se connecter'
     invalid_captcha: 'Vérification CAPTCHA invalide.'
     user_blocked: 'Votre compte a été bloqué.'
+    account_deleted: 'Votre compte a été supprimé.'
     invalid_credentials: 'Adresse e-mail ou mot de passe invalide.'
     dont_have_account_yet: 'Vous n’avez pas encore de compte ? Inscrivez-vous !'
     subtitle: 'Connectez-vous à votre compte'

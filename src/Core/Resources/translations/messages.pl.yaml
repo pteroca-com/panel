@@ -18,6 +18,7 @@ pteroca:
     sign_in: 'Zaloguj się'
     invalid_captcha: 'Nieprawidłowa weryfikacja CAPTCHA.'
     user_blocked: 'Twoje konto zostało zablokowane.'
+    account_deleted: 'Twoje konto zostało usunięte.'
     invalid_credentials: 'Nieprawidłowy adres e-mail lub hasło.'
     dont_have_account_yet: 'Nie masz jeszcze konta? Zarejestruj się!'
     subtitle: 'Zaloguj się do swojego konta'
