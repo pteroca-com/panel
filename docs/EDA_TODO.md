@@ -405,41 +405,81 @@ POST /panel/api/server/{id}/backup/{backupId}/restore
 
 ---
 
-### 4. Server Databases API
+### ~~4. Server Databases API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/API/ServerDatabaseController.php`
 
-#### Endpointy bez eventów:
+#### ~~Endpointy bez eventów:~~ ✅ Endpointy z eventami:
 
-| Endpoint | Metoda | Akcja |
-|----------|--------|-------|
-| `/panel/api/server/{id}/database/all` | GET | Lista baz danych |
-| `/panel/api/server/{id}/database/create` | POST | Tworzenie bazy danych |
-| `/panel/api/server/{id}/database/{databaseId}/delete` | DELETE | Usuwanie bazy |
-| `/panel/api/server/{id}/database/{databaseId}/rotate-password` | POST | Zmiana hasła |
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/server/{id}/database/all` | GET | Lista baz danych | ✅ Read-only (bez eventów) |
+| `/panel/api/server/{id}/database/create` | POST | Tworzenie bazy danych | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/database/{databaseId}/delete` | DELETE | Usuwanie bazy | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/database/{databaseId}/rotate-password` | POST | Zmiana hasła | ✅ Eventy zaimplementowane |
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // POST /panel/api/server/{id}/database/create
-- ServerDatabaseCreationRequestedEvent (pre, stoppable)
-- ServerDatabaseCreatedEvent (post-commit)
-- ServerDatabaseCreationFailedEvent (error)
+✅ ServerDatabaseCreationRequestedEvent (pre, stoppable) - src/Core/Event/Server/Database/
+✅ ServerDatabaseCreatedEvent (post-commit) - src/Core/Event/Server/Database/
+✅ ServerDatabaseCreationFailedEvent (error) - src/Core/Event/Server/Database/
 
 // DELETE /panel/api/server/{id}/database/{databaseId}/delete
-- ServerDatabaseDeletionRequestedEvent (pre, stoppable)
-- ServerDatabaseDeletedEvent (post-commit)
+✅ ServerDatabaseDeletionRequestedEvent (pre, stoppable) - src/Core/Event/Server/Database/
+✅ ServerDatabaseDeletedEvent (post-commit) - src/Core/Event/Server/Database/
 
 // POST /panel/api/server/{id}/database/{databaseId}/rotate-password
-- ServerDatabasePasswordRotationRequestedEvent (pre, stoppable)
-- ServerDatabasePasswordRotatedEvent (post-commit)
+✅ ServerDatabasePasswordRotationRequestedEvent (pre, stoppable) - src/Core/Event/Server/Database/
+✅ ServerDatabasePasswordRotatedEvent (post-commit) - src/Core/Event/Server/Database/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/Database/`
+- Logika: `src/Core/Service/Server/ServerDatabaseService.php`
+- Kontroler: `src/Core/Controller/API/ServerDatabaseController.php` (thin - wywołuje serwis)
+
+**Payload eventów:**
+- **Database Creation**: userId, serverId, serverPterodactylIdentifier, databaseName, connectionsFrom, failureReason (dla Failed), context
+- **Database Deletion**: userId, serverId, serverPterodactylIdentifier, databaseId, context
+- **Password Rotation**: userId, serverId, serverPterodactylIdentifier, databaseId, context (bez nowego hasła ze względów bezpieczeństwa)
+
+**Flow dla tworzenia bazy:**
+```
+POST /panel/api/server/{id}/database/create
+  → ServerDatabaseCreationRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Try-catch block
+    → Pterodactyl API createDatabase()
+    → ServerLogService.logServerAction()
+    → ServerDatabaseCreatedEvent (post-commit) - po API call
+  → Exception catch:
+    → ServerDatabaseCreationFailedEvent (error) - w przypadku błędu
+```
+
+**Flow dla usuwania bazy:**
+```
+DELETE /panel/api/server/{id}/database/{databaseId}/delete
+  → ServerDatabaseDeletionRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Pterodactyl API deleteDatabase()
+  → ServerLogService.logServerAction()
+  → ServerDatabaseDeletedEvent (post-commit) - po API call
+```
+
+**Flow dla rotacji hasła:**
+```
+POST /panel/api/server/{id}/database/{databaseId}/rotate-password
+  → ServerDatabasePasswordRotationRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Pterodactyl API rotatePassword()
+  → ServerLogService.logServerAction()
+  → ServerDatabasePasswordRotatedEvent (post-commit) - po API call
 ```
 
 #### Zastosowanie dla pluginów:
-- **Quota management** - limit baz danych per serwer
-- **Security** - audit trail dla operacji na bazach
-- **Notifications** - powiadomienia o krytycznych operacjach
-- **Backup integration** - automatyczne backupy przed delete/rotate
+- **Quota management** - limit baz danych per serwer ✅
+- **Security** - audit trail dla operacji na bazach ✅
+- **Notifications** - powiadomienia o krytycznych operacjach ✅
+- **Backup integration** - automatyczne backupy przed delete/rotate ✅
 
 ---
 
@@ -1556,11 +1596,11 @@ Każdy nowy event powinien być dodany do `EVENT_DRIVEN_ARCHITECTURE.md` z:
 
 Sugerowana kolejność implementacji:
 
-#### Faza 1: API - Krytyczne operacje (1-2 tygodnie)
-- Server Configuration API
-- Server Backups API
-- Server Users API
-- Server Databases API
+#### ~~Faza 1: API - Krytyczne operacje (1-2 tygodnie)~~ ✅ **UKOŃCZONA** (2025-10-22)
+- ✅ Server Configuration API (ukończone 2025-10-22)
+- ✅ Server Backups API (ukończone 2025-10-22)
+- ✅ Server Users API (ukończone 2025-10-22)
+- ✅ Server Databases API (ukończone 2025-10-22)
 
 #### Faza 2: API - Pozostałe (1 tydzień)
 - Server Network API
