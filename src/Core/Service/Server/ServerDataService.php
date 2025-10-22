@@ -170,9 +170,6 @@ class ServerDataService
                 $serverSchedules = $pterodactylClientApi->schedules()
                     ->getSchedules($server->getPterodactylServerIdentifier())
                     ->toArray();
-                $serverSchedules = array_map(function ($schedule) {
-                    return $schedule->toArray();
-                }, $serverSchedules);
             } catch (Exception $exception) {
                 $this->logger->error('Failed to get server schedules', [
                     'server_id' => $server->getId(),

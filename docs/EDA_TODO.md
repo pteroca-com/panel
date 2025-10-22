@@ -278,48 +278,84 @@ Cała warstwa API **nie emituje eventów EDA**. To są głównie operacje związ
 
 ---
 
-### 3. Server Backups API
+### ~~3. Server Backups API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/API/ServerBackupController.php`
 
-#### Endpointy bez eventów:
+#### ~~Endpointy bez eventów:~~ ✅ Endpointy z eventami:
 
-| Endpoint | Metoda | Akcja |
-|----------|--------|-------|
-| `/panel/api/server/{id}/backup/create` | POST | Tworzenie backupu |
-| `/panel/api/server/{id}/backup/{backupId}/download` | GET | Pobieranie backupu |
-| `/panel/api/server/{id}/backup/{backupId}/delete` | DELETE | Usuwanie backupu |
-| `/panel/api/server/{id}/backup/{backupId}/restore` | POST | Przywracanie backupu |
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/server/{id}/backup/create` | POST | Tworzenie backupu | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/backup/{backupId}/download` | GET | Pobieranie backupu | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/backup/{backupId}/delete` | DELETE | Usuwanie backupu | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/backup/{backupId}/restore` | POST | Przywracanie backupu | ✅ Eventy zaimplementowane |
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // POST /panel/api/server/{id}/backup/create
-- ServerBackupCreationRequestedEvent (pre, stoppable)
-- ServerBackupCreatedEvent (post-commit)
-- ServerBackupCreationFailedEvent (error)
+✅ ServerBackupCreationRequestedEvent (pre, stoppable) - src/Core/Event/Server/Backup/
+✅ ServerBackupCreatedEvent (post-commit) - src/Core/Event/Server/Backup/
+✅ ServerBackupCreationFailedEvent (error) - src/Core/Event/Server/Backup/
 
 // GET /panel/api/server/{id}/backup/{backupId}/download
-- ServerBackupDownloadRequestedEvent (pre)
-- ServerBackupDownloadInitiatedEvent (post)
+✅ ServerBackupDownloadRequestedEvent (pre) - src/Core/Event/Server/Backup/
+✅ ServerBackupDownloadInitiatedEvent (post) - src/Core/Event/Server/Backup/
 
 // DELETE /panel/api/server/{id}/backup/{backupId}/delete
-- ServerBackupDeletionRequestedEvent (pre, stoppable)
-- ServerBackupDeletedEvent (post-commit)
+✅ ServerBackupDeletionRequestedEvent (pre, stoppable) - src/Core/Event/Server/Backup/
+✅ ServerBackupDeletedEvent (post-commit) - src/Core/Event/Server/Backup/
 
 // POST /panel/api/server/{id}/backup/{backupId}/restore
-- ServerBackupRestoreRequestedEvent (pre, stoppable)
-- ServerBackupRestoreInitiatedEvent (post)
-- ServerBackupRestoredEvent (post-commit)
-- ServerBackupRestoreFailedEvent (error)
+✅ ServerBackupRestoreRequestedEvent (pre, stoppable) - src/Core/Event/Server/Backup/
+✅ ServerBackupRestoreInitiatedEvent (post) - src/Core/Event/Server/Backup/
+✅ ServerBackupRestoredEvent (post-commit) - src/Core/Event/Server/Backup/
+✅ ServerBackupRestoreFailedEvent (error) - src/Core/Event/Server/Backup/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/Backup/`
+- Logika: `src/Core/Service/Server/ServerBackupService.php`
+- Kontroler: `src/Core/Controller/API/ServerBackupController.php` (thin - wywołuje serwisy)
+
+**Payload eventów:**
+- **Backup Creation**: userId, serverId, serverPterodactylIdentifier, backupName, ignoredFiles, backupId (dla Created), failureReason (dla Failed), context
+- **Backup Download**: userId, serverId, serverPterodactylIdentifier, backupId, downloadUrl (dla Initiated), context
+- **Backup Deletion**: userId, serverId, serverPterodactylIdentifier, backupId, context
+- **Backup Restore**: userId, serverId, serverPterodactylIdentifier, backupId, truncate, failureReason (dla Failed), context
+
+**Flow dla tworzenia backupu:**
+```
+POST /panel/api/server/{id}/backup/create
+  → ServerBackupCreationRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Try-catch block
+    → Pterodactyl API createBackup()
+    → ServerLogService.logServerAction()
+    → ServerBackupCreatedEvent (post-commit) - po API call
+  → Exception catch:
+    → ServerBackupCreationFailedEvent (error) - w przypadku błędu
+```
+
+**Flow dla restore backupu:**
+```
+POST /panel/api/server/{id}/backup/{backupId}/restore
+  → ServerBackupRestoreRequestedEvent (pre, stoppable) - plugin może zablokować
+  → ServerBackupRestoreInitiatedEvent (post) - po walidacji, przed API
+  → Try-catch block
+    → Pterodactyl API restoreBackup()
+    → ServerLogService.logServerAction()
+    → ServerBackupRestoredEvent (post-commit) - po API call
+  → Exception catch:
+    → ServerBackupRestoreFailedEvent (error) - w przypadku błędu
 ```
 
 #### Zastosowanie dla pluginów:
-- **Quota management** - limit backupów per serwer
-- **Billing** - płatność za dodatkowe backupy
-- **Notifications** - powiadomienia o zakończeniu backupu/restore
-- **Monitoring** - tracking użycia przestrzeni backupów
-- **Security** - audit trail dla krytycznych operacji restore
+- **Quota management** - limit backupów per serwer ✅
+- **Billing** - płatność za dodatkowe backupy ✅
+- **Notifications** - powiadomienia o zakończeniu backupu/restore ✅
+- **Monitoring** - tracking użycia przestrzeni backupów ✅
+- **Security** - audit trail dla krytycznych operacji restore ✅
 
 ---
 
