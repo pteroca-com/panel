@@ -5,6 +5,8 @@ namespace App\Core\Controller;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Enum\ViewNameEnum;
+use App\Core\Event\Server\ServerManagementDataLoadedEvent;
+use App\Core\Event\Server\ServerManagementPageAccessedEvent;
 use App\Core\Event\Server\ServersListAccessedEvent;
 use App\Core\Event\Server\ServersListDataLoadedEvent;
 use App\Core\Repository\ServerRepository;
@@ -69,18 +71,61 @@ class ServerController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        $this->dispatchDataEvent(
+            ServerManagementPageAccessedEvent::class,
+            $request,
+            [
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $server->getServerProduct()->getName(),
+                $server->getUser() === $this->getUser(), // isOwner
+                $this->isGranted(UserRoleEnum::ROLE_ADMIN->name), // isAdminView
+            ]
+        );
+
         $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
         $isAdminView = $this->isGranted(UserRoleEnum::ROLE_ADMIN->name);
         $isOwner = $server->getUser() === $this->getUser();
+
+        $loadedDataSections = [];
+        if (!empty($serverData->pterodactylServer)) $loadedDataSections[] = 'pterodactyl_server';
+        if (!empty($serverData->allocatedPorts)) $loadedDataSections[] = 'allocations';
+        if (!empty($serverData->serverBackups)) $loadedDataSections[] = 'backups';
+        if (!empty($serverData->subusers)) $loadedDataSections[] = 'subusers';
+        if (!empty($serverData->activityLogs)) $loadedDataSections[] = 'activity_logs';
+        if (!empty($serverData->serverSchedules)) $loadedDataSections[] = 'schedules';
+        if (!empty($serverData->serverDetails)) $loadedDataSections[] = 'server_details';
+        if (!empty($serverData->serverVariables)) $loadedDataSections[] = 'server_variables';
+        if (!empty($serverData->dockerImages)) $loadedDataSections[] = 'docker_images';
+        if (!empty($serverData->availableNestEggs)) $loadedDataSections[] = 'available_nest_eggs';
+
+        $this->dispatchDataEvent(
+            ServerManagementDataLoadedEvent::class,
+            $request,
+            [
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $serverData->isInstalling ?? false,
+                $serverData->isSuspended ?? false,
+                !empty($serverData->serverPermissions?->toArray()),
+                $loadedDataSections,
+            ]
+        );
+
         if (empty($serverData->serverPermissions?->toArray()) && !$isAdminView) {
             throw $this->createAccessDeniedException();
         }
 
-        return $this->render('panel/server/server.html.twig', [
-            'server' => $server,
-            'serverData' => $serverData,
-            'isAdminView' => $isAdminView,
-            'isOwner' => $isOwner,
-        ]);
+        return $this->renderWithEvent(
+            ViewNameEnum::SERVER_MANAGEMENT,
+            'panel/server/server.html.twig',
+            [
+                'server' => $server,
+                'serverData' => $serverData,
+                'isAdminView' => $isAdminView,
+                'isOwner' => $isOwner,
+            ],
+            $request
+        );
     }
 }

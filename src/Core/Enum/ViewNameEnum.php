@@ -8,6 +8,7 @@ enum ViewNameEnum: string
     case REGISTRATION = 'registration';
     case DASHBOARD = 'dashboard';
     case SERVERS_LIST = 'servers_list';
+    case SERVER_MANAGEMENT = 'server_management';
     case BALANCE_RECHARGE = 'balance_recharge';
     case CART_TOPUP = 'cart_topup';
     case CART_CONFIGURE = 'cart_configure';

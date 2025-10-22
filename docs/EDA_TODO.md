@@ -455,51 +455,75 @@ Cała warstwa API **nie emituje eventów EDA**. To są głównie operacje związ
 
 ---
 
-### 7. Server Configuration API
+### ~~7. Server Configuration API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/API/ServerConfigurationController.php`
 
-#### Endpointy bez eventów:
+#### ~~Endpointy bez eventów:~~ ✅ Endpointy z eventami:
 
-| Endpoint | Metoda | Akcja |
-|----------|--------|-------|
-| `/panel/api/server/{id}/startup/variable` | POST | Zmiana zmiennej startowej |
-| `/panel/api/server/{id}/startup/option` | POST | Zmiana opcji startowej |
-| `/panel/api/server/{id}/details/update` | POST | Aktualizacja szczegółów |
-| `/panel/api/server/{id}/reinstall` | POST | Reinstalacja serwera |
-| `/panel/api/server/{id}/auto-renewal/toggle` | POST | Przełączenie auto-renewal |
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/server/{id}/startup/variable` | POST | Zmiana zmiennej startowej | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/startup/option` | POST | Zmiana opcji startowej | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/details/update` | POST | Aktualizacja szczegółów | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/reinstall` | POST | Reinstalacja serwera | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/auto-renewal/toggle` | POST | Przełączenie auto-renewal | ✅ Eventy zaimplementowane |
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // POST /panel/api/server/{id}/startup/variable
-- ServerStartupVariableUpdateRequestedEvent (pre, stoppable)
-- ServerStartupVariableUpdatedEvent (post-commit)
+✅ ServerStartupVariableUpdateRequestedEvent (pre, stoppable) - src/Core/Event/Server/Configuration/
+✅ ServerStartupVariableUpdatedEvent (post-commit) - src/Core/Event/Server/Configuration/
 
 // POST /panel/api/server/{id}/startup/option
-- ServerStartupOptionUpdateRequestedEvent (pre, stoppable)
-- ServerStartupOptionUpdatedEvent (post-commit)
+✅ ServerStartupOptionUpdateRequestedEvent (pre, stoppable) - src/Core/Event/Server/Configuration/
+✅ ServerStartupOptionUpdatedEvent (post-commit) - src/Core/Event/Server/Configuration/
 
 // POST /panel/api/server/{id}/details/update
-- ServerDetailsUpdateRequestedEvent (pre, stoppable)
-- ServerDetailsUpdatedEvent (post-commit)
+✅ ServerDetailsUpdateRequestedEvent (pre, stoppable) - src/Core/Event/Server/Configuration/
+✅ ServerDetailsUpdatedEvent (post-commit) - src/Core/Event/Server/Configuration/
 
 // POST /panel/api/server/{id}/reinstall
-- ServerReinstallRequestedEvent (pre, stoppable)
-- ServerReinstallInitiatedEvent (post)
-- ServerReinstalledEvent (post-commit)
+✅ ServerReinstallRequestedEvent (pre, stoppable) - src/Core/Event/Server/Configuration/
+✅ ServerReinstallInitiatedEvent (post) - src/Core/Event/Server/Configuration/
+✅ ServerReinstalledEvent (post-commit) - src/Core/Event/Server/Configuration/
 
 // POST /panel/api/server/{id}/auto-renewal/toggle
-- ServerAutoRenewalToggleRequestedEvent (pre, stoppable)
-- ServerAutoRenewalToggledEvent (post-commit)
+✅ ServerAutoRenewalToggleRequestedEvent (pre, stoppable) - src/Core/Event/Server/Configuration/
+✅ ServerAutoRenewalToggledEvent (post-commit) - src/Core/Event/Server/Configuration/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/Configuration/`
+- Logika: `src/Core/Service/Server/ServerConfiguration/` (5 serwisów)
+- Kontroler: `src/Core/Controller/API/ServerConfigurationController.php` (thin - wywołuje serwisy)
+
+**Payload eventów:**
+- **Startup Variable**: userId, serverId, serverPterodactylIdentifier, variableKey, variableValue, oldValue (dla Updated), context
+- **Startup Option**: userId, serverId, serverPterodactylIdentifier, optionKey, optionValue, oldValue (dla Updated), context
+- **Server Details**: userId, serverId, serverPterodactylIdentifier, serverName, serverDescription, oldServerName, oldServerDescription (dla Updated), context
+- **Server Reinstall**: userId, serverId, serverPterodactylIdentifier, selectedEgg, currentEgg/previousEgg, eggChanged, context
+- **Auto Renewal Toggle**: userId, serverId, serverPterodactylIdentifier, newValue, currentValue/previousValue, context
+
+**Flow dla reinstalacji:**
+```
+POST /panel/api/server/{id}/reinstall
+  → ServerReinstallRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Walidacja i zmiana egg (jeśli wybrano)
+  → ServerReinstallInitiatedEvent (post) - po zmianie egg, przed API
+  → Pterodactyl API reinstallServer()
+  → ServerReinstalledEvent (post-commit) - po API call
 ```
 
 #### Zastosowanie dla pluginów:
-- **Validation** - dodatkowe walidacje przed reinstalacją
-- **Backup automation** - automatyczny backup przed reinstalacją
-- **Notifications** - powiadomienia o zmianach konfiguracji
-- **Audit trail** - historia zmian konfiguracji
-- **Security** - monitoring podejrzanych zmian
+- **Validation** - dodatkowe walidacje przed reinstalacją ✅
+- **Backup automation** - automatyczny backup przed reinstalacją ✅
+- **Notifications** - powiadomienia o zmianach konfiguracji ✅
+- **Audit trail** - historia zmian konfiguracji ✅
+- **Security** - monitoring podejrzanych zmian ✅
+- **Rate limiting** - ograniczenia częstotliwości zmian ✅
+- **Analytics** - tracking popularnych zmian ✅
 
 ---
 
@@ -925,32 +949,56 @@ Każda komenda powinna mieć minimum:
 
 ## Brakujące Implementacje - Inne Kontrolery
 
-### 1. Server Management Page
+### ~~1. Server Management Page~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/ServerController.php`
 
-#### Strona bez eventów:
+#### ~~Strona bez eventów:~~ ✅ Strona z eventami:
 
-| Route | Akcja |
-|-------|-------|
-| `/server?id=XXX` | Strona zarządzania pojedynczym serwerem |
+| Route | Akcja | Status |
+|-------|-------|--------|
+| `/server?id=XXX` | Strona zarządzania pojedynczym serwerem | ✅ Eventy zaimplementowane |
 
-**Uwaga:** Kontroler ma eventy dla `/servers` (lista), ale **nie ma** dla `/server` (szczegóły).
+**Uwaga:** Kontroler ma eventy dla obu endpointów:
+- ✅ `/servers` (lista) - ServersListAccessedEvent, ServersListDataLoadedEvent
+- ✅ `/server` (szczegóły) - ServerManagementPageAccessedEvent, ServerManagementDataLoadedEvent
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // GET /server?id=XXX
-- ServerManagementPageAccessedEvent (post)
-- ServerManagementDataLoadedEvent (post)
-- ViewDataEvent (viewName='server_management')
+✅ ServerManagementPageAccessedEvent (post) - src/Core/Event/Server/
+✅ ServerManagementDataLoadedEvent (post) - src/Core/Event/Server/
+✅ ViewDataEvent (viewName='server_management') - ViewNameEnum::SERVER_MANAGEMENT
 ```
 
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/`
+- Kontroler: `src/Core/Controller/ServerController.php::server()`
+- ViewNameEnum: `SERVER_MANAGEMENT` case dodany
+
+**Payload eventów:**
+- `ServerManagementPageAccessedEvent`: userId, serverId, serverPterodactylIdentifier, serverName, isOwner, isAdminView, context
+- `ServerManagementDataLoadedEvent`: userId, serverId, serverPterodactylIdentifier, isInstalling, isSuspended, hasPermissions, loadedDataSections[], context
+
+**Flow:**
+```
+GET /server?id=XXX
+  → ServerManagementPageAccessedEvent (po walidacji serwera)
+  → ServerDataService::getServerData() - pobieranie danych
+  → ServerManagementDataLoadedEvent (z metadata loadedDataSections)
+  → ViewDataEvent (pre-render)
+```
+
+**loadedDataSections metadata:**
+Lista możliwych sekcji: `pterodactyl_server`, `allocations`, `backups`, `subusers`, `activity_logs`, `schedules`, `server_details`, `server_variables`, `docker_images`, `available_nest_eggs`
+
 #### Zastosowanie dla pluginów:
-- **Analytics** - tracking użycia strony zarządzania
-- **Performance tracking** - monitoring ładowania danych
-- **Custom widgets** - pluginy mogą dodać własne sekcje
-- **Personalizacja** - customizacja interfejsu zarządzania
+- **Analytics** - tracking użycia strony zarządzania ✅
+- **Performance tracking** - monitoring ładowania danych ✅
+- **Custom widgets** - pluginy mogą dodać własne sekcje na podstawie loadedDataSections ✅
+- **Personalizacja** - customizacja interfejsu zarządzania ✅
+- **Usage analytics** - które funkcje są używane (backups, schedules, databases) ✅
 
 ---
 
@@ -1015,10 +1063,12 @@ Te operacje są **najczęściej wykonywane przez użytkowników** i mają **najw
 
 #### Lista:
 
-1. **Server Configuration API** (`ServerConfigurationController.php`)
-   - Auto-renewal toggle - krytyczne dla retention
-   - Reinstall - krytyczna operacja wymagająca audit trail
-   - Startup variables - często używane
+1. **~~Server Configuration API~~** ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
+   - ~~`ServerConfigurationController.php`~~
+   - ✅ Auto-renewal toggle - krytyczne dla retention
+   - ✅ Reinstall - krytyczna operacja wymagająca audit trail
+   - ✅ Startup variables/options - często używane
+   - ✅ Server details update - często używane
 
 2. **Server Backups API** (`ServerBackupController.php`)
    - Create/Restore backup - krytyczne operacje bezpieczeństwa
@@ -1028,9 +1078,11 @@ Te operacje są **najczęściej wykonywane przez użytkowników** i mają **najw
    - Dodawanie/usuwanie dostępu - krytyczne dla bezpieczeństwa
    - Wymaga security notifications
 
-4. **Server Management Page** (`/server?id=XXX`)
-   - Główny interfejs zarządzania serwerem
-   - Brak eventów blokuje rozszerzalność pluginów
+4. **~~Server Management Page~~** ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
+   - ~~`/server?id=XXX`~~
+   - ✅ `ServerManagementPageAccessedEvent`
+   - ✅ `ServerManagementDataLoadedEvent`
+   - ✅ `ViewDataEvent` (SERVER_MANAGEMENT)
 
 5. **Server Databases API** (`ServerDatabaseController.php`)
    - Create/Delete database - krytyczne operacje
@@ -1434,10 +1486,11 @@ Sugerowana kolejność implementacji:
 - Server Details API
 - Voucher API
 
-#### ~~Faza 3: User-facing pages + Admin operations (2-3 dni)~~ ✅ **CZĘŚCIOWO UKOŃCZONA** (2025-10-21)
-- ⏳ Server Management Page (do zrobienia)
+#### ~~Faza 3: User-facing pages + Admin operations (2-3 dni)~~ ✅ **UKOŃCZONA** (2025-10-21 - 2025-10-22)
+- ✅ Server Management Page (ukończone 2025-10-22)
 - ✅ Admin Overview (ukończone 2025-10-21)
 - ✅ Product Copy - operacja specjalna (ukończone 2025-10-21)
+- ✅ Voucher API (ukończone 2025-10-22)
 
 #### Faza 4: CLI - Critical (1 tydzień)
 - SuspendUnpaidServersCommand
@@ -1477,20 +1530,37 @@ Sugerowana kolejność implementacji:
     - ✅ `AdminOverviewDataLoadedEvent` - Admin Overview
     - ✅ `ProductCopyRequestedEvent` - Product Copy (stoppable)
     - ✅ `ProductCopiedEvent` - Product Copy
-  - **✨ 3 nowe eventy (2025-10-22):**
+  - **✨ 3 nowe eventy (2025-10-22 rano):**
     - ✅ `VoucherRedemptionRequestedEvent` - Voucher API (stoppable)
     - ✅ `VoucherRedeemedEvent` - Voucher API
     - ✅ `VoucherRedemptionFailedEvent` - Voucher API
-  - **RAZEM:** ~76+ eventów + automatyczne eventy dla 13+ kontrolerów CRUD
+  - **✨ 2 nowe eventy (2025-10-22 popołudnie):**
+    - ✅ `ServerManagementPageAccessedEvent` - Server Management Page
+    - ✅ `ServerManagementDataLoadedEvent` - Server Management Page
+  - **✨ 11 nowych eventów (2025-10-22 wieczór):**
+    - ✅ `ServerStartupVariableUpdateRequestedEvent` - Server Configuration API (stoppable)
+    - ✅ `ServerStartupVariableUpdatedEvent` - Server Configuration API
+    - ✅ `ServerStartupOptionUpdateRequestedEvent` - Server Configuration API (stoppable)
+    - ✅ `ServerStartupOptionUpdatedEvent` - Server Configuration API
+    - ✅ `ServerDetailsUpdateRequestedEvent` - Server Configuration API (stoppable)
+    - ✅ `ServerDetailsUpdatedEvent` - Server Configuration API
+    - ✅ `ServerReinstallRequestedEvent` - Server Configuration API (stoppable)
+    - ✅ `ServerReinstallInitiatedEvent` - Server Configuration API
+    - ✅ `ServerReinstalledEvent` - Server Configuration API
+    - ✅ `ServerAutoRenewalToggleRequestedEvent` - Server Configuration API (stoppable)
+    - ✅ `ServerAutoRenewalToggledEvent` - Server Configuration API
+  - **RAZEM:** ~89+ eventów + automatyczne eventy dla 13+ kontrolerów CRUD
 
 - **❌ Do zaimplementowania:**
-  - **API Controllers:** 9 kontrolerów (~47+ eventów) ~~10 kontrolerów~~
+  - **API Controllers:** 8 kontrolerów (~36+ eventów) ~~9 kontrolerów (~47+ eventów)~~
   - **CLI Commands:** 14 komend (~40+ eventów)
-  - **User Pages:** 2 strony (~6+ eventów)
+  - **User Pages:** 1 strona (~3+ eventy) ~~2 strony~~
   - ~~**Admin Pages:**~~ ✅ **UKOŃCZONE** (Admin Overview - 2025-10-21)
   - ~~**Operacje specjalne:**~~ ✅ **UKOŃCZONE** (Product Copy - 2025-10-21)
   - ~~**Voucher API:**~~ ✅ **UKOŃCZONE** (Voucher Redeem - 2025-10-22)
-  - **RAZEM:** ~93 nowych eventów (zamiast pierwotnie 101)
+  - ~~**Server Management Page:**~~ ✅ **UKOŃCZONE** (Server Management - 2025-10-22)
+  - ~~**Server Configuration API:**~~ ✅ **UKOŃCZONE** (Server Configuration - 2025-10-22)
+  - **RAZEM:** ~79 nowych eventów (zamiast pierwotnie 101)
 
 **Zmiana po analizie AbstractPanelController:**
 - ~~30+ eventów dla Admin CRUD~~ → ✅ **Już zaimplementowane w AbstractPanelController**
@@ -1500,14 +1570,25 @@ Sugerowana kolejność implementacji:
 - ~~Admin Pages + Operacje specjalne~~ → ✅ **Ukończone!**
 - **Postęp:** +4 eventy zaimplementowane! 🎉
 
-**Zmiana po implementacji Voucher API (2025-10-22):**
+**Zmiana po implementacji Voucher API (2025-10-22 rano):**
 - ~~Voucher Redeem API~~ → ✅ **Ukończone!**
 - **Postęp:** +3 eventy zaimplementowane! 🎉
 - **Łącznie od 2025-10-21:** +7 nowych eventów!
 
+**Zmiana po implementacji Server Management Page (2025-10-22 popołudnie):**
+- ~~Server Management Page~~ → ✅ **Ukończone!**
+- **Postęp:** +2 eventy zaimplementowane! 🎉
+- **Łącznie od 2025-10-21:** +9 nowych eventów! 🎊
+
+**Zmiana po implementacji Server Configuration API (2025-10-22 wieczór):**
+- ~~Server Configuration API~~ → ✅ **Ukończone!**
+- **Postęp:** +11 eventów zaimplementowanych (5 endpointów, 11 eventów)! 🎉
+- **Łącznie od 2025-10-21:** +20 nowych eventów! 🎊🎊
+- **Priorytet 1 (Krytyczny):** Częściowo ukończony! Server Configuration API to jeden z najważniejszych API!
+
 ### Szacowany czas implementacji (zaktualizowany 2025-10-22):
 
-- **Priorytet 1 (Krytyczny):** 2-3 tygodnie (API - Server Management) ⏳
+- **Priorytet 1 (Krytyczny):** 2-3 tygodnie (API - Server Management) ⏳ - częściowo ukończony (Server Management Page ✅)
 - **Priorytet 2 (Wysoki):** 2 tygodnie (CLI + pozostałe API) ⏳
 - ~~**Priorytet 3 (Średni):**~~ ~~3-4 dni (Admin Overview + Product Copy)~~ ✅ **UKOŃCZONE!** (2025-10-21)
 - **Priorytet 4 (Niski):** 1-2 tygodnie (Utility endpoints i CLI) ⏳ - częściowo ukończony (Voucher API ✅)
@@ -1525,19 +1606,26 @@ Sugerowana kolejność implementacji:
 1. ✅ **Review dokumentacji** - przeczytaj `EVENT_DRIVEN_ARCHITECTURE.md`
 2. ✅ **Zapoznaj się z istniejącymi implementacjami** - sprawdź eventy w `RegistrationController`, `CartController`
 3. ✅ **Priorytet 3 UKOŃCZONY** - Admin Overview + Product Copy zaimplementowane! (2025-10-21)
-4. ✅ **Voucher API UKOŃCZONE** - Voucher Redeem API zaimplementowane! (2025-10-22)
-5. ⏳ **Wybierz kolejny priorytet** - Priorytet 1 (API - Server Management) lub Priorytet 2 (CLI)
-6. ⏳ **Implementuj systematycznie** - jeden kontroler na raz
-7. ⏳ **Testuj** - każdy event z testami
-8. ⏳ **Dokumentuj** - aktualizuj `EVENT_DRIVEN_ARCHITECTURE.md`
-9. ⏳ **Review** - code review przed merge
+4. ✅ **Voucher API UKOŃCZONE** - Voucher Redeem API zaimplementowane! (2025-10-22 rano)
+5. ✅ **Server Management Page UKOŃCZONE** - Server Management Page zaimplementowane! (2025-10-22 popołudnie)
+6. ✅ **Faza 3 UKOŃCZONA** - Wszystkie user-facing pages + admin operations gotowe!
+7. ✅ **Server Configuration API UKOŃCZONE** - 5 endpointów, 11 eventów zaimplementowanych! (2025-10-22 wieczór)
+8. ⏳ **Kontynuuj Priorytet 1** - Pozostałe API: Server Backups, Server Users, Server Databases
+9. ⏳ **Implementuj systematycznie** - jeden kontroler na raz
+10. ⏳ **Testuj** - każdy event z testami
+10. ⏳ **Dokumentuj** - aktualizuj `EVENT_DRIVEN_ARCHITECTURE.md`
+11. ⏳ **Review** - code review przed merge
 
 ---
 
 **Koniec dokumentu**
 
-**Ostatnia aktualizacja:** 2025-10-22
+**Ostatnia aktualizacja:** 2025-10-22 (wieczór)
 **Status:**
 - ✅ Priorytet 3 (Średni): **UKOŃCZONY** - Admin Overview + Product Copy (2025-10-21)
-- ✅ Priorytet 4 (Niski): **Częściowo ukończony** - Voucher API (2025-10-22)
-- ⏳ Pozostało: API Controllers (9), CLI Commands (14), User Pages (2)
+- ✅ Faza 3: **UKOŃCZONA** - User-facing pages + Admin operations (2025-10-21 - 2025-10-22)
+- ✅ Priorytet 4 (Niski): **Częściowo ukończony** - Voucher API (2025-10-22 rano)
+- ✅ Priorytet 1 (Krytyczny): **Częściowo ukończony** - Server Management Page + Server Configuration API (2025-10-22)
+- ⏳ Pozostało: API Controllers (8), CLI Commands (14), User Pages (1)
+- 🎊🎊 **+20 nowych eventów od 2025-10-21!** (największy przyrost!)
+- 📊 **Postęp Priorytetu 1:** Server Configuration API (✅), Server Management Page (✅), pozostałe: Server Backups, Server Users, Server Databases

@@ -4,13 +4,21 @@ namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
+use App\Core\Event\Server\Configuration\ServerStartupOptionUpdateRequestedEvent;
+use App\Core\Event\Server\Configuration\ServerStartupOptionUpdatedEvent;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ServerConfigurationOptionService extends AbstractServerConfiguration
 {
     public function __construct(
         private readonly PterodactylApplicationService    $pterodactylApplicationService,
         private readonly ServerConfigurationStartupService $serverConfigurationStartupService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RequestStack $requestStack,
+        private readonly EventContextService $eventContextService,
     ) {
         parent::__construct($this->pterodactylApplicationService);
     }
@@ -22,8 +30,34 @@ class ServerConfigurationOptionService extends AbstractServerConfiguration
         string $variableValue,
     ): void
     {
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
+
+        $originalVariableKey = $variableKey;
         $variableKey = $this->mapVariableKey($variableKey);
         $serverDetails = $this->getServerDetails($server, ['egg']);
+
+        $oldValue = match ($variableKey) {
+            'startup' => $serverDetails['container']['startup_command'] ?? '',
+            'image' => $serverDetails['container']['image'] ?? '',
+            default => ''
+        };
+
+        $requestedEvent = new ServerStartupOptionUpdateRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $originalVariableKey,
+            $variableValue,
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Server startup option update was blocked';
+            throw new \Exception($reason);
+        }
+
         $this->validateVariableValue($variableKey, $variableValue, $serverDetails);
 
         $startupPayload = $this->serverConfigurationStartupService
@@ -31,6 +65,17 @@ class ServerConfigurationOptionService extends AbstractServerConfiguration
 
         $this->serverConfigurationStartupService
             ->updateServerStartup($server, $startupPayload);
+
+        $updatedEvent = new ServerStartupOptionUpdatedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $originalVariableKey,
+            $variableValue,
+            $oldValue,
+            $context
+        );
+        $this->eventDispatcher->dispatch($updatedEvent);
     }
 
     private function mapVariableKey(string $variableKey): string

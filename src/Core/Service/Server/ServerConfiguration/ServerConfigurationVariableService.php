@@ -5,14 +5,22 @@ namespace App\Core\Service\Server\ServerConfiguration;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
+use App\Core\Event\Server\Configuration\ServerStartupVariableUpdateRequestedEvent;
+use App\Core\Event\Server\Configuration\ServerStartupVariableUpdatedEvent;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ServerConfigurationVariableService extends AbstractServerConfiguration
 {
     public function __construct(
         private readonly PterodactylApplicationService $pterodactylApplicationService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RequestStack $requestStack,
+        private readonly EventContextService $eventContextService,
     ) {
         parent::__construct($this->pterodactylApplicationService);
     }
@@ -24,14 +32,51 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         string $variableValue,
     ): void
     {
+        // Build event context
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
+
         $serverDetails = $this->getServerDetails($server, ['variables']);
         $serverVariable = $this->getServerVariable($serverDetails, $variableKey);
+
+        // Get old value for the event
+        $oldValue = $serverVariable['server_value'] ?? '';
+
+        // Emit ServerStartupVariableUpdateRequestedEvent (pre, stoppable)
+        $requestedEvent = new ServerStartupVariableUpdateRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $variableKey,
+            $variableValue,
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        // Check if event was stopped
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Server startup variable update was blocked';
+            throw new \Exception($reason);
+        }
+
         $this->validateVariable($server, $serverDetails, $serverVariable, $variableValue, $user);
 
         $this->pterodactylApplicationService
             ->getClientApi($user)
             ->servers()
             ->updateServerStartupVariable($server, $variableKey, $variableValue);
+
+        // Emit ServerStartupVariableUpdatedEvent (post-commit)
+        $updatedEvent = new ServerStartupVariableUpdatedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $variableKey,
+            $variableValue,
+            $oldValue,
+            $context
+        );
+        $this->eventDispatcher->dispatch($updatedEvent);
     }
 
     private function getServerVariable(array $serverDetails, string $variableKey): array

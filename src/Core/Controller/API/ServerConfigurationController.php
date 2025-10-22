@@ -147,7 +147,7 @@ class ServerConfigurationController extends APIAbstractController
         }
         
         $requestData = $request->toArray();
-        $serverAutoRenewalService->toggleAutoRenewal($server, $requestData['value']);
+        $serverAutoRenewalService->toggleAutoRenewal($server, $requestData['value'], $this->getUser()->getId());
 
         $this->serverLogService->logServerAction(
             $this->getUser(),
