@@ -239,42 +239,88 @@ Cała warstwa API **nie emituje eventów EDA**. To są głównie operacje związ
 
 ---
 
-### 2. Server Users API
+### ~~2. Server Users API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/API/ServerUserController.php`
 
-#### Endpointy bez eventów:
+#### ~~Endpointy bez eventów:~~ ✅ Endpointy z eventami:
 
-| Endpoint | Metoda | Akcja |
-|----------|--------|-------|
-| `/panel/api/server/{id}/users/all` | GET | Lista subuserów |
-| `/panel/api/server/{id}/users/create` | POST | Tworzenie subusera |
-| `/panel/api/server/{id}/users/{userUuid}` | GET | Szczegóły subusera |
-| `/panel/api/server/{id}/users/{userUuid}/permissions` | POST | Aktualizacja uprawnień |
-| `/panel/api/server/{id}/users/{userUuid}/delete` | DELETE | Usuwanie subusera |
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/server/{id}/users/all` | GET | Lista subuserów | ✅ Read-only (bez eventów) |
+| `/panel/api/server/{id}/users/create` | POST | Tworzenie subusera | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/users/{userUuid}` | GET | Szczegóły subusera | ✅ Read-only (bez eventów) |
+| `/panel/api/server/{id}/users/{userUuid}/permissions` | POST | Aktualizacja uprawnień | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/users/{userUuid}/delete` | DELETE | Usuwanie subusera | ✅ Eventy zaimplementowane |
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // POST /panel/api/server/{id}/users/create
-- ServerSubuserCreationRequestedEvent (pre, stoppable)
-- ServerSubuserCreatedEvent (post-commit)
-- ServerSubuserCreationFailedEvent (error)
+✅ ServerSubuserCreationRequestedEvent (pre, stoppable) - src/Core/Event/Server/User/
+✅ ServerSubuserCreatedEvent (post-commit) - src/Core/Event/Server/User/
+✅ ServerSubuserCreationFailedEvent (error) - src/Core/Event/Server/User/
 
 // POST /panel/api/server/{id}/users/{userUuid}/permissions
-- ServerSubuserPermissionsUpdateRequestedEvent (pre, stoppable)
-- ServerSubuserPermissionsUpdatedEvent (post-commit)
+✅ ServerSubuserPermissionsUpdateRequestedEvent (pre, stoppable) - src/Core/Event/Server/User/
+✅ ServerSubuserPermissionsUpdatedEvent (post-commit) - src/Core/Event/Server/User/
 
 // DELETE /panel/api/server/{id}/users/{userUuid}/delete
-- ServerSubuserDeletionRequestedEvent (pre, stoppable)
-- ServerSubuserDeletedEvent (post-commit)
+✅ ServerSubuserDeletionRequestedEvent (pre, stoppable) - src/Core/Event/Server/User/
+✅ ServerSubuserDeletedEvent (post-commit) - src/Core/Event/Server/User/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/User/`
+- Logika: `src/Core/Service/Server/ServerUserService.php`
+- Kontroler: `src/Core/Controller/API/ServerUserController.php` (thin - wywołuje serwis)
+
+**Payload eventów:**
+- **Subuser Creation**: userId, serverId, serverPterodactylIdentifier, subuserEmail, permissions, subuserUuid (dla Created), failureReason (dla Failed), context
+- **Permissions Update**: userId, serverId, serverPterodactylIdentifier, subuserEmail, subuserUuid, oldPermissions, newPermissions, context
+- **Subuser Deletion**: userId, serverId, serverPterodactylIdentifier, subuserEmail, subuserUuid, context
+
+**Flow dla tworzenia subusera:**
+```
+POST /panel/api/server/{id}/users/create
+  → ServerSubuserCreationRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Try-catch block
+    → Walidacja użytkownika (istnienie, weryfikacja, duplikat)
+    → Pterodactyl API createUser()
+    → syncServerSubuser() - zapis do lokalnej bazy
+    → ServerLogService.logServerAction()
+    → ServerSubuserCreatedEvent (post-commit) - po API call
+  → Exception catch:
+    → ServerSubuserCreationFailedEvent (error) - w przypadku błędu
+```
+
+**Flow dla aktualizacji uprawnień:**
+```
+POST /panel/api/server/{id}/users/{userUuid}/permissions
+  → Pobranie starych uprawnień (getSubuser)
+  → ServerSubuserPermissionsUpdateRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Pterodactyl API updateUserPermissions()
+  → syncServerSubuser() - aktualizacja lokalnej bazy
+  → ServerLogService.logServerAction()
+  → ServerSubuserPermissionsUpdatedEvent (post-commit) - z oldPermissions i newPermissions
+```
+
+**Flow dla usuwania subusera:**
+```
+DELETE /panel/api/server/{id}/users/{userUuid}/delete
+  → ServerSubuserDeletionRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Pterodactyl API deleteUser()
+  → Usunięcie z lokalnej bazy (ServerSubuserRepository.delete)
+  → ServerLogService.logServerAction()
+  → ServerSubuserDeletedEvent (post-commit) - po API call
 ```
 
 #### Zastosowanie dla pluginów:
-- **Security notifications** - powiadomienia o dodaniu/usunięciu dostępu
-- **Audit trail** - pełna historia zmian uprawnień
-- **Access control** - dodatkowe walidacje (np. limit subuserów)
-- **Webhooks** - integracje z zewnętrznymi systemami (Discord, Slack)
+- **Security notifications** - powiadomienia o dodaniu/usunięciu dostępu ✅
+- **Audit trail** - pełna historia zmian uprawnień z old/new values ✅
+- **Access control** - dodatkowe walidacje (np. limit subuserów, niebezpieczne uprawnienia) ✅
+- **Webhooks** - integracje z zewnętrznymi systemami (Discord, Slack) ✅
+- **Quota management** - limit subuserów per serwer ✅
 
 ---
 
