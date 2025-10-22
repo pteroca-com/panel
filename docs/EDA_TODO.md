@@ -503,30 +503,55 @@ Cała warstwa API **nie emituje eventów EDA**. To są głównie operacje związ
 
 ---
 
-### 8. Voucher API
+### ~~8. Voucher API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/API/VoucherController.php`
 
-#### Endpointy bez eventów:
+#### ~~Endpointy bez eventów:~~ ✅ Endpoint z eventami:
 
-| Endpoint | Metoda | Akcja |
-|----------|--------|-------|
-| `/panel/api/voucher/redeem` | POST | Wykorzystanie vouchera |
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/voucher/redeem` | POST | Wykorzystanie vouchera | ✅ Eventy zaimplementowane |
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // POST /panel/api/voucher/redeem
-- VoucherRedemptionRequestedEvent (pre, stoppable)
-- VoucherRedeemedEvent (post-commit)
-- VoucherRedemptionFailedEvent (error)
+✅ VoucherRedemptionRequestedEvent (pre, stoppable) - src/Core/Event/Voucher/
+✅ VoucherRedeemedEvent (post-commit) - src/Core/Event/Voucher/
+✅ VoucherRedemptionFailedEvent (error) - src/Core/Event/Voucher/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Voucher/`
+- Logika: `src/Core/Service/Voucher/VoucherService.php`
+- Kontroler: `src/Core/Controller/API/VoucherController.php` (thin - bez zmian)
+
+**Payload eventów:**
+- `VoucherRedemptionRequestedEvent`: userId, voucherCode, orderAmount, context + StoppableEventTrait
+- `VoucherRedeemedEvent`: userId, voucherId, voucherCode, voucherType, voucherValue, voucherUsageId, balanceAdded, oldBalance, newBalance, context
+- `VoucherRedemptionFailedEvent`: userId, voucherCode, failureReason, attemptedVoucherType, attemptedVoucherValue, context
+
+**Flow:**
+```
+POST /panel/api/voucher/redeem
+  → VoucherRedemptionRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Walidacje vouchera (expired, max uses, requirements...)
+  → Jeśli BALANCE_TOPUP: redeemVoucherForUser() + addBalanceTopup()
+  → VoucherRedeemedEvent (post-commit) - z info o dodanym saldzie
+
+CATCH:
+  → VoucherRedemptionFailedEvent (error) - z powodem błędu
 ```
 
 #### Zastosowanie dla pluginów:
-- **Fraud detection** - wykrywanie nadużyć
-- **Analytics** - tracking wykorzystania voucherów
-- **Marketing integration** - tracking kampanii
-- **Notifications** - powiadomienia o wykorzystaniu
+- **Fraud detection** - wykrywanie nadużyć ✅
+- **Rate limiting** - limity per user/IP ✅
+- **Analytics** - tracking wykorzystania voucherów, ROI kampanii ✅
+- **Marketing integration** - tracking kampanii, CRM sync ✅
+- **Notifications** - powiadomienia o wykorzystaniu ✅
+- **Loyalty programs** - punkty za wykorzystanie ✅
+- **Security monitoring** - alerting przy nadużyciach ✅
 
 ---
 
@@ -1076,8 +1101,11 @@ Operacje **rzadko wykonywane** lub **mało krytyczne**.
 16. **Server Details API** (`ServerController.php` - `/api/server/{id}/details`)
     - Read-only endpoint - niski priorytet
 
-17. **Voucher Redeem API** (`VoucherController.php`)
-    - Już może być obsłużone przez istniejące eventy w CartController
+17. **~~Voucher Redeem API~~** ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
+    - ~~`VoucherController.php`~~
+    - ✅ `VoucherRedemptionRequestedEvent` (stoppable)
+    - ✅ `VoucherRedeemedEvent`
+    - ✅ `VoucherRedemptionFailedEvent`
 
 18. **First Configuration** (`FirstConfigurationController.php`)
     - Wykonywane raz podczas instalacji
@@ -1449,15 +1477,20 @@ Sugerowana kolejność implementacji:
     - ✅ `AdminOverviewDataLoadedEvent` - Admin Overview
     - ✅ `ProductCopyRequestedEvent` - Product Copy (stoppable)
     - ✅ `ProductCopiedEvent` - Product Copy
-  - **RAZEM:** ~73+ eventów + automatyczne eventy dla 13+ kontrolerów CRUD
+  - **✨ 3 nowe eventy (2025-10-22):**
+    - ✅ `VoucherRedemptionRequestedEvent` - Voucher API (stoppable)
+    - ✅ `VoucherRedeemedEvent` - Voucher API
+    - ✅ `VoucherRedemptionFailedEvent` - Voucher API
+  - **RAZEM:** ~76+ eventów + automatyczne eventy dla 13+ kontrolerów CRUD
 
 - **❌ Do zaimplementowania:**
-  - **API Controllers:** 10 kontrolerów (~50+ eventów)
+  - **API Controllers:** 9 kontrolerów (~47+ eventów) ~~10 kontrolerów~~
   - **CLI Commands:** 14 komend (~40+ eventów)
   - **User Pages:** 2 strony (~6+ eventów)
   - ~~**Admin Pages:**~~ ✅ **UKOŃCZONE** (Admin Overview - 2025-10-21)
   - ~~**Operacje specjalne:**~~ ✅ **UKOŃCZONE** (Product Copy - 2025-10-21)
-  - **RAZEM:** ~96 nowych eventów (zamiast 101)
+  - ~~**Voucher API:**~~ ✅ **UKOŃCZONE** (Voucher Redeem - 2025-10-22)
+  - **RAZEM:** ~93 nowych eventów (zamiast pierwotnie 101)
 
 **Zmiana po analizie AbstractPanelController:**
 - ~~30+ eventów dla Admin CRUD~~ → ✅ **Już zaimplementowane w AbstractPanelController**
@@ -1467,12 +1500,17 @@ Sugerowana kolejność implementacji:
 - ~~Admin Pages + Operacje specjalne~~ → ✅ **Ukończone!**
 - **Postęp:** +4 eventy zaimplementowane! 🎉
 
-### Szacowany czas implementacji (zaktualizowany 2025-10-21):
+**Zmiana po implementacji Voucher API (2025-10-22):**
+- ~~Voucher Redeem API~~ → ✅ **Ukończone!**
+- **Postęp:** +3 eventy zaimplementowane! 🎉
+- **Łącznie od 2025-10-21:** +7 nowych eventów!
+
+### Szacowany czas implementacji (zaktualizowany 2025-10-22):
 
 - **Priorytet 1 (Krytyczny):** 2-3 tygodnie (API - Server Management) ⏳
 - **Priorytet 2 (Wysoki):** 2 tygodnie (CLI + pozostałe API) ⏳
 - ~~**Priorytet 3 (Średni):**~~ ~~3-4 dni (Admin Overview + Product Copy)~~ ✅ **UKOŃCZONE!** (2025-10-21)
-- **Priorytet 4 (Niski):** 1-2 tygodnie (Utility endpoints i CLI) ⏳
+- **Priorytet 4 (Niski):** 1-2 tygodnie (Utility endpoints i CLI) ⏳ - częściowo ukończony (Voucher API ✅)
 
 **TOTAL:** ~5-6 tygodni przy pełnym zaangażowaniu (zamiast pierwotnie 8-10!)
 
@@ -1487,15 +1525,19 @@ Sugerowana kolejność implementacji:
 1. ✅ **Review dokumentacji** - przeczytaj `EVENT_DRIVEN_ARCHITECTURE.md`
 2. ✅ **Zapoznaj się z istniejącymi implementacjami** - sprawdź eventy w `RegistrationController`, `CartController`
 3. ✅ **Priorytet 3 UKOŃCZONY** - Admin Overview + Product Copy zaimplementowane! (2025-10-21)
-4. ⏳ **Wybierz kolejny priorytet** - Priorytet 1 (API - Server Management) lub Priorytet 2 (CLI)
-5. ⏳ **Implementuj systematycznie** - jeden kontroler na raz
-6. ⏳ **Testuj** - każdy event z testami
-7. ⏳ **Dokumentuj** - aktualizuj `EVENT_DRIVEN_ARCHITECTURE.md`
-8. ⏳ **Review** - code review przed merge
+4. ✅ **Voucher API UKOŃCZONE** - Voucher Redeem API zaimplementowane! (2025-10-22)
+5. ⏳ **Wybierz kolejny priorytet** - Priorytet 1 (API - Server Management) lub Priorytet 2 (CLI)
+6. ⏳ **Implementuj systematycznie** - jeden kontroler na raz
+7. ⏳ **Testuj** - każdy event z testami
+8. ⏳ **Dokumentuj** - aktualizuj `EVENT_DRIVEN_ARCHITECTURE.md`
+9. ⏳ **Review** - code review przed merge
 
 ---
 
 **Koniec dokumentu**
 
-**Ostatnia aktualizacja:** 2025-10-21
-**Status Priorytetu 3:** ✅ UKOŃCZONY (Admin Overview + Product Copy)
+**Ostatnia aktualizacja:** 2025-10-22
+**Status:**
+- ✅ Priorytet 3 (Średni): **UKOŃCZONY** - Admin Overview + Product Copy (2025-10-21)
+- ✅ Priorytet 4 (Niski): **Częściowo ukończony** - Voucher API (2025-10-22)
+- ⏳ Pozostało: API Controllers (9), CLI Commands (14), User Pages (2)
