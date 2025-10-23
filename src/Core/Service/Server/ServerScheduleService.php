@@ -61,7 +61,6 @@ class ServerScheduleService
         bool $onlyWhenOnline = true
     ): array
     {
-        // Quota validation BEFORE event emission (hard business rule)
         $schedulesLimit = $server->getServerProduct()->getSchedules();
         if ($schedulesLimit <= 0) {
             throw new \Exception('Schedules are disabled for this server.');
@@ -72,11 +71,9 @@ class ServerScheduleService
             throw new \Exception(sprintf('Maximum number of schedules (%d) reached. Delete existing schedules to create new ones.', $schedulesLimit));
         }
 
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        // Emit requested event (stoppable - plugins can block)
         $requestedEvent = new ServerScheduleCreationRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -126,7 +123,6 @@ class ServerScheduleService
             $resultArray = $result->toArray();
             $scheduleId = $resultArray['attributes']['id'] ?? 0;
 
-            // Emit success event
             $createdEvent = new ServerScheduleCreatedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -142,7 +138,6 @@ class ServerScheduleService
 
             return $resultArray;
         } catch (\Exception $e) {
-            // Emit failure event
             $failedEvent = new ServerScheduleCreationFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -170,14 +165,11 @@ class ServerScheduleService
         ?bool $onlyWhenOnline = null
     ): array
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        // Normalize cronExpression for event
         $cronExpressionForEvent = $cronExpression ?? [];
 
-        // Emit requested event (stoppable)
         $requestedEvent = new ServerScheduleUpdateRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -237,7 +229,6 @@ class ServerScheduleService
                 ]
             );
 
-            // Emit success event
             $updatedEvent = new ServerScheduleUpdatedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -253,7 +244,6 @@ class ServerScheduleService
 
             return $result->toArray();
         } catch (\Exception $e) {
-            // Emit failure event
             $failedEvent = new ServerScheduleUpdateFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -278,11 +268,9 @@ class ServerScheduleService
         int $scheduleId
     ): void
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        // Emit requested event (stoppable)
         $requestedEvent = new ServerScheduleDeletionRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -312,7 +300,6 @@ class ServerScheduleService
                 ]
             );
 
-            // Emit success event
             $deletedEvent = new ServerScheduleDeletedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -322,7 +309,6 @@ class ServerScheduleService
             );
             $this->eventDispatcher->dispatch($deletedEvent);
         } catch (\Exception $e) {
-            // Emit failure event
             $failedEvent = new ServerScheduleDeletionFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -361,11 +347,9 @@ class ServerScheduleService
         bool $continueOnFailure = false
     ): array
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        // Emit requested event (stoppable)
         $requestedEvent = new ServerScheduleTaskUpdateRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -411,7 +395,6 @@ class ServerScheduleService
                 ]
             );
 
-            // Emit success event
             $updatedEvent = new ServerScheduleTaskUpdatedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -427,7 +410,6 @@ class ServerScheduleService
 
             return $result->toArray();
         } catch (\Exception $e) {
-            // Emit failure event
             $failedEvent = new ServerScheduleTaskUpdateFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -456,11 +438,9 @@ class ServerScheduleService
         bool $continueOnFailure = false
     ): array
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        // Emit requested event (stoppable)
         $requestedEvent = new ServerScheduleTaskCreationRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -507,7 +487,6 @@ class ServerScheduleService
             $resultArray = $result->toArray();
             $taskId = $resultArray['attributes']['id'] ?? 0;
 
-            // Emit success event
             $createdEvent = new ServerScheduleTaskCreatedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -523,7 +502,6 @@ class ServerScheduleService
 
             return $resultArray;
         } catch (\Exception $e) {
-            // Emit failure event
             $failedEvent = new ServerScheduleTaskCreationFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -548,11 +526,9 @@ class ServerScheduleService
         int $taskId
     ): void
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        // Emit requested event (stoppable)
         $requestedEvent = new ServerScheduleTaskDeletionRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -584,7 +560,6 @@ class ServerScheduleService
                 ]
             );
 
-            // Emit success event
             $deletedEvent = new ServerScheduleTaskDeletedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -595,7 +570,6 @@ class ServerScheduleService
             );
             $this->eventDispatcher->dispatch($deletedEvent);
         } catch (\Exception $e) {
-            // Emit failure event
             $failedEvent = new ServerScheduleTaskDeletionFailedEvent(
                 $user->getId(),
                 $server->getId(),

@@ -780,7 +780,83 @@ POST /panel/api/server/{id}/reinstall
 
 ---
 
-### ~~8. Voucher API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
+### ~~8. Server Details API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-23)
+
+**Plik:** `src/Core/Controller/API/ServerController.php`
+
+#### ~~Endpointy bez eventów:~~ ✅ Endpointy z eventami:
+
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/server/{id}/details` | GET | Pobieranie szczegółów serwera | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/websocket` | GET | Pobieranie tokenu WebSocket | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/accept-eula` | POST | Akceptacja EULA | ✅ Eventy zaimplementowane |
+
+#### Zaimplementowane eventy:
+
+```php
+// GET /panel/api/server/{id}/details
+✅ ServerDetailsRequestedEvent (post, non-stoppable) - src/Core/Event/Server/
+✅ ServerDetailsLoadedEvent (post, non-stoppable) - src/Core/Event/Server/
+
+// GET /panel/api/server/{id}/websocket
+✅ ServerWebsocketTokenRequestedEvent (post, non-stoppable) - src/Core/Event/Server/
+✅ ServerWebsocketTokenGeneratedEvent (post, non-stoppable) - src/Core/Event/Server/
+
+// POST /panel/api/server/{id}/accept-eula
+✅ ServerEulaAcceptanceRequestedEvent (pre, stoppable) - src/Core/Event/Server/
+✅ ServerEulaAcceptedEvent (post-commit) - src/Core/Event/Server/
+✅ ServerEulaAcceptanceFailedEvent (error) - src/Core/Event/Server/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/` (7 eventów)
+- Kontroler: `src/Core/Controller/API/ServerController.php` (eventy dla GET endpoints)
+- Serwis: `src/Core/Service/Pterodactyl/ServerEulaService.php` (full EDA flow dla POST)
+
+**Payload eventów:**
+
+**GET /details (Read-only, metadata only):**
+- **ServerDetailsRequested**: userId, serverId, serverPterodactylIdentifier, context
+- **ServerDetailsLoaded**: userId, serverId, serverPterodactylIdentifier, currentState, isSuspended, context
+
+**GET /websocket (Read-only, bez tokenu - security):**
+- **ServerWebsocketTokenRequested**: userId, serverId, serverPterodactylIdentifier, context
+- **ServerWebsocketTokenGenerated**: userId, serverId, serverPterodactylIdentifier, context (BEZ tokenu)
+
+**POST /accept-eula (Write operation):**
+- **ServerEulaAcceptanceRequested**: userId, serverId, serverPterodactylIdentifier, context
+- **ServerEulaAccepted**: userId, serverId, serverPterodactylIdentifier, context
+- **ServerEulaAcceptanceFailed**: userId, serverId, serverPterodactylIdentifier, failureReason, context
+
+**Uwagi implementacyjne:**
+- Read-only endpoints (GET) NIE mają Failed events - tylko Request/Loaded pattern
+- Websocket token NIE jest w payload ServerWebsocketTokenGeneratedEvent (security)
+- ServerDetailsLoadedEvent zawiera tylko metadata (currentState, isSuspended), nie pełny DTO
+- EULA acceptance ma pełny flow z Requested (stoppable), Accepted, Failed
+
+**Flow dla EULA acceptance:**
+```
+POST /panel/api/server/{id}/accept-eula
+  → ServerEulaAcceptanceRequestedEvent (pre, stoppable) - plugin może zablokować
+  → updateEulaFileContent() - zapis pliku eula.txt
+  → sendPowerSignal('restart') - restart serwera
+  → ServerEulaAcceptedEvent (post-commit) - po sukcesie
+  → [catch] ServerEulaAcceptanceFailedEvent (error) - jeśli błąd
+```
+
+#### Zastosowanie dla pluginów:
+- **Analytics** - tracking użycia endpointów details i websocket ✅
+- **Performance monitoring** - monitoring czasu ładowania danych ✅
+- **Security** - monitoring generowania tokenów WebSocket ✅
+- **Rate limiting** - ograniczenie częstotliwości requestów ✅
+- **EULA validation** - dodatkowe walidacje przed akceptacją ✅
+- **Audit trail** - historia akceptacji EULA ✅
+- **Notifications** - powiadomienia o akceptacji EULA ✅
+
+---
+
+### ~~9. Voucher API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/API/VoucherController.php`
 
@@ -1403,8 +1479,15 @@ Operacje **rzadko wykonywane** lub **mało krytyczne**.
 
 #### Lista:
 
-16. **Server Details API** (`ServerController.php` - `/api/server/{id}/details`)
-    - Read-only endpoint - niski priorytet
+16. **~~Server Details API~~** ✅ **ZAIMPLEMENTOWANE** (2025-10-23)
+    - ~~Read-only endpoint - niski priorytet~~
+    - ✅ `ServerDetailsRequestedEvent`
+    - ✅ `ServerDetailsLoadedEvent`
+    - ✅ `ServerWebsocketTokenRequestedEvent`
+    - ✅ `ServerWebsocketTokenGeneratedEvent`
+    - ✅ `ServerEulaAcceptanceRequestedEvent` (stoppable)
+    - ✅ `ServerEulaAcceptedEvent`
+    - ✅ `ServerEulaAcceptanceFailedEvent`
 
 17. **~~Voucher Redeem API~~** ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
     - ~~`VoucherController.php`~~
@@ -1733,11 +1816,11 @@ Sugerowana kolejność implementacji:
 - ✅ Server Users API (ukończone 2025-10-22)
 - ✅ Server Databases API (ukończone 2025-10-22)
 
-#### Faza 2: API - Pozostałe (1 tydzień)
+#### ~~Faza 2: API - Pozostałe (1 tydzień)~~ ✅ **UKOŃCZONA** (2025-10-23)
 - ✅ Server Network API (ukończone 2025-10-23)
 - ✅ Server Schedules API (ukończone 2025-10-23)
-- Server Details API
-- ~~Voucher API~~ ✅ (ukończone 2025-10-22)
+- ✅ Server Details API (ukończone 2025-10-23)
+- ✅ Voucher API (ukończone 2025-10-22)
 
 #### ~~Faza 3: User-facing pages + Admin operations (2-3 dni)~~ ✅ **UKOŃCZONA** (2025-10-21 - 2025-10-22)
 - ✅ Server Management Page (ukończone 2025-10-22)

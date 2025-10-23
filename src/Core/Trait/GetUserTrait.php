@@ -22,4 +22,16 @@ trait GetUserTrait
 
         return $user;
     }
+
+    protected function getUserId(): int
+    {
+        $user = $this->getUser();
+        $userId = $user?->getId();
+
+        if ($userId === null) {
+            throw new \LogicException('User ID cannot be null in authenticated context');
+        }
+
+        return $userId;
+    }
 }

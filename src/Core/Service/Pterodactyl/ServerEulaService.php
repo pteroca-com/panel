@@ -6,9 +6,15 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Enum\SettingEnum;
+use App\Core\Event\Server\ServerEulaAcceptanceFailedEvent;
+use App\Core\Event\Server\ServerEulaAcceptanceRequestedEvent;
+use App\Core\Event\Server\ServerEulaAcceptedEvent;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\SettingService;
 use Exception;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ServerEulaService
@@ -18,11 +24,30 @@ class ServerEulaService
         private readonly SettingService $settingService,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RequestStack $requestStack,
+        private readonly EventContextService $eventContextService,
     ) {
     }
 
     public function acceptServerEula(Server $server, UserInterface $user): array
     {
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
+
+        $requestedEvent = new ServerEulaAcceptanceRequestedEvent(
+            $user->getId() ?? 0,
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'EULA acceptance was blocked';
+            throw new \RuntimeException($reason);
+        }
+
         try {
             $this->updateEulaFileContent($server, $user);
 
@@ -36,8 +61,25 @@ class ServerEulaService
 
             $this->serverLogService->logServerAction($user, $server, ServerLogActionEnum::ACCEPT_EULA);
 
+            $acceptedEvent = new ServerEulaAcceptedEvent(
+                $user->getId() ?? 0,
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($acceptedEvent);
+
             return ['success' => true];
         } catch (Exception $e) {
+            $failedEvent = new ServerEulaAcceptanceFailedEvent(
+                $user->getId() ?? 0,
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $e->getMessage(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($failedEvent);
+
             throw new Exception('Failed to accept EULA: ' . $e->getMessage());
         }
     }
