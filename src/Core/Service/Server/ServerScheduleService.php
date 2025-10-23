@@ -5,14 +5,38 @@ namespace App\Core\Service\Server;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogActionEnum;
+use App\Core\Event\Server\Schedule\ServerScheduleCreationRequestedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleCreatedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleCreationFailedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleUpdateRequestedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleUpdatedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleUpdateFailedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleDeletionRequestedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleDeletedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleDeletionFailedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskCreationRequestedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskCreatedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskCreationFailedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskUpdateRequestedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskUpdatedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskUpdateFailedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskDeletionRequestedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskDeletedEvent;
+use App\Core\Event\Server\Schedule\ServerScheduleTaskDeletionFailedEvent;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ServerScheduleService
 {
     public function __construct(
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerLogService $serverLogService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RequestStack $requestStack,
+        private readonly EventContextService $eventContextService,
     ) {}
 
     public function getAllSchedules(Server $server, UserInterface $user): array
@@ -37,14 +61,37 @@ class ServerScheduleService
         bool $onlyWhenOnline = true
     ): array
     {
+        // Quota validation BEFORE event emission (hard business rule)
         $schedulesLimit = $server->getServerProduct()->getSchedules();
         if ($schedulesLimit <= 0) {
-            throw new \Exception('Harmonogramy są wyłączone dla tego serwera.');
+            throw new \Exception('Schedules are disabled for this server.');
         }
 
         $currentSchedules = $this->getAllSchedules($server, $user);
         if (count($currentSchedules) >= $schedulesLimit) {
-            throw new \Exception(sprintf('Osiągnięto maksymalną liczbę harmonogramów (%d). Usuń istniejące harmonogramy, aby utworzyć nowe.', $schedulesLimit));
+            throw new \Exception(sprintf('Maximum number of schedules (%d) reached. Delete existing schedules to create new ones.', $schedulesLimit));
+        }
+
+        // Build event context
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
+
+        // Emit requested event (stoppable - plugins can block)
+        $requestedEvent = new ServerScheduleCreationRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $name,
+            $cronExpression,
+            $isActive,
+            $onlyWhenOnline,
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Schedule creation was blocked';
+            throw new \RuntimeException($reason);
         }
 
         $scheduleData = [
@@ -58,24 +105,59 @@ class ServerScheduleService
             'only_when_online' => $onlyWhenOnline,
         ];
 
-        $result = $this->pterodactylApplicationService
-            ->getClientApi($user)
-            ->schedules()
-            ->createSchedule($server, $scheduleData);
+        try {
+            $result = $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->schedules()
+                ->createSchedule($server, $scheduleData);
 
-        $this->serverLogService->logServerAction(
-            $user,
-            $server,
-            ServerLogActionEnum::CREATE_SCHEDULE,
-            [
-                'schedule_name' => $name,
-                'cron_expression' => implode(' ', $cronExpression),
-                'is_active' => $isActive,
-                'only_when_online' => $onlyWhenOnline,
-            ]
-        );
+            $this->serverLogService->logServerAction(
+                $user,
+                $server,
+                ServerLogActionEnum::CREATE_SCHEDULE,
+                [
+                    'schedule_name' => $name,
+                    'cron_expression' => implode(' ', $cronExpression),
+                    'is_active' => $isActive,
+                    'only_when_online' => $onlyWhenOnline,
+                ]
+            );
 
-        return $result->toArray();
+            $resultArray = $result->toArray();
+            $scheduleId = $resultArray['attributes']['id'] ?? 0;
+
+            // Emit success event
+            $createdEvent = new ServerScheduleCreatedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $name,
+                $cronExpression,
+                $isActive,
+                $onlyWhenOnline,
+                $context
+            );
+            $this->eventDispatcher->dispatch($createdEvent);
+
+            return $resultArray;
+        } catch (\Exception $e) {
+            // Emit failure event
+            $failedEvent = new ServerScheduleCreationFailedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $name,
+                $cronExpression,
+                $isActive,
+                $onlyWhenOnline,
+                $e->getMessage(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($failedEvent);
+
+            throw $e;
+        }
     }
 
     public function updateSchedule(
@@ -88,12 +170,38 @@ class ServerScheduleService
         ?bool $onlyWhenOnline = null
     ): array
     {
+        // Build event context
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
+
+        // Normalize cronExpression for event
+        $cronExpressionForEvent = $cronExpression ?? [];
+
+        // Emit requested event (stoppable)
+        $requestedEvent = new ServerScheduleUpdateRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $scheduleId,
+            $name ?? '',
+            $cronExpressionForEvent,
+            $isActive ?? true,
+            $onlyWhenOnline ?? true,
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Schedule update was blocked';
+            throw new \RuntimeException($reason);
+        }
+
         $scheduleData = [];
-        
+
         if ($name !== null) {
             $scheduleData['name'] = $name;
         }
-        
+
         if ($cronExpression !== null) {
             $scheduleData['minute'] = $cronExpression['minute'] ?? '*';
             $scheduleData['hour'] = $cronExpression['hour'] ?? '*';
@@ -101,34 +209,67 @@ class ServerScheduleService
             $scheduleData['month'] = $cronExpression['month'] ?? '*';
             $scheduleData['day_of_week'] = $cronExpression['day_of_week'] ?? '*';
         }
-        
+
         if ($isActive !== null) {
             $scheduleData['is_active'] = $isActive;
         }
-        
+
         if ($onlyWhenOnline !== null) {
             $scheduleData['only_when_online'] = $onlyWhenOnline;
         }
 
-        $result = $this->pterodactylApplicationService
-            ->getClientApi($user)
-            ->schedules()
-            ->updateSchedule($server, $scheduleId, $scheduleData);
+        try {
+            $result = $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->schedules()
+                ->updateSchedule($server, $scheduleId, $scheduleData);
 
-        $this->serverLogService->logServerAction(
-            $user,
-            $server,
-            ServerLogActionEnum::UPDATE_SCHEDULE,
-            [
-                'schedule_id' => $scheduleId,
-                'schedule_name' => $name,
-                'cron_expression' => $cronExpression ? implode(' ', $cronExpression) : null,
-                'is_active' => $isActive,
-                'only_when_online' => $onlyWhenOnline,
-            ]
-        );
+            $this->serverLogService->logServerAction(
+                $user,
+                $server,
+                ServerLogActionEnum::UPDATE_SCHEDULE,
+                [
+                    'schedule_id' => $scheduleId,
+                    'schedule_name' => $name,
+                    'cron_expression' => $cronExpression ? implode(' ', $cronExpression) : null,
+                    'is_active' => $isActive,
+                    'only_when_online' => $onlyWhenOnline,
+                ]
+            );
 
-        return $result->toArray();
+            // Emit success event
+            $updatedEvent = new ServerScheduleUpdatedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $name ?? '',
+                $cronExpressionForEvent,
+                $isActive ?? true,
+                $onlyWhenOnline ?? true,
+                $context
+            );
+            $this->eventDispatcher->dispatch($updatedEvent);
+
+            return $result->toArray();
+        } catch (\Exception $e) {
+            // Emit failure event
+            $failedEvent = new ServerScheduleUpdateFailedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $name ?? '',
+                $cronExpressionForEvent,
+                $isActive ?? true,
+                $onlyWhenOnline ?? true,
+                $e->getMessage(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($failedEvent);
+
+            throw $e;
+        }
     }
 
     public function deleteSchedule(
@@ -137,19 +278,63 @@ class ServerScheduleService
         int $scheduleId
     ): void
     {
-        $this->pterodactylApplicationService
-            ->getClientApi($user)
-            ->schedules()
-            ->deleteSchedule($server, $scheduleId);
+        // Build event context
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        $this->serverLogService->logServerAction(
-            $user,
-            $server,
-            ServerLogActionEnum::DELETE_SCHEDULE,
-            [
-                'schedule_id' => $scheduleId,
-            ]
+        // Emit requested event (stoppable)
+        $requestedEvent = new ServerScheduleDeletionRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $scheduleId,
+            $context
         );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Schedule deletion was blocked';
+            throw new \RuntimeException($reason);
+        }
+
+        try {
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->schedules()
+                ->deleteSchedule($server, $scheduleId);
+
+            $this->serverLogService->logServerAction(
+                $user,
+                $server,
+                ServerLogActionEnum::DELETE_SCHEDULE,
+                [
+                    'schedule_id' => $scheduleId,
+                ]
+            );
+
+            // Emit success event
+            $deletedEvent = new ServerScheduleDeletedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $context
+            );
+            $this->eventDispatcher->dispatch($deletedEvent);
+        } catch (\Exception $e) {
+            // Emit failure event
+            $failedEvent = new ServerScheduleDeletionFailedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $e->getMessage(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($failedEvent);
+
+            throw $e;
+        }
     }
 
     public function getSchedule(
@@ -176,6 +361,29 @@ class ServerScheduleService
         bool $continueOnFailure = false
     ): array
     {
+        // Build event context
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
+
+        // Emit requested event (stoppable)
+        $requestedEvent = new ServerScheduleTaskUpdateRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $scheduleId,
+            $taskId,
+            $action,
+            $payload,
+            $timeOffset,
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Schedule task update was blocked';
+            throw new \RuntimeException($reason);
+        }
+
         $taskData = [
             'action' => $action,
             'payload' => $payload,
@@ -183,26 +391,59 @@ class ServerScheduleService
             'continue_on_failure' => $continueOnFailure,
         ];
 
-        $result = $this->pterodactylApplicationService
-            ->getClientApi($user)
-            ->schedules()
-            ->updateScheduleTask($server, $scheduleId, $taskId, $taskData);
+        try {
+            $result = $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->schedules()
+                ->updateScheduleTask($server, $scheduleId, $taskId, $taskData);
 
-        $this->serverLogService->logServerAction(
-            $user,
-            $server,
-            ServerLogActionEnum::UPDATE_SCHEDULE_TASK,
-            [
-                'schedule_id' => $scheduleId,
-                'task_id' => $taskId,
-                'action' => $action,
-                'payload' => $payload,
-                'time_offset' => $timeOffset,
-                'continue_on_failure' => $continueOnFailure,
-            ]
-        );
+            $this->serverLogService->logServerAction(
+                $user,
+                $server,
+                ServerLogActionEnum::UPDATE_SCHEDULE_TASK,
+                [
+                    'schedule_id' => $scheduleId,
+                    'task_id' => $taskId,
+                    'action' => $action,
+                    'payload' => $payload,
+                    'time_offset' => $timeOffset,
+                    'continue_on_failure' => $continueOnFailure,
+                ]
+            );
 
-        return $result->toArray();
+            // Emit success event
+            $updatedEvent = new ServerScheduleTaskUpdatedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $taskId,
+                $action,
+                $payload,
+                $timeOffset,
+                $context
+            );
+            $this->eventDispatcher->dispatch($updatedEvent);
+
+            return $result->toArray();
+        } catch (\Exception $e) {
+            // Emit failure event
+            $failedEvent = new ServerScheduleTaskUpdateFailedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $taskId,
+                $action,
+                $payload,
+                $timeOffset,
+                $e->getMessage(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($failedEvent);
+
+            throw $e;
+        }
     }
 
     public function createScheduleTask(
@@ -215,6 +456,28 @@ class ServerScheduleService
         bool $continueOnFailure = false
     ): array
     {
+        // Build event context
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
+
+        // Emit requested event (stoppable)
+        $requestedEvent = new ServerScheduleTaskCreationRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $scheduleId,
+            $action,
+            $payload,
+            $timeOffset,
+            $context
+        );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Schedule task creation was blocked';
+            throw new \RuntimeException($reason);
+        }
+
         $taskData = [
             'action' => $action,
             'payload' => $payload,
@@ -222,25 +485,60 @@ class ServerScheduleService
             'continue_on_failure' => $continueOnFailure,
         ];
 
-        $result = $this->pterodactylApplicationService
-            ->getClientApi($user)
-            ->schedules()
-            ->createScheduleTask($server, $scheduleId, $taskData);
+        try {
+            $result = $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->schedules()
+                ->createScheduleTask($server, $scheduleId, $taskData);
 
-        $this->serverLogService->logServerAction(
-            $user,
-            $server,
-            ServerLogActionEnum::CREATE_SCHEDULE_TASK,
-            [
-                'schedule_id' => $scheduleId,
-                'action' => $action,
-                'payload' => $payload,
-                'time_offset' => $timeOffset,
-                'continue_on_failure' => $continueOnFailure,
-            ]
-        );
+            $this->serverLogService->logServerAction(
+                $user,
+                $server,
+                ServerLogActionEnum::CREATE_SCHEDULE_TASK,
+                [
+                    'schedule_id' => $scheduleId,
+                    'action' => $action,
+                    'payload' => $payload,
+                    'time_offset' => $timeOffset,
+                    'continue_on_failure' => $continueOnFailure,
+                ]
+            );
 
-        return $result->toArray();
+            $resultArray = $result->toArray();
+            $taskId = $resultArray['attributes']['id'] ?? 0;
+
+            // Emit success event
+            $createdEvent = new ServerScheduleTaskCreatedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $taskId,
+                $action,
+                $payload,
+                $timeOffset,
+                $context
+            );
+            $this->eventDispatcher->dispatch($createdEvent);
+
+            return $resultArray;
+        } catch (\Exception $e) {
+            // Emit failure event
+            $failedEvent = new ServerScheduleTaskCreationFailedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $action,
+                $payload,
+                $timeOffset,
+                $e->getMessage(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($failedEvent);
+
+            throw $e;
+        }
     }
 
     public function deleteScheduleTask(
@@ -250,19 +548,66 @@ class ServerScheduleService
         int $taskId
     ): void
     {
-        $this->pterodactylApplicationService
-            ->getClientApi($user)
-            ->schedules()
-            ->deleteScheduleTask($server, $scheduleId, $taskId);
+        // Build event context
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        $this->serverLogService->logServerAction(
-            $user,
-            $server,
-            ServerLogActionEnum::DELETE_SCHEDULE_TASK,
-            [
-                'schedule_id' => $scheduleId,
-                'task_id' => $taskId,
-            ]
+        // Emit requested event (stoppable)
+        $requestedEvent = new ServerScheduleTaskDeletionRequestedEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $scheduleId,
+            $taskId,
+            $context
         );
+        $this->eventDispatcher->dispatch($requestedEvent);
+
+        if ($requestedEvent->isPropagationStopped()) {
+            $reason = $requestedEvent->getRejectionReason() ?? 'Schedule task deletion was blocked';
+            throw new \RuntimeException($reason);
+        }
+
+        try {
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->schedules()
+                ->deleteScheduleTask($server, $scheduleId, $taskId);
+
+            $this->serverLogService->logServerAction(
+                $user,
+                $server,
+                ServerLogActionEnum::DELETE_SCHEDULE_TASK,
+                [
+                    'schedule_id' => $scheduleId,
+                    'task_id' => $taskId,
+                ]
+            );
+
+            // Emit success event
+            $deletedEvent = new ServerScheduleTaskDeletedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $taskId,
+                $context
+            );
+            $this->eventDispatcher->dispatch($deletedEvent);
+        } catch (\Exception $e) {
+            // Emit failure event
+            $failedEvent = new ServerScheduleTaskDeletionFailedEvent(
+                $user->getId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                $scheduleId,
+                $taskId,
+                $e->getMessage(),
+                $context
+            );
+            $this->eventDispatcher->dispatch($failedEvent);
+
+            throw $e;
+        }
     }
 }

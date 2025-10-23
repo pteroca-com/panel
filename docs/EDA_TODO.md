@@ -603,55 +603,108 @@ DELETE /panel/api/server/{id}/allocation/{allocationId}/delete
 
 ---
 
-### 6. Server Schedules API
+### ~~6. Server Schedules API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-23)
 
 **Plik:** `src/Core/Controller/API/ServerScheduleController.php`
 
-#### Endpointy bez eventów:
+#### ~~Endpointy bez eventów:~~ ✅ Endpointy z eventami:
 
-| Endpoint | Metoda | Akcja |
-|----------|--------|-------|
-| `/panel/api/server/{id}/schedules/create` | POST | Tworzenie harmonogramu |
-| `/panel/api/server/{id}/schedules/{scheduleId}` | PUT | Aktualizacja harmonogramu |
-| `/panel/api/server/{id}/schedules/{scheduleId}/delete` | DELETE | Usuwanie harmonogramu |
-| `/panel/api/server/{id}/schedules/{scheduleId}` | GET | Pobieranie harmonogramu |
-| `/panel/api/server/{id}/schedules/{scheduleId}/tasks` | POST | Tworzenie zadania |
-| `/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}` | PUT | Aktualizacja zadania |
-| `/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}` | DELETE | Usuwanie zadania |
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/server/{id}/schedules/create` | POST | Tworzenie harmonogramu | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/schedules/{scheduleId}` | PUT | Aktualizacja harmonogramu | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/schedules/{scheduleId}/delete` | DELETE | Usuwanie harmonogramu | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/schedules/{scheduleId}` | GET | Pobieranie harmonogramu | READ-ONLY |
+| `/panel/api/server/{id}/schedules/{scheduleId}/tasks` | POST | Tworzenie zadania | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}` | PUT | Aktualizacja zadania | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}` | DELETE | Usuwanie zadania | ✅ Eventy zaimplementowane |
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // POST /panel/api/server/{id}/schedules/create
-- ServerScheduleCreationRequestedEvent (pre, stoppable)
-- ServerScheduleCreatedEvent (post-commit)
+✅ ServerScheduleCreationRequestedEvent (pre, stoppable) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleCreatedEvent (post-commit) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleCreationFailedEvent (error) - src/Core/Event/Server/Schedule/
 
 // PUT /panel/api/server/{id}/schedules/{scheduleId}
-- ServerScheduleUpdateRequestedEvent (pre, stoppable)
-- ServerScheduleUpdatedEvent (post-commit)
+✅ ServerScheduleUpdateRequestedEvent (pre, stoppable) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleUpdatedEvent (post-commit) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleUpdateFailedEvent (error) - src/Core/Event/Server/Schedule/
 
 // DELETE /panel/api/server/{id}/schedules/{scheduleId}/delete
-- ServerScheduleDeletionRequestedEvent (pre, stoppable)
-- ServerScheduleDeletedEvent (post-commit)
+✅ ServerScheduleDeletionRequestedEvent (pre, stoppable) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleDeletedEvent (post-commit) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleDeletionFailedEvent (error) - src/Core/Event/Server/Schedule/
 
 // POST /panel/api/server/{id}/schedules/{scheduleId}/tasks
-- ServerScheduleTaskCreationRequestedEvent (pre, stoppable)
-- ServerScheduleTaskCreatedEvent (post-commit)
+✅ ServerScheduleTaskCreationRequestedEvent (pre, stoppable) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleTaskCreatedEvent (post-commit) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleTaskCreationFailedEvent (error) - src/Core/Event/Server/Schedule/
 
 // PUT /panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}
-- ServerScheduleTaskUpdateRequestedEvent (pre, stoppable)
-- ServerScheduleTaskUpdatedEvent (post-commit)
+✅ ServerScheduleTaskUpdateRequestedEvent (pre, stoppable) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleTaskUpdatedEvent (post-commit) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleTaskUpdateFailedEvent (error) - src/Core/Event/Server/Schedule/
 
 // DELETE /panel/api/server/{id}/schedules/{scheduleId}/tasks/{taskId}
-- ServerScheduleTaskDeletionRequestedEvent (pre, stoppable)
-- ServerScheduleTaskDeletedEvent (post-commit)
+✅ ServerScheduleTaskDeletionRequestedEvent (pre, stoppable) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleTaskDeletedEvent (post-commit) - src/Core/Event/Server/Schedule/
+✅ ServerScheduleTaskDeletionFailedEvent (error) - src/Core/Event/Server/Schedule/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/Schedule/` (18 eventów)
+- Logika: `src/Core/Service/Server/ServerScheduleService.php` (6 metod z EDA)
+- Kontroler: `src/Core/Controller/API/ServerScheduleController.php` (thin - wywołuje serwis)
+
+**Payload eventów:**
+
+**Schedule Operations:**
+- **Creation**: userId, serverId, serverPterodactylIdentifier, scheduleName, cronExpression (array), isActive, onlyWhenOnline, context
+- **Created**: userId, serverId, serverPterodactylIdentifier, scheduleId, scheduleName, cronExpression (array), isActive, onlyWhenOnline, context
+- **CreationFailed**: userId, serverId, serverPterodactylIdentifier, scheduleName, cronExpression (array), isActive, onlyWhenOnline, failureReason, context
+- **Update**: userId, serverId, serverPterodactylIdentifier, scheduleId, scheduleName, cronExpression (array), isActive, onlyWhenOnline, context
+- **Updated**: userId, serverId, serverPterodactylIdentifier, scheduleId, scheduleName, cronExpression (array), isActive, onlyWhenOnline, context
+- **UpdateFailed**: userId, serverId, serverPterodactylIdentifier, scheduleId, scheduleName, cronExpression (array), isActive, onlyWhenOnline, failureReason, context
+- **Deletion**: userId, serverId, serverPterodactylIdentifier, scheduleId, context
+- **Deleted**: userId, serverId, serverPterodactylIdentifier, scheduleId, context
+- **DeletionFailed**: userId, serverId, serverPterodactylIdentifier, scheduleId, failureReason, context
+
+**Task Operations:**
+- **TaskCreation**: userId, serverId, serverPterodactylIdentifier, scheduleId, action, payload, timeOffset, context
+- **TaskCreated**: userId, serverId, serverPterodactylIdentifier, scheduleId, taskId, action, payload, timeOffset, context
+- **TaskCreationFailed**: userId, serverId, serverPterodactylIdentifier, scheduleId, action, payload, timeOffset, failureReason, context
+- **TaskUpdate**: userId, serverId, serverPterodactylIdentifier, scheduleId, taskId, action, payload, timeOffset, context
+- **TaskUpdated**: userId, serverId, serverPterodactylIdentifier, scheduleId, taskId, action, payload, timeOffset, context
+- **TaskUpdateFailed**: userId, serverId, serverPterodactylIdentifier, scheduleId, taskId, action, payload, timeOffset, failureReason, context
+- **TaskDeletion**: userId, serverId, serverPterodactylIdentifier, scheduleId, taskId, context
+- **TaskDeleted**: userId, serverId, serverPterodactylIdentifier, scheduleId, taskId, context
+- **TaskDeletionFailed**: userId, serverId, serverPterodactylIdentifier, scheduleId, taskId, failureReason, context
+
+**Uwagi implementacyjne:**
+- cronExpression przechowywany jako array (np. `['minute' => '0', 'hour' => '*', 'day_of_month' => '*', 'month' => '*', 'day_of_week' => '*']`)
+- Quota validation wykonywana PRZED emisją Requested event (hard business rule)
+- Wszystkie operacje mają Failed events dla pełnego error trackingu
+- Stoppable events pozwalają na blokowanie przed wykonaniem API call
+
+**Flow dla tworzenia harmonogramu:**
+```
+POST /panel/api/server/{id}/schedules/create
+  → Quota validation (hard business rule)
+  → ServerScheduleCreationRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Pterodactyl API createSchedule()
+  → ServerScheduleCreatedEvent (post-commit) - po API call
+  → [catch] ServerScheduleCreationFailedEvent (error) - jeśli API error
 ```
 
 #### Zastosowanie dla pluginów:
-- **Quota management** - limit harmonogramów per serwer
-- **Analytics** - tracking popularnych schedulów
-- **Notifications** - powiadomienia o wykonaniu zadań
-- **Monitoring** - tracking błędów w harmonogramach
+- **Quota management** - limit harmonogramów per serwer ✅
+- **Analytics** - tracking popularnych schedulów ✅
+- **Notifications** - powiadomienia o wykonaniu zadań ✅
+- **Monitoring** - tracking błędów w harmonogramach ✅
+- **Validation** - dodatkowe walidacje cron expressions ✅
+- **Security** - audit trail dla schedulów i tasków ✅
 
 ---
 
@@ -1308,11 +1361,11 @@ Operacje **często wykonywane** lub **krytyczne dla zarządzania**.
 8. **CLI - Sync Servers** (`PterocaSyncServersCommand`)
    - Synchronizacja z Pterodactyl - krytyczna dla spójności
 
-9. **Server Network API** (`ServerNetworkController.php`)
-   - Zarządzanie alokacjami - często używane
+9. **~~Server Network API~~** ✅ **ZAIMPLEMENTOWANE** (2025-10-23)
+   - ~~Zarządzanie alokacjami - często używane~~
 
-10. **Server Schedules API** (`ServerScheduleController.php`)
-    - Harmonogramy zadań - popularna funkcjonalność
+10. **~~Server Schedules API~~** ✅ **ZAIMPLEMENTOWANE** (2025-10-23)
+    - ~~Harmonogramy zadań - popularna funkcjonalność~~
 
 ---
 
@@ -1681,10 +1734,10 @@ Sugerowana kolejność implementacji:
 - ✅ Server Databases API (ukończone 2025-10-22)
 
 #### Faza 2: API - Pozostałe (1 tydzień)
-- Server Network API
-- Server Schedules API
+- ✅ Server Network API (ukończone 2025-10-23)
+- ✅ Server Schedules API (ukończone 2025-10-23)
 - Server Details API
-- Voucher API
+- ~~Voucher API~~ ✅ (ukończone 2025-10-22)
 
 #### ~~Faza 3: User-facing pages + Admin operations (2-3 dni)~~ ✅ **UKOŃCZONA** (2025-10-21 - 2025-10-22)
 - ✅ Server Management Page (ukończone 2025-10-22)
