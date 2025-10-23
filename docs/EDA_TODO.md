@@ -483,45 +483,123 @@ POST /panel/api/server/{id}/database/{databaseId}/rotate-password
 
 ---
 
-### 5. Server Network API
+### ~~5. Server Network API~~ ✅ **ZAIMPLEMENTOWANE** (2025-10-22)
 
 **Plik:** `src/Core/Controller/API/ServerNetworkController.php`
 
-#### Endpointy bez eventów:
+#### ~~Endpointy bez eventów:~~ ✅ Endpointy z eventami:
 
-| Endpoint | Metoda | Akcja |
-|----------|--------|-------|
-| `/panel/api/server/{id}/allocation/create` | POST | Tworzenie alokacji |
-| `/panel/api/server/{id}/allocation/{allocationId}/primary` | POST | Ustawienie jako primary |
-| `/panel/api/server/{id}/allocation/{allocationId}/edit` | POST | Edycja alokacji |
-| `/panel/api/server/{id}/allocation/{allocationId}/delete` | DELETE | Usuwanie alokacji |
+| Endpoint | Metoda | Akcja | Status |
+|----------|--------|-------|--------|
+| `/panel/api/server/{id}/allocation/create` | POST | Tworzenie alokacji | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/allocation/{allocationId}/primary` | POST | Ustawienie jako primary | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/allocation/{allocationId}/edit` | POST | Edycja alokacji | ✅ Eventy zaimplementowane |
+| `/panel/api/server/{id}/allocation/{allocationId}/delete` | DELETE | Usuwanie alokacji | ✅ Eventy zaimplementowane |
 
-#### Proponowane eventy:
+#### Zaimplementowane eventy:
 
 ```php
 // POST /panel/api/server/{id}/allocation/create
-- ServerAllocationCreationRequestedEvent (pre, stoppable)
-- ServerAllocationCreatedEvent (post-commit)
-- ServerAllocationCreationFailedEvent (error)
+✅ ServerAllocationCreationRequestedEvent (pre, stoppable) - src/Core/Event/Server/Network/
+✅ ServerAllocationCreatedEvent (post-commit) - src/Core/Event/Server/Network/
+✅ ServerAllocationCreationFailedEvent (error) - src/Core/Event/Server/Network/
 
 // POST /panel/api/server/{id}/allocation/{allocationId}/primary
-- ServerAllocationPrimaryChangeRequestedEvent (pre, stoppable)
-- ServerAllocationPrimaryChangedEvent (post-commit)
+✅ ServerAllocationPrimaryChangeRequestedEvent (pre, stoppable) - src/Core/Event/Server/Network/
+✅ ServerAllocationPrimaryChangedEvent (post-commit) - src/Core/Event/Server/Network/
+✅ ServerAllocationPrimaryChangeFailedEvent (error) - src/Core/Event/Server/Network/
 
 // POST /panel/api/server/{id}/allocation/{allocationId}/edit
-- ServerAllocationEditRequestedEvent (pre, stoppable)
-- ServerAllocationEditedEvent (post-commit)
+✅ ServerAllocationEditRequestedEvent (pre, stoppable) - src/Core/Event/Server/Network/
+✅ ServerAllocationEditedEvent (post-commit) - src/Core/Event/Server/Network/
+✅ ServerAllocationEditFailedEvent (error) - src/Core/Event/Server/Network/
 
 // DELETE /panel/api/server/{id}/allocation/{allocationId}/delete
-- ServerAllocationDeletionRequestedEvent (pre, stoppable)
-- ServerAllocationDeletedEvent (post-commit)
+✅ ServerAllocationDeletionRequestedEvent (pre, stoppable) - src/Core/Event/Server/Network/
+✅ ServerAllocationDeletedEvent (post-commit) - src/Core/Event/Server/Network/
+✅ ServerAllocationDeletionFailedEvent (error) - src/Core/Event/Server/Network/
+```
+
+**Lokalizacja:**
+- Eventy: `src/Core/Event/Server/Network/`
+- Logika: `src/Core/Service/Server/ServerNetworkService.php`
+- Kontroler: `src/Core/Controller/API/ServerNetworkController.php` (thin - wywołuje serwis)
+
+**Payload eventów:**
+- **Allocation Creation**: userId, serverId, serverPterodactylIdentifier, failureReason (dla Failed), context
+- **Allocation Primary Change**: userId, serverId, serverPterodactylIdentifier, allocationId, failureReason (dla Failed), context
+- **Allocation Edit**: userId, serverId, serverPterodactylIdentifier, allocationId, newNotes, failureReason (dla Failed), context
+- **Allocation Deletion**: userId, serverId, serverPterodactylIdentifier, allocationId, failureReason (dla Failed), context
+
+**Specyfika implementacji:**
+- Wszystkie metody zwracają `ServerAllocationActionResult` zamiast rzucać wyjątki
+- Stoppable eventy blokują przez `return ServerAllocationActionResult(success: false, error: reason)`
+- Failed eventy emitowane w bloku `if (!empty($errorDetail))` przed zwróceniem DTO z error
+- Wszystkie operacje mają Failed event (w przeciwieństwie do oryginalnej dokumentacji)
+
+**Flow dla tworzenia alokacji:**
+```
+POST /panel/api/server/{id}/allocation/create
+  → ServerAllocationCreationRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Try-catch block
+    → Pterodactyl API assignAllocation()
+  → If error:
+    → ServerAllocationCreationFailedEvent (error)
+    → Return ServerAllocationActionResult(success: false)
+  → ServerLogService.logServerAction()
+  → ServerAllocationCreatedEvent (post-commit)
+  → Return ServerAllocationActionResult(success: true)
+```
+
+**Flow dla zmiany primary:**
+```
+POST /panel/api/server/{id}/allocation/{allocationId}/primary
+  → ServerAllocationPrimaryChangeRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Try-catch block
+    → Pterodactyl API setPrimaryAllocation()
+  → If error:
+    → ServerAllocationPrimaryChangeFailedEvent (error)
+    → Return ServerAllocationActionResult(success: false)
+  → ServerLogService.logServerAction()
+  → ServerAllocationPrimaryChangedEvent (post-commit)
+  → Return ServerAllocationActionResult(success: true)
+```
+
+**Flow dla edycji notatek:**
+```
+POST /panel/api/server/{id}/allocation/{allocationId}/edit
+  → ServerAllocationEditRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Try-catch block
+    → Pterodactyl API updateAllocationNotes()
+  → If error:
+    → ServerAllocationEditFailedEvent (error)
+    → Return ServerAllocationActionResult(success: false)
+  → ServerLogService.logServerAction()
+  → ServerAllocationEditedEvent (post-commit)
+  → Return ServerAllocationActionResult(success: true)
+```
+
+**Flow dla usuwania alokacji:**
+```
+DELETE /panel/api/server/{id}/allocation/{allocationId}/delete
+  → ServerAllocationDeletionRequestedEvent (pre, stoppable) - plugin może zablokować
+  → Try-catch block
+    → Pterodactyl API removeAllocation()
+  → If error:
+    → ServerAllocationDeletionFailedEvent (error)
+    → Return ServerAllocationActionResult(success: false)
+  → ServerLogService.logServerAction()
+  → ServerAllocationDeletedEvent (post-commit)
+  → Return ServerAllocationActionResult(success: true)
 ```
 
 #### Zastosowanie dla pluginów:
-- **Quota management** - limit portów per serwer
-- **Billing** - płatność za dodatkowe porty
-- **Firewall integration** - automatyczna konfiguracja firewall
-- **DDoS protection** - integracja z systemami ochrony
+- **Quota management** - limit portów per serwer ✅
+- **Billing** - płatność za dodatkowe porty ✅
+- **Firewall integration** - automatyczna konfiguracja firewall ✅
+- **DDoS protection** - integracja z systemami ochrony ✅
+- **Network monitoring** - tracking zmian w alokacjach ✅
+- **Security** - audit trail dla operacji sieciowych ✅
 
 ---
 
