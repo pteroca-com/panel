@@ -61,7 +61,6 @@ class CronJobScheduleCommand extends Command
         $io->info(sprintf('[%s] Starting cron job execution', $timestamp));
 
         foreach (self::SCHEDULED_COMMANDS as $key => $config) {
-            // Parse command configuration
             $commandName = is_string($config) ? $config : $key;
             $conditions = null;
             $interval = CronIntervalEnum::EVERY_MINUTE;
@@ -71,14 +70,12 @@ class CronJobScheduleCommand extends Command
                 $interval = $config['interval'] ?? CronIntervalEnum::EVERY_MINUTE;
             }
 
-            // Check if command should execute now based on interval
             if (!$interval->shouldExecuteNow()) {
                 $io->info(sprintf('⏭  Skipping command: %s (interval: %s)', $commandName, $interval->value));
                 continue;
             }
 
             try {
-                // Check required conditions (settings)
                 if ($conditions) {
                     $this->checkConditions($commandName, $conditions);
                 }

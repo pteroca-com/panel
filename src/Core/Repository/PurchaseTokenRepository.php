@@ -7,14 +7,6 @@ use App\Core\Entity\PurchaseToken;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<PurchaseToken>
- *
- * @method PurchaseToken|null find($id, $lockMode = null, $lockVersion = null)
- * @method PurchaseToken|null findOneBy(array $criteria, array $orderBy = null)
- * @method PurchaseToken[]    findAll()
- * @method PurchaseToken[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class PurchaseTokenRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -57,9 +49,6 @@ class PurchaseTokenRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    /**
-     * Delete all tokens for a specific user and type
-     */
     public function deleteUserTokensByType(UserInterface $user, string $type): void
     {
         $this->createQueryBuilder('pt')

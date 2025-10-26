@@ -2,9 +2,6 @@
 
 namespace App\Core\Enum;
 
-/**
- * Enum representing cron job execution intervals
- */
 enum CronIntervalEnum: string
 {
     case EVERY_MINUTE = 'every_minute';
@@ -13,9 +10,6 @@ enum CronIntervalEnum: string
     case HOURLY = 'hourly';
     case DAILY = 'daily';
 
-    /**
-     * Check if the current time matches the interval
-     */
     public function shouldExecuteNow(): bool
     {
         $now = new \DateTime();
@@ -31,9 +25,6 @@ enum CronIntervalEnum: string
         };
     }
 
-    /**
-     * Get human-readable description of the interval
-     */
     public function getDescription(): string
     {
         return match ($this) {
