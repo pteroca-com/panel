@@ -156,6 +156,7 @@ pteroca:
     total: 'Łącznie'
     slot: 'slot'
     slots: 'Sloty'
+    processing: 'Przetwarzanie...'
 
   store:
     title: 'Sklep'
@@ -1181,6 +1182,8 @@ pteroca:
       user_already_exists_in_local_database: 'Użytkownik o tym adresie e-mail już istnieje w lokalnej bazie danych.'
 
   error:
+    invalid_csrf_token: 'Nieprawidłowy token CSRF. Odśwież stronę i spróbuj ponownie.'
+    user_not_found: 'Użytkownik nie znaleziony.'
     404:
       title: 'Strona nie została znaleziona'
       message: 'Przepraszamy, ale strona której szukasz nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.'

@@ -28,10 +28,12 @@
             </div>
         </div>
 
-        <form action="{{ path('panel', { routeName: 'cart_buy' }) }}" method="post">
+        <form action="{{ path('panel', { routeName: 'cart_buy' }) }}" method="post" id="cart-buy-form">
             <input type="hidden" name="id" value="{{ product.id }}">
             <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="server_discount">
-            
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('submit') }}">
+            <input type="hidden" name="purchase_token" value="{{ purchase_token }}">
+
             <div class="row g-4">
                 <!-- Product Configuration -->
                 <div class="col-lg-8">
@@ -436,6 +438,17 @@
             {% endif %}
 
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
+
+            // Prevent double-submit: disable button on form submission
+            const submitButton = document.getElementById('order-submit');
+            const form = document.getElementById('cart-buy-form');
+
+            form.addEventListener('submit', function(e) {
+                if (!submitButton.disabled) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>{{ "pteroca.product.processing"|trans|default("Processing...") }}';
+                }
+            });
         })
 
         function calculatePrice() {
