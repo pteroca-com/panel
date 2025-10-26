@@ -17,6 +17,7 @@ pteroca:
     sign_in: 'Inloggen'
     invalid_captcha: 'Ongeldige CAPTCHA-verificatie.'
     user_blocked: 'Uw account is geblokkeerd.'
+    account_deleted: 'Uw account is verwijderd.'
     invalid_credentials: 'Ongeldig e-mailadres of wachtwoord.'
     dont_have_account_yet: "Heeft u nog geen account? Registreer nu!"
     subtitle: 'Log in op uw account'
@@ -150,6 +151,8 @@ pteroca:
     total: 'Totaal'
     slot: 'slot'
     slots: 'Slots'
+    processing: 'Verwerken...'
+
   store:
     title: 'Winkel'
     order: 'Bestel'
@@ -1164,6 +1167,8 @@ pteroca:
       user_already_exists_in_local_database: 'Een gebruiker met dit e-mailadres bestaat al in de lokale database.'
 
   error:
+    invalid_csrf_token: 'Ongeldig CSRF-token. Vernieuw de pagina en probeer het opnieuw.'
+    user_not_found: 'Gebruiker niet gevonden.'
     404:
       title: 'Pagina niet gevonden'
       message: 'Sorry, maar de pagina die u zoekt bestaat niet of is verplaatst. Controleer de URL of ga terug naar de hoofdpagina.'

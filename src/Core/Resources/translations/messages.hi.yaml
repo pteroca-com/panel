@@ -18,6 +18,7 @@ pteroca:
     sign_in: 'साइन इन करें'
     invalid_captcha: 'अमान्य CAPTCHA सत्यापन।'
     user_blocked: 'आपका खाता ब्लॉक कर दिया गया है।'
+    account_deleted: 'आपका खाता हटा दिया गया है।'
     invalid_credentials: 'अमान्य ईमेल या पासवर्ड।'
     dont_have_account_yet: "अभी तक खाता नहीं है? अभी पंजीकरण करें!"
     subtitle: 'अपने खाते में लॉगिन करें'
@@ -155,6 +156,7 @@ pteroca:
     total: 'कुल'
     slot: 'स्लॉट'
     slots: 'स्लॉट्स'
+    processing: 'प्रसंस्करण...'
 
   store:
     title: 'स्टोर'
@@ -1180,6 +1182,8 @@ pteroca:
       user_already_exists_in_local_database: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही स्थानीय डेटाबेस में मौजूद है।'
 
   error:
+    invalid_csrf_token: 'अमान्य CSRF टोकन। कृपया पृष्ठ को ताज़ा करें और पुनः प्रयास करें।'
+    user_not_found: 'उपयोगकर्ता नहीं मिला।'
     404:
       title: 'पेज नहीं मिला'
       message: 'खुशी है, लेकिन आप जो पेज खोज रहे हैं वह मौजूद नहीं है या स्थानांतरित हो गया है। URL की जांच करें या मुख्य पेज पर वापस जाएं।'

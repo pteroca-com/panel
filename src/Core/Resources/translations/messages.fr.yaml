@@ -20,6 +20,7 @@ pteroca:
     sign_in: 'Se connecter'
     invalid_captcha: 'Vérification CAPTCHA invalide.'
     user_blocked: 'Votre compte a été bloqué.'
+    account_deleted: 'Votre compte a été supprimé.'
     invalid_credentials: 'Adresse e-mail ou mot de passe invalide.'
     dont_have_account_yet: 'Vous n’avez pas encore de compte ? Inscrivez-vous !'
     subtitle: 'Connectez-vous à votre compte'
@@ -159,7 +160,7 @@ pteroca:
     total: 'Total'
     slot: 'emplacement'
     slots: 'Emplacements'
-
+    processing: 'Traitement...'
 
   store:
     title: 'Boutique'
@@ -1186,6 +1187,8 @@ pteroca:
       admin_account_alert: "N'oubliez pas de créer un compte administrateur sécurisé et de conserver vos identifiants en lieu sûr."
 
   error:
+    invalid_csrf_token: 'Jeton CSRF invalide. Veuillez actualiser la page et réessayer.'
+    user_not_found: 'Utilisateur introuvable.'
     404:
       title: 'Page non trouvée'
       message: 'Désolé, mais la page que vous recherchez n''existe pas ou a été déplacée. Vérifiez l''URL ou retournez à la page d''accueil.'

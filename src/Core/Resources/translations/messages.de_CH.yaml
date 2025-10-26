@@ -18,6 +18,7 @@ pteroca:
     sign_in: 'Anmelden'
     invalid_captcha: 'Ungültige CAPTCHA-Überprüfung.'
     user_blocked: 'Ihr Konto wurde gesperrt.'
+    account_deleted: 'Ihr Konto wurde gelöscht.'
     invalid_credentials: 'Ungültige E-Mail oder Passwort.'
     dont_have_account_yet: "Sie haben noch kein Konto? Jetzt registrieren!"
     subtitle: 'Melden Sie sich in Ihrem Konto an'
@@ -152,6 +153,8 @@ pteroca:
     total: 'Gesamt'
     slot: 'Slot'
     slots: 'Slots'
+    processing: 'Verarbeitung...'
+
   store:
     title: 'Shop'
     order: 'Bestellung'
@@ -1171,6 +1174,8 @@ pteroca:
       user_already_exists_in_local_database: 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits in der lokalen Datenbank.'
 
   error:
+    invalid_csrf_token: 'Ungültiges CSRF-Token. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.'
+    user_not_found: 'Benutzer nicht gefunden.'
     404:
       title: 'Seite nicht gefunden'
       message: 'Entschuldigung, aber die Seite, die Sie suchen, existiert nicht oder wurde verschoben. Überprüfen Sie die URL oder kehren Sie zur Startseite zurück.'

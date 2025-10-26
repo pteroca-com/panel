@@ -22,6 +22,7 @@ pteroca:
     sign_in: 'Iniciar sesión'
     invalid_captcha: 'Verificación CAPTCHA no válida.'
     user_blocked: 'Tu cuenta ha sido bloqueada.'
+    account_deleted: 'Tu cuenta ha sido eliminada.'
     invalid_credentials: 'Correo electrónico o contraseña inválidos.'
     dont_have_account_yet: '¿No tienes una cuenta? ¡Regístrate!'
     subtitle: 'Inicia sesión en tu cuenta'
@@ -159,6 +160,7 @@ pteroca:
     total: 'Total'
     slot: 'slot'
     slots: 'Slots'
+    processing: 'Procesando...'
 
   store:
     title: 'Tienda'
@@ -1184,6 +1186,8 @@ pteroca:
       user_already_exists_in_local_database: 'Un usuario con esta dirección de correo electrónico ya existe en la base de datos local.'
 
   error:
+    invalid_csrf_token: 'Token CSRF inválido. Por favor, actualice la página e inténtelo de nuevo.'
+    user_not_found: 'Usuario no encontrado.'
     404:
       title: 'Página no encontrada'
       message: 'Lo sentimos, pero la página que buscas no existe o ha sido movida. Verifica la URL o regresa a la página principal.'
