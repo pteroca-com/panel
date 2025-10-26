@@ -1101,43 +1101,181 @@ Wszystkie polecenia CLI **nie emitują eventów EDA**.
 
 ---
 
-#### 2. SuspendUnpaidServersCommand
+#### 2. SuspendUnpaidServersCommand ✅ UKOŃCZONA (2025-10-25)
 
 **Komenda:** `app:suspend-unpaid-servers`
 **Plik:** `src/Core/Command/SuspendUnpaidServersCommand.php`
+**Handler:** `src/Core/Handler/SuspendUnpaidServersHandler.php`
 
-**Proponowane eventy:**
-```php
-- SuspendUnpaidServersProcessStartedEvent (pre)
-- ServerSuspendedForNonPaymentEvent (per server)
-- SuspendUnpaidServersProcessCompletedEvent (post)
+**Zaimplementowane eventy (6):**
+
+**Process-level events:**
+1. **SuspendUnpaidServersProcessStartedEvent** - Process start
+   - **Ścieżka:** `src/Core/Event/Cli/SuspendUnpaidServers/SuspendUnpaidServersProcessStartedEvent.php`
+   - **Payload:** startedAt, context
+   - **Kiedy:** Na początku procesu zawieszania
+
+2. **SuspendUnpaidServersProcessCompletedEvent** - Process completion
+   - **Ścieżka:** `src/Core/Event/Cli/SuspendUnpaidServers/SuspendUnpaidServersProcessCompletedEvent.php`
+   - **Payload:** serversChecked, serversSuspended, serversRenewed, serversFailedToProcess, durationInSeconds, completedAt, context
+   - **Kiedy:** Po pomyślnym zakończeniu procesu
+
+3. **SuspendUnpaidServersProcessFailedEvent** - Process failure
+   - **Ścieżka:** `src/Core/Event/Cli/SuspendUnpaidServers/SuspendUnpaidServersProcessFailedEvent.php`
+   - **Payload:** failureReason, stats (checked/suspended/renewed/failed), failedAt, context
+   - **Kiedy:** Gdy proces zakończył się błędem krytycznym
+
+**Per-server events:**
+4. **ServerSuspendedForNonPaymentEvent** - Server suspended
+   - **Ścieżka:** `src/Core/Event/Cli/SuspendUnpaidServers/ServerSuspendedForNonPaymentEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylIdentifier, serverName, suspendedAt, context
+   - **Kiedy:** Po pomyślnym zawieszeniu serwera za brak płatności
+
+5. **ServerAutoRenewedEvent** - Auto-renewal success
+   - **Ścieżka:** `src/Core/Event/Cli/SuspendUnpaidServers/ServerAutoRenewedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylIdentifier, serverName, renewedAt, renewalCost, context
+   - **Kiedy:** Gdy serwer został pomyślnie odnowiony automatycznie (zamiast zawieszenia)
+
+6. **ServerSuspensionFailedEvent** - Per-server failure
+   - **Ścieżka:** `src/Core/Event/Cli/SuspendUnpaidServers/ServerSuspensionFailedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylIdentifier, serverName, failureReason, context
+   - **Kiedy:** Gdy zawieszenie pojedynczego serwera zakończyło się błędem (proces kontynuuje dla pozostałych)
+
+**Przepływ eventów:**
+```
+1. Dispatch: SuspendUnpaidServersProcessStartedEvent
+   ↓
+2. Foreach server:
+   - Try auto-renewal
+     → Success: Dispatch ServerAutoRenewedEvent
+     → Failed: Try suspend
+       → Success: Dispatch ServerSuspendedForNonPaymentEvent
+       → Failed: Dispatch ServerSuspensionFailedEvent (continue)
+   ↓
+3. Dispatch: SuspendUnpaidServersProcessCompletedEvent (with stats)
+   OR
+   Dispatch: SuspendUnpaidServersProcessFailedEvent (on critical error)
 ```
 
+**CLI Context:**
+- `source`: 'cli'
+- `command`: 'app:suspend-unpaid-servers'
+- `userAgent`: 'CLI'
+- `locale`: null
+- `ip`: null
+
+**Kluczowe decyzje implementacyjne:**
+- Process-level events dla całego procesu + per-server events dla szczegółów
+- Proces kontynuuje przetwarzanie pomimo błędów pojedynczych serwerów
+- ServerAutoRenewedEvent emitowany gdy auto-renewal kończy się sukcesem
+- Szczegółowe statystyki w ProcessCompletedEvent (checked, suspended, renewed, failed, duration)
+- CLI-specific context structure (bez Request object)
+
 **Zastosowanie:**
-- Notifications - powiadomienia użytkowników o zawieszeniu
-- Analytics - tracking zawieszonych serwerów
-- Monitoring - alerting przy błędach
+- Notifications - powiadomienia użytkowników o zawieszeniu/odnowieniu
+- Analytics - tracking zawieszonych/odnowionych serwerów z metrykami
+- Monitoring - alerting przy błędach (per-server i process-level)
 - Retry logic - ponowne próby dla failed operations
+- Performance monitoring - tracking duration i throughput
 
 ---
 
-#### 3. DeleteInactiveServersCommand
+#### 3. DeleteInactiveServersCommand ✅ UKOŃCZONA (2025-10-25)
 
 **Komenda:** `app:delete-inactive-servers`
 **Plik:** `src/Core/Command/DeleteInactiveServersCommand.php`
+**Handler:** `src/Core/Handler/DeleteInactiveServersHandler.php`
 
-**Proponowane eventy:**
-```php
-- DeleteInactiveServersProcessStartedEvent (pre)
-- InactiveServerDeletedEvent (per server)
-- DeleteInactiveServersProcessCompletedEvent (post)
+**Zaimplementowane eventy (6):**
+
+**Process-level events:**
+1. **DeleteInactiveServersProcessStartedEvent** - Process start
+   - **Ścieżka:** `src/Core/Event/Cli/DeleteInactiveServers/DeleteInactiveServersProcessStartedEvent.php`
+   - **Payload:** startedAt, daysAfterExpiration, context
+   - **Kiedy:** Na początku procesu usuwania
+
+2. **DeleteInactiveServersProcessCompletedEvent** - Process completion
+   - **Ścieżka:** `src/Core/Event/Cli/DeleteInactiveServers/DeleteInactiveServersProcessCompletedEvent.php`
+   - **Payload:** serversChecked, serversDeleted, serversSkipped, serversFailed, daysAfterExpiration, durationInSeconds, completedAt, context
+   - **Kiedy:** Po pomyślnym zakończeniu procesu
+
+3. **DeleteInactiveServersProcessFailedEvent** - Process failure
+   - **Ścieżka:** `src/Core/Event/Cli/DeleteInactiveServers/DeleteInactiveServersProcessFailedEvent.php`
+   - **Payload:** failureReason, stats (checked/deleted/skipped/failed), failedAt, context
+   - **Kiedy:** Gdy proces zakończył się błędem krytycznym
+
+**Per-server events:**
+4. **InactiveServerDeletionRequestedEvent** (stoppable) - Pre-deletion
+   - **Ścieżka:** `src/Core/Event/Cli/DeleteInactiveServers/InactiveServerDeletionRequestedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylIdentifier, serverName, expiredAt, daysAfterExpiration, context
+   - **Kiedy:** PRZED usunięciem każdego serwera
+   - **Stoppable:** TAK - plugin może wykonać backup lub zablokować usunięcie
+   - **Trait:** StoppableEventTrait
+
+5. **InactiveServerDeletedEvent** - Server deleted
+   - **Ścieżka:** `src/Core/Event/Cli/DeleteInactiveServers/InactiveServerDeletedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylIdentifier, serverName, expiredAt, deletedAt, daysAfterExpiration, context
+   - **Kiedy:** Po pomyślnym usunięciu serwera
+
+6. **InactiveServerDeletionFailedEvent** - Per-server failure
+   - **Ścieżka:** `src/Core/Event/Cli/DeleteInactiveServers/InactiveServerDeletionFailedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylIdentifier, serverName, expiredAt, failureReason, context
+   - **Kiedy:** Gdy usunięcie pojedynczego serwera zakończyło się błędem (proces kontynuuje dla pozostałych)
+
+**Przepływ eventów:**
+```
+1. Dispatch: DeleteInactiveServersProcessStartedEvent
+   ↓
+2. Foreach server to delete:
+   → Dispatch: InactiveServerDeletionRequestedEvent (stoppable)
+     ✓ Not stopped: Proceed with deletion
+       → Delete from Pterodactyl
+       → Delete from database
+       → Success: Dispatch InactiveServerDeletedEvent
+       ✗ Error: Dispatch InactiveServerDeletionFailedEvent (continue)
+     ✗ Stopped by plugin: Skip deletion (stats['skipped']++)
+   ↓
+3. Dispatch: DeleteInactiveServersProcessCompletedEvent (with stats)
+   OR
+   Dispatch: DeleteInactiveServersProcessFailedEvent (on critical error)
 ```
 
+**Konfiguracja:**
+- Dni po wygaśnięciu: Odczytywane z `SettingEnum::DELETE_SUSPENDED_SERVERS_DAYS_AFTER`
+- Domyślna wartość: 30 dni
+
+**CLI Context:**
+- `source`: 'cli'
+- `command`: 'app:delete-inactive-servers'
+- `daysAfterExpiration`: konfigurowana wartość
+- `userAgent`: 'CLI'
+- `locale`: null
+- `ip`: null
+
+**Kluczowe decyzje implementacyjne:**
+- **Stoppable pre-event** dla backup automation - plugin może zrobić backup lub zablokować usunięcie
+- **Pełne dane czasowe** (expiredAt, deletedAt, daysAfterExpiration) dla analytics i audit
+- Proces **kontynuuje** przetwarzanie pomimo błędów pojedynczych serwerów
+- **Stat 'skipped'** - tracking serwerów zablokowanych przez pluginy
+- Szczegółowe statystyki w ProcessCompletedEvent (checked, deleted, skipped, failed, duration)
+
 **Zastosowanie:**
-- Backup automation - backupy przed usunięciem
-- Notifications - ostatnie ostrzeżenia dla użytkowników
-- Analytics - tracking usuniętych serwerów
-- Audit trail
+✅ **Backup automation** - Plugin nasłuchuje na `InactiveServerDeletionRequestedEvent`:
+  - Wykonuje backup przed usunięciem
+  - Może zablokować usunięcie używając `setRejected(true, reason)`
+
+✅ **Notifications** - Plugin może wysłać ostatnie ostrzeżenie w reakcji na `InactiveServerDeletionRequestedEvent`
+
+✅ **Analytics** - Pełne dane czasowe pozwalają na tracking:
+  - Ile serwerów jest usuwanych
+  - Jak długo po wygaśnięciu następuje usunięcie
+  - Success rate usuwania
+  - Ile serwerów zostało zablokowanych przez pluginy
+
+✅ **Audit trail** - Wszystkie operacje logowane:
+  - Kto (userId), co (serverId), kiedy (timestamps)
+  - Powody niepowodzeń
+  - Blokady przez pluginy (w tym powody)
 
 ---
 
@@ -1181,24 +1319,148 @@ Wszystkie polecenia CLI **nie emitują eventów EDA**.
 
 ---
 
-#### 6. PterocaSyncServersCommand
+#### 6. PterocaSyncServersCommand ✅ UKOŃCZONA (2025-10-25)
 
-**Komenda:** `app:pteroca-sync-servers`
+**Komenda:** `pteroca:sync-servers`
 **Plik:** `src/Core/Command/PterocaSyncServersCommand.php`
+**Handler:** `src/Core/Handler/SyncServersHandler.php`
+**Services:** `PterodactylSyncService.php`, `PterodactylCleanupService.php`
 
-**Proponowane eventy:**
-```php
-- ServersSyncProcessStartedEvent (pre)
-- ServerSyncedEvent (per server)
-- ServersSyncProcessCompletedEvent (post)
-- ServerSyncFailedEvent (error, per server)
+**Opcje CLI:**
+- `--limit` (domyślnie 1000) - limit serwerów do sprawdzenia z Pterodactyl
+- `--dry-run` - tryb testowy, pokazuje co by zostało zrobione bez wprowadzania zmian
+- `--auto` - automatyczny tryb, usuwa osierocone serwery bez pytania (dla crona)
+
+**Zaimplementowane eventy (7):**
+
+**Process-level events:**
+1. **ServersSyncProcessStartedEvent** - Process start
+   - **Ścieżka:** `src/Core/Event/Cli/SyncServers/ServersSyncProcessStartedEvent.php`
+   - **Payload:** startedAt, limit, dryRun, auto, context
+   - **Kiedy:** Na początku procesu synchronizacji
+
+2. **ServersSyncProcessCompletedEvent** - Process completion
+   - **Ścieżka:** `src/Core/Event/Cli/SyncServers/ServersSyncProcessCompletedEvent.php`
+   - **Payload:** pterodactylServersFound, orphanedServersFound, orphanedServersDeleted, orphanedServersSkipped, orphanedServersFailed, limit, dryRun, auto, durationInSeconds, completedAt, context
+   - **Kiedy:** Po pomyślnym zakończeniu procesu
+
+3. **ServersSyncProcessFailedEvent** - Process failure
+   - **Ścieżka:** `src/Core/Event/Cli/SyncServers/ServersSyncProcessFailedEvent.php`
+   - **Payload:** failureReason, stats (częściowe), failedAt, context
+   - **Kiedy:** Gdy proces zakończył się błędem krytycznym
+
+**Per-server events:**
+4. **OrphanedServerFoundEvent** ⚠️ STOPPABLE - Orphaned server found
+   - **Ścieżka:** `src/Core/Event/Cli/SyncServers/OrphanedServerFoundEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylServerId, serverPterodactylIdentifier, serverName, context
+   - **Kiedy:** Po znalezieniu osieroczonego serwera, PRZED pytaniem użytkownika / usunięciem
+   - **Stoppable:** TAK - plugin może zablokować usunięcie lub wykonać backup
+   - **Trait:** StoppableEventTrait
+
+5. **OrphanedServerDeletedEvent** - Orphaned server deleted
+   - **Ścieżka:** `src/Core/Event/Cli/SyncServers/OrphanedServerDeletedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylServerId, serverPterodactylIdentifier, serverName, deletedAt, context
+   - **Kiedy:** Po pomyślnym usunięciu (soft delete) osieroczonego serwera
+
+6. **OrphanedServerSkippedEvent** - Orphaned server skipped
+   - **Ścieżka:** `src/Core/Event/Cli/SyncServers/OrphanedServerSkippedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylServerId, serverPterodactylIdentifier, serverName, reason, context
+   - **Kiedy:** Gdy serwer został pominięty
+   - **Reasons:** "plugin_blocked" (zablokowany przez plugin), "user_declined" (user odmówił), "dry_run" (tryb testowy)
+
+7. **OrphanedServerDeletionFailedEvent** - Per-server failure
+   - **Ścieżka:** `src/Core/Event/Cli/SyncServers/OrphanedServerDeletionFailedEvent.php`
+   - **Payload:** userId, serverId, serverPterodactylServerId, serverPterodactylIdentifier, serverName, failureReason, context
+   - **Kiedy:** Błąd przy usuwaniu osieroczonego serwera (proces kontynuuje)
+
+**Przepływ eventów:**
+```
+1. Dispatch: ServersSyncProcessStartedEvent
+   ↓
+2. Fetch servers from Pterodactyl API → stats['pterodactylServersFound']
+   ↓
+3. Find orphaned servers (in PteroCA but not in Pterodactyl)
+   ↓
+4. Foreach orphaned server:
+   → stats['orphanedServersFound']++
+   → Dispatch: OrphanedServerFoundEvent (stoppable)
+     ✗ Stopped by plugin:
+       → Dispatch OrphanedServerSkippedEvent(reason: "plugin_blocked")
+       → stats['orphanedServersSkipped']++
+       → continue
+     ✓ Not stopped:
+       → If !auto: Ask user "delete?"
+         ✗ User says no:
+           → Dispatch OrphanedServerSkippedEvent(reason: "user_declined")
+           → stats['orphanedServersSkipped']++
+           → continue
+       → If dryRun:
+         → Dispatch OrphanedServerSkippedEvent(reason: "dry_run")
+         → stats['orphanedServersSkipped']++
+         → continue
+       → Try delete (soft delete):
+         ✓ Success:
+           → Dispatch OrphanedServerDeletedEvent
+           → stats['orphanedServersDeleted']++
+         ✗ Error:
+           → Dispatch OrphanedServerDeletionFailedEvent
+           → stats['orphanedServersFailed']++
+           → continue
+   ↓
+5. Dispatch: ServersSyncProcessCompletedEvent (with full stats)
+   OR (on critical error)
+   Dispatch: ServersSyncProcessFailedEvent
 ```
 
+**CLI Context:**
+- `source`: 'cli'
+- `command`: 'pteroca:sync-servers'
+- `limit`: 1000 (konfigurowalne)
+- `dryRun`: true/false
+- `auto`: true/false
+- `userAgent`: 'CLI'
+- `locale`: null
+- `ip`: null
+
+**Kluczowe decyzje implementacyjne:**
+- **Orphaned cleanup** - komenda usuwa serwery które są w PteroCA ale nie ma ich w Pterodactyl
+- **Stoppable pre-event** dla backup automation - plugin może zrobić backup lub zablokować usunięcie
+- **Opcje CLI w context** (limit, dryRun, auto) dla pełnej transparentności
+- **Dry-run handling** - normalne eventy z flagą w context (nie specjalne "would-be" eventy)
+- **User interaction tracking** - stat 'skipped' z trzema powodami (plugin_blocked, user_declined, dry_run)
+- Proces **kontynuuje** przetwarzanie pomimo błędów pojedynczych serwerów
+- Szczegółowe statystyki w ProcessCompletedEvent (pterodactylServersFound, orphanedServersFound, deleted, skipped, failed, duration)
+- **Soft delete** - używa `setDeletedAtValue()` zamiast fizycznego usunięcia
+
 **Zastosowanie:**
-- Monitoring - tracking synchronizacji
-- Error alerting - powiadomienia o błędach
-- Analytics - statystyki sync
-- Performance tracking
+✅ **Monitoring** - Process-level events z pełnymi statystykami:
+  - Orphan rate (ile % serwerów jest osieroconych)
+  - Success rate usuwania
+  - Duration i throughput
+
+✅ **Error alerting** - Per-server i process-level failure events:
+  - Błędy pojedynczych serwerów
+  - Błędy krytyczne procesu
+
+✅ **Analytics** - Szczegółowe tracking:
+  - User interaction (ile razy user declined)
+  - Plugin interaction (ile razy plugin blocked)
+  - Dry-run simulations
+
+✅ **Audit trail** - Pełny tracking:
+  - Wszystkie decyzje (user, plugin, system)
+  - Powody skipowania serwerów
+  - Powody błędów
+
+✅ **Plugin extensibility** - Stoppable pre-event:
+  - Plugin może zablokować usunięcie konkretnego serwera
+  - Może wykonać backup przed usunięciem
+  - Może zmodyfikować flow (np. przenieść serwer zamiast usuwać)
+
+✅ **Dry-run safety** - Eventy emitowane w dry-run mode:
+  - Pluginy widzą co by się stało
+  - Można testować integracje bez zmian w bazie
+  - Eventy mają flagę `dryRun: true` w context
 
 ---
 
@@ -1828,10 +2090,10 @@ Sugerowana kolejność implementacji:
 - ✅ Product Copy - operacja specjalna (ukończone 2025-10-21)
 - ✅ Voucher API (ukończone 2025-10-22)
 
-#### Faza 4: CLI - Critical (1 tydzień)
-- SuspendUnpaidServersCommand
-- DeleteInactiveServersCommand
-- PterocaSyncServersCommand
+#### Faza 4: CLI - Critical (1 tydzień) ✅ **UKOŃCZONA** (2025-10-25)
+- ✅ SuspendUnpaidServersCommand (ukończone 2025-10-25)
+- ✅ DeleteInactiveServersCommand (ukończone 2025-10-25)
+- ✅ PterocaSyncServersCommand (ukończone 2025-10-25)
 
 #### ~~Faza 5: Admin CRUD (1 tydzień)~~ ✅ **UKOŃCZONA** (przez AbstractPanelController)
 - ~~User CRUD~~ ✅ Eventy CRUD automatyczne
@@ -1885,18 +2147,34 @@ Sugerowana kolejność implementacji:
     - ✅ `ServerReinstalledEvent` - Server Configuration API
     - ✅ `ServerAutoRenewalToggleRequestedEvent` - Server Configuration API (stoppable)
     - ✅ `ServerAutoRenewalToggledEvent` - Server Configuration API
-  - **RAZEM:** ~89+ eventów + automatyczne eventy dla 13+ kontrolerów CRUD
+  - **✨ 6 nowych eventów CLI (2025-10-25 - SuspendUnpaidServers):**
+    - ✅ `SuspendUnpaidServersProcessStartedEvent` - CLI SuspendUnpaidServers (process-level)
+    - ✅ `SuspendUnpaidServersProcessCompletedEvent` - CLI SuspendUnpaidServers (process-level)
+    - ✅ `SuspendUnpaidServersProcessFailedEvent` - CLI SuspendUnpaidServers (process-level)
+    - ✅ `ServerSuspendedForNonPaymentEvent` - CLI SuspendUnpaidServers (per-server)
+    - ✅ `ServerAutoRenewedEvent` - CLI SuspendUnpaidServers (per-server)
+    - ✅ `ServerSuspensionFailedEvent` - CLI SuspendUnpaidServers (per-server)
+  - **✨ 6 nowych eventów CLI (2025-10-25 - DeleteInactiveServers):**
+    - ✅ `DeleteInactiveServersProcessStartedEvent` - CLI DeleteInactiveServers (process-level)
+    - ✅ `DeleteInactiveServersProcessCompletedEvent` - CLI DeleteInactiveServers (process-level)
+    - ✅ `DeleteInactiveServersProcessFailedEvent` - CLI DeleteInactiveServers (process-level)
+    - ✅ `InactiveServerDeletionRequestedEvent` - CLI DeleteInactiveServers (per-server, stoppable)
+    - ✅ `InactiveServerDeletedEvent` - CLI DeleteInactiveServers (per-server)
+    - ✅ `InactiveServerDeletionFailedEvent` - CLI DeleteInactiveServers (per-server)
+  - **RAZEM:** ~101+ eventów + automatyczne eventy dla 13+ kontrolerów CRUD
 
 - **❌ Do zaimplementowania:**
   - **API Controllers:** 8 kontrolerów (~36+ eventów) ~~9 kontrolerów (~47+ eventów)~~
-  - **CLI Commands:** 14 komend (~40+ eventów)
+  - **CLI Commands:** 12 komend (~28+ eventów) ~~13 komend (~34+ eventów)~~ ~~14 komend (~40+ eventów)~~
   - **User Pages:** 1 strona (~3+ eventy) ~~2 strony~~
   - ~~**Admin Pages:**~~ ✅ **UKOŃCZONE** (Admin Overview - 2025-10-21)
   - ~~**Operacje specjalne:**~~ ✅ **UKOŃCZONE** (Product Copy - 2025-10-21)
   - ~~**Voucher API:**~~ ✅ **UKOŃCZONE** (Voucher Redeem - 2025-10-22)
   - ~~**Server Management Page:**~~ ✅ **UKOŃCZONE** (Server Management - 2025-10-22)
   - ~~**Server Configuration API:**~~ ✅ **UKOŃCZONE** (Server Configuration - 2025-10-22)
-  - **RAZEM:** ~79 nowych eventów (zamiast pierwotnie 101)
+  - ~~**SuspendUnpaidServersCommand CLI:**~~ ✅ **UKOŃCZONE** (SuspendUnpaidServers - 2025-10-25)
+  - ~~**DeleteInactiveServersCommand CLI:**~~ ✅ **UKOŃCZONE** (DeleteInactiveServers - 2025-10-25)
+  - **RAZEM:** ~67 nowych eventów (zamiast pierwotnie 101)
 
 **Zmiana po analizie AbstractPanelController:**
 - ~~30+ eventów dla Admin CRUD~~ → ✅ **Już zaimplementowane w AbstractPanelController**
@@ -1922,7 +2200,26 @@ Sugerowana kolejność implementacji:
 - **Łącznie od 2025-10-21:** +20 nowych eventów! 🎊🎊
 - **Priorytet 1 (Krytyczny):** Częściowo ukończony! Server Configuration API to jeden z najważniejszych API!
 
-### Szacowany czas implementacji (zaktualizowany 2025-10-22):
+**Zmiana po implementacji SuspendUnpaidServersCommand CLI (2025-10-25):**
+- ~~SuspendUnpaidServersCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +6 eventów zaimplementowanych (3 process-level + 3 per-server)! 🎉
+- **Nowe narzędzia:**
+  - ✅ `AbstractDomainEvent` - zaktualizowany z opcjonalnym `eventId`
+  - ✅ `EventContextService::buildCliContext()` - CLI context builder
+- **Łącznie od 2025-10-21:** +26 nowych eventów! 🎊🎊🎊
+- **Faza 4 (CLI - Critical):** Rozpoczęta! Pierwsze CLI command z pełnym EDA! 🚀
+
+**Zmiana po implementacji DeleteInactiveServersCommand CLI (2025-10-25):**
+- ~~DeleteInactiveServersCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +6 eventów zaimplementowanych (3 process-level + 3 per-server)! 🎉
+- **Kluczowe feature:**
+  - ✅ Stoppable pre-event dla backup automation (`InactiveServerDeletionRequestedEvent`)
+  - ✅ Pełne dane czasowe (expiredAt, deletedAt, daysAfterExpiration)
+  - ✅ Stat 'skipped' dla serwerów zablokowanych przez pluginy
+- **Łącznie od 2025-10-21:** +32 nowych eventów! 🎊🎊🎊🎊
+- **Faza 4 (CLI - Critical):** 2/3 ukończone! 🚀🚀
+
+### Szacowany czas implementacji (zaktualizowany 2025-10-25):
 
 - **Priorytet 1 (Krytyczny):** 2-3 tygodnie (API - Server Management) ⏳ - częściowo ukończony (Server Management Page ✅)
 - **Priorytet 2 (Wysoki):** 2 tygodnie (CLI + pozostałe API) ⏳
@@ -1956,12 +2253,15 @@ Sugerowana kolejność implementacji:
 
 **Koniec dokumentu**
 
-**Ostatnia aktualizacja:** 2025-10-22 (wieczór)
+**Ostatnia aktualizacja:** 2025-10-25
 **Status:**
 - ✅ Priorytet 3 (Średni): **UKOŃCZONY** - Admin Overview + Product Copy (2025-10-21)
 - ✅ Faza 3: **UKOŃCZONA** - User-facing pages + Admin operations (2025-10-21 - 2025-10-22)
 - ✅ Priorytet 4 (Niski): **Częściowo ukończony** - Voucher API (2025-10-22 rano)
 - ✅ Priorytet 1 (Krytyczny): **Częściowo ukończony** - Server Management Page + Server Configuration API (2025-10-22)
-- ⏳ Pozostało: API Controllers (8), CLI Commands (14), User Pages (1)
-- 🎊🎊 **+20 nowych eventów od 2025-10-21!** (największy przyrost!)
+- ⏳ Faza 4 (CLI - Critical): **W TRAKCIE** - SuspendUnpaidServersCommand (✅), DeleteInactiveServersCommand (✅)
+- ⏳ Pozostało: API Controllers (8), CLI Commands (12), User Pages (1)
+- 🎊🎊🎊🎊 **+32 nowych eventów od 2025-10-21!** (największy przyrost!)
 - 📊 **Postęp Priorytetu 1:** Server Configuration API (✅), Server Management Page (✅), pozostałe: Server Backups, Server Users, Server Databases
+- 🚀 **Postęp Fazy 4:** 2/3 ukończone! SuspendUnpaidServersCommand (✅), DeleteInactiveServersCommand (✅), pozostałe: PterocaSyncServersCommand
+- 💾 **Nowe feature:** Backup automation support - stoppable pre-event dla DeleteInactiveServersCommand!

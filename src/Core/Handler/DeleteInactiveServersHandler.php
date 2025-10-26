@@ -3,10 +3,20 @@
 namespace App\Core\Handler;
 
 use App\Core\Enum\SettingEnum;
+use App\Core\Event\Cli\DeleteInactiveServers\DeleteInactiveServersProcessCompletedEvent;
+use App\Core\Event\Cli\DeleteInactiveServers\DeleteInactiveServersProcessFailedEvent;
+use App\Core\Event\Cli\DeleteInactiveServers\DeleteInactiveServersProcessStartedEvent;
+use App\Core\Event\Cli\DeleteInactiveServers\InactiveServerDeletedEvent;
+use App\Core\Event\Cli\DeleteInactiveServers\InactiveServerDeletionFailedEvent;
+use App\Core\Event\Cli\DeleteInactiveServers\InactiveServerDeletionRequestedEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\SettingRepository;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use DateTime;
+use DateTimeImmutable;
+use Exception;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 readonly class DeleteInactiveServersHandler implements HandlerInterface
 {
@@ -16,23 +26,123 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
         private ServerRepository $serverRepository,
         private PterodactylApplicationService $pterodactylApplicationService,
         private SettingRepository $settingRepository,
+        private EventDispatcherInterface $eventDispatcher,
+        private EventContextService $eventContextService,
     ) {}
 
     public function handle(): void
     {
-       $this->handleDeleteInactiveServers();
+        $startTime = new DateTimeImmutable();
+        $daysAfter = $this->getDeleteInactiveServersDaysAfter();
+        $context = $this->eventContextService->buildCliContext('app:delete-inactive-servers', [
+            'daysAfterExpiration' => $daysAfter,
+        ]);
+
+        $this->eventDispatcher->dispatch(
+            new DeleteInactiveServersProcessStartedEvent($startTime, $daysAfter, $context)
+        );
+
+        $stats = ['checked' => 0, 'deleted' => 0, 'skipped' => 0, 'failed' => 0];
+
+        try {
+            $this->handleDeleteInactiveServers($stats, $daysAfter, $context);
+
+            $duration = (new DateTimeImmutable())->getTimestamp() - $startTime->getTimestamp();
+            $this->eventDispatcher->dispatch(
+                new DeleteInactiveServersProcessCompletedEvent(
+                    $stats['checked'],
+                    $stats['deleted'],
+                    $stats['skipped'],
+                    $stats['failed'],
+                    $daysAfter,
+                    $duration,
+                    new DateTimeImmutable(),
+                    $context
+                )
+            );
+        } catch (Exception $e) {
+            $this->eventDispatcher->dispatch(
+                new DeleteInactiveServersProcessFailedEvent(
+                    $e->getMessage(),
+                    $stats,
+                    new DateTimeImmutable(),
+                    $context
+                )
+            );
+            throw $e;
+        }
     }
 
-    private function handleDeleteInactiveServers(): void
+    private function handleDeleteInactiveServers(array &$stats, int $daysAfter, array $context): void
     {
-        $dateObject = new DateTime(sprintf('now - %d days', $this->getDeleteInactiveServersDaysAfter()));
+        $dateObject = new DateTime(sprintf('now - %d days', $daysAfter));
         $serversToDelete = $this->serverRepository->getServersExpiredBefore($dateObject);
+
         foreach ($serversToDelete as $server) {
-            $this->pterodactylApplicationService
-                ->getApplicationApi()
-                ->servers()
-                ->deleteServer($server->getPterodactylServerId());
-            $this->serverRepository->delete($server);
+            $stats['checked']++;
+
+            try {
+                $expiredAt = $server->getExpiresAt();
+                $expiredAtImmutable = $expiredAt ? DateTimeImmutable::createFromMutable($expiredAt) : new DateTimeImmutable();
+
+                $requestedEvent = new InactiveServerDeletionRequestedEvent(
+                    $server->getUser()->getId() ?? 0,
+                    $server->getId(),
+                    $server->getPterodactylServerIdentifier(),
+                    $server->getName(),
+                    $expiredAtImmutable,
+                    $daysAfter,
+                    $context
+                );
+                $this->eventDispatcher->dispatch($requestedEvent);
+
+                if ($requestedEvent->isPropagationStopped()) {
+                    $stats['skipped']++;
+                    continue;
+                }
+
+                $this->pterodactylApplicationService
+                    ->getApplicationApi()
+                    ->servers()
+                    ->deleteServer($server->getPterodactylServerId());
+
+                $this->serverRepository->delete($server);
+
+                $stats['deleted']++;
+
+                $this->eventDispatcher->dispatch(
+                    new InactiveServerDeletedEvent(
+                        $server->getUser()->getId() ?? 0,
+                        $server->getId(),
+                        $server->getPterodactylServerIdentifier(),
+                        $server->getName(),
+                        $expiredAtImmutable,
+                        new DateTimeImmutable(),
+                        $daysAfter,
+                        $context
+                    )
+                );
+
+            } catch (Exception $e) {
+                $stats['failed']++;
+
+                $expiredAt = $server->getExpiresAt();
+                $expiredAtImmutable = $expiredAt ? DateTimeImmutable::createFromMutable($expiredAt) : new DateTimeImmutable();
+
+                $this->eventDispatcher->dispatch(
+                    new InactiveServerDeletionFailedEvent(
+                        $server->getUser()->getId() ?? 0,
+                        $server->getId(),
+                        $server->getPterodactylServerIdentifier(),
+                        $server->getName(),
+                        $expiredAtImmutable,
+                        $e->getMessage(),
+                        $context
+                    )
+                );
+
+                // Continue processing other servers
+            }
         }
     }
 

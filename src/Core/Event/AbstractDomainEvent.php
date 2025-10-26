@@ -11,9 +11,9 @@ abstract class AbstractDomainEvent
     private DateTimeImmutable $occurredAt;
     private string $schemaVersion = 'v1';
 
-    public function __construct()
+    public function __construct(?string $eventId = null)
     {
-        $this->eventId = Uuid::v4()->toString();
+        $this->eventId = $eventId ?? Uuid::v4()->toString();
         $this->occurredAt = new DateTimeImmutable();
     }
 

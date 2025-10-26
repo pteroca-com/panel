@@ -55,7 +55,6 @@ class ServerController extends APIAbstractController
         $serverDetailsDTO = $this->serverService->getServerStateByClient($user, $server);
         $serverDetails = $serverDetailsDTO?->toArray();
         unset($serverDetails['egg']);
-
         $loadedEvent = new ServerDetailsLoadedEvent(
             $this->getUserId(),
             $server->getId(),

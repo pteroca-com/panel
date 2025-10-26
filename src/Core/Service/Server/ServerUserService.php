@@ -55,11 +55,9 @@ class ServerUserService
         array $permissions = []
     ): array
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        // Emit ServerSubuserCreationRequestedEvent (pre, stoppable)
         $requestedEvent = new ServerSubuserCreationRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -70,7 +68,6 @@ class ServerUserService
         );
         $this->eventDispatcher->dispatch($requestedEvent);
 
-        // Check if event was stopped
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Subuser creation was blocked';
             throw new \RuntimeException($reason);
@@ -117,7 +114,6 @@ class ServerUserService
                 ]
             );
 
-            // Emit ServerSubuserCreatedEvent (post-commit)
             $resultArray = $result->toArray();
             $subuserUuid = $resultArray['attributes']['uuid'] ?? '';
 
@@ -135,7 +131,6 @@ class ServerUserService
             return $resultArray;
 
         } catch (\Exception $e) {
-            // Emit ServerSubuserCreationFailedEvent (error)
             $failedEvent = new ServerSubuserCreationFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -169,7 +164,6 @@ class ServerUserService
         array $permissions
     ): array
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
@@ -181,11 +175,9 @@ class ServerUserService
 
         $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.modify_permissions'));
 
-        // Get old permissions before update
         $subuserData = $this->getSubuser($server, $user, $subuserUuid);
         $oldPermissions = $subuserData['attributes']['permissions'] ?? [];
 
-        // Emit ServerSubuserPermissionsUpdateRequestedEvent (pre, stoppable)
         $requestedEvent = new ServerSubuserPermissionsUpdateRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -198,7 +190,6 @@ class ServerUserService
         );
         $this->eventDispatcher->dispatch($requestedEvent);
 
-        // Check if event was stopped
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Subuser permissions update was blocked';
             throw new \RuntimeException($reason);
@@ -222,7 +213,6 @@ class ServerUserService
             ]
         );
 
-        // Emit ServerSubuserPermissionsUpdatedEvent (post-commit)
         $updatedEvent = new ServerSubuserPermissionsUpdatedEvent(
             $user->getId(),
             $server->getId(),
@@ -245,7 +235,6 @@ class ServerUserService
         string $email
     ): void
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
@@ -257,7 +246,6 @@ class ServerUserService
 
         $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.delete_yourself_from_server'));
 
-        // Emit ServerSubuserDeletionRequestedEvent (pre, stoppable)
         $requestedEvent = new ServerSubuserDeletionRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -268,7 +256,6 @@ class ServerUserService
         );
         $this->eventDispatcher->dispatch($requestedEvent);
 
-        // Check if event was stopped
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Subuser deletion was blocked';
             throw new \RuntimeException($reason);
@@ -294,7 +281,6 @@ class ServerUserService
             ]
         );
 
-        // Emit ServerSubuserDeletedEvent (post-commit)
         $deletedEvent = new ServerSubuserDeletedEvent(
             $user->getId(),
             $server->getId(),

@@ -42,4 +42,17 @@ class EventContextService
 
         return $this->buildContext($request, $additionalContext);
     }
+
+    public function buildCliContext(string $commandName, array $additionalContext = []): array
+    {
+        $context = [
+            'source' => 'cli',
+            'command' => $commandName,
+            'userAgent' => 'CLI',
+            'locale' => null,
+            'ip' => null,
+        ];
+
+        return array_merge($context, $additionalContext);
+    }
 }
