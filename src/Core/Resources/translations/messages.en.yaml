@@ -156,6 +156,7 @@ pteroca:
     total: 'Total'
     slot: 'slot'
     slots: 'Slots'
+    processing: 'Processing...'
 
   store:
     title: 'Store'
@@ -1176,6 +1177,8 @@ pteroca:
       validation_error: 'An error occurred while validating the step. Please try again.'
 
   error:
+    invalid_csrf_token: 'Invalid CSRF token. Please refresh the page and try again.'
+    user_not_found: 'User not found.'
     404:
       title: 'Page not found'
       message: 'Sorry, but the page you are looking for does not exist or has been moved. Check the URL or return to the home page.'

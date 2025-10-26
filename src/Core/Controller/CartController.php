@@ -9,16 +9,21 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
+use App\Core\Repository\UserRepository;
 use App\Core\Service\Payment\PaymentService;
+use App\Core\Service\PurchaseTokenService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\SettingService;
 use App\Core\Service\StoreService;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CartController extends AbstractController
@@ -29,6 +34,10 @@ class CartController extends AbstractController
         private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly TranslatorInterface $translator,
         private readonly ServerSlotPricingService $serverSlotPricingService,
+        private readonly PurchaseTokenService $purchaseTokenService,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly UserRepository $userRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     #[Route('/cart/topup', name: 'cart_topup', methods: ['GET', 'POST'])]
@@ -89,17 +98,21 @@ class CartController extends AbstractController
     {
         $product = $this->getProductByRequest($request);
         $preparedEggs = $this->storeService->getProductEggs($product);
-        $request = $request->query->all();
+        $requestParams = $request->query->all();
 
         $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
+
+        // Generate one-time purchase token to prevent double-submit
+        $purchaseToken = $this->purchaseTokenService->generateToken($this->getUser(), 'buy');
 
         return $this->render('panel/cart/configure.html.twig', [
             'product' => $product,
             'eggs' => $preparedEggs,
-            'request' => $request,
+            'request' => $requestParams,
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
             'hasSlotPrices' => $hasSlotPrices,
-            'initialSlots' => $request['slots'] ?? null,
+            'initialSlots' => $requestParams['slots'] ?? null,
+            'purchase_token' => $purchaseToken,
         ]);
     }
 
@@ -110,35 +123,69 @@ class CartController extends AbstractController
         CreateServerService $createServerService,
     ): Response
     {
-        $product = $this->getProductByRequest($request);
-
-        $eggId = $request->request->getInt('egg');
-        $priceId = $request->request->getInt('duration');
-        $serverName = $request->request->getString('server-name');
-        $autoRenewal = $request->request->getBoolean('auto-renewal');
-        $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
-
         try {
-            $this->storeService->validateBoughtProduct(
-                $product,
-                $eggId,
-                $priceId,
-                null,
-                $slots
-            );
+            // 1. Validate CSRF token (before any database operations)
+            $csrfToken = $request->request->get('_csrf_token');
+            if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('submit', $csrfToken))) {
+                throw new \Exception($this->translator->trans('pteroca.error.invalid_csrf_token'));
+            }
 
-            $createServerService->createServer(
-                $product,
-                $eggId,
-                $priceId,
-                $serverName,
-                $autoRenewal,
-                $this->getUser(),
-                $request->request->getString('voucher'),
-                $slots
-            );
+            // 2. Validate and consume purchase token (prevents double-submit and back button)
+            $purchaseToken = $request->request->getString('purchase_token');
+            $this->purchaseTokenService->validateAndConsumeToken($purchaseToken, $this->getUser(), 'buy');
+
+            // 3. Get request parameters
+            $product = $this->getProductByRequest($request);
+            $eggId = $request->request->getInt('egg');
+            $priceId = $request->request->getInt('duration');
+            $serverName = $request->request->getString('server-name');
+            $autoRenewal = $request->request->getBoolean('auto-renewal');
+            $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
+            $voucherCode = $request->request->getString('voucher');
+
+            // 4. Execute purchase in a database transaction with pessimistic locking
+            $createdServer = null;
+            $this->entityManager->wrapInTransaction(function() use (
+                $product, $eggId, $priceId, $serverName, $autoRenewal, $slots, $voucherCode, $createServerService, &$createdServer
+            ) {
+                // Lock the user row to prevent race conditions
+                $lockedUser = $this->userRepository->findOneByIdWithLock($this->getUser()->getId());
+
+                if (!$lockedUser) {
+                    throw new \Exception($this->translator->trans('pteroca.error.user_not_found'));
+                }
+
+                // Validate product configuration
+                $this->storeService->validateBoughtProduct(
+                    $product,
+                    $eggId,
+                    $priceId,
+                    null,
+                    $slots
+                );
+
+                // Create the server (balance check and deduction happens here)
+                $createdServer = $createServerService->createServer(
+                    $product,
+                    $eggId,
+                    $priceId,
+                    $serverName,
+                    $autoRenewal,
+                    $lockedUser,
+                    $voucherCode,
+                    $slots
+                );
+            });
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
+
+            // Redirect to the newly created server's management page
+            if ($createdServer) {
+                return $this->redirectToRoute('panel', [
+                    'routeName' => 'server',
+                    'id' => $createdServer->getPterodactylServerIdentifier()
+                ]);
+            }
         } catch (Exception $exception) {
             $flashMessage = sprintf(
                 '%s: %s',
@@ -164,11 +211,15 @@ class CartController extends AbstractController
             $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
         }
 
+        // Generate one-time purchase token to prevent double-submit
+        $purchaseToken = $this->purchaseTokenService->generateToken($this->getUser(), 'renew');
+
         return $this->render('panel/cart/renew.html.twig', [
             'server' => $server,
             'isOwner' => $isOwner,
             'hasSlotPrices' => $hasSlotPrices,
             'serverSlots' => $serverSlots ?? null,
+            'purchase_token' => $purchaseToken,
         ]);
     }
 
@@ -179,28 +230,54 @@ class CartController extends AbstractController
         RenewServerService $renewServerService,
     ): Response
     {
-        $server = $this->getServerByRequest($request);
-
         try {
+            // 1. Validate CSRF token (before any database operations)
+            $csrfToken = $request->request->get('_csrf_token');
+            if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('submit', $csrfToken))) {
+                throw new \Exception($this->translator->trans('pteroca.error.invalid_csrf_token'));
+            }
+
+            // 2. Validate and consume purchase token (prevents double-submit and back button)
+            $purchaseToken = $request->request->getString('purchase_token');
+            $this->purchaseTokenService->validateAndConsumeToken($purchaseToken, $this->getUser(), 'renew');
+
+            // 3. Get request parameters
+            $server = $this->getServerByRequest($request);
+            $voucherCode = $request->request->getString('voucher');
+
             $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
             if ($hasActiveSlotPricing) {
                 $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
             }
 
-            $this->storeService->validateBoughtProduct(
-                $server->getServerProduct(),
-                null,
-                $server->getServerProduct()->getSelectedPrice()->getId(),
-                $server,
-                $serverSlots ?? null
-            );
+            // 4. Execute renewal in a database transaction with pessimistic locking
+            $this->entityManager->wrapInTransaction(function() use (
+                $server, $voucherCode, $serverSlots, $renewServerService
+            ) {
+                // Lock the user row to prevent race conditions
+                $lockedUser = $this->userRepository->findOneByIdWithLock($this->getUser()->getId());
 
-            $renewServerService->renewServer(
-                $server,
-                $this->getUser(),
-                $request->request->getString('voucher'),
-                $serverSlots ?? null,
-            );
+                if (!$lockedUser) {
+                    throw new \Exception($this->translator->trans('pteroca.error.user_not_found'));
+                }
+
+                // Validate product configuration
+                $this->storeService->validateBoughtProduct(
+                    $server->getServerProduct(),
+                    null,
+                    $server->getServerProduct()->getSelectedPrice()->getId(),
+                    $server,
+                    $serverSlots ?? null
+                );
+
+                // Renew the server (balance check and deduction happens here)
+                $renewServerService->renewServer(
+                    $server,
+                    $lockedUser,
+                    $voucherCode,
+                    $serverSlots ?? null,
+                );
+            });
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
         } catch (\Exception $exception) {

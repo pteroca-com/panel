@@ -5,6 +5,7 @@ namespace App\Core\Repository;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -107,5 +108,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $criteria['deletedAt'] = null;
         return parent::findOneBy($criteria, $orderBy);
+    }
+
+    /**
+     * Find user by ID with pessimistic write lock
+     * This prevents race conditions during concurrent purchases
+     *
+     * @param int $id User ID
+     * @return User|null
+     */
+    public function findOneByIdWithLock(int $id): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.id = :id')
+            ->andWhere('u.deletedAt IS NULL')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->setLockMode(LockMode::PESSIMISTIC_WRITE)
+            ->getOneOrNullResult();
     }
 }
