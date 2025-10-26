@@ -995,6 +995,8 @@ pteroca:
       only_during_order: 'Voucher can only be used during the order.'
 
   email:
+    creation_not_sent_misconfigured: 'Server was created successfully, but the confirmation email could not be sent due to email configuration issues. Please check your email settings.'
+    renewal_not_sent_misconfigured: 'Server was renewed successfully, but the confirmation email could not be sent due to email configuration issues. Please check your email settings.'
     general:
       hello: 'Hello'
       best_regards: 'Best regards'

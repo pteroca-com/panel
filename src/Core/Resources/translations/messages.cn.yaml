@@ -1000,6 +1000,8 @@ pteroca:
       only_during_order: '代金券仅可在下单时使用。'
 
   email:
+    creation_not_sent_misconfigured: '服务器已成功创建，但由于电子邮件配置问题，无法发送确认电子邮件。请检查您的电子邮件设置。'
+    renewal_not_sent_misconfigured: '服务器已成功续费，但由于电子邮件配置问题，无法发送确认电子邮件。请检查您的电子邮件设置。'
     general:
       hello: '你好'
       best_regards: '此致'

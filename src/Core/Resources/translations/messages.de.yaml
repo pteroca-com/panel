@@ -1000,6 +1000,8 @@ pteroca:
       only_during_order: 'Gutschein kann nur während der Bestellung verwendet werden.'
 
   email:
+    creation_not_sent_misconfigured: 'Server wurde erfolgreich erstellt, aber die Bestätigungs-E-Mail konnte aufgrund von E-Mail-Konfigurationsproblemen nicht gesendet werden. Bitte überprüfen Sie Ihre E-Mail-Einstellungen.'
+    renewal_not_sent_misconfigured: 'Server wurde erfolgreich verlängert, aber die Bestätigungs-E-Mail konnte aufgrund von E-Mail-Konfigurationsproblemen nicht gesendet werden. Bitte überprüfen Sie Ihre E-Mail-Einstellungen.'
     general:
       hello: 'Hallo'
       best_regards: 'Mit freundlichen Grüßen'

@@ -1000,6 +1000,8 @@ pteroca:
       only_during_order: 'Il voucher può essere utilizzato solo durante l''ordine.'
 
   email:
+    creation_not_sent_misconfigured: 'Il server è stato creato con successo, ma l''email di conferma non è stata inviata a causa di problemi di configurazione dell''email. Si prega di controllare le impostazioni email.'
+    renewal_not_sent_misconfigured: 'Il server è stato rinnovato con successo, ma l''email di conferma non è stata inviata a causa di problemi di configurazione dell''email. Si prega di controllare le impostazioni email.'
     general:
       hello: 'Ciao'
       best_regards: 'Cordiali saluti'
