@@ -1,6 +1,17 @@
 # Changelog
 
---
+## [0.5.11] - 2025-10-26
+
+### Added
+- Added new app:cleanup-purchase-tokens command to automatically remove expired purchase tokens - it is now included in the default cron job and runs once per hour.
+- Extended app:cron-job-schedule command with conditional execution logic - now also responsible for running the inactive server cleanup every hour (separate from the suspension job, which still runs every minute).
+
+### Fixed
+- Fixed registration issue for users signing up again after their previous account was deleted.
+- Fixed admin permissions for viewing the server dashboard.
+- Secured the server purchase and renewal process - added CSRF token validation, purchase token verification, and database transaction locking to prevent multiple or duplicate server creation caused by repeated clicks or browser navigation actions.
+
+---
 
 ## [0.5.10] - 2025-10-12
 
