@@ -1000,6 +1000,8 @@ pteroca:
       only_during_order: 'Voucher może być użyty tylko podczas składania zamówienia.'
 
   email:
+    creation_not_sent_misconfigured: 'Serwer został pomyślnie utworzony, ale wiadomość e-mail z potwierdzeniem nie mogła zostać wysłana z powodu problemów z konfiguracją poczty e-mail. Sprawdź ustawienia poczty e-mail.'
+    renewal_not_sent_misconfigured: 'Serwer został pomyślnie odnowiony, ale wiadomość e-mail z potwierdzeniem nie mogła zostać wysłana z powodu problemów z konfiguracją poczty e-mail. Sprawdź ustawienia poczty e-mail.'
     general:
       hello: 'Cześć'
       best_regards: 'Pozdrawiamy'

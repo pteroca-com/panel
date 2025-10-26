@@ -39,12 +39,15 @@ class RenewServerService extends AbstractActionServerService
         parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
     }
 
+    /**
+     * @return array{emailError: string|null}
+     */
     public function renewServer(
         Server $server,
         UserInterface $user,
         ?string $voucherCode = null,
         ?int $slots = null
-    ): void
+    ): array
     {
         if (!empty($voucherCode)) {
             $this->voucherPaymentService->validateVoucherCode(
@@ -96,13 +99,23 @@ class RenewServerService extends AbstractActionServerService
         }
 
         $previousExpiresAt = clone $currentExpirationDate;
+        $emailError = null;
         if ($this->boughtConfirmationEmailService->shouldSendRenewalNotification($server, $previousExpiresAt, $server->getExpiresAt())) {
-            $this->boughtConfirmationEmailService->sendRenewConfirmationEmail(
-                $user,
-                $server,
-                $this->getPterodactylAccountLogin($user),
-            );
-            
+            // Try to send renewal confirmation email, but don't fail if email is misconfigured
+            try {
+                $this->boughtConfirmationEmailService->sendRenewConfirmationEmail(
+                    $user,
+                    $server,
+                    $this->getPterodactylAccountLogin($user),
+                );
+            } catch (\Exception $e) {
+                $emailError = 'pteroca.email.renewal_not_sent_misconfigured';
+                $this->logger->error('Failed to send renewal confirmation email', [
+                    'user_id' => $user->getId(),
+                    'server_id' => $server->getId(),
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         $this->logService->logAction(
@@ -110,5 +123,9 @@ class RenewServerService extends AbstractActionServerService
             LogActionEnum::RENEW_SERVER,
             ['server' => $server],
         );
+
+        return [
+            'emailError' => $emailError,
+        ];
     }
 }

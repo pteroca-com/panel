@@ -44,6 +44,9 @@ class CreateServerService extends AbstractActionServerService
         parent::__construct($userRepository, $pterodactylService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
     }
 
+    /**
+     * @return array{server: Server, emailError: string|null}
+     */
     public function createServer(
         Product $product,
         int $eggId,
@@ -53,7 +56,7 @@ class CreateServerService extends AbstractActionServerService
         UserInterface $user,
         ?string $voucherCode = null,
         ?int $slots = null,
-    ): Server
+    ): array
     {
         if (!empty($voucherCode)) {
             $this->voucherPaymentService->validateVoucherCode(
@@ -76,13 +79,25 @@ class CreateServerService extends AbstractActionServerService
         $this->createEntitiesServerProductPrice($createdEntityServerProduct, $priceId);
 
         $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots);
-        $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
-            $user,
-            $createdEntityServer,
-            $product,
-            $priceId,
-            $this->getPterodactylAccountLogin($user),
-        );
+
+        // Try to send confirmation email, but don't fail if email is misconfigured
+        $emailError = null;
+        try {
+            $this->boughtConfirmationEmailService->sendBoughtConfirmationEmail(
+                $user,
+                $createdEntityServer,
+                $product,
+                $priceId,
+                $this->getPterodactylAccountLogin($user),
+            );
+        } catch (\Exception $e) {
+            $emailError = 'pteroca.email.creation_not_sent_misconfigured';
+            $this->logger->error('Failed to send purchase confirmation email', [
+                'user_id' => $user->getId(),
+                'server_id' => $createdEntityServer->getId(),
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         $this->logService->logAction(
             $user,
@@ -96,7 +111,10 @@ class CreateServerService extends AbstractActionServerService
             ],
         );
 
-        return $createdEntityServer;
+        return [
+            'server' => $createdEntityServer,
+            'emailError' => $emailError,
+        ];
     }
 
     private function createPterodactylServer(

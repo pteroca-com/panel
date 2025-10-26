@@ -988,6 +988,8 @@ pteroca:
       error_during_redeeming: 'Er is een fout opgetreden tijdens het inwisselen van de voucher.'
       only_during_order: 'Voucher kan alleen worden gebruikt tijdens de bestelling.'
   email:
+    creation_not_sent_misconfigured: 'Server is succesvol aangemaakt, maar de bevestigingsmail kon niet worden verzonden vanwege e-mailconfiguratieproblemen. Controleer uw e-mailinstellingen.'
+    renewal_not_sent_misconfigured: 'Server is succesvol verlengd, maar de bevestigingsmail kon niet worden verzonden vanwege e-mailconfiguratieproblemen. Controleer uw e-mailinstellingen.'
     general:
       hello: 'Hallo'
       best_regards: 'Met vriendelijke groet'

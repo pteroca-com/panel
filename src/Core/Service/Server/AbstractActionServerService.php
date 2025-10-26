@@ -20,7 +20,7 @@ abstract class AbstractActionServerService
         private readonly VoucherPaymentService $voucherPaymentService,
         private readonly ProductPriceCalculatorService $productPriceCalculatorService,
         private readonly TranslatorInterface $translator,
-        private readonly LoggerInterface $logger,
+        protected readonly LoggerInterface $logger,
     ) {}
 
     protected function updateUserBalance(

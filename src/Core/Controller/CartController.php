@@ -141,9 +141,9 @@ class CartController extends AbstractController
             $slots = $request->request->get('slots') ? $request->request->getInt('slots') : null;
             $voucherCode = $request->request->getString('voucher');
 
-            $createdServer = null;
+            $result = null;
             $this->entityManager->wrapInTransaction(function() use (
-                $product, $eggId, $priceId, $serverName, $autoRenewal, $slots, $voucherCode, $createServerService, &$createdServer
+                $product, $eggId, $priceId, $serverName, $autoRenewal, $slots, $voucherCode, $createServerService, &$result
             ) {
                 $lockedUser = $this->userRepository->findOneByIdWithLock($this->getUser()->getId());
 
@@ -159,7 +159,7 @@ class CartController extends AbstractController
                     $slots
                 );
 
-                $createdServer = $createServerService->createServer(
+                $result = $createServerService->createServer(
                     $product,
                     $eggId,
                     $priceId,
@@ -171,12 +171,17 @@ class CartController extends AbstractController
                 );
             });
 
+            // Check if email was sent successfully
+            if ($result && $result['emailError']) {
+                $this->addFlash('warning', $this->translator->trans($result['emailError']));
+            }
+
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
 
-            if ($createdServer) {
+            if ($result && $result['server']) {
                 return $this->redirectToRoute('panel', [
                     'routeName' => 'server',
-                    'id' => $createdServer->getPterodactylServerIdentifier()
+                    'id' => $result['server']->getPterodactylServerIdentifier()
                 ]);
             }
         } catch (Exception $exception) {
@@ -244,8 +249,9 @@ class CartController extends AbstractController
                 $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
             }
 
+            $result = null;
             $this->entityManager->wrapInTransaction(function() use (
-                $server, $voucherCode, $serverSlots, $renewServerService
+                $server, $voucherCode, $serverSlots, $renewServerService, &$result
             ) {
                 $lockedUser = $this->userRepository->findOneByIdWithLock($this->getUser()->getId());
 
@@ -261,13 +267,18 @@ class CartController extends AbstractController
                     $serverSlots,
                 );
 
-                $renewServerService->renewServer(
+                $result = $renewServerService->renewServer(
                     $server,
                     $lockedUser,
                     $voucherCode,
                     $serverSlots,
                 );
             });
+
+            // Check if email was sent successfully
+            if ($result && $result['emailError']) {
+                $this->addFlash('warning', $this->translator->trans($result['emailError']));
+            }
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
         } catch (\Exception $exception) {

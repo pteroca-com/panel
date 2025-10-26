@@ -1000,6 +1000,8 @@ pteroca:
       only_during_order: 'Le bon ne peut être utilisé que lors de la commande.'
 
   email:
+    creation_not_sent_misconfigured: 'Le serveur a été créé avec succès, mais l''e-mail de confirmation n''a pas pu être envoyé en raison de problèmes de configuration de l''e-mail. Veuillez vérifier vos paramètres d''e-mail.'
+    renewal_not_sent_misconfigured: 'Le serveur a été renouvelé avec succès, mais l''e-mail de confirmation n''a pas pu être envoyé en raison de problèmes de configuration de l''e-mail. Veuillez vérifier vos paramètres d''e-mail.'
     general:
       hello: 'Bonjour'
       best_regards: 'Cordialement'
