@@ -1464,7 +1464,151 @@ Wszystkie polecenia CLI **nie emitują eventów EDA**.
 
 ---
 
-#### 7. SynchronizeDataCommand
+#### 7. PterodactylMigrateServersCommand ✅ UKOŃCZONA (2025-10-26)
+
+**Komenda:** `pterodactyl:migrate-servers`
+**Plik:** `src/Core/Command/PterodactylMigrateServersCommand.php`
+**Handler:** `src/Core/Handler/MigrateServersHandler.php`
+
+**Zaimplementowane eventy (7):**
+
+**Process-level events (3):**
+1. **ServerMigrationProcessStartedEvent** (post)
+   - Lokalizacja: `src/Core/Event/Cli/MigrateServers/ServerMigrationProcessStartedEvent.php`
+   - Payload: `startedAt`, `limit`, `dryRun`, `context`
+   - Kiedy: Na początku procesu migracji
+
+2. **ServerMigrationProcessCompletedEvent** (post-commit)
+   - Lokalizacja: `src/Core/Event/Cli/MigrateServers/ServerMigrationProcessCompletedEvent.php`
+   - Payload: `pterodactylServersFound`, `pterodactylUsersFound`, `serversAlreadyExisting`, `serversMigrated`, `serversSkipped`, `serversFailed`, `limit`, `dryRun`, `durationInSeconds`, `completedAt`, `context`
+   - Kiedy: Po zakończeniu całego procesu
+   - Zawiera pełne statystyki procesu
+
+3. **ServerMigrationProcessFailedEvent** (error)
+   - Lokalizacja: `src/Core/Event/Cli/MigrateServers/ServerMigrationProcessFailedEvent.php`
+   - Payload: `failureReason`, `stats` (partial), `failedAt`, `context`
+   - Kiedy: W catch() handle() - krytyczny błąd całego procesu
+
+**Per-server events (4):**
+
+4. **ServerMigrationRequestedEvent** (pre, stoppable) ⚠️
+   - Lokalizacja: `src/Core/Event/Cli/MigrateServers/ServerMigrationRequestedEvent.php`
+   - Payload: `pterodactylServerId`, `pterodactylServerIdentifier`, `serverName`, `ownerEmail`, `pterodactylOwnerId`, `isSuspended`, `context`
+   - Kiedy: Po user confirmation, przed askForDuration()
+   - **Stoppable:** Plugin może zablokować migrację (backup automation)
+
+5. **ServerMigratedEvent** (post-commit)
+   - Lokalizacja: `src/Core/Event/Cli/MigrateServers/ServerMigratedEvent.php`
+   - Payload: `userId`, `serverId`, `pterodactylServerId`, `pterodactylServerIdentifier`, `serverName`, `duration`, `price`, `expiresAt`, `migratedAt`, `context`
+   - Kiedy: Po utworzeniu wszystkich 3 encji (Server, ServerProduct, ServerProductPrice)
+   - Zawiera pełne dane migracji (duration, price)
+
+6. **ServerMigrationSkippedEvent** (post)
+   - Lokalizacja: `src/Core/Event/Cli/MigrateServers/ServerMigrationSkippedEvent.php`
+   - Payload: `pterodactylServerId`, `pterodactylServerIdentifier`, `serverName`, `reason`, `ownerEmail`, `context`
+   - Kiedy: Przy każdym skip (5 scenariuszy)
+   - **Reason values:** `already_exists`, `owner_not_found`, `user_declined`, `plugin_blocked`, `dry_run`
+
+7. **ServerMigrationFailedEvent** (error)
+   - Lokalizacja: `src/Core/Event/Cli/MigrateServers/ServerMigrationFailedEvent.php`
+   - Payload: `pterodactylServerId`, `pterodactylServerIdentifier`, `serverName`, `failureReason`, `ownerEmail`, `context`
+   - Kiedy: W catch() podczas migracji pojedynczego serwera
+   - **Proces kontynuuje** mimo błędu (fail-safe approach)
+
+**Flow:**
+```
+1. Pobranie serwerów z Pterodactyl (limit)
+2. Pobranie użytkowników z Pterodactyl
+3. Pobranie serwerów z PteroCA
+4. Pobranie użytkowników z PteroCA
+5. ServerMigrationProcessStartedEvent
+6. Dla każdego serwera Pterodactyl:
+   a. Sprawdzenie czy już istnieje → ServerMigrationSkippedEvent (already_exists)
+   b. Sprawdzenie czy owner istnieje → ServerMigrationSkippedEvent (owner_not_found)
+   c. Pytanie użytkownika CLI → ServerMigrationSkippedEvent (user_declined)
+   d. ServerMigrationRequestedEvent (stoppable)
+      → ServerMigrationSkippedEvent (plugin_blocked) jeśli zatrzymano
+   e. Pytanie o duration i price
+   f. Dry-run check → ServerMigrationSkippedEvent (dry_run)
+   g. Migracja: Server → ServerProduct → ServerProductPrice
+      → ServerMigratedEvent (success)
+      → ServerMigrationFailedEvent (error, continue)
+7. ServerMigrationProcessCompletedEvent
+```
+
+**CLI Context:**
+```php
+[
+  'source' => 'cli',
+  'command' => 'pterodactyl:migrate-servers',
+  'limit' => 100,         // Limit serwerów z Pterodactyl
+  'dryRun' => false,      // Tryb dry-run
+  'ip' => null,
+  'userAgent' => 'Symfony CLI',
+  'locale' => 'en',
+]
+```
+
+**Stats Structure:**
+```php
+[
+  'pterodactylServersFound' => int,   // Serwery pobrane z Pterodactyl
+  'pterodactylUsersFound' => int,     // Użytkownicy pobrania z Pterodactyl
+  'serversAlreadyExisting' => int,    // Serwery już w PteroCA (skip: already_exists)
+  'serversMigrated' => int,           // Pomyślnie zmigrowane
+  'serversSkipped' => int,            // Wszystkie skip (5 powodów)
+  'serversFailed' => int,             // Błędy podczas migracji
+]
+```
+
+**Skip Reasons (5):**
+- `already_exists` - Serwer już istnieje w PteroCA
+- `owner_not_found` - Owner nie istnieje w PteroCA
+- `user_declined` - Użytkownik CLI powiedział "no"
+- `plugin_blocked` - Plugin zatrzymał przez `stopPropagation()`
+- `dry_run` - Tryb dry-run (test mode)
+
+**Decyzje implementacyjne:**
+- ✅ **User interaction tracking:** Duration i price w `ServerMigratedEvent`
+- ✅ **5 skip reasons:** Szczegółowy tracking wszystkich scenariuszy skip
+- ✅ **Stoppable pre-event:** `ServerMigrationRequestedEvent` dla backup automation
+- ✅ **Fail-safe:** Błąd pojedynczego serwera nie zatrzymuje całego procesu
+- ✅ **3 encje:** Server + ServerProduct + ServerProductPrice w jednej transakcji
+- ✅ **Dry-run support:** Traktowany jako skip reason (zgodnie z wzorcem)
+
+**Use Cases:**
+
+✅ **Monitoring & Analytics** - Process-level tracking:
+  - Ile serwerów pobrano z Pterodactyl
+  - Ile z nich już istnieje w PteroCA
+  - Success rate migracji
+  - Czas trwania procesu
+
+✅ **Per-server Analytics** - Szczegółowe tracking:
+  - Które serwery zostały zmigrowane
+  - Jakie ceny i duration ustawiono
+  - Powody skipowania poszczególnych serwerów
+  - Błędy podczas migracji (fail-safe)
+
+✅ **Audit trail** - Pełny tracking:
+  - Wszystkie decyzje (user, plugin, system)
+  - Powody skipowania serwerów (5 scenariuszy)
+  - Powody błędów z exception message
+  - User input (duration, price) w eventach
+
+✅ **Plugin extensibility** - Stoppable pre-event:
+  - Plugin może zablokować migrację konkretnego serwera
+  - Może wykonać backup przed migracją
+  - Może zmodyfikować flow (np. custom validation)
+
+✅ **Dry-run safety** - Eventy emitowane w dry-run mode:
+  - Pluginy widzą co by się stało
+  - Można testować integracje bez zmian w bazie
+  - Eventy mają flagę `dryRun: true` w context
+
+---
+
+#### 8. SynchronizeDataCommand
 
 **Komenda:** `app:synchronize-data`
 **Plik:** `src/Core/Command/SynchronizeDataCommand.php`
@@ -1483,21 +1627,101 @@ Wszystkie polecenia CLI **nie emitują eventów EDA**.
 
 ---
 
-#### 8. DeleteOldLogsCommand
+#### 8. DeleteOldLogsCommand ✅ UKOŃCZONA (2025-10-26)
 
 **Komenda:** `app:delete-old-logs`
 **Plik:** `src/Core/Command/DeleteOldLogsCommand.php`
 
-**Proponowane eventy:**
-```php
-- LogDeletionProcessStartedEvent (pre)
-- LogDeletionProcessCompletedEvent (post, z informacją ile usunięto)
+**Zaimplementowane eventy (3):**
+
+**Process-level events (3):**
+1. **LogDeletionProcessStartedEvent** (post)
+   - Lokalizacja: `src/Core/Event/Cli/DeleteOldLogs/LogDeletionProcessStartedEvent.php`
+   - Payload: `startedAt`, `daysAfter`, `cutoffDate`, `context`
+   - Kiedy: Na początku procesu usuwania logów
+
+2. **LogDeletionProcessCompletedEvent** (post-commit)
+   - Lokalizacja: `src/Core/Event/Cli/DeleteOldLogs/LogDeletionProcessCompletedEvent.php`
+   - Payload: `daysAfter`, `cutoffDate`, `deletedLogs`, `deletedServerLogs`, `deletedEmailLogs`, `totalDeleted`, `durationInSeconds`, `completedAt`, `context`
+   - Kiedy: Po zakończeniu całego procesu usuwania
+   - Zawiera pełne statystyki procesu (wszystkie 3 typy logów)
+
+3. **LogDeletionProcessFailedEvent** (error)
+   - Lokalizacja: `src/Core/Event/Cli/DeleteOldLogs/LogDeletionProcessFailedEvent.php`
+   - Payload: `failureReason`, `daysAfter` (nullable), `failedAt`, `context`
+   - Kiedy: W catch() execute() lub przy invalid setting
+   - Zawiera reason dla diagnostyki
+
+**Flow:**
+```
+1. Odczyt ustawienia LOG_CLEANUP_DAYS_AFTER
+2. Walidacja ustawienia
+   → LogDeletionProcessFailedEvent (invalid setting) jeśli błędne
+3. Obliczenie cutoff date (now - N days)
+4. LogDeletionProcessStartedEvent
+5. Usuwanie logów z 3 repozytoriów:
+   a. LogRepository.deleteOldLogs(cutoffDate)
+   b. ServerLogRepository.deleteOldLogs(cutoffDate)
+   c. EmailLogRepository.deleteOldLogs(cutoffDate)
+6. LogDeletionProcessCompletedEvent (success)
+   → LogDeletionProcessFailedEvent (error) w przypadku wyjątku
 ```
 
-**Zastosowanie:**
-- Monitoring - tracking czyszczenia logów
-- Analytics - statystyki przestrzeni zwolnionej
-- Compliance - logging operacji czyszczenia
+**CLI Context:**
+```php
+[
+  'source' => 'cli',
+  'command' => 'app:delete-old-logs',
+  'daysAfter' => 90,           // Dni z SettingEnum::LOG_CLEANUP_DAYS_AFTER
+  'cutoffDate' => '2024-07-27 12:00:00', // Data graniczna
+  'ip' => null,
+  'userAgent' => 'Symfony CLI',
+  'locale' => 'en',
+]
+```
+
+**Stats Structure:**
+```php
+[
+  'daysAfter' => int,           // Dni retention z ustawień
+  'cutoffDate' => DateTimeImmutable, // Data graniczna
+  'deletedLogs' => int,         // Usunięte logi główne
+  'deletedServerLogs' => int,   // Usunięte server logs
+  'deletedEmailLogs' => int,    // Usunięte email logs
+  'totalDeleted' => int,        // Suma wszystkich usuniętych
+  'durationInSeconds' => int,   // Czas wykonania
+]
+```
+
+**Decyzje implementacyjne:**
+- ✅ **Basic CLI implementation:** 3 eventy (process-level tylko)
+- ✅ **No per-log-type events:** Stats breakdown w CompletedEvent
+- ✅ **Setting validation:** Osobny FailedEvent dla invalid setting
+- ✅ **3 log types:** logs, server_logs, email_logs w jednej operacji
+- ✅ **Time tracking:** Duration w CompletedEvent
+
+**Use Cases:**
+
+✅ **Monitoring & Analytics** - Process-level tracking:
+  - Ile logów usunięto (breakdown per type)
+  - Czy cleanup działa regularnie
+  - Czas wykonania operacji
+  - Setting retention period
+
+✅ **Compliance & Audit** - Compliance tracking:
+  - Dokładna data cutoff dla każdej operacji
+  - Wszystkie operacje czyszczenia w audit log
+  - Tracking dla regulacji (GDPR, etc.)
+
+✅ **Storage Management** - Capacity planning:
+  - Analytics ile miejsca zwolniono
+  - Tracking wzrostu logów
+  - Planning retention policy
+
+✅ **Alerting** - Error detection:
+  - Monitoring błędów usuwania
+  - Alert gdy setting invalid
+  - Alert gdy proces trwa za długo
 
 ---
 
@@ -2090,7 +2314,7 @@ Sugerowana kolejność implementacji:
 - ✅ Product Copy - operacja specjalna (ukończone 2025-10-21)
 - ✅ Voucher API (ukończone 2025-10-22)
 
-#### Faza 4: CLI - Critical (1 tydzień) ✅ **UKOŃCZONA** (2025-10-25)
+#### ~~Faza 4: CLI - Critical (1 tydzień)~~ ✅ **UKOŃCZONA** (2025-10-25)
 - ✅ SuspendUnpaidServersCommand (ukończone 2025-10-25)
 - ✅ DeleteInactiveServersCommand (ukończone 2025-10-25)
 - ✅ PterocaSyncServersCommand (ukończone 2025-10-25)
@@ -2102,7 +2326,51 @@ Sugerowana kolejność implementacji:
 - ~~Voucher CRUD~~ ✅ Eventy CRUD automatyczne
 
 #### Faza 6: CLI - Utility (3-4 dni)
-- Pozostałe komendy CLI
+
+**Tier 1: Wysokie priorytety (produkcyjne operacje)**
+
+1. **PterodactylMigrateServersCommand** (`pterodactyl:migrate-servers`) ⭐⭐⭐⭐⭐
+   - Migracja serwerów z Pterodactyl do istniejących kont użytkowników w PteroCA
+   - CLI opcje: `--limit`, `--dry-run`
+   - Handler: MigrateServersHandler (304 linie, bardzo złożony)
+   - Szacowane eventy: ~9-11 (process-level + per-server + optional)
+   - Czas: 2-3h
+
+2. **DeleteOldLogsCommand** (`app:delete-old-logs`) ⭐⭐⭐
+   - Usuwanie logów starszych niż N dni (logs, server_logs, email_logs)
+   - Brak CLI opcji (czyta z SettingEnum::LOG_CLEANUP_DAYS_AFTER)
+   - Szacowane eventy: ~3-4
+   - Czas: 1h
+
+3. **SynchronizeDataCommand** (`app:synchronize-data`) ⭐⭐
+   - Synchronizacja danych (tworzenie Pterodactyl API keys dla użytkowników)
+   - Handler: SynchronizeDataHandler (prosty, 34 linie)
+   - Szacowane eventy: ~5-6
+   - Czas: 1h
+
+**Tier 2: Niskie priorytety (narzędzia admin)**
+
+4. **CreateNewUserCommand** (`app:create-new-user`) ⭐
+   - Tworzenie nowego użytkownika (PteroCA + Pterodactyl account + API key)
+   - Handler: CreateNewUserHandler
+   - Szacowane eventy: ~3-4
+   - Czas: 1h
+
+5. **ChangeUserPasswordCommand** (`app:change-user-password`) ⭐
+   - Zmiana hasła użytkownika (PteroCA + Pterodactyl)
+   - Handler: ChangeUserPasswordHandler
+   - Szacowane eventy: ~3
+   - Czas: 45min
+
+**Poza zakresem EDA (dev/install tools):**
+- UpdateSystemCommand (dev tool - update systemu)
+- MakeThemeCommand (dev tool - generator motywów)
+- ConfigureSystemCommand (instalator - konfiguracja początkowa)
+- ConfigureDatabaseCommand (instalator - setup bazy)
+- ShowMissingTranslationsCommand (dev tool - YAML translations)
+- CronJobScheduleCommand (wrapper - uruchamia inne komendy)
+
+**Razem Tier 1+2:** ~23-28 eventów, około 6-7h pracy
 
 #### ~~Faza 7: Pozostałe CRUD (1 tydzień)~~ ✅ **UKOŃCZONA** (przez AbstractPanelController)
 - ~~Category, Payment, Logs, Settings CRUD~~ ✅ Eventy CRUD automatyczne
@@ -2165,7 +2433,7 @@ Sugerowana kolejność implementacji:
 
 - **❌ Do zaimplementowania:**
   - **API Controllers:** 8 kontrolerów (~36+ eventów) ~~9 kontrolerów (~47+ eventów)~~
-  - **CLI Commands:** 12 komend (~28+ eventów) ~~13 komend (~34+ eventów)~~ ~~14 komend (~40+ eventów)~~
+  - **CLI Commands:** 5 komend w Tier 1+2 (~23-28 eventów), 6 poza zakresem ~~12 komend (~28+ eventów)~~ ~~13 komend (~34+ eventów)~~ ~~14 komend (~40+ eventów)~~
   - **User Pages:** 1 strona (~3+ eventy) ~~2 strony~~
   - ~~**Admin Pages:**~~ ✅ **UKOŃCZONE** (Admin Overview - 2025-10-21)
   - ~~**Operacje specjalne:**~~ ✅ **UKOŃCZONE** (Product Copy - 2025-10-21)
@@ -2174,7 +2442,11 @@ Sugerowana kolejność implementacji:
   - ~~**Server Configuration API:**~~ ✅ **UKOŃCZONE** (Server Configuration - 2025-10-22)
   - ~~**SuspendUnpaidServersCommand CLI:**~~ ✅ **UKOŃCZONE** (SuspendUnpaidServers - 2025-10-25)
   - ~~**DeleteInactiveServersCommand CLI:**~~ ✅ **UKOŃCZONE** (DeleteInactiveServers - 2025-10-25)
-  - **RAZEM:** ~67 nowych eventów (zamiast pierwotnie 101)
+  - ~~**PterocaSyncServersCommand CLI:**~~ ✅ **UKOŃCZONE** (PterocaSyncServers - 2025-10-26)
+  - ~~**Faza 4 (CLI - Critical):**~~ ✅ **UKOŃCZONE** (3 critical CLI commands - 2025-10-26)
+  - ~~**PterodactylMigrateServersCommand CLI:**~~ ✅ **UKOŃCZONE** (MigrateServers - 2025-10-26)
+  - ~~**DeleteOldLogsCommand CLI:**~~ ✅ **UKOŃCZONE** (DeleteOldLogs - 2025-10-26)
+  - **RAZEM:** ~78 nowych eventów pozostałych (zamiast pierwotnie 101, -3 dla DeleteOldLogs)
 
 **Zmiana po analizie AbstractPanelController:**
 - ~~30+ eventów dla Admin CRUD~~ → ✅ **Już zaimplementowane w AbstractPanelController**
@@ -2219,7 +2491,45 @@ Sugerowana kolejność implementacji:
 - **Łącznie od 2025-10-21:** +32 nowych eventów! 🎊🎊🎊🎊
 - **Faza 4 (CLI - Critical):** 2/3 ukończone! 🚀🚀
 
-### Szacowany czas implementacji (zaktualizowany 2025-10-25):
+**Zmiana po implementacji PterocaSyncServersCommand CLI (2025-10-26):**
+- ~~PterocaSyncServersCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +7 eventów zaimplementowanych (3 process-level + 4 per-server)! 🎉
+- **Kluczowe feature:**
+  - ✅ Stoppable pre-event dla backup automation (`OrphanedServerFoundEvent`)
+  - ✅ Wsparcie dla dry-run mode z oddzielną obsługą w eventach
+  - ✅ Wsparcie dla auto mode (brak interakcji użytkownika)
+  - ✅ 3 powody skip: `plugin_blocked`, `user_declined`, `dry_run`
+  - ✅ Pełne statystyki (5 metryk): pterodactylServersFound, orphanedServersFound, orphanedServersDeleted, orphanedServersSkipped, orphanedServersFailed
+- **Łącznie od 2025-10-21:** +39 nowych eventów! 🎊🎊🎊🎊🎊
+- **Faza 4 (CLI - Critical):** ✅ **UKOŃCZONA!** Wszystkie 3 critical CLI commands gotowe! 🚀🚀🚀
+
+**Zmiana po implementacji PterodactylMigrateServersCommand CLI (2025-10-26):**
+- ~~PterodactylMigrateServersCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +7 eventów zaimplementowanych (3 process-level + 4 per-server)! 🎉
+- **Kluczowe feature:**
+  - ✅ Stoppable pre-event dla backup automation (`ServerMigrationRequestedEvent`)
+  - ✅ 5 skip reasons: `already_exists`, `owner_not_found`, `user_declined`, `plugin_blocked`, `dry_run`
+  - ✅ User interaction tracking: duration i price w `ServerMigratedEvent`
+  - ✅ Fail-safe approach: błąd pojedynczego serwera nie zatrzymuje całego procesu
+  - ✅ 3 encje w jednej transakcji: Server + ServerProduct + ServerProductPrice
+  - ✅ Pełne statystyki (6 metryk): pterodactylServersFound, pterodactylUsersFound, serversAlreadyExisting, serversMigrated, serversSkipped, serversFailed
+- **Łącznie od 2025-10-21:** +46 nowych eventów! 🎊🎊🎊🎊🎊🎊
+- **Faza 6 (CLI - Utility):** Rozpoczęta! Pierwsza komenda z Tier 1! 🚀
+
+**Zmiana po implementacji DeleteOldLogsCommand CLI (2025-10-26):**
+- ~~DeleteOldLogsCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +3 eventy zaimplementowane (3 process-level)! 🎉
+- **Kluczowe feature:**
+  - ✅ Basic CLI implementation (3 eventy, bez per-log-type events)
+  - ✅ Setting validation z osobnym FailedEvent
+  - ✅ 3 log types: logs, server_logs, email_logs w jednej operacji
+  - ✅ Pełne statystyki (breakdown per type): deletedLogs, deletedServerLogs, deletedEmailLogs, totalDeleted
+  - ✅ Time tracking z duration w CompletedEvent
+  - ✅ Compliance tracking (GDPR, audit log)
+- **Łącznie od 2025-10-21:** +49 nowych eventów! 🎊🎊🎊🎊🎊🎊
+- **Faza 6 (CLI - Utility) Tier 1:** Postęp! 2/3 komend Tier 1 ukończone! 🚀
+
+### Szacowany czas implementacji (zaktualizowany 2025-10-26):
 
 - **Priorytet 1 (Krytyczny):** 2-3 tygodnie (API - Server Management) ⏳ - częściowo ukończony (Server Management Page ✅)
 - **Priorytet 2 (Wysoki):** 2 tygodnie (CLI + pozostałe API) ⏳
@@ -2253,15 +2563,17 @@ Sugerowana kolejność implementacji:
 
 **Koniec dokumentu**
 
-**Ostatnia aktualizacja:** 2025-10-25
+**Ostatnia aktualizacja:** 2025-10-26
 **Status:**
 - ✅ Priorytet 3 (Średni): **UKOŃCZONY** - Admin Overview + Product Copy (2025-10-21)
 - ✅ Faza 3: **UKOŃCZONA** - User-facing pages + Admin operations (2025-10-21 - 2025-10-22)
 - ✅ Priorytet 4 (Niski): **Częściowo ukończony** - Voucher API (2025-10-22 rano)
 - ✅ Priorytet 1 (Krytyczny): **Częściowo ukończony** - Server Management Page + Server Configuration API (2025-10-22)
-- ⏳ Faza 4 (CLI - Critical): **W TRAKCIE** - SuspendUnpaidServersCommand (✅), DeleteInactiveServersCommand (✅)
-- ⏳ Pozostało: API Controllers (8), CLI Commands (12), User Pages (1)
-- 🎊🎊🎊🎊 **+32 nowych eventów od 2025-10-21!** (największy przyrost!)
+- ✅ Faza 4 (CLI - Critical): **UKOŃCZONA** - SuspendUnpaidServersCommand (✅), DeleteInactiveServersCommand (✅), PterocaSyncServersCommand (✅)
+- ⏳ Faza 6 (CLI - Utility): **W TRAKCIE** - PterodactylMigrateServersCommand (✅ Tier 1)
+- ⏳ Pozostało: API Controllers (8), CLI Commands (4 w Tier 1+2), User Pages (1)
+- 🎊🎊🎊🎊🎊🎊 **+46 nowych eventów od 2025-10-21!** (największy przyrost!)
 - 📊 **Postęp Priorytetu 1:** Server Configuration API (✅), Server Management Page (✅), pozostałe: Server Backups, Server Users, Server Databases
-- 🚀 **Postęp Fazy 4:** 2/3 ukończone! SuspendUnpaidServersCommand (✅), DeleteInactiveServersCommand (✅), pozostałe: PterocaSyncServersCommand
-- 💾 **Nowe feature:** Backup automation support - stoppable pre-event dla DeleteInactiveServersCommand!
+- 🚀 **Faza 4 (CLI - Critical):** ✅ **UKOŃCZONA!** Wszystkie 3 komendy critical gotowe! (+19 eventów CLI)
+- 🎯 **Faza 6 (CLI - Utility):** ⏳ **ROZPOCZĘTA!** PterodactylMigrateServersCommand Tier 1 ukończona! (+7 eventów CLI)
+- 💾 **Nowe feature:** Backup automation support + fail-safe migration - stoppable pre-events dla wszystkich CLI commands!

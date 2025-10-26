@@ -13,10 +13,21 @@ use App\Core\Repository\ServerProductPriceRepository;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use App\Core\Event\Cli\MigrateServers\ServerMigratedEvent;
+use App\Core\Event\Cli\MigrateServers\ServerMigrationFailedEvent;
+use App\Core\Event\Cli\MigrateServers\ServerMigrationProcessCompletedEvent;
+use App\Core\Event\Cli\MigrateServers\ServerMigrationProcessFailedEvent;
+use App\Core\Event\Cli\MigrateServers\ServerMigrationProcessStartedEvent;
+use App\Core\Event\Cli\MigrateServers\ServerMigrationRequestedEvent;
+use App\Core\Event\Cli\MigrateServers\ServerMigrationSkippedEvent;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerEggService;
 use App\Core\Service\SettingService;
+use DateTimeImmutable;
+use Exception;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class MigrateServersHandler implements HandlerInterface
@@ -33,6 +44,8 @@ class MigrateServersHandler implements HandlerInterface
         private readonly UserRepository $userRepository,
         private readonly SettingService $settingService,
         private readonly ServerEggService $serverEggService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly EventContextService $eventContextService,
     )
     {
     }
@@ -53,74 +66,261 @@ class MigrateServersHandler implements HandlerInterface
 
     public function handle(bool $dryRun = false): void
     {
-        $this->io->title('Pterodactyl Server Migration');
+        $startTime = new DateTimeImmutable();
+        $context = $this->eventContextService->buildCliContext('pterodactyl:migrate-servers', [
+            'limit' => $this->limit,
+            'dryRun' => $dryRun,
+        ]);
 
-        if ($dryRun) {
-            $this->io->info('Running in dry-run mode - no changes will be made');
-        }
+        $this->eventDispatcher->dispatch(
+            new ServerMigrationProcessStartedEvent($startTime, $this->limit, $dryRun, $context)
+        );
 
-        $pterodactylServers = $this->getPterodactylServers();
-        $pterodactylUsers = $this->getPterodactylUsers();
-        $pterocaServers = $this->getPterocaServers();
-        $pterocaUsers = $this->getPterocaUsers();
+        $stats = [
+            'pterodactylServersFound' => 0,
+            'pterodactylUsersFound' => 0,
+            'serversAlreadyExisting' => 0,
+            'serversMigrated' => 0,
+            'serversSkipped' => 0,
+            'serversFailed' => 0,
+        ];
 
-        foreach ($pterodactylServers as $pterodactylServer) {
-            if ($this->isServerAlreadyExists($pterodactylServer->toArray(), $pterocaServers)) {
-                $infoMessage = sprintf(
-                    'Server %s #%s already exists in PteroCA, skipping...',
-                    $pterodactylServer['name'],
-                    $pterodactylServer['identifier'],
-                );
-                $this->io->info($infoMessage);
-                continue;
+        try {
+            $this->io->title('Pterodactyl Server Migration');
+
+            if ($dryRun) {
+                $this->io->info('Running in dry-run mode - no changes will be made');
             }
 
-            $pterodactylServerOwner = current(array_filter(
-                $pterodactylUsers,
-                fn(PterodactylUser $user) => $user->get('id') === $pterodactylServer['user']
-            ));
-            if (!in_array($pterodactylServerOwner->get('email'), array_column($pterocaUsers, 'email'))) {
-                $warningMessage = sprintf(
-                    'User %s does not exist in PteroCA, skipping server %s #%s...',
-                    $pterodactylServerOwner->get('email'),
-                    $pterodactylServer['name'],
-                    $pterodactylServer['identifier'],
-                );
-                $this->io->warning($warningMessage);
-                continue;
-            }
+            $pterodactylServers = $this->getPterodactylServers();
+            $pterodactylUsers = $this->getPterodactylUsers();
+            $pterocaServers = $this->getPterocaServers();
+            $pterocaUsers = $this->getPterocaUsers();
 
-            if ($this->isUserWantMigrateServer($pterodactylServer->toArray()) === false) {
-                $this->io->info(sprintf(
-                    'Skipping server %s #%s...',
-                    $pterodactylServer['name'],
-                    $pterodactylServer['identifier'],
+            $stats['pterodactylServersFound'] = count($pterodactylServers);
+            $stats['pterodactylUsersFound'] = count($pterodactylUsers);
+
+            foreach ($pterodactylServers as $pterodactylServer) {
+                $serverArray = $pterodactylServer->toArray();
+
+                // Skip: already exists
+                if ($this->isServerAlreadyExists($serverArray, $pterocaServers)) {
+                    $stats['serversAlreadyExisting']++;
+                    $stats['serversSkipped']++;
+
+                    $this->eventDispatcher->dispatch(
+                        new ServerMigrationSkippedEvent(
+                            $serverArray['id'],
+                            $serverArray['identifier'],
+                            $serverArray['name'],
+                            'already_exists',
+                            null,
+                            $context
+                        )
+                    );
+
+                    $this->io->info(sprintf(
+                        'Server %s #%s already exists in PteroCA, skipping...',
+                        $serverArray['name'],
+                        $serverArray['identifier'],
+                    ));
+                    continue;
+                }
+
+                // Find owner
+                $pterodactylServerOwner = current(array_filter(
+                    $pterodactylUsers,
+                    fn(PterodactylUser $user) => $user->get('id') === $serverArray['user']
                 ));
-                continue;
-            }
 
-            $this->io->section(sprintf(
-                'Migrating server %s #%s...',
-                $pterodactylServer['name'],
-                $pterodactylServer['identifier'],
-            ));;
-            $this->io->info('You need to set the base price and duration for the server in PteroCA.');
-            $duration = $this->askForDuration();
-            $price = $this->askForPrice();
+                // Skip: owner not found
+                if (!in_array($pterodactylServerOwner->get('email'), array_column($pterocaUsers, 'email'))) {
+                    $stats['serversSkipped']++;
 
-            if (!$dryRun) {
-                $this->migrateServer(
-                    $pterodactylServer->toArray(),
+                    $this->eventDispatcher->dispatch(
+                        new ServerMigrationSkippedEvent(
+                            $serverArray['id'],
+                            $serverArray['identifier'],
+                            $serverArray['name'],
+                            'owner_not_found',
+                            $pterodactylServerOwner->get('email'),
+                            $context
+                        )
+                    );
+
+                    $this->io->warning(sprintf(
+                        'User %s does not exist in PteroCA, skipping server %s #%s...',
+                        $pterodactylServerOwner->get('email'),
+                        $serverArray['name'],
+                        $serverArray['identifier'],
+                    ));
+                    continue;
+                }
+
+                // Skip: user declined
+                if ($this->isUserWantMigrateServer($serverArray) === false) {
+                    $stats['serversSkipped']++;
+
+                    $this->eventDispatcher->dispatch(
+                        new ServerMigrationSkippedEvent(
+                            $serverArray['id'],
+                            $serverArray['identifier'],
+                            $serverArray['name'],
+                            'user_declined',
+                            $pterodactylServerOwner->get('email'),
+                            $context
+                        )
+                    );
+
+                    $this->io->info(sprintf(
+                        'Skipping server %s #%s...',
+                        $serverArray['name'],
+                        $serverArray['identifier'],
+                    ));
+                    continue;
+                }
+
+                $this->io->section(sprintf(
+                    'Migrating server %s #%s...',
+                    $serverArray['name'],
+                    $serverArray['identifier'],
+                ));
+
+                $requestedEvent = new ServerMigrationRequestedEvent(
+                    $serverArray['id'],
+                    $serverArray['identifier'],
+                    $serverArray['name'],
                     $pterodactylServerOwner->get('email'),
-                    $duration,
-                    $price
+                    $serverArray['user'],
+                    $serverArray['suspended'],
+                    $context
                 );
-            } else {
-                $this->io->info('Dry run: Would migrate server but not saving changes');
-            }
-        }
+                $this->eventDispatcher->dispatch($requestedEvent);
 
-        $this->io->success('Server migration completed.');
+                if ($requestedEvent->isPropagationStopped()) {
+                    $stats['serversSkipped']++;
+
+                    $this->eventDispatcher->dispatch(
+                        new ServerMigrationSkippedEvent(
+                            $serverArray['id'],
+                            $serverArray['identifier'],
+                            $serverArray['name'],
+                            'plugin_blocked',
+                            $pterodactylServerOwner->get('email'),
+                            $context
+                        )
+                    );
+
+                    $this->io->warning(sprintf(
+                        'Migration blocked by plugin for server %s #%s',
+                        $serverArray['name'],
+                        $serverArray['identifier'],
+                    ));
+                    continue;
+                }
+
+                $this->io->info('You need to set the base price and duration for the server in PteroCA.');
+                $duration = $this->askForDuration();
+                $price = $this->askForPrice();
+
+                // Skip: dry-run
+                if ($dryRun) {
+                    $stats['serversSkipped']++;
+
+                    $this->eventDispatcher->dispatch(
+                        new ServerMigrationSkippedEvent(
+                            $serverArray['id'],
+                            $serverArray['identifier'],
+                            $serverArray['name'],
+                            'dry_run',
+                            $pterodactylServerOwner->get('email'),
+                            $context
+                        )
+                    );
+
+                    $this->io->info('Dry run: Would migrate server but not saving changes');
+                    continue;
+                }
+
+                // Migrate server
+                try {
+                    $migratedServerId = $this->migrateServer(
+                        $serverArray,
+                        $pterodactylServerOwner->get('email'),
+                        $duration,
+                        $price,
+                        $context,
+                        $stats
+                    );
+
+                    $stats['serversMigrated']++;
+
+                    $this->io->success(sprintf(
+                        'Server %s #%s migrated successfully (ID: %d)',
+                        $serverArray['name'],
+                        $serverArray['identifier'],
+                        $migratedServerId
+                    ));
+                } catch (Exception $e) {
+                    $stats['serversFailed']++;
+
+                    $this->eventDispatcher->dispatch(
+                        new ServerMigrationFailedEvent(
+                            $serverArray['id'],
+                            $serverArray['identifier'],
+                            $serverArray['name'],
+                            $e->getMessage(),
+                            $pterodactylServerOwner->get('email'),
+                            $context
+                        )
+                    );
+
+                    $this->io->error(sprintf(
+                        'Failed to migrate server %s #%s: %s',
+                        $serverArray['name'],
+                        $serverArray['identifier'],
+                        $e->getMessage()
+                    ));
+
+                    // Continue processing other servers
+                }
+            }
+
+            $duration = (new DateTimeImmutable())->getTimestamp() - $startTime->getTimestamp();
+            $this->eventDispatcher->dispatch(
+                new ServerMigrationProcessCompletedEvent(
+                    $stats['pterodactylServersFound'],
+                    $stats['pterodactylUsersFound'],
+                    $stats['serversAlreadyExisting'],
+                    $stats['serversMigrated'],
+                    $stats['serversSkipped'],
+                    $stats['serversFailed'],
+                    $this->limit,
+                    $dryRun,
+                    $duration,
+                    new DateTimeImmutable(),
+                    $context
+                )
+            );
+
+            $this->io->success(sprintf(
+                'Server migration completed. Migrated: %d, Skipped: %d, Failed: %d (Pterodactyl servers: %d)',
+                $stats['serversMigrated'],
+                $stats['serversSkipped'],
+                $stats['serversFailed'],
+                $stats['pterodactylServersFound']
+            ));
+        } catch (Exception $e) {
+            $this->eventDispatcher->dispatch(
+                new ServerMigrationProcessFailedEvent(
+                    $e->getMessage(),
+                    $stats,
+                    new DateTimeImmutable(),
+                    $context
+                )
+            );
+            throw $e;
+        }
     }
 
     private function migrateServer(
@@ -128,22 +328,43 @@ class MigrateServersHandler implements HandlerInterface
         string $pterodactylServerOwnerEmail,
         int $duration,
         float $price,
-    ): void
+        array $context,
+        array &$stats
+    ): int
     {
         $pterocaUser = $this->userRepository->findOneBy(['email' => $pterodactylServerOwnerEmail]);
         if (empty($pterocaUser)) {
-            $this->io->error(sprintf(
-                'Could not find user with email %s, skipping server %s #%s...',
-                $pterodactylServerOwnerEmail,
-                $pterodactylServer['name'],
-                $pterodactylServer['identifier'],
+            throw new Exception(sprintf(
+                'Could not find user with email %s',
+                $pterodactylServerOwnerEmail
             ));
-            return;
         }
 
         $serverEntity = $this->migrateServerEntity($pterocaUser, $pterodactylServer, $duration);
         $serverProductEntity = $this->migrateServerProductEntity($serverEntity, $pterodactylServer);
         $serverProductPriceEntity = $this->migrateServerProductPriceEntity($serverProductEntity, $duration, $price);
+
+        // Emit ServerMigratedEvent
+        $expiresAtImmutable = $serverEntity->getExpiresAt()
+            ? DateTimeImmutable::createFromMutable($serverEntity->getExpiresAt())
+            : new DateTimeImmutable();
+
+        $this->eventDispatcher->dispatch(
+            new ServerMigratedEvent(
+                $pterocaUser->getId() ?? 0,
+                $serverEntity->getId(),
+                $pterodactylServer['id'],
+                $pterodactylServer['identifier'],
+                $pterodactylServer['name'],
+                $duration,
+                $price,
+                $expiresAtImmutable,
+                new DateTimeImmutable(),
+                $context
+            )
+        );
+
+        return $serverEntity->getId();
     }
 
     private function migrateServerProductPriceEntity(
