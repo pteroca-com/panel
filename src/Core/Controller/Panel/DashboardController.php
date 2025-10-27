@@ -26,6 +26,13 @@ use App\Core\Enum\UserRoleEnum;
 use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\Dashboard\DashboardAccessedEvent;
 use App\Core\Event\Dashboard\DashboardDataLoadedEvent;
+use App\Core\Event\Dashboard\DashboardWidgetsCollectedEvent;
+use App\Core\Service\Widget\DashboardWidgetRegistry;
+use App\Core\Widget\Dashboard\BalanceWidget;
+use App\Core\Widget\Dashboard\ServersWidget;
+use App\Core\Widget\Dashboard\MotdWidget;
+use App\Core\Widget\Dashboard\ActivityWidget;
+use App\Core\Widget\Dashboard\QuickActionsWidget;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Server\ServerService;
@@ -60,6 +67,11 @@ class DashboardController extends AbstractDashboardController
         private readonly TemplateManager $templateManager,
         private readonly ServerService $serverService,
         private readonly RequestStack $requestStack,
+        private readonly BalanceWidget $balanceWidget,
+        private readonly ServersWidget $serversWidget,
+        private readonly MotdWidget $motdWidget,
+        private readonly ActivityWidget $activityWidget,
+        private readonly QuickActionsWidget $quickActionsWidget,
     ) {}
 
     #[Route('/panel', name: 'panel')]
@@ -73,6 +85,18 @@ class DashboardController extends AbstractDashboardController
             $request,
             [$user->getRoles()]
         );
+
+        // === Widget Registry System ===
+        $widgetRegistry = new DashboardWidgetRegistry();
+
+        // Register builtin widgets
+        $this->registerBuiltinWidgets($widgetRegistry);
+
+        // Dispatch event for plugins to register custom widgets
+        $context = $this->buildMinimalEventContext($request);
+        $widgetEvent = new DashboardWidgetsCollectedEvent($widgetRegistry, $user, $context);
+        $this->dispatchEvent($widgetEvent);
+        // === End Widget Registry System ===
 
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
         $servers = $this->serverService->getServersWithAccess($user);
@@ -88,6 +112,7 @@ class DashboardController extends AbstractDashboardController
         );
 
         $viewData = [
+            'widgetRegistry' => $widgetRegistry,
             'servers' => $servers,
             'user' => $user,
             'logs' => $logs,
@@ -100,6 +125,21 @@ class DashboardController extends AbstractDashboardController
         $viewEvent = $this->prepareViewDataEvent(ViewNameEnum::DASHBOARD, $viewData, $request);
 
         return $this->render('panel/dashboard/dashboard.html.twig', $viewEvent->getViewData());
+    }
+
+    /**
+     * Register builtin (core) dashboard widgets.
+     *
+     * @param DashboardWidgetRegistry $registry
+     * @return void
+     */
+    private function registerBuiltinWidgets(DashboardWidgetRegistry $registry): void
+    {
+        $registry->registerWidget($this->quickActionsWidget);
+        $registry->registerWidget($this->balanceWidget);
+        $registry->registerWidget($this->serversWidget);
+        $registry->registerWidget($this->motdWidget);
+        $registry->registerWidget($this->activityWidget);
     }
 
     public function configureDashboard(): Dashboard

@@ -13,3 +13,14 @@ services:
         resource: '../src/Core/Event/*'
         autowire: false
         autoconfigure: false
+
+    # Dashboard Widget Registry
+    App\Core\Service\Widget\DashboardWidgetRegistry:
+        public: true
+
+    # Auto-register builtin widgets as services
+    App\Core\Widget\Dashboard\:
+        resource: '../src/Core/Widget/Dashboard/*Widget.php'
+        tags: ['dashboard.widget']
+        autowire: true
+        autoconfigure: true

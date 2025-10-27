@@ -23,58 +23,77 @@
             </div>
         </div>
 
-        <div class="row g-4">
-            <!-- Quick Actions -->
-            <div class="col-lg-8 col-md-6">
-                <div class="card border-0 shadow-sm rounded-3 h-100">
-                    <div class="card-header">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-bolt me-2"></i>
-                            <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.dashboard.quick_actions'|trans }}</h5>
+        {# TOP widgets - Full width section #}
+        {% set topWidgets = widgetRegistry.getWidgetsByPosition(constant('App\\Core\\Enum\\WidgetPosition::TOP')) %}
+        {% if topWidgets|length > 0 %}
+            <div class="row g-4">
+                {% for widget in topWidgets %}
+                    {% if widget.isVisible(app.user) %}
+                        <div class="col-12">
+                            {% include widget.getTemplate() with widget.getData(app.user) only %}
                         </div>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <a href="{{ path('panel', { routeName: 'store' }) }}" class="btn w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
-                                    <i class="fas fa-store fs-3 mb-2"></i>
-                                    <span class="fw-semibold">{{ 'pteroca.dashboard.browse_store'|trans }}</span>
-                                </a>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="{{ path('panel', { routeName: 'servers' }) }}" class="btn w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
-                                    <i class="fas fa-server fs-3 mb-2"></i>
-                                    <span class="fw-semibold">{{ 'pteroca.dashboard.my_servers'|trans }}</span>
-                                </a>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
-                                    <i class="fas fa-wallet fs-3 mb-2"></i>
-                                    <span class="fw-semibold">{{ 'pteroca.dashboard.account_recharge'|trans }}</span>
-                                </a>
-                            </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# FULL_WIDTH widgets - Spanning entire row #}
+        {% set fullWidgets = widgetRegistry.getWidgetsByPosition(constant('App\\Core\\Enum\\WidgetPosition::FULL_WIDTH')) %}
+        {% if fullWidgets|length > 0 %}
+            <div class="row g-4 mt-2">
+                {% for widget in fullWidgets %}
+                    {% if widget.isVisible(app.user) %}
+                        <div class="col-12">
+                            {% include widget.getTemplate() with widget.getData(app.user) only %}
                         </div>
-                    </div>
-                </div>
+                    {% endif %}
+                {% endfor %}
             </div>
+        {% endif %}
 
-            <!-- Balance Card -->
-            <div class="col-lg-4 col-md-6">
-                {% include 'panel/dashboard/components/balance.html.twig' %}
-            </div>
-        </div>
-
+        {# LEFT + RIGHT widgets - Main content area #}
         <div class="row g-4 mt-2">
-            <!-- Servers Section -->
-            <div class="col-12 col-xl-8">
-                {% include 'panel/dashboard/components/servers.html.twig' %}
-            </div>
-            
-            <!-- Right Column -->
-            <div class="col-12 col-xl-4">
-                {% include 'panel/dashboard/components/motd.html.twig' %}
-                {% include 'panel/dashboard/components/activity.html.twig' %}
-            </div>
+            {# LEFT widgets - Main content (8 columns) #}
+            {% set leftWidgets = widgetRegistry.getWidgetsByPosition(constant('App\\Core\\Enum\\WidgetPosition::LEFT')) %}
+            {% if leftWidgets|length > 0 %}
+                <div class="col-12 col-xl-8">
+                    {% for widget in leftWidgets %}
+                        {% if widget.isVisible(app.user) %}
+                            <div class="mb-4">
+                                {% include widget.getTemplate() with widget.getData(app.user) only %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {# RIGHT widgets - Sidebar (4 columns) #}
+            {% set rightWidgets = widgetRegistry.getWidgetsByPosition(constant('App\\Core\\Enum\\WidgetPosition::RIGHT')) %}
+            {% if rightWidgets|length > 0 %}
+                <div class="col-12 col-xl-4">
+                    {% for widget in rightWidgets %}
+                        {% if widget.isVisible(app.user) %}
+                            <div class="mb-4">
+                                {% include widget.getTemplate() with widget.getData(app.user) only %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
+
+        {# BOTTOM widgets - Full width section at bottom #}
+        {% set bottomWidgets = widgetRegistry.getWidgetsByPosition(constant('App\\Core\\Enum\\WidgetPosition::BOTTOM')) %}
+        {% if bottomWidgets|length > 0 %}
+            <div class="row g-4 mt-2">
+                {% for widget in bottomWidgets %}
+                    {% if widget.isVisible(app.user) %}
+                        <div class="col-12">
+                            {% include widget.getTemplate() with widget.getData(app.user) only %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
