@@ -2,32 +2,138 @@
 
 namespace App\Core\Handler;
 
+use App\Core\Event\Cli\SynchronizeData\DataSyncProcessCompletedEvent;
+use App\Core\Event\Cli\SynchronizeData\DataSyncProcessFailedEvent;
+use App\Core\Event\Cli\SynchronizeData\DataSyncProcessStartedEvent;
+use App\Core\Event\Cli\SynchronizeData\UserPterodactylApiKeyCreatedEvent;
+use App\Core\Event\Cli\SynchronizeData\UserPterodactylApiKeyCreationFailedEvent;
+use App\Core\Event\Cli\SynchronizeData\UserPterodactylApiKeyCreationRequestedEvent;
 use App\Core\Repository\UserRepository;
+use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylClientApiKeyService;
+use DateTimeImmutable;
+use Exception;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SynchronizeDataHandler implements HandlerInterface
 {
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly EventContextService $eventContextService,
     )
     {
     }
 
     public function handle(): void
     {
-        $this->synchronizeUserPterodactylKeys();
+        $startTime = new DateTimeImmutable();
+        $context = $this->eventContextService->buildCliContext('app:synchronize-data', []);
+
+        $this->eventDispatcher->dispatch(
+            new DataSyncProcessStartedEvent($startTime, $context)
+        );
+
+        $stats = [
+            'usersWithoutKeys' => 0,
+            'keysCreated' => 0,
+            'keysSkipped' => 0,
+            'keysFailed' => 0,
+        ];
+
+        try {
+            $this->synchronizeUserPterodactylKeys($context, $stats);
+
+            $endTime = new DateTimeImmutable();
+            $duration = $endTime->getTimestamp() - $startTime->getTimestamp();
+
+            $this->eventDispatcher->dispatch(
+                new DataSyncProcessCompletedEvent(
+                    $stats['usersWithoutKeys'],
+                    $stats['keysCreated'],
+                    $stats['keysSkipped'],
+                    $stats['keysFailed'],
+                    $duration,
+                    $endTime,
+                    $context
+                )
+            );
+        } catch (Exception $e) {
+            $this->eventDispatcher->dispatch(
+                new DataSyncProcessFailedEvent(
+                    $e->getMessage(),
+                    $stats,
+                    new DateTimeImmutable(),
+                    $context
+                )
+            );
+
+            throw $e;
+        }
     }
 
-    private function synchronizeUserPterodactylKeys(): void
+    private function synchronizeUserPterodactylKeys(array $context, array &$stats): void
     {
         $usersWithoutPterodactylKeys = $this->userRepository
             ->findBy(['pterodactylUserApiKey' => null]);
 
+        $stats['usersWithoutKeys'] = count($usersWithoutPterodactylKeys);
+
         foreach ($usersWithoutPterodactylKeys as $user) {
-            $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
-            $user->setPterodactylUserApiKey($pterodactylClientApiKey);
-            $this->userRepository->save($user);
+            $userId = $user->getId() ?? 0;
+            $userEmail = $user->getEmail() ?? '';
+            $userName = $user->getUserIdentifier();
+
+            // Emit stoppable pre-event
+            $requestedEvent = new UserPterodactylApiKeyCreationRequestedEvent(
+                $userId,
+                $userEmail,
+                $userName,
+                $context
+            );
+            $this->eventDispatcher->dispatch($requestedEvent);
+
+            // Check if plugin blocked the operation
+            if ($requestedEvent->isPropagationStopped()) {
+                $stats['keysSkipped']++;
+                continue;
+            }
+
+            // Try to create API key for this user (fail-safe)
+            try {
+                $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
+                $user->setPterodactylUserApiKey($pterodactylClientApiKey);
+                $this->userRepository->save($user);
+
+                $stats['keysCreated']++;
+
+                // Emit success event (without API key for security)
+                $this->eventDispatcher->dispatch(
+                    new UserPterodactylApiKeyCreatedEvent(
+                        $userId,
+                        $userEmail,
+                        $userName,
+                        '***', // API key masked for security
+                        new DateTimeImmutable(),
+                        $context
+                    )
+                );
+            } catch (Exception $e) {
+                $stats['keysFailed']++;
+
+                // Emit failure event and continue with other users (fail-safe)
+                $this->eventDispatcher->dispatch(
+                    new UserPterodactylApiKeyCreationFailedEvent(
+                        $userId,
+                        $userEmail,
+                        $userName,
+                        $e->getMessage(),
+                        $context
+                    )
+                );
+                // Continue processing other users
+            }
         }
     }
 }

@@ -1608,22 +1608,124 @@ Wszystkie polecenia CLI **nie emitują eventów EDA**.
 
 ---
 
-#### 8. SynchronizeDataCommand
+#### 8. SynchronizeDataCommand ✅ UKOŃCZONA (2025-10-26)
 
 **Komenda:** `app:synchronize-data`
 **Plik:** `src/Core/Command/SynchronizeDataCommand.php`
+**Handler:** `src/Core/Handler/SynchronizeDataHandler.php`
 
-**Proponowane eventy:**
-```php
-- DataSyncProcessStartedEvent (pre)
-- DataSyncProcessCompletedEvent (post)
-- DataSyncFailedEvent (error)
+**Zaimplementowane eventy (6):**
+
+**Process-level events (3):**
+1. **DataSyncProcessStartedEvent** (post)
+   - Lokalizacja: `src/Core/Event/Cli/SynchronizeData/DataSyncProcessStartedEvent.php`
+   - Payload: `startedAt`, `context`
+   - Kiedy: Na początku procesu synchronizacji
+
+2. **DataSyncProcessCompletedEvent** (post-commit)
+   - Lokalizacja: `src/Core/Event/Cli/SynchronizeData/DataSyncProcessCompletedEvent.php`
+   - Payload: `usersWithoutKeys`, `keysCreated`, `keysSkipped`, `keysFailed`, `durationInSeconds`, `completedAt`, `context`
+   - Kiedy: Po zakończeniu całego procesu synchronizacji
+   - Zawiera pełne statystyki procesu (wszystkie 4 metryki)
+
+3. **DataSyncProcessFailedEvent** (error)
+   - Lokalizacja: `src/Core/Event/Cli/SynchronizeData/DataSyncProcessFailedEvent.php`
+   - Payload: `failureReason`, `stats` (partial), `failedAt`, `context`
+   - Kiedy: W catch() handle() - krytyczny błąd całego procesu
+
+**Per-user events (3):**
+
+4. **UserPterodactylApiKeyCreationRequestedEvent** (pre, stoppable) ⚠️
+   - Lokalizacja: `src/Core/Event/Cli/SynchronizeData/UserPterodactylApiKeyCreationRequestedEvent.php`
+   - Payload: `userId`, `userEmail`, `userName`, `context`
+   - Kiedy: Przed utworzeniem API key dla konkretnego użytkownika
+   - **Stoppable:** Plugin może zablokować utworzenie (np. suspended user, security policy)
+
+5. **UserPterodactylApiKeyCreatedEvent** (post-commit)
+   - Lokalizacja: `src/Core/Event/Cli/SynchronizeData/UserPterodactylApiKeyCreatedEvent.php`
+   - Payload: `userId`, `userEmail`, `userName`, `apiKeyIdentifier`, `createdAt`, `context`
+   - Kiedy: Po utworzeniu i zapisaniu Pterodactyl Client API Key
+   - Zawiera `apiKeyIdentifier` (bez pełnego klucza dla security)
+
+6. **UserPterodactylApiKeyCreationFailedEvent** (error)
+   - Lokalizacja: `src/Core/Event/Cli/SynchronizeData/UserPterodactylApiKeyCreationFailedEvent.php`
+   - Payload: `userId`, `userEmail`, `userName`, `failureReason`, `context`
+   - Kiedy: W catch() podczas tworzenia klucza dla usera
+   - **Fail-safe:** Proces kontynuuje z pozostałymi userami
+
+**Flow:**
+```
+1. Pobranie użytkowników bez pterodactylUserApiKey (null)
+2. DataSyncProcessStartedEvent
+3. Dla każdego użytkownika bez API key:
+   a. UserPterodactylApiKeyCreationRequestedEvent (stoppable)
+      → Skip jeśli plugin zablokuje (keysSkipped++)
+   b. Try-catch per user (fail-safe):
+      - createClientApiKey() w Pterodactyl
+      - setPterodactylUserApiKey() + save()
+      - UserPterodactylApiKeyCreatedEvent (success, keysCreated++)
+      - UserPterodactylApiKeyCreationFailedEvent (error, keysFailed++, continue)
+4. DataSyncProcessCompletedEvent (success)
+   → DataSyncProcessFailedEvent (krytyczny błąd całego procesu)
 ```
 
-**Zastosowanie:**
-- Monitoring - tracking synchronizacji danych
-- Alerting - powiadomienia o błędach
-- Performance tracking
+**CLI Context:**
+```php
+[
+  'source' => 'cli',
+  'command' => 'app:synchronize-data',
+  'ip' => null,
+  'userAgent' => 'Symfony CLI',
+  'locale' => 'en',
+]
+```
+
+**Stats Structure:**
+```php
+[
+  'usersWithoutKeys' => int,  // Znalezieni użytkownicy bez API keys
+  'keysCreated' => int,       // Utworzone klucze API
+  'keysSkipped' => int,       // Pominięci (plugin_blocked)
+  'keysFailed' => int,        // Błędy podczas tworzenia
+  'durationInSeconds' => int, // Czas wykonania
+]
+```
+
+**Skip Reasons (1):**
+- `plugin_blocked` - Plugin zatrzymał przez `stopPropagation()` w UserPterodactylApiKeyCreationRequestedEvent
+
+**Decyzje implementacyjne:**
+- ✅ **Pełna implementacja:** 6 eventów (3 process + 3 per-user) dla security-critical API keys
+- ✅ **Stoppable pre-event:** Plugin może zablokować utworzenie klucza (security policy, validation)
+- ✅ **Fail-safe approach:** Błąd dla jednego usera nie zatrzymuje całego procesu
+- ✅ **Security:** `apiKeyIdentifier` w evencie (bez pełnego klucza API)
+- ✅ **Per-user tracking:** Pełny audit trail dla każdego utworzonego klucza
+- ✅ **Time tracking:** Duration w CompletedEvent
+
+**Use Cases:**
+
+✅ **Security & Audit Trail** - Per-user tracking:
+  - Kto i kiedy otrzymał API key
+  - Które operacje zostały zablokowane przez plugin
+  - Błędy podczas tworzenia kluczy (diagnostyka)
+  - Compliance tracking dla security-critical operations
+
+✅ **Monitoring & Analytics** - Process-level tracking:
+  - Ile użytkowników potrzebowało API keys
+  - Success rate tworzenia kluczy
+  - Czas wykonania całego procesu
+  - Alerting gdy wiele błędów
+
+✅ **Plugin Extensibility** - Stoppable pre-event:
+  - Plugin może zablokować utworzenie klucza dla suspended users
+  - Custom security policy enforcement
+  - Validation rules (np. tylko verified emails)
+  - Pre-creation hooks (logging, notifications)
+
+✅ **Error Handling** - Fail-safe approach:
+  - Błąd dla jednego usera nie blokuje pozostałych
+  - Szczegółowe tracking błędów (failureReason)
+  - Częściowe sukcesy (niektórzy dostają klucze mimo błędów u innych)
 
 ---
 
@@ -2446,7 +2548,8 @@ Sugerowana kolejność implementacji:
   - ~~**Faza 4 (CLI - Critical):**~~ ✅ **UKOŃCZONE** (3 critical CLI commands - 2025-10-26)
   - ~~**PterodactylMigrateServersCommand CLI:**~~ ✅ **UKOŃCZONE** (MigrateServers - 2025-10-26)
   - ~~**DeleteOldLogsCommand CLI:**~~ ✅ **UKOŃCZONE** (DeleteOldLogs - 2025-10-26)
-  - **RAZEM:** ~78 nowych eventów pozostałych (zamiast pierwotnie 101, -3 dla DeleteOldLogs)
+  - ~~**SynchronizeDataCommand CLI:**~~ ✅ **UKOŃCZONE** (SynchronizeData - 2025-10-26)
+  - **RAZEM:** ~72 nowych eventów pozostałych (zamiast pierwotnie 101, -3 dla DeleteOldLogs, -6 dla SynchronizeData)
 
 **Zmiana po analizie AbstractPanelController:**
 - ~~30+ eventów dla Admin CRUD~~ → ✅ **Już zaimplementowane w AbstractPanelController**
@@ -2529,6 +2632,20 @@ Sugerowana kolejność implementacji:
 - **Łącznie od 2025-10-21:** +49 nowych eventów! 🎊🎊🎊🎊🎊🎊
 - **Faza 6 (CLI - Utility) Tier 1:** Postęp! 2/3 komend Tier 1 ukończone! 🚀
 
+**Zmiana po implementacji SynchronizeDataCommand CLI (2025-10-26):**
+- ~~SynchronizeDataCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +6 eventów zaimplementowanych (3 process-level + 3 per-user)! 🎉
+- **Kluczowe feature:**
+  - ✅ Pełna implementacja (6 eventów) dla security-critical API keys
+  - ✅ Stoppable pre-event dla security policy enforcement (`UserPterodactylApiKeyCreationRequestedEvent`)
+  - ✅ Fail-safe approach: błąd dla jednego usera nie zatrzymuje całego procesu
+  - ✅ Per-user tracking: pełny audit trail dla każdego utworzonego klucza
+  - ✅ Security: `apiKeyIdentifier` w evencie (bez pełnego klucza API)
+  - ✅ Pełne statystyki (4 metryki): usersWithoutKeys, keysCreated, keysSkipped, keysFailed
+  - ✅ Skip reason: `plugin_blocked` dla custom validation
+- **Łącznie od 2025-10-21:** +55 nowych eventów! 🎊🎊🎊🎊🎊🎊🎊
+- **Faza 6 (CLI - Utility) Tier 1:** ✅ **UKOŃCZONA!** Wszystkie 3 komendy Tier 1 gotowe! 🚀🚀🚀
+
 ### Szacowany czas implementacji (zaktualizowany 2025-10-26):
 
 - **Priorytet 1 (Krytyczny):** 2-3 tygodnie (API - Server Management) ⏳ - częściowo ukończony (Server Management Page ✅)
@@ -2570,10 +2687,11 @@ Sugerowana kolejność implementacji:
 - ✅ Priorytet 4 (Niski): **Częściowo ukończony** - Voucher API (2025-10-22 rano)
 - ✅ Priorytet 1 (Krytyczny): **Częściowo ukończony** - Server Management Page + Server Configuration API (2025-10-22)
 - ✅ Faza 4 (CLI - Critical): **UKOŃCZONA** - SuspendUnpaidServersCommand (✅), DeleteInactiveServersCommand (✅), PterocaSyncServersCommand (✅)
-- ⏳ Faza 6 (CLI - Utility): **W TRAKCIE** - PterodactylMigrateServersCommand (✅ Tier 1)
-- ⏳ Pozostało: API Controllers (8), CLI Commands (4 w Tier 1+2), User Pages (1)
-- 🎊🎊🎊🎊🎊🎊 **+46 nowych eventów od 2025-10-21!** (największy przyrost!)
+- ✅ Faza 6 (CLI - Utility) Tier 1: **UKOŃCZONA** - PterodactylMigrateServersCommand (✅), DeleteOldLogsCommand (✅), SynchronizeDataCommand (✅)
+- ⏳ Pozostało: API Controllers (8), CLI Commands (2 w Tier 2), User Pages (1)
+- 🎊🎊🎊🎊🎊🎊🎊 **+55 nowych eventów od 2025-10-21!** (największy przyrost!)
 - 📊 **Postęp Priorytetu 1:** Server Configuration API (✅), Server Management Page (✅), pozostałe: Server Backups, Server Users, Server Databases
 - 🚀 **Faza 4 (CLI - Critical):** ✅ **UKOŃCZONA!** Wszystkie 3 komendy critical gotowe! (+19 eventów CLI)
-- 🎯 **Faza 6 (CLI - Utility):** ⏳ **ROZPOCZĘTA!** PterodactylMigrateServersCommand Tier 1 ukończona! (+7 eventów CLI)
+- 🎯 **Faza 6 (CLI - Utility) Tier 1:** ✅ **UKOŃCZONA!** Wszystkie 3 komendy Tier 1 gotowe! (+16 eventów CLI)
 - 💾 **Nowe feature:** Backup automation support + fail-safe migration - stoppable pre-events dla wszystkich CLI commands!
+- 🔐 **Security:** API key creation tracking z pełnym audit trail dla compliance
