@@ -115,6 +115,15 @@ pteroca:
     view_all_payments_description: 'Muestra todos los pagos realizados en tu cuenta.'
     amount_must_be_positive: 'The amount must be positive.'
 
+  payment:
+    no_gateways_available: 'Actualmente no hay pasarelas de pago disponibles. Configure una pasarela de pago o contacte al administrador.'
+    gateway_not_found: 'No se encontró la pasarela de pago seleccionada.'
+    gateway_not_configured: 'La pasarela de pago seleccionada no está configurada. Contacte al administrador.'
+    currency_not_supported: 'La moneda seleccionada no es compatible con esta pasarela de pago.'
+    gateway:
+      stripe:
+        description: 'Pagos rápidos y seguros con tarjeta de crédito o débito'
+
   product:
     information: 'Información'
     ram: 'RAM'
@@ -882,6 +891,7 @@ pteroca:
       description: 'Gestiona tus pagos y consulta el historial de transacciones'
       continue_payment: 'Continuar pago'
       detail: 'Detalles'
+      gateway: 'Pasarela de pago'
     user_account:
       description: 'Edita tus datos personales, cambia la contraseña y gestiona la configuración de la cuenta'
     log:

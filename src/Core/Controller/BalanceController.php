@@ -8,7 +8,9 @@ use App\Core\Event\Balance\BalanceRechargePageAccessedEvent;
 use App\Core\Event\Balance\BalanceRechargeFormDataLoadedEvent;
 use App\Core\Event\Balance\BalancePaymentCallbackAccessedEvent;
 use App\Core\Event\Form\FormBuildEvent;
+use App\Core\Event\Payment\PaymentGatewaysCollectedEvent;
 use App\Core\Service\Payment\PaymentService;
+use App\Core\Service\Payment\PaymentGatewayManager;
 use App\Core\Service\SettingService;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
@@ -24,6 +26,7 @@ class BalanceController extends AbstractController
         private readonly PaymentService $paymentService,
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
+        private readonly PaymentGatewayManager $gatewayManager,
     ) {
     }
 
@@ -67,9 +70,16 @@ class BalanceController extends AbstractController
             [$this->getUser()->getBalance(), $currency]
         );
 
+        $gatewaysEvent = new PaymentGatewaysCollectedEvent($this->gatewayManager, $context);
+        $this->dispatchEvent($gatewaysEvent);
+
+        $availableGateways = $this->gatewayManager->getProvidersForCurrency($currency);
+
         $viewData = [
             'form' => $form->createView(),
             'balance' => $this->getUser()->getBalance(),
+            'availableGateways' => $availableGateways,
+            'currency' => $currency,
         ];
 
         return $this->renderWithEvent(ViewNameEnum::BALANCE_RECHARGE, 'panel/wallet/recharge.html.twig', $viewData, $request);

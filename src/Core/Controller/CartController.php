@@ -17,9 +17,11 @@ use App\Core\Event\Cart\CartBuyRequestedEvent;
 use App\Core\Event\Cart\CartRenewPageAccessedEvent;
 use App\Core\Event\Cart\CartRenewDataLoadedEvent;
 use App\Core\Event\Cart\CartRenewBuyRequestedEvent;
+use App\Core\Event\Payment\PaymentGatewaysCollectedEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Payment\PaymentService;
+use App\Core\Service\Payment\PaymentGatewayManager;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
@@ -48,6 +50,7 @@ class CartController extends AbstractController
         Request $request,
         SettingService $settingService,
         PaymentService $paymentService,
+        PaymentGatewayManager $gatewayManager,
     ): Response
     {
         $requestPayload = $request->isMethod('POST')
@@ -74,13 +77,15 @@ class CartController extends AbstractController
 
         if ($request->isMethod('POST')) {
             try {
+                $gateway = $requestPayload['gateway'] ?? 'stripe';
                 $paymentUrl = $paymentService->createPayment(
                     $this->getUser(),
                     $requestPayload['amount'],
                     $currency,
                     $requestPayload['voucher'] ?? '',
                     $this->generateUrl('stripe_success', [], 0) . '?session_id={CHECKOUT_SESSION_ID}',
-                    $this->generateUrl('stripe_cancel', [], 0)
+                    $this->generateUrl('stripe_cancel', [], 0),
+                    $gateway
                 );
 
                 $this->dispatchDataEvent(
@@ -100,9 +105,19 @@ class CartController extends AbstractController
                 [$amount, $currency]
             );
         }
-        
+
+        // Dispatch event to allow plugins to register payment gateways
+        $context = $this->buildMinimalEventContext($request);
+        $gatewaysEvent = new PaymentGatewaysCollectedEvent($gatewayManager, $context);
+        $this->dispatchEvent($gatewaysEvent);
+
+        // Get available payment gateways for the currency
+        $availableGateways = $gatewayManager->getProvidersForCurrency($currency);
+
         $viewData = [
             'request' => $requestPayload,
+            'availableGateways' => $availableGateways,
+            'currency' => $currency,
         ];
 
         return $this->renderWithEvent(ViewNameEnum::CART_TOPUP, 'panel/cart/topup.html.twig', $viewData, $request);

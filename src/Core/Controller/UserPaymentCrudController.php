@@ -128,6 +128,8 @@ class UserPaymentCrudController extends AbstractPanelController
             TextField::new('currency', $this->translator->trans('pteroca.crud.payment.currency'))
                 ->onlyOnDetail()
                 ->formatValue(fn ($value) => strtoupper($value)),
+            TextField::new('gateway', $this->translator->trans('pteroca.crud.payment.gateway'))
+                ->formatValue(fn ($value) => ucfirst($value)),
             NumberField::new('balanceAmount', $this->translator->trans('pteroca.crud.payment.balance_amount'))
                 ->formatValue(fn ($value) => sprintf(
                     '%0.2f %s',
@@ -183,6 +185,7 @@ class UserPaymentCrudController extends AbstractPanelController
         $filters
             ->add('sessionId')
             ->add('status')
+            ->add('gateway')
             ->add('amount')
             ->add('currency')
             ->add('createdAt')

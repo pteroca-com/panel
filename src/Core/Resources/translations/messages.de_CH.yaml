@@ -112,6 +112,14 @@ pteroca:
     view_transaction_history: 'Transaktionshistorie anzeigen'
     view_all_payments_description: 'Zeigen Sie alle Zahlungen an, die auf Ihrem Konto getätigt wurden.'
     amount_must_be_positive: 'The amount must be positive.'
+  payment:
+    no_gateways_available: 'Derzeit sind keine Zahlungs-Gateways verfügbar. Bitte konfigurieren Sie ein Zahlungs-Gateway oder kontaktieren Sie den Administrator.'
+    gateway_not_found: 'Das ausgewählte Zahlungs-Gateway wurde nicht gefunden.'
+    gateway_not_configured: 'Das ausgewählte Zahlungs-Gateway ist nicht konfiguriert. Bitte kontaktieren Sie den Administrator.'
+    currency_not_supported: 'Die ausgewählte Währung wird von diesem Zahlungs-Gateway nicht unterstützt.'
+    gateway:
+      stripe:
+        description: 'Schnelle und sichere Zahlungen mit Kredit- oder Debitkarte'
   product:
     information: 'Informationen'
     ram: 'RAM'
@@ -876,6 +884,7 @@ pteroca:
       description: 'Verwalten Sie Ihre Zahlungen und sehen Sie die Transaktionshistorie ein'
       continue_payment: 'Zahlung fortsetzen'
       detail: 'Details'
+      gateway: 'Zahlungs-Gateway'
     user_account:
       description: 'Bearbeiten Sie Ihre persönlichen Daten, ändern Sie Ihr Passwort und verwalten Sie Ihre Kontoeinstellungen'
     log:

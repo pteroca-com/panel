@@ -24,3 +24,15 @@ services:
         tags: ['dashboard.widget']
         autowire: true
         autoconfigure: true
+
+    # Payment Gateway Manager
+    App\Core\Service\Payment\PaymentGatewayManager:
+        arguments:
+            $providers: !tagged_iterator payment.provider
+
+    # Auto-register payment providers as tagged services
+    App\Core\Provider\Payment\:
+        resource: '../src/Core/Provider/Payment/*Provider.php'
+        tags: ['payment.provider']
+        autowire: true
+        autoconfigure: true

@@ -18,6 +18,7 @@ use App\Core\Exception\PaymentExpiredException;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Provider\Payment\PaymentProviderInterface;
 use App\Core\Repository\PaymentRepository;
+use App\Core\Service\Payment\PaymentGatewayManager;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Email\EmailNotificationService;
@@ -31,7 +32,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PaymentService
 {
     public function __construct(
-        private readonly PaymentProviderInterface $paymentProvider,
+        private readonly PaymentGatewayManager $gatewayManager,
         private readonly PaymentRepository $paymentRepository,
         private readonly UserRepository $userRepository,
         private readonly TranslatorInterface $translator,
@@ -51,9 +52,26 @@ class PaymentService
         string $voucherCode,
         string $successUrl,
         string $cancelUrl,
+        string $gateway = 'stripe',
     ): string
     {
         $this->userVerificationService->validateUserVerification($user);
+
+        // Get the payment provider from the manager
+        $paymentProvider = $this->gatewayManager->getProvider($gateway);
+        if ($paymentProvider === null) {
+            throw new \Exception($this->translator->trans('pteroca.payment.gateway_not_found'));
+        }
+
+        if (!$paymentProvider->isConfigured()) {
+            throw new \Exception($this->translator->trans('pteroca.payment.gateway_not_configured'));
+        }
+
+        // Validate currency support
+        if (!in_array($currency, $paymentProvider->getSupportedCurrencies(), true)) {
+            throw new \Exception($this->translator->trans('pteroca.payment.currency_not_supported'));
+        }
+
         $balanceAmount = $amount;
         if (!empty($voucherCode)) {
             $this->voucherPaymentService->validateVoucherCode(
@@ -64,7 +82,7 @@ class PaymentService
             $amount = $this->voucherPaymentService->redeemPaymentVoucher($amount, $voucherCode, $user);
         }
 
-        $session = $this->paymentProvider->createSession($amount, $currency, $successUrl, $cancelUrl);
+        $session = $paymentProvider->createSession($amount, $currency, $successUrl, $cancelUrl);
         if (empty($session)) {
             throw new \Exception($this->translator->trans('pteroca.recharge.failed_to_create_payment'));
         }
@@ -78,9 +96,10 @@ class PaymentService
                 'sessionId' => $session->getId(),
                 'balanceAmount' => $balanceAmount,
                 'voucherCode' => $voucherCode,
+                'gateway' => $gateway,
             ]
         );
-        $this->savePaymentSession($user, $session, $balanceAmount, $voucherCode);
+        $this->savePaymentSession($user, $session, $balanceAmount, $voucherCode, $gateway);
 
         return $session->getUrl();
     }
@@ -89,7 +108,18 @@ class PaymentService
         string $sessionId,
     ): string
     {
-        $retrievedSession = $this->paymentProvider->retrieveSession($sessionId);
+        /** @var Payment|null $payment */
+        $payment = $this->paymentRepository->findOneBy(['sessionId' => $sessionId]);
+        if (empty($payment)) {
+            throw new \Exception($this->translator->trans('pteroca.recharge.payment_not_found'));
+        }
+
+        $paymentProvider = $this->gatewayManager->getProvider($payment->getGateway());
+        if ($paymentProvider === null) {
+            throw new \Exception($this->translator->trans('pteroca.payment.gateway_not_found'));
+        }
+
+        $retrievedSession = $paymentProvider->retrieveSession($sessionId);
         if ($retrievedSession === null) {
             throw new \Exception($this->translator->trans('pteroca.recharge.payment_not_found'));
         }
@@ -107,14 +137,19 @@ class PaymentService
 
     public function finalizePayment(UserInterface $user, string $sessionId): ?string
     {
-        $session = $this->paymentProvider->retrieveSession($sessionId);
-        if (empty($session)) {
+        /** @var Payment|null $payment */
+        $payment = $this->paymentRepository->findOneBy(['sessionId' => $sessionId]);
+        if (empty($payment)) {
             return $this->translator->trans('pteroca.recharge.payment_not_found');
         }
 
-        /** @var Payment|null $payment */
-        $payment = $this->paymentRepository->findOneBy(['sessionId' => $sessionId]);
-        if (empty($payment)) {;
+        $paymentProvider = $this->gatewayManager->getProvider($payment->getGateway());
+        if ($paymentProvider === null) {
+            return $this->translator->trans('pteroca.payment.gateway_not_found');
+        }
+
+        $session = $paymentProvider->retrieveSession($sessionId);
+        if (empty($session)) {
             return $this->translator->trans('pteroca.recharge.payment_not_found');
         }
         
@@ -131,7 +166,7 @@ class PaymentService
             return $this->translator->trans('pteroca.recharge.payment_already_processed');
         }
 
-        if ($session->getPaymentStatus() === $this->paymentProvider::PAID_STATUS) {
+        if ($session->getPaymentStatus() === $paymentProvider::PAID_STATUS) {
             $amount = $payment->getBalanceAmount();
             $oldBalance = $user->getBalance();
             $newBalance = $oldBalance + $amount;
@@ -225,6 +260,7 @@ class PaymentService
         PaymentSessionDTO $session,
         float $balanceAmount,
         string $voucherCode,
+        string $gateway,
     ): void {
         if (!empty($voucherCode)) {
             $voucher = $this->voucherPaymentService->getVoucher($voucherCode);
@@ -236,6 +272,7 @@ class PaymentService
             ->setBalanceAmount($balanceAmount)
             ->setSessionId($session->getId())
             ->setUser($user)
+            ->setGateway($gateway)
             ->setStatus($session->getPaymentStatus());
 
         if (!empty($voucher)) {

@@ -115,6 +115,15 @@ pteroca:
     view_all_payments_description: 'Zobacz wszystkie płatności, które zostały dokonane na Twoim koncie.'
     amount_must_be_positive: 'The amount must be positive.'
 
+  payment:
+    no_gateways_available: 'Obecnie nie są dostępne żadne bramki płatności. Skonfiguruj bramkę płatności lub skontaktuj się z administratorem.'
+    gateway_not_found: 'Nie znaleziono wybranej bramki płatności.'
+    gateway_not_configured: 'Wybrana bramka płatności nie jest skonfigurowana. Skontaktuj się z administratorem.'
+    currency_not_supported: 'Wybrana waluta nie jest obsługiwana przez tę bramkę płatności.'
+    gateway:
+      stripe:
+        description: 'Szybkie i bezpieczne płatności kartą kredytową lub debetową'
+
   product:
     information: 'Informacje'
     ram: 'RAM'
@@ -882,6 +891,7 @@ pteroca:
       description: 'Zarządzaj swoimi płatnościami i przeglądaj historię transakcji'
       continue_payment: 'Kontynuuj płatność'
       detail: 'Szczegóły'
+      gateway: 'Bramka płatności'
     user_account:
       description: 'Edytuj swoje dane osobowe, zmień hasło i zarządzaj ustawieniami konta'
     log:

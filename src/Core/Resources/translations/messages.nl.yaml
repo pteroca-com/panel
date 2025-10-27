@@ -110,6 +110,14 @@ pteroca:
     view_transaction_history: 'Bekijk transactiegeschiedenis'
     view_all_payments_description: 'Toont alle betalingen die op uw account zijn gedaan.'
     amount_must_be_positive: 'The amount must be positive.'
+  payment:
+    no_gateways_available: 'Er zijn momenteel geen betalingsgateways beschikbaar. Configureer een betalingsgateway of neem contact op met de beheerder.'
+    gateway_not_found: 'De geselecteerde betalingsgateway is niet gevonden.'
+    gateway_not_configured: 'De geselecteerde betalingsgateway is niet geconfigureerd. Neem contact op met de beheerder.'
+    currency_not_supported: 'De geselecteerde valuta wordt niet ondersteund door deze betalingsgateway.'
+    gateway:
+      stripe:
+        description: 'Snelle en veilige betalingen met creditcard of debitcard'
   product:
     information: 'Informatie'
     ram: 'Geheugen'
@@ -870,6 +878,7 @@ pteroca:
       description: 'Beheer je betalingen en bekijk de transactiegeschiedenis'
       continue_payment: 'Betaling voortzetten'
       detail: 'Details'
+      gateway: 'Betalingsgateway'
     user_account:
       description: 'Bewerk je persoonlijke gegevens, wijzig je wachtwoord en beheer je accountinstellingen'
     voucher:

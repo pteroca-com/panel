@@ -32,6 +32,7 @@
             <input type="hidden" name="amount" value="{{ request.amount }}" id="topup-amount">
             <input type="hidden" name="currency" value="{{ request.currency }}">
             <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="payment_discount">
+            <input type="hidden" name="gateway" value="{{ availableGateways|first.identifier ?? 'stripe' }}" id="selected-gateway">
             
             <div class="row g-4">
                 <!-- Main Content -->
@@ -75,25 +76,34 @@
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <div class="row g-3">
-                                <div class="col-12 col-sm-6 col-md-6 col-lg-4">
-                                    <input type="radio"
-                                           name="payment_provider"
-                                           id="provider1"
-                                           value="provider1"
-                                           class="card-input-element d-none"
-                                           checked>
-                                    <label for="provider1" class="card border-2 shadow-sm rounded-3 card-input h-100">
-                                        <div class="card-body text-center p-4">
-                                            <img src="{{ asset('assets/img/payments/stripe.svg') }}"
-                                                 alt="Stripe"
-                                                 class="img-fluid mb-3"
-                                                 style="max-height: 40px;">
-                                            <h6 class="card-title mb-0 fw-semibold">Stripe</h6>
-                                        </div>
-                                    </label>
+                            {% if availableGateways is empty %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    {{ 'pteroca.payment.no_gateways_available'|trans }}
                                 </div>
-                            </div>
+                            {% else %}
+                                <div class="row g-3">
+                                    {% for gateway in availableGateways %}
+                                        <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                                            <input type="radio"
+                                                   name="payment_provider"
+                                                   id="gateway_{{ gateway.identifier }}"
+                                                   value="{{ gateway.identifier }}"
+                                                   class="card-input-element d-none"
+                                                   {% if loop.first %}checked{% endif %}>
+                                            <label for="gateway_{{ gateway.identifier }}" class="card border-2 shadow-sm rounded-3 card-input h-100">
+                                                <div class="card-body text-center p-4">
+                                                    <i class="{{ gateway.icon }} mb-3" style="font-size: 2.5rem; {% if gateway.metadata.color is defined %}color: {{ gateway.metadata.color }};{% endif %}"></i>
+                                                    <h6 class="card-title mb-0 fw-semibold">{{ gateway.displayName }}</h6>
+                                                    {% if gateway.description %}
+                                                        <small class="text-muted d-block mt-1">{{ gateway.description }}</small>
+                                                    {% endif %}
+                                                </div>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -220,6 +230,8 @@
                 const label = document.querySelector(`label[for="${selectedRadio.id}"]`);
                 const methodName = label.querySelector('.card-title').textContent;
                 document.querySelector('#selected-payment-method').textContent = methodName;
+                // Update hidden gateway field
+                document.querySelector('#selected-gateway').value = selectedRadio.value;
             }
         }
     </script>

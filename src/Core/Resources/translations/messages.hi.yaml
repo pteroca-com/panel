@@ -115,6 +115,15 @@ pteroca:
     view_all_payments_description: 'आपके खाते पर किए गए सभी भुगतान दिखाता है।'
     amount_must_be_positive: 'The amount must be positive.'
 
+  payment:
+    no_gateways_available: 'वर्तमान में कोई भुगतान गेटवे उपलब्ध नहीं हैं। कृपया एक भुगतान गेटवे कॉन्फ़िगर करें या व्यवस्थापक से संपर्क करें।'
+    gateway_not_found: 'चयनित भुगतान गेटवे नहीं मिला।'
+    gateway_not_configured: 'चयनित भुगतान गेटवे कॉन्फ़िगर नहीं है। कृपया व्यवस्थापक से संपर्क करें।'
+    currency_not_supported: 'यह भुगतान गेटवे चयनित मुद्रा का समर्थन नहीं करता।'
+    gateway:
+      stripe:
+        description: 'क्रेडिट या डेबिट कार्ड से तेज़ और सुरक्षित भुगतान'
+
   product:
     information: 'जानकारी'
     ram: 'RAM'
@@ -882,6 +891,7 @@ pteroca:
       description: 'अपने भुगतान प्रबंधित करें और लेनदेन इतिहास देखें'
       continue_payment: 'भुगतान जारी रखें'
       detail: 'विवरण'
+      gateway: 'भुगतान गेटवे'
     user_account:
       description: 'अपना व्यक्तिगत डेटा संपादित करें, पासवर्ड बदलें और खाता सेटिंग्स प्रबंधित करें'
     log:

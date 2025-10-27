@@ -16,4 +16,18 @@ interface PaymentProviderInterface
     ): ?PaymentSessionDTO;
 
     public function retrieveSession(string $sessionId): ?PaymentSessionDTO;
+
+    public function getIdentifier(): string;
+
+    public function getDisplayName(): string;
+
+    public function getIcon(): string;
+
+    public function isConfigured(): bool;
+
+    public function getDescription(): string;
+
+    public function getSupportedCurrencies(): array;
+
+    public function getMetadata(): array;
 }

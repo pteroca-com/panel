@@ -26,6 +26,9 @@ trait PaymentEntityTrait
     #[ORM\Column(type: 'string', length: 3)]
     private string $currency;
 
+    #[ORM\Column(type: 'string', length: 50)]
+    private string $gateway;
+
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private float $balanceAmount;
 
@@ -101,6 +104,17 @@ trait PaymentEntityTrait
     public function setCurrency(string $currency): self
     {
         $this->currency = $currency;
+        return $this;
+    }
+
+    public function getGateway(): string
+    {
+        return $this->gateway;
+    }
+
+    public function setGateway(string $gateway): self
+    {
+        $this->gateway = $gateway;
         return $this;
     }
 

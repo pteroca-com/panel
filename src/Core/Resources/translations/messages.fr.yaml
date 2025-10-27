@@ -115,6 +115,14 @@ pteroca:
     amount_must_be_positive: 'The amount must be positive.'
     payment_is_not_configured: 'Le système de paiement n’est pas configuré. Contactez l’administrateur.'
 
+  payment:
+    no_gateways_available: 'Aucune passerelle de paiement n''est actuellement disponible. Veuillez configurer une passerelle de paiement ou contacter l''administrateur.'
+    gateway_not_found: 'La passerelle de paiement sélectionnée n''a pas été trouvée.'
+    gateway_not_configured: 'La passerelle de paiement sélectionnée n''est pas configurée. Veuillez contacter l''administrateur.'
+    currency_not_supported: 'La devise sélectionnée n''est pas prise en charge par cette passerelle de paiement.'
+    gateway:
+      stripe:
+        description: 'Paiements rapides et sécurisés par carte de crédit ou de débit'
   product:
     information: 'Informations'
     ram: 'RAM'
@@ -883,6 +891,7 @@ pteroca:
       description: 'Gérez vos paiements et consultez l''historique des transactions'
       continue_payment: 'Continuer le paiement'
       detail: 'Détails'
+      gateway: 'Passerelle de paiement'
     user_account:
       description: 'Modifiez vos données personnelles, changez le mot de passe et gérez les paramètres du compte'
     log:

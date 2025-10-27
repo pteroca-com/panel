@@ -115,6 +115,15 @@ pteroca:
     view_all_payments_description: '显示您账户上进行的所有支付。'
     amount_must_be_positive: 'The amount must be positive.'
 
+  payment:
+    no_gateways_available: '当前没有可用的支付网关。请配置支付网关或联系管理员。'
+    gateway_not_found: '未找到选定的支付网关。'
+    gateway_not_configured: '选定的支付网关未配置。请联系管理员。'
+    currency_not_supported: '此支付网关不支持选定的货币。'
+    gateway:
+      stripe:
+        description: '使用信用卡或借记卡快速安全的支付'
+
   product:
     information: '信息'
     ram: '内存'
@@ -882,6 +891,7 @@ pteroca:
       description: '管理您的付款并查看交易历史'
       continue_payment: '继续付款'
       detail: '详情'
+      gateway: '支付网关'
     user_account:
       description: '编辑您的个人数据，更改密码并管理账户设置'
     log:

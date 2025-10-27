@@ -115,6 +115,15 @@ pteroca:
     view_all_payments_description: 'Mostra tutti i pagamenti effettuati sul tuo account.'
     amount_must_be_positive: 'The amount must be positive.'
 
+  payment:
+    no_gateways_available: 'Attualmente non sono disponibili gateway di pagamento. Configura un gateway di pagamento o contatta l''amministratore.'
+    gateway_not_found: 'Il gateway di pagamento selezionato non è stato trovato.'
+    gateway_not_configured: 'Il gateway di pagamento selezionato non è configurato. Contatta l''amministratore.'
+    currency_not_supported: 'La valuta selezionata non è supportata da questo gateway di pagamento.'
+    gateway:
+      stripe:
+        description: 'Pagamenti rapidi e sicuri con carta di credito o debito'
+
   product:
     information: 'Informazioni'
     ram: 'RAM'
@@ -882,6 +891,7 @@ pteroca:
       description: 'Gestisci i tuoi pagamenti e visualizza la cronologia delle transazioni'
       continue_payment: 'Continua pagamento'
       detail: 'Dettagli'
+      gateway: 'Gateway di pagamento'
     user_account:
       description: 'Modifica i tuoi dati personali, cambia la password e gestisci le impostazioni dell''account'
     log:

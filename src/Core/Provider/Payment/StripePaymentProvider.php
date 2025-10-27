@@ -88,4 +88,51 @@ class StripePaymentProvider implements PaymentProviderInterface
 
         return $stripeSession;
     }
+
+    public function getIdentifier(): string
+    {
+        return 'stripe';
+    }
+
+    public function getDisplayName(): string
+    {
+        return 'Stripe';
+    }
+
+    public function getIcon(): string
+    {
+        return 'fab fa-stripe';
+    }
+
+    public function isConfigured(): bool
+    {
+        $apiKey = $this->settingService->getSetting(SettingEnum::STRIPE_SECRET_KEY->value);
+
+        return !empty($apiKey);
+    }
+
+    public function getDescription(): string
+    {
+        return $this->translator->trans('pteroca.payment.gateway.stripe.description');
+    }
+
+    public function getSupportedCurrencies(): array
+    {
+        // Stripe supports 135+ currencies, listing most common ones
+        return [
+            'USD', 'EUR', 'GBP', 'PLN', 'CHF', 'CZK', 'DKK', 'SEK', 'NOK',
+            'CAD', 'AUD', 'JPY', 'BGN', 'HRK', 'HUF', 'RON', 'ISK', 'NZD',
+            'BRL', 'INR', 'MXN', 'SGD', 'HKD', 'ZAR', 'THB', 'MYR',
+        ];
+    }
+
+    public function getMetadata(): array
+    {
+        return [
+            'logo' => '/assets/img/payment/stripe-logo.svg',
+            'color' => '#635bff',
+            'supports_recurring' => true,
+            'payment_methods' => $this->getStripePaymentMethods(),
+        ];
+    }
 }

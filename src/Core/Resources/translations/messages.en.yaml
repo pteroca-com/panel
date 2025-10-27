@@ -115,6 +115,15 @@ pteroca:
     view_all_payments_description: 'View all payments that have been made on your account.'
     amount_must_be_positive: 'The amount must be positive.'
 
+  payment:
+    no_gateways_available: 'No payment gateways are currently available. Please configure a payment gateway or contact the administrator.'
+    gateway_not_found: 'The selected payment gateway was not found.'
+    gateway_not_configured: 'The selected payment gateway is not configured. Please contact the administrator.'
+    currency_not_supported: 'The selected currency is not supported by this payment gateway.'
+    gateway:
+      stripe:
+        description: 'Fast and secure payments with credit or debit card'
+
   product:
     information: 'Information'
     ram: 'RAM'
@@ -866,6 +875,7 @@ pteroca:
       status: 'Status'
       amount: 'Amount'
       currency: 'Currency'
+      gateway: 'Payment gateway'
       user: 'User'
       created_at: 'Created at'
       updated_at: 'Updated at'
