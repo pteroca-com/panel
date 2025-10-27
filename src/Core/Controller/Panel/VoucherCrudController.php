@@ -6,6 +6,12 @@ use App\Core\Entity\Voucher;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Enum\VoucherTypeEnum;
+use App\Core\Event\Voucher\VoucherCreationRequestedEvent;
+use App\Core\Event\Voucher\VoucherCreatedEvent;
+use App\Core\Event\Voucher\VoucherUpdateRequestedEvent;
+use App\Core\Event\Voucher\VoucherUpdatedEvent;
+use App\Core\Event\Voucher\VoucherDeletionRequestedEvent;
+use App\Core\Event\Voucher\VoucherDeletedEvent;
 use App\Core\Service\Crud\PanelCrudService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -140,7 +146,22 @@ class VoucherCrudController extends AbstractPanelController
             $entityInstance->setOneUsePerUser(true);
         }
 
+        // Dispatch VoucherCreationRequestedEvent
+        $request = $this->requestStack->getCurrentRequest();
+        $eventContext = $request ? $this->buildMinimalEventContext($request) : [];
+
+        $creationRequestedEvent = new VoucherCreationRequestedEvent($entityInstance, $eventContext);
+        $creationRequestedEvent = $this->dispatchEvent($creationRequestedEvent);
+
+        if ($creationRequestedEvent->isPropagationStopped()) {
+            throw new \RuntimeException($this->translator->trans('pteroca.crud.voucher.creation_blocked'));
+        }
+
         parent::persistEntity($entityManager, $entityInstance);
+
+        // Dispatch VoucherCreatedEvent
+        $createdEvent = new VoucherCreatedEvent($entityInstance, $eventContext);
+        $this->dispatchEvent($createdEvent);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
@@ -153,7 +174,50 @@ class VoucherCrudController extends AbstractPanelController
             $entityInstance->setOneUsePerUser(true);
         }
 
+        // Dispatch VoucherUpdateRequestedEvent
+        $request = $this->requestStack->getCurrentRequest();
+        $eventContext = $request ? $this->buildMinimalEventContext($request) : [];
+
+        $updateRequestedEvent = new VoucherUpdateRequestedEvent($entityInstance, $eventContext);
+        $updateRequestedEvent = $this->dispatchEvent($updateRequestedEvent);
+
+        if ($updateRequestedEvent->isPropagationStopped()) {
+            throw new \RuntimeException($this->translator->trans('pteroca.crud.voucher.update_blocked'));
+        }
+
         parent::updateEntity($entityManager, $entityInstance);
+
+        // Dispatch VoucherUpdatedEvent
+        $updatedEvent = new VoucherUpdatedEvent($entityInstance, $eventContext);
+        $this->dispatchEvent($updatedEvent);
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (false === $entityInstance instanceof Voucher) {
+            return;
+        }
+
+        // Dispatch VoucherDeletionRequestedEvent
+        $request = $this->requestStack->getCurrentRequest();
+        $eventContext = $request ? $this->buildMinimalEventContext($request) : [];
+
+        $deletionRequestedEvent = new VoucherDeletionRequestedEvent($entityInstance, $eventContext);
+        $deletionRequestedEvent = $this->dispatchEvent($deletionRequestedEvent);
+
+        if ($deletionRequestedEvent->isPropagationStopped()) {
+            throw new \RuntimeException($this->translator->trans('pteroca.crud.voucher.deletion_blocked'));
+        }
+
+        // Store voucher data before deletion
+        $voucherId = $entityInstance->getId();
+        $voucherCode = $entityInstance->getCode();
+
+        parent::deleteEntity($entityManager, $entityInstance);
+
+        // Dispatch VoucherDeletedEvent
+        $deletedEvent = new VoucherDeletedEvent($voucherId, $voucherCode, $eventContext);
+        $this->dispatchEvent($deletedEvent);
     }
 
     private function getShowRedeemedVouchersAction(): Action

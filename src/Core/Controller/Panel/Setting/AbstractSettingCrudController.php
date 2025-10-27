@@ -172,13 +172,13 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
-        $this->settingRepository->save($entityInstance);
+        parent::persistEntity($entityManager, $entityInstance);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
-        $this->settingRepository->save($entityInstance);
+        parent::updateEntity($entityManager, $entityInstance);
     }
 
     public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
