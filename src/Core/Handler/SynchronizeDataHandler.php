@@ -85,7 +85,6 @@ class SynchronizeDataHandler implements HandlerInterface
             $userEmail = $user->getEmail() ?? '';
             $userName = $user->getUserIdentifier();
 
-            // Emit stoppable pre-event
             $requestedEvent = new UserPterodactylApiKeyCreationRequestedEvent(
                 $userId,
                 $userEmail,
@@ -94,13 +93,11 @@ class SynchronizeDataHandler implements HandlerInterface
             );
             $this->eventDispatcher->dispatch($requestedEvent);
 
-            // Check if plugin blocked the operation
             if ($requestedEvent->isPropagationStopped()) {
                 $stats['keysSkipped']++;
                 continue;
             }
 
-            // Try to create API key for this user (fail-safe)
             try {
                 $pterodactylClientApiKey = $this->pterodactylClientApiKeyService->createClientApiKey($user);
                 $user->setPterodactylUserApiKey($pterodactylClientApiKey);
@@ -108,7 +105,6 @@ class SynchronizeDataHandler implements HandlerInterface
 
                 $stats['keysCreated']++;
 
-                // Emit success event (without API key for security)
                 $this->eventDispatcher->dispatch(
                     new UserPterodactylApiKeyCreatedEvent(
                         $userId,
@@ -122,7 +118,6 @@ class SynchronizeDataHandler implements HandlerInterface
             } catch (Exception $e) {
                 $stats['keysFailed']++;
 
-                // Emit failure event and continue with other users (fail-safe)
                 $this->eventDispatcher->dispatch(
                     new UserPterodactylApiKeyCreationFailedEvent(
                         $userId,

@@ -1,6 +1,6 @@
 # Event-Driven Architecture - TODO Lista
 
-**Data ostatniej aktualizacji:** 2025-10-21
+**Data ostatniej aktualizacji:** 2025-10-26
 **Status:** Analiza brakujących implementacji EDA w projekcie PteroCA
 
 ---
@@ -1082,22 +1082,133 @@ Wszystkie polecenia CLI **nie emitują eventów EDA**.
 
 ### Lista komend bez eventów:
 
-#### 1. CreateNewUserCommand
+#### 1. CreateNewUserCommand ✅ UKOŃCZONA (2025-10-26)
 
 **Komenda:** `app:create-new-user`
 **Plik:** `src/Core/Command/CreateNewUserCommand.php`
+**Handler:** `src/Core/Handler/CreateNewUserHandler.php`
 
-**Proponowane eventy:**
-```php
-- UserCreationViaCLIRequestedEvent (pre)
-- UserCreatedViaCLIEvent (post-commit)
-- UserCreationViaCLIFailedEvent (error)
+**Argumenty CLI:**
+- `email` (required) - User email
+- `password` (required) - User password
+- `role` (optional, default: ROLE_USER) - User role (ROLE_USER, ROLE_ADMIN)
+
+**Zaimplementowane eventy (3):**
+
+**Process-level events (3):**
+
+1. **UserCreationProcessStartedEvent** (post)
+   - Lokalizacja: `src/Core/Event/Cli/CreateUser/UserCreationProcessStartedEvent.php`
+   - Payload: `startedAt`, `email`, `role`, `context`
+   - Kiedy: Po walidacji credentials, przed utworzeniem User entity
+
+2. **UserCreationProcessCompletedEvent** (post-commit)
+   - Lokalizacja: `src/Core/Event/Cli/CreateUser/UserCreationProcessCompletedEvent.php`
+   - Payload: `userId`, `email`, `role`, `hasPterodactylAccount`, `hasApiKey`, `createdWithoutApiKey`, `durationInSeconds`, `completedAt`, `context`
+   - Kiedy: Po zapisie użytkownika do bazy (success)
+   - Zawiera pełne statystyki utworzonego użytkownika
+
+3. **UserCreationProcessFailedEvent** (error)
+   - Lokalizacja: `src/Core/Event/Cli/CreateUser/UserCreationProcessFailedEvent.php`
+   - Payload: `failureReason`, `email`, `role`, `failedAt`, `context`
+   - Kiedy: W catch() - wszystkie błędy (credentials, Pterodactyl, API key, rollback)
+
+**Flow:**
+```
+1. Walidacja credentials (email, password)
+   → UserCreationProcessFailedEvent jeśli empty
+2. UserCreationProcessStartedEvent
+3. Utworzenie User entity + hash password
+4. Try: Utworzenie Pterodactyl account
+   → UserCreationProcessFailedEvent jeśli ValidationException
+5. Try: Utworzenie Pterodactyl Client API Key
+   → Jeśli błąd i !allowToCreateWithNoPterodactylApiKey:
+     - Rollback: delete Pterodactyl account
+     - UserCreationProcessFailedEvent
+   → Jeśli błąd i allowToCreateWithNoPterodactylApiKey:
+     - Continue bez API key (createdWithoutApiKey=true)
+6. Save user do bazy
+7. UserCreationProcessCompletedEvent (success)
 ```
 
-**Zastosowanie:**
-- Audit trail dla kont tworzonych przez CLI
-- Notifications dla nowych użytkowników
-- Analytics
+**CLI Context:**
+```php
+[
+  'source' => 'cli',
+  'command' => 'app:create-new-user',
+  'email' => 'user@example.com',
+  'role' => 'ROLE_USER',
+  'ip' => null,
+  'userAgent' => 'Symfony CLI',
+  'locale' => 'en',
+]
+```
+
+**Stats Structure:**
+```php
+[
+  'userId' => int,                      // ID utworzonego użytkownika
+  'email' => string,                    // Email użytkownika
+  'role' => string,                     // ROLE_USER, ROLE_ADMIN
+  'hasPterodactylAccount' => bool,      // Czy utworzono konto Pterodactyl
+  'hasApiKey' => bool,                  // Czy utworzono API key
+  'createdWithoutApiKey' => bool,       // Czy user wybrał continue bez API key
+  'durationInSeconds' => int,           // Czas wykonania
+]
+```
+
+**Decyzje implementacyjne:**
+- ✅ **Basic CLI implementation:** 3 eventy (process-level tylko)
+- ✅ **Comprehensive error tracking:** Wszystkie exception types (RuntimeException, ValidationException, CouldNotCreatePterodactylClientApiKeyException)
+- ✅ **Rollback tracking:** Dedykowany failureReason jeśli rollback fails
+- ✅ **Conditional API key:** Flags `hasApiKey` + `createdWithoutApiKey` w stats
+- ✅ **Multi-step tracking:** hasPterodactylAccount + hasApiKey pokazują progress
+- ✅ **Admin tool:** Tier 2 (niskie priorytety), basic approach wystarczający
+
+**Error Scenarios:**
+
+1. **Credentials not set:**
+   - FailureReason: "User credentials not set"
+   - Email/Role: "UNKNOWN" jeśli nie ustawione
+
+2. **Pterodactyl account creation failed:**
+   - FailureReason: ValidationException message + errors details
+   - Rollback: nie potrzebny (user entity nie zapisana)
+
+3. **API key creation failed (strict mode):**
+   - Rollback: delete Pterodactyl account
+   - FailureReason: CouldNotCreatePterodactylClientApiKeyException message
+   - Jeśli rollback fails: "Could not create API key AND rollback failed: {details}"
+
+4. **API key creation failed (allow mode):**
+   - No FailedEvent emitted
+   - CompletedEvent z `createdWithoutApiKey=true`, `hasApiKey=false`
+
+**Use Cases:**
+
+✅ **Audit Trail** - Admin operations tracking:
+  - Kto i kiedy utworzył użytkownika przez CLI
+  - Jaka rola została przypisana
+  - Czy utworzono pełne konto (Pterodactyl + API key)
+  - Błędy podczas tworzenia kont
+
+✅ **Security & Compliance:**
+  - Tracking wszystkich utworzonych kont admin
+  - Monitoring failed attempts
+  - Rollback tracking dla data integrity
+  - Email tracking dla user management
+
+✅ **Monitoring & Alerting:**
+  - Alert gdy wiele failed attempts
+  - Monitoring success rate tworzenia kont
+  - Tracking incomplete accounts (bez API key)
+  - Performance tracking (duration)
+
+✅ **Analytics:**
+  - Ile kont utworzono przez CLI vs web
+  - Distribution of roles (ROLE_USER vs ROLE_ADMIN)
+  - API key creation success rate
+  - Rollback frequency
 
 ---
 
@@ -1279,22 +1390,120 @@ Wszystkie polecenia CLI **nie emitują eventów EDA**.
 
 ---
 
-#### 4. ChangeUserPasswordCommand
+#### 4. ChangeUserPasswordCommand ✅ UKOŃCZONA (2025-10-26)
 
 **Komenda:** `app:change-user-password`
 **Plik:** `src/Core/Command/ChangeUserPasswordCommand.php`
+**Handler:** `src/Core/Handler/ChangeUserPasswordHandler.php`
 
-**Proponowane eventy:**
-```php
-- PasswordChangeViaCLIRequestedEvent (pre)
-- PasswordChangedViaCLIEvent (post-commit)
-- PasswordChangeViaCLIFailedEvent (error)
+**Argumenty CLI:**
+- `email` (required) - User email
+- `password` (required) - New password
+
+**Zaimplementowane eventy (3):**
+
+**Process-level events (3):**
+
+1. **PasswordChangeProcessStartedEvent** (post)
+   - Lokalizacja: `src/Core/Event/Cli/ChangePassword/PasswordChangeProcessStartedEvent.php`
+   - Payload: `startedAt`, `email`, `context`
+   - Kiedy: Po walidacji credentials, przed znalezieniem usera
+
+2. **PasswordChangeProcessCompletedEvent** (post-commit)
+   - Lokalizacja: `src/Core/Event/Cli/ChangePassword/PasswordChangeProcessCompletedEvent.php`
+   - Payload: `userId`, `email`, `passwordChangedInPterodactyl`, `durationInSeconds`, `completedAt`, `context`
+   - Kiedy: Po zapisie do bazy (success)
+   - Zawiera pełne statystyki zmiany hasła
+
+3. **PasswordChangeProcessFailedEvent** (error)
+   - Lokalizacja: `src/Core/Event/Cli/ChangePassword/PasswordChangeProcessFailedEvent.php`
+   - Payload: `failureReason`, `email`, `failedAt`, `context`
+   - Kiedy: W catch() - wszystkie błędy (credentials, user not found, Pterodactyl)
+
+**Flow:**
+```
+1. Walidacja credentials (email, password)
+   → PasswordChangeProcessFailedEvent jeśli empty
+2. PasswordChangeProcessStartedEvent
+3. Znalezienie użytkownika w bazie po email
+   → PasswordChangeProcessFailedEvent jeśli not found
+4. Hash nowego hasła
+5. Try: Aktualizacja hasła w Pterodactyl
+   → PasswordChangeProcessFailedEvent jeśli ValidationException
+6. Save user do bazy
+7. PasswordChangeProcessCompletedEvent (success)
 ```
 
-**Zastosowanie:**
-- Security notifications - powiadomienia o zmianie hasła
-- Audit trail - kto zmienił hasło przez CLI
-- Compliance logging
+**CLI Context:**
+```php
+[
+  'source' => 'cli',
+  'command' => 'app:change-user-password',
+  'email' => 'user@example.com',
+  'ip' => null,
+  'userAgent' => 'Symfony CLI',
+  'locale' => 'en',
+]
+```
+
+**Stats Structure:**
+```php
+[
+  'userId' => int,                           // ID użytkownika
+  'email' => string,                         // Email użytkownika
+  'passwordChangedInPterodactyl' => bool,    // Czy zmieniono hasło w Pterodactyl (true w success)
+  'durationInSeconds' => int,                // Czas wykonania
+]
+```
+
+**Decyzje implementacyjne:**
+- ✅ **Basic CLI implementation:** 3 eventy (process-level tylko) - zgodnie z wzorcem Tier 2
+- ✅ **Security-critical:** Password change tracking dla security notifications
+- ✅ **No rollback needed:** Update Pterodactyl i save są atomic operations
+- ✅ **Comprehensive error tracking:** 3 różne error scenarios
+- ✅ **Simple stats:** passwordChangedInPterodactyl (zawsze true w CompletedEvent)
+- ✅ **Admin tool:** Tier 2 (niskie priorytety), basic approach wystarczający
+
+**Error Scenarios:**
+
+1. **Credentials not set:**
+   - FailureReason: "User credentials not set"
+   - Email: "UNKNOWN" jeśli nie ustawiony
+   - FailedEvent emitowany PRZED StartedEvent
+
+2. **User not found:**
+   - FailureReason: "User not found"
+   - FailedEvent po StartedEvent
+
+3. **Pterodactyl update failed:**
+   - FailureReason: ValidationException message + errors details
+   - FailedEvent po StartedEvent
+
+**Use Cases:**
+
+✅ **Security Notifications** - Immediate alerts:
+  - Email notifications do użytkownika o zmianie hasła
+  - SMS/2FA notifications dla security
+  - Alert jeśli zmiana z nieznanych lokacji (future enhancement)
+  - Tracking wszystkich zmian hasła dla security audit
+
+✅ **Audit Trail** - Admin operations tracking:
+  - Kto zmienił hasło przez CLI (admin operations)
+  - Kiedy i dla którego użytkownika
+  - Success/failure rate
+  - Compliance logging dla regulacji
+
+✅ **Monitoring & Alerting:**
+  - Alert gdy wiele failed attempts (brute force detection)
+  - Monitoring success rate zmian haseł
+  - Performance tracking (duration)
+  - Pterodactyl integration health check
+
+✅ **Compliance:**
+  - GDPR compliance - tracking password changes
+  - Security policy enforcement
+  - Password change history
+  - Admin accountability
 
 ---
 
@@ -2427,7 +2636,7 @@ Sugerowana kolejność implementacji:
 - ~~Product CRUD~~ ✅ Eventy CRUD automatyczne + Product Copy
 - ~~Voucher CRUD~~ ✅ Eventy CRUD automatyczne
 
-#### Faza 6: CLI - Utility (3-4 dni)
+#### ~~Faza 6: CLI - Utility~~ ✅ **CAŁKOWICIE UKOŃCZONA** (2025-10-26)
 
 **Tier 1: Wysokie priorytety (produkcyjne operacje)**
 
@@ -2477,10 +2686,36 @@ Sugerowana kolejność implementacji:
 #### ~~Faza 7: Pozostałe CRUD (1 tydzień)~~ ✅ **UKOŃCZONA** (przez AbstractPanelController)
 - ~~Category, Payment, Logs, Settings CRUD~~ ✅ Eventy CRUD automatyczne
 
-#### Faza 8: Nice-to-have (opcjonalne)
-- First Configuration
-- Admin API
-- Eggs API
+#### ~~Faza 8: Nice-to-have~~ ❌ **POZA ZAKRESEM EDA** (2025-10-26)
+
+**Analiza i decyzja:** Wszystkie elementy Fazy 8 są **read-only utility endpoints** bez business value dla EDA.
+
+**Powody wykluczenia:**
+
+1. **First Configuration** (`FirstConfigurationController.php`)
+   - ❌ Jednorazowa operacja podczas instalacji
+   - ❌ Brak pluginów w tym momencie
+   - ❌ Nie powinno być żadnych ingerencji
+   - **Decyzja:** Poza zakresem EDA
+
+2. **Admin API** (`VersionController`, `TemplateController`)
+   - ❌ Read-only GET endpoints (brak state changes)
+   - ❌ Utility functions bez business logic
+   - ❌ Overhead > Value (caching lepiej na innym poziomie)
+   - ❌ Analytics można robić przez application logs
+   - **Decyzja:** Poza zakresem EDA
+
+3. **Eggs API** (`EggsController.php`)
+   - ❌ Read-only GET endpoint (lista eggs z Pterodactyl)
+   - ❌ Brak side effects, brak state changes
+   - ❌ Caching lepiej przez HTTP headers/Redis/service layer
+   - ❌ Plugin extensibility value: minimalny
+   - **Decyzja:** Poza zakresem EDA
+
+**Konsekwencje:**
+- ✅ Oszczędność: ~6 eventów (nie trzeba implementować)
+- ✅ Focus na API Controllers z prawdziwą business value
+- ✅ Consistency: EDA tylko dla business-critical i state-changing operations
 
 ---
 
@@ -2535,8 +2770,9 @@ Sugerowana kolejność implementacji:
 
 - **❌ Do zaimplementowania:**
   - **API Controllers:** 8 kontrolerów (~36+ eventów) ~~9 kontrolerów (~47+ eventów)~~
-  - **CLI Commands:** 5 komend w Tier 1+2 (~23-28 eventów), 6 poza zakresem ~~12 komend (~28+ eventów)~~ ~~13 komend (~34+ eventów)~~ ~~14 komend (~40+ eventów)~~
   - **User Pages:** 1 strona (~3+ eventy) ~~2 strony~~
+  - ~~**CLI Commands:**~~ ✅ **UKOŃCZONE** (Faza 4 + Faza 6, wszystkie 8 komend - 41 eventów CLI)
+  - ~~**Faza 8 (Nice-to-have):**~~ ❌ **POZA ZAKRESEM EDA** (read-only utilities)
   - ~~**Admin Pages:**~~ ✅ **UKOŃCZONE** (Admin Overview - 2025-10-21)
   - ~~**Operacje specjalne:**~~ ✅ **UKOŃCZONE** (Product Copy - 2025-10-21)
   - ~~**Voucher API:**~~ ✅ **UKOŃCZONE** (Voucher Redeem - 2025-10-22)
@@ -2549,7 +2785,13 @@ Sugerowana kolejność implementacji:
   - ~~**PterodactylMigrateServersCommand CLI:**~~ ✅ **UKOŃCZONE** (MigrateServers - 2025-10-26)
   - ~~**DeleteOldLogsCommand CLI:**~~ ✅ **UKOŃCZONE** (DeleteOldLogs - 2025-10-26)
   - ~~**SynchronizeDataCommand CLI:**~~ ✅ **UKOŃCZONE** (SynchronizeData - 2025-10-26)
-  - **RAZEM:** ~72 nowych eventów pozostałych (zamiast pierwotnie 101, -3 dla DeleteOldLogs, -6 dla SynchronizeData)
+  - ~~**CreateNewUserCommand CLI:**~~ ✅ **UKOŃCZONE** (CreateUser - 2025-10-26)
+  - ~~**ChangeUserPasswordCommand CLI:**~~ ✅ **UKOŃCZONE** (ChangePassword - 2025-10-26)
+  - ~~**Faza 6 (CLI - Utility):**~~ ✅ **CAŁKOWICIE UKOŃCZONA** (Tier 1+2, wszystkie 5 komend - 2025-10-26)
+  - ~~**Faza 8 (Nice-to-have):**~~ ❌ **POZA ZAKRESEM EDA** (read-only utilities - 2025-10-26)
+  - **RAZEM pozostałych:** ~39 nowych eventów (API Controllers ~36, User Pages ~3)
+  - **Oszczędność:** -27 eventów (DeleteOldLogs -3, SynchronizeData -6, CreateNewUser -3, ChangePassword -3, CLI poza zakresem -6, Faza 8 -6)
+  - **Ukończono:** +61 eventów od 2025-10-21 (Faza 4: +19, Faza 6: +22, User-facing: +20)
 
 **Zmiana po analizie AbstractPanelController:**
 - ~~30+ eventów dla Admin CRUD~~ → ✅ **Już zaimplementowane w AbstractPanelController**
@@ -2646,6 +2888,33 @@ Sugerowana kolejność implementacji:
 - **Łącznie od 2025-10-21:** +55 nowych eventów! 🎊🎊🎊🎊🎊🎊🎊
 - **Faza 6 (CLI - Utility) Tier 1:** ✅ **UKOŃCZONA!** Wszystkie 3 komendy Tier 1 gotowe! 🚀🚀🚀
 
+**Zmiana po implementacji CreateNewUserCommand CLI (2025-10-26):**
+- ~~CreateNewUserCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +3 eventy zaimplementowane (3 process-level)! 🎉
+- **Kluczowe feature:**
+  - ✅ Basic CLI implementation (3 eventy, admin tool Tier 2)
+  - ✅ Comprehensive error tracking: wszystkie exception types (RuntimeException, ValidationException, CouldNotCreatePterodactylClientApiKeyException)
+  - ✅ Rollback tracking: dedykowany failureReason jeśli rollback fails
+  - ✅ Conditional API key: flags hasApiKey + createdWithoutApiKey
+  - ✅ Multi-step tracking: hasPterodactylAccount + hasApiKey pokazują progress
+  - ✅ Error scenarios: 4 różne scenariusze błędów z dedykowanym tracking
+- **Łącznie od 2025-10-21:** +58 nowych eventów! 🎊🎊🎊🎊🎊🎊🎊🎊
+- **Faza 6 (CLI - Utility) Tier 2:** Postęp! 1/2 komend Tier 2 ukończone! 🚀
+
+**Zmiana po implementacji ChangeUserPasswordCommand CLI (2025-10-26):**
+- ~~ChangeUserPasswordCommand CLI~~ → ✅ **Ukończone!**
+- **Postęp:** +3 eventy zaimplementowane (3 process-level)! 🎉
+- **Kluczowe feature:**
+  - ✅ Basic CLI implementation (3 eventy, admin tool Tier 2)
+  - ✅ Security-critical: password change tracking dla security notifications
+  - ✅ Comprehensive error tracking: 3 różne error scenarios (credentials, user not found, Pterodactyl)
+  - ✅ No rollback needed: update Pterodactyl i save są atomic operations
+  - ✅ Simple stats: passwordChangedInPterodactyl tracking
+  - ✅ Use cases: Security Notifications, Audit Trail, Monitoring, Compliance (GDPR)
+- **Łącznie od 2025-10-21:** +61 nowych eventów! 🎊🎊🎊🎊🎊🎊🎊🎊🎊
+- **Faza 6 (CLI - Utility) Tier 2:** ✅ **UKOŃCZONA!** Wszystkie 2 komendy Tier 2 gotowe! 🚀🚀
+- **Faza 6 (CLI - Utility):** ✅ **CAŁKOWICIE UKOŃCZONA!** Wszystkie komendy Tier 1+2 gotowe! 🎉🎉🎉
+
 ### Szacowany czas implementacji (zaktualizowany 2025-10-26):
 
 - **Priorytet 1 (Krytyczny):** 2-3 tygodnie (API - Server Management) ⏳ - częściowo ukończony (Server Management Page ✅)
@@ -2688,10 +2957,15 @@ Sugerowana kolejność implementacji:
 - ✅ Priorytet 1 (Krytyczny): **Częściowo ukończony** - Server Management Page + Server Configuration API (2025-10-22)
 - ✅ Faza 4 (CLI - Critical): **UKOŃCZONA** - SuspendUnpaidServersCommand (✅), DeleteInactiveServersCommand (✅), PterocaSyncServersCommand (✅)
 - ✅ Faza 6 (CLI - Utility) Tier 1: **UKOŃCZONA** - PterodactylMigrateServersCommand (✅), DeleteOldLogsCommand (✅), SynchronizeDataCommand (✅)
-- ⏳ Pozostało: API Controllers (8), CLI Commands (2 w Tier 2), User Pages (1)
-- 🎊🎊🎊🎊🎊🎊🎊 **+55 nowych eventów od 2025-10-21!** (największy przyrost!)
+- ✅ Faza 6 (CLI - Utility) Tier 2: **UKOŃCZONA** - CreateNewUserCommand (✅), ChangeUserPasswordCommand (✅)
+- ✅ Faza 6 (CLI - Utility): **CAŁKOWICIE UKOŃCZONA!** Wszystkie Tier 1+2 gotowe! 🎉
+- ⏳ Pozostało: API Controllers (8), User Pages (1)
+- 🎊🎊🎊🎊🎊🎊🎊🎊🎊 **+61 nowych eventów od 2025-10-21!** (największy przyrost!)
 - 📊 **Postęp Priorytetu 1:** Server Configuration API (✅), Server Management Page (✅), pozostałe: Server Backups, Server Users, Server Databases
 - 🚀 **Faza 4 (CLI - Critical):** ✅ **UKOŃCZONA!** Wszystkie 3 komendy critical gotowe! (+19 eventów CLI)
-- 🎯 **Faza 6 (CLI - Utility) Tier 1:** ✅ **UKOŃCZONA!** Wszystkie 3 komendy Tier 1 gotowe! (+16 eventów CLI)
+- 🎯 **Faza 6 (CLI - Utility):** ✅ **CAŁKOWICIE UKOŃCZONA!** Wszystkie 5 komend Tier 1+2 gotowe! (+22 eventy CLI)
+  - Tier 1: PterodactylMigrateServers (+7), DeleteOldLogs (+3), SynchronizeData (+6)
+  - Tier 2: CreateNewUser (+3), ChangePassword (+3)
 - 💾 **Nowe feature:** Backup automation support + fail-safe migration - stoppable pre-events dla wszystkich CLI commands!
-- 🔐 **Security:** API key creation tracking z pełnym audit trail dla compliance
+- 🔐 **Security:** API key creation tracking + password change tracking z pełnym audit trail dla compliance
+- 🔄 **Rollback tracking:** Comprehensive error handling z rollback scenarios dla data integrity
