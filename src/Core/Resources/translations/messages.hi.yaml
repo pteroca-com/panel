@@ -82,6 +82,10 @@ pteroca:
     title: 'डैशबोर्ड'
     welcome_message: 'आपका सर्वर कमांड सेंटर'
     quick_actions: 'त्वरित क्रियाएं'
+    quick_action_order_server: 'सर्वर ऑर्डर करें'
+    quick_action_add_funds: 'धन जोड़ें'
+    quick_action_my_servers: 'मेरे सर्वर'
+    quick_action_settings: 'खाता सेटिंग्स'
     browse_store: 'स्टोर ब्राउज़ करें'
   recharge:
     recharge_balance: 'शेष राशि जोड़ें'

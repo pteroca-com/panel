@@ -82,6 +82,10 @@ pteroca:
     title: 'Cruscotto'
     welcome_message: 'Il tuo centro di comando server'
     quick_actions: 'Azioni rapide'
+    quick_action_order_server: 'Ordina server'
+    quick_action_add_funds: 'Aggiungi fondi'
+    quick_action_my_servers: 'I miei server'
+    quick_action_settings: 'Impostazioni account'
     browse_store: 'Sfoglia negozio'
   recharge:
     recharge_balance: 'Ricarica saldo'

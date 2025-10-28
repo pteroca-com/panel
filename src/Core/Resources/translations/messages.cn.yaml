@@ -82,6 +82,10 @@ pteroca:
     title: '仪表板'
     welcome_message: '您的服务器指挥中心'
     quick_actions: '快速操作'
+    quick_action_order_server: '订购服务器'
+    quick_action_add_funds: '添加资金'
+    quick_action_my_servers: '我的服务器'
+    quick_action_settings: '账户设置'
     browse_store: '浏览商店'
   recharge:
     recharge_balance: '充值余额'

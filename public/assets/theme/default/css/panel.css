@@ -19,8 +19,52 @@
     border-color: var(--primary-color);
 }
 
-.btn-outline-primary:hover i {
-    color: white;
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    color: #fff !important;
+}
+
+.btn-outline-primary:hover i,
+.btn-outline-primary:focus i,
+.btn-outline-primary:active i {
+    color: #fff !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+    color: #fff !important;
+}
+
+.btn-outline-success:hover i,
+.btn-outline-success:focus i,
+.btn-outline-success:active i {
+    color: #fff !important;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus,
+.btn-outline-info:active {
+    color: #fff !important;
+}
+
+.btn-outline-info:hover i,
+.btn-outline-info:focus i,
+.btn-outline-info:active i {
+    color: #fff !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    color: #fff !important;
+}
+
+.btn-outline-secondary:hover i,
+.btn-outline-secondary:focus i,
+.btn-outline-secondary:active i {
+    color: #fff !important;
 }
 
 .ea-dark-scheme .form-switch .form-check-input:checked, .form-switch .form-check-input:checked {

@@ -78,6 +78,10 @@ pteroca:
     title: 'Dashboard'
     welcome_message: 'Uw server commandocentrum'
     quick_actions: 'Snelle acties'
+    quick_action_order_server: 'Server bestellen'
+    quick_action_add_funds: 'Geld toevoegen'
+    quick_action_my_servers: 'Mijn servers'
+    quick_action_settings: 'Accountinstellingen'
     browse_store: 'Winkel bekijken'
   recharge:
     recharge_balance: 'Opladen saldo'

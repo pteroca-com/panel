@@ -82,6 +82,10 @@ pteroca:
     title: 'Tablero'
     welcome_message: 'Su centro de comando de servidores'
     quick_actions: 'Acciones rápidas'
+    quick_action_order_server: 'Pedir servidor'
+    quick_action_add_funds: 'Agregar fondos'
+    quick_action_my_servers: 'Mis servidores'
+    quick_action_settings: 'Configuración de cuenta'
     browse_store: 'Explorar tienda'
   recharge:
     recharge_balance: 'Recargar saldo'

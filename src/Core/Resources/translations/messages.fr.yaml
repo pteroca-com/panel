@@ -80,6 +80,10 @@ pteroca:
     title: 'Tableau de bord'
     welcome_message: 'Votre centre de commande de serveurs'
     quick_actions: 'Actions rapides'
+    quick_action_order_server: 'Commander un serveur'
+    quick_action_add_funds: 'Ajouter des fonds'
+    quick_action_my_servers: 'Mes serveurs'
+    quick_action_settings: 'Paramètres du compte'
     browse_store: 'Parcourir la boutique'
     no_servers_description: "Vous n'avez pas encore de serveurs. Commandez votre premier serveur pour commencer à l'utiliser."
     order_first_server: "Commander votre premier serveur"

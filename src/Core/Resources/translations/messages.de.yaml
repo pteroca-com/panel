@@ -82,6 +82,10 @@ pteroca:
     title: 'Instrumententafel'
     welcome_message: 'Ihr Server-Kommandozentrum'
     quick_actions: 'Schnelle Aktionen'
+    quick_action_order_server: 'Server bestellen'
+    quick_action_add_funds: 'Guthaben hinzufügen'
+    quick_action_my_servers: 'Meine Server'
+    quick_action_settings: 'Kontoeinstellungen'
     browse_store: 'Shop durchsuchen'
   recharge:
     recharge_balance: 'Guthaben aufladen'

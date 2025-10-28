@@ -82,6 +82,10 @@ pteroca:
     title: 'Painel de controle'
     welcome_message: 'Seu centro de comando de servidores'
     quick_actions: 'Ações rápidas'
+    quick_action_order_server: 'Pedir servidor'
+    quick_action_add_funds: 'Adicionar fundos'
+    quick_action_my_servers: 'Meus servidores'
+    quick_action_settings: 'Configurações da conta'
     browse_store: 'Navegar na loja'
   recharge:
     recharge_balance: 'Recarregar saldo'

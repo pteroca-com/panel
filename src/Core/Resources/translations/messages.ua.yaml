@@ -82,6 +82,10 @@ pteroca:
     title: 'Панель приладів'
     welcome_message: 'Центр керування вашим сервером'
     quick_actions: 'Швидкі дії'
+    quick_action_order_server: 'Замовити сервер'
+    quick_action_add_funds: 'Додати кошти'
+    quick_action_my_servers: 'Мої сервери'
+    quick_action_settings: 'Налаштування облікового запису'
     browse_store: 'Переглянути магазин'
   recharge:
     recharge_balance: 'Поповнити баланс'

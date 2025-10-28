@@ -82,6 +82,10 @@ pteroca:
     title: 'Dashboard'
     welcome_message: 'Twoje centrum dowodzenia serwerami'
     quick_actions: 'Szybkie akcje'
+    quick_action_order_server: 'Zamów serwer'
+    quick_action_add_funds: 'Dodaj środki'
+    quick_action_my_servers: 'Moje serwery'
+    quick_action_settings: 'Ustawienia konta'
     browse_store: 'Przeglądaj sklep'
   recharge:
     recharge_balance: 'Doładuj balans'

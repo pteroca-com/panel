@@ -79,6 +79,10 @@ pteroca:
     title: 'Панель управления'
     welcome_message: 'Центр управления вашим сервером'
     quick_actions: 'Быстрые действия'
+    quick_action_order_server: 'Заказать сервер'
+    quick_action_add_funds: 'Добавить средства'
+    quick_action_my_servers: 'Мои серверы'
+    quick_action_settings: 'Настройки аккаунта'
     browse_store: 'Просмотр магазина'
   recharge:
     recharge_balance: 'Пополнить баланс'
