@@ -9,7 +9,10 @@ use App\Core\Event\Server\ServerManagementDataLoadedEvent;
 use App\Core\Event\Server\ServerManagementPageAccessedEvent;
 use App\Core\Event\Server\ServersListAccessedEvent;
 use App\Core\Event\Server\ServersListDataLoadedEvent;
+use App\Core\Event\Server\Tab\ServerTabsCollectedEvent;
+use App\Core\DTO\ServerTabContext;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Tab\ServerTabRegistry;
 use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,6 +58,7 @@ class ServerController extends AbstractController
         Request $request,
         ServerRepository $serverRepository,
         ServerDataService $serverDataService,
+        ServerTabRegistry $serverTabRegistry,
     ): Response
     {
         $this->checkPermission();
@@ -116,6 +120,21 @@ class ServerController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        $tabContext = new ServerTabContext(
+            server: $server,
+            serverData: $serverData,
+            user: $this->getUser(),
+            isAdminView: $isAdminView,
+            isOwner: $isOwner,
+        );
+
+        $context = $this->buildMinimalEventContext($request);
+        $tabsEvent = new ServerTabsCollectedEvent($serverTabRegistry, $tabContext, $context);
+        $this->dispatchEvent($tabsEvent);
+
+        $visibleTabs = $serverTabRegistry->getVisibleTabs($tabContext);
+        $tabAssets = $serverTabRegistry->getTabAssets($visibleTabs);
+
         return $this->renderWithEvent(
             ViewNameEnum::SERVER_MANAGEMENT,
             'panel/server/server.html.twig',
@@ -124,6 +143,10 @@ class ServerController extends AbstractController
                 'serverData' => $serverData,
                 'isAdminView' => $isAdminView,
                 'isOwner' => $isOwner,
+                'tabRegistry' => $serverTabRegistry,
+                'tabContext' => $tabContext,
+                'visibleTabs' => $visibleTabs,
+                'tabAssets' => $tabAssets,
             ],
             $request
         );

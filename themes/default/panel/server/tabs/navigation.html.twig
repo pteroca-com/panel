@@ -1,47 +1,16 @@
 {% block main %}
     <div class="nav-tabs-custom form-tabs-tablist">
         <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" href="#console" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.console'|trans }}</a>
-            </li>
-            {% if (serverData.hasConfigurableOptions or serverData.hasConfigurableVariables) and hasServerPermission(serverData.serverPermissions, 'startup.read') %}
+            {% for tab in visibleTabs %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#startup" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.startup'|trans }}</a>
+                    <a class="nav-link {% if tab.isDefault %}active{% endif %}"
+                       href="#{{ tab.id }}"
+                       data-bs-toggle="tab"
+                       role="tab">
+                        {{ tab.label|trans }}
+                    </a>
                 </li>
-            {% endif %}
-            {% if server.serverProduct.dbCount and hasServerPermission(serverData.serverPermissions, 'database.read') %}
-                <li class="nav-item">
-                    <a class="nav-link" href="#databases" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.databases'|trans }}</a>
-                </li>
-            {% endif %}
-            {% if server.serverProduct.backups and hasServerPermission(serverData.serverPermissions, 'backup.read') %}
-                <li class="nav-item">
-                    <a class="nav-link" href="#backups" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.backups'|trans }}</a>
-                </li>
-            {% endif %}
-            {% if hasServerPermission(serverData.serverPermissions, 'allocation.read') %}
-            <li class="nav-item">
-                <a class="nav-link" href="#network" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.network'|trans }}</a>
-            </li>
-            {% endif %}
-            {% if hasServerPermission(serverData.serverPermissions, 'user.read') %}
-            <li class="nav-item">
-                <a class="nav-link" href="#users" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.users'|trans }}</a>
-            </li>
-            {% endif %}
-            {% if server.serverProduct.schedules > 0 and hasServerPermission(serverData.serverPermissions, 'schedule.read') %}
-            <li class="nav-item">
-                <a class="nav-link" href="#schedules" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.schedules'|trans }}</a>
-            </li>
-            {% endif %}
-            <li class="nav-item">
-                <a class="nav-link" href="#settings" data-bs-toggle="tab" role="tab">{{ 'pteroca.server.settings'|trans }}</a>
-            </li>
-            {% if hasServerPermission(serverData.serverPermissions, 'activity.read') %}
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" href="#activity" data-bs-toggle="tab" aria-selected="true" role="tab">{{ 'pteroca.server.activity'|trans }}</a>
-            </li>
-            {% endif %}
+            {% endfor %}
         </ul>
     </div>
 {% endblock %}

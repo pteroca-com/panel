@@ -36,3 +36,15 @@ services:
         tags: ['payment.provider']
         autowire: true
         autoconfigure: true
+
+    # Server Tab Registry
+    App\Core\Service\Tab\ServerTabRegistry:
+        arguments:
+            $tabs: !tagged_iterator server.tab
+
+    # Auto-register builtin server tabs as tagged services
+    App\Core\Tab\Server\:
+        resource: '../src/Core/Tab/Server/*Tab.php'
+        tags: ['server.tab']
+        autowire: true
+        autoconfigure: true
