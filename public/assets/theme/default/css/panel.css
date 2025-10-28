@@ -353,6 +353,605 @@ input#command {
     }
 }
 
+/* ===== Stripe-inspired Design System ===== */
+:root {
+    --stripe-gray-50: #f9fafb;
+    --stripe-gray-100: #f3f4f6;
+    --stripe-gray-200: #e5e7eb;
+    --stripe-gray-300: #d1d5db;
+    --stripe-gray-400: #9ca3af;
+    --stripe-gray-500: #6b7280;
+    --stripe-gray-600: #4b5563;
+    --stripe-gray-700: #374151;
+    --stripe-gray-800: #1f2937;
+    --stripe-gray-900: #111827;
+
+    --stripe-blue-50: #eff6ff;
+    --stripe-blue-100: #dbeafe;
+    --stripe-blue-500: #3b82f6;
+    --stripe-blue-600: #2563eb;
+
+    --stripe-green-50: #f0fdf4;
+    --stripe-green-100: #dcfce7;
+    --stripe-green-500: #22c55e;
+    --stripe-green-600: #16a34a;
+
+    --stripe-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --stripe-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+    --stripe-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    --stripe-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+
+    --stripe-radius: 8px;
+    --stripe-radius-lg: 12px;
+}
+
+/* Card Styling - Stripe inspired */
+.card {
+    background-color: #ffffff;
+    border: 1px solid var(--stripe-gray-200);
+    box-shadow: var(--stripe-shadow-sm);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: var(--stripe-shadow-md);
+    border-color: var(--stripe-gray-300);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid var(--stripe-gray-200);
+    padding: 1.25rem 1.5rem;
+    color: var(--stripe-gray-900);
+    font-weight: 600;
+}
+
+.card-header h5 {
+    color: var(--stripe-gray-900);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.card-header .text-white {
+    color: var(--stripe-gray-900) !important;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Remove old colored headers */
+.card-header.bg-success,
+.card-header.bg-info,
+.card-header.bg-primary {
+    background-color: #fff !important;
+}
+
+/* Badge Styling - Stripe inspired */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.625rem;
+    border-radius: 6px;
+    letter-spacing: 0.01em;
+}
+
+.badge-success {
+    background-color: var(--stripe-green-100);
+    color: var(--stripe-green-600);
+}
+
+.badge-warning {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.badge-danger {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.badge-secondary {
+    background-color: var(--stripe-gray-200);
+    color: var(--stripe-gray-700);
+}
+
+.badge-primary {
+    background-color: var(--stripe-blue-100);
+    color: var(--stripe-blue-600);
+}
+
+/* Button Styling - Stripe inspired */
+.btn {
+    font-weight: 500;
+    border-radius: var(--stripe-radius);
+    padding: 0.5rem 1rem;
+    transition: all 0.15s ease;
+    font-size: 0.875rem;
+}
+
+.btn-primary {
+    background-color: var(--stripe-blue-600);
+    border-color: var(--stripe-blue-600);
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--stripe-blue-500) !important;
+    border-color: var(--stripe-blue-500) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-success {
+    background-color: var(--stripe-green-600);
+    border-color: var(--stripe-green-600);
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+    background-color: var(--stripe-green-500) !important;
+    border-color: var(--stripe-green-500) !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.btn-outline-primary {
+    border-color: var(--stripe-gray-300);
+    color: var(--stripe-gray-700);
+    background-color: #fff;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: var(--stripe-gray-50) !important;
+    border-color: var(--stripe-gray-400) !important;
+    color: var(--stripe-gray-900) !important;
+}
+
+.btn-outline-success {
+    border-color: var(--stripe-gray-300);
+    color: var(--stripe-gray-700);
+    background-color: #fff;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+    background-color: var(--stripe-green-50) !important;
+    border-color: var(--stripe-green-600) !important;
+    color: var(--stripe-green-600) !important;
+}
+
+.btn-outline-info {
+    border-color: var(--stripe-gray-300);
+    color: var(--stripe-gray-700);
+    background-color: #fff;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus,
+.btn-outline-info:active {
+    background-color: var(--stripe-blue-50) !important;
+    border-color: var(--stripe-blue-600) !important;
+    color: var(--stripe-blue-600) !important;
+}
+
+.btn-outline-secondary {
+    border-color: var(--stripe-gray-300);
+    color: var(--stripe-gray-700);
+    background-color: #fff;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    background-color: var(--stripe-gray-50) !important;
+    border-color: var(--stripe-gray-400) !important;
+    color: var(--stripe-gray-900) !important;
+}
+
+/* Table Styling - Stripe inspired */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    background-color: var(--stripe-gray-50);
+    color: var(--stripe-gray-700);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--stripe-gray-200);
+    padding: 0.75rem 1rem;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--stripe-gray-200);
+}
+
+.table tbody tr:hover {
+    background-color: var(--stripe-gray-50);
+}
+
+.table tbody td {
+    padding: 1rem;
+    color: var(--stripe-gray-700);
+}
+
+/* List Group Styling - Stripe inspired */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--stripe-gray-200);
+    padding: 1rem 1.5rem;
+    transition: background-color 0.15s ease;
+}
+
+.list-group-item:hover {
+    background-color: var(--stripe-gray-50);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Typography improvements */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--stripe-gray-900);
+    font-weight: 600;
+}
+
+.text-muted {
+    color: var(--stripe-gray-500) !important;
+}
+
+/* Icon styling */
+.card-header i,
+.bg-success i,
+.bg-info i,
+.bg-primary i {
+    color: var(--stripe-gray-600);
+}
+
+/* Rounded corners */
+.rounded-3 {
+    border-radius: var(--stripe-radius-lg) !important;
+}
+
+.rounded-pill {
+    border-radius: 50rem !important;
+}
+
+/* Shadow utilities */
+.shadow-sm {
+    box-shadow: var(--stripe-shadow-sm) !important;
+}
+
+.shadow {
+    box-shadow: var(--stripe-shadow) !important;
+}
+
+.shadow-md {
+    box-shadow: var(--stripe-shadow-md) !important;
+}
+
+.shadow-lg {
+    box-shadow: var(--stripe-shadow-lg) !important;
+}
+
+/* Background utilities */
+.bg-light {
+    background-color: var(--stripe-gray-50) !important;
+}
+
+.bg-opacity-10 {
+    opacity: 0.1;
+}
+
+/* Dashboard specific styling */
+.dashboard-header {
+    background-color: #ffffff;
+    border: 1px solid var(--stripe-gray-200);
+    box-shadow: var(--stripe-shadow-sm);
+}
+
+.dashboard-header h4 {
+    color: var(--stripe-gray-900);
+}
+
+.dashboard-header .text-muted {
+    color: var(--stripe-gray-600) !important;
+}
+
+.dashboard-header .bg-primary {
+    background-color: var(--stripe-blue-600) !important;
+}
+
+/* Widget spacing improvements */
+.card + .card {
+    margin-top: 0;
+}
+
+/* Server list item styling */
+.list-group-item h6 {
+    color: var(--stripe-gray-900);
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.list-group-item .text-muted,
+.list-group-item small {
+    color: var(--stripe-gray-500) !important;
+    font-size: 0.8125rem;
+}
+
+/* Icon in list styling */
+.list-group-item .fa-server {
+    color: var(--stripe-gray-600);
+}
+
+/* Empty state styling */
+.card-body .text-center h6 {
+    color: var(--stripe-gray-900);
+}
+
+.card-body .text-center .text-muted {
+    color: var(--stripe-gray-500) !important;
+}
+
+.card-body .text-center .bg-light {
+    background-color: var(--stripe-gray-100) !important;
+}
+
+.card-body .text-center .text-muted.fs-5 {
+    color: var(--stripe-gray-400) !important;
+}
+
+/* Table improvements for activity log */
+.table thead th i {
+    opacity: 0.6;
+}
+
+.table tbody td .badge {
+    background-color: var(--stripe-gray-100);
+    color: var(--stripe-gray-600);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+}
+
+/* Improve icon containers */
+.rounded-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Focus states for better accessibility */
+.btn:focus-visible {
+    outline: 2px solid var(--stripe-blue-500);
+    outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Override for elements that shouldn't transition */
+*:not(.btn):not(.card):not(.list-group-item):not(.badge) {
+    transition: none;
+}
+
+/* Container spacing */
+.container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+@media (min-width: 1200px) {
+    .container-fluid {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+/* Row gap improvements */
+.row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1.5rem;
+}
+
+/* Main content area background */
+.content-wrapper,
+.content {
+    background-color: #f6f9fc;
+}
+
+/* Improve overall page background */
+body {
+    background-color: #f6f9fc;
+}
+
+/* Better text rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Link styling */
+a {
+    color: var(--stripe-blue-600);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--stripe-blue-500);
+}
+
+/* Input and form styling improvements */
+.form-control,
+.form-select {
+    border-color: var(--stripe-gray-300);
+    border-radius: var(--stripe-radius);
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--stripe-blue-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Better placeholder text */
+::placeholder {
+    color: var(--stripe-gray-400);
+}
+
+/* Stripe-like dividers */
+hr {
+    border-color: var(--stripe-gray-200);
+    opacity: 1;
+}
+
+/* Alert/notification styling */
+.alert {
+    border-radius: var(--stripe-radius-lg);
+    border: 1px solid var(--stripe-gray-200);
+}
+
+/* Modal improvements */
+.modal-content {
+    border-radius: var(--stripe-radius-lg);
+    border: 1px solid var(--stripe-gray-200);
+    box-shadow: var(--stripe-shadow-lg);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--stripe-gray-200);
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--stripe-gray-200);
+    padding: 1.25rem 1.5rem;
+}
+
+/* Dropdown improvements */
+.dropdown-menu {
+    border: 1px solid var(--stripe-gray-200);
+    box-shadow: var(--stripe-shadow-lg);
+    border-radius: var(--stripe-radius);
+}
+
+.dropdown-item {
+    color: var(--stripe-gray-700);
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+    background-color: var(--stripe-gray-50);
+    color: var(--stripe-gray-900);
+}
+
+/* Pagination improvements */
+.pagination {
+    gap: 0.25rem;
+}
+
+.page-link {
+    border-color: var(--stripe-gray-300);
+    color: var(--stripe-gray-700);
+    border-radius: var(--stripe-radius);
+}
+
+.page-link:hover {
+    background-color: var(--stripe-gray-50);
+    border-color: var(--stripe-gray-400);
+    color: var(--stripe-gray-900);
+}
+
+.page-item.active .page-link {
+    background-color: var(--stripe-blue-600);
+    border-color: var(--stripe-blue-600);
+}
+
+/* Quick actions styling */
+.btn.w-100 {
+    padding: 0.625rem 1rem;
+    font-weight: 500;
+}
+
+.btn i {
+    opacity: 0.8;
+}
+
+.btn:hover i {
+    opacity: 1;
+}
+
+/* Button size refinements */
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+}
+
+/* Card body padding consistency */
+.card-body.p-0 {
+    padding: 0 !important;
+}
+
+.card-body.p-3 {
+    padding: 1rem !important;
+}
+
+.card-body.p-4 {
+    padding: 1.5rem !important;
+}
+
+/* Gap utilities for rows */
+.g-2 {
+    --bs-gutter-x: 0.5rem;
+    --bs-gutter-y: 0.5rem;
+}
+
+.g-4 {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1.5rem;
+}
+
+/* Margin utilities with proper Stripe spacing */
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mt-2 {
+    margin-top: 0.5rem !important;
+}
+
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+/* Ensure proper spacing between sections */
+.row + .row {
+    margin-top: 0;
+}
+
 #terminal > div {
     padding: 10px;
 }

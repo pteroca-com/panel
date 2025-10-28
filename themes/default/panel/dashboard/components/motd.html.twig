@@ -1,17 +1,17 @@
 {% if motdEnabled %}
     <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-header bg-info text-white">
+        <div class="card-header">
             <div class="d-flex align-items-center">
                 <i class="fas fa-bullhorn me-2"></i>
-                <h5 class="mb-1 fw-bold text-white">{{ motdTitle|raw }}</h5>
+                <h5 class="mb-0 fw-semibold">{{ motdTitle|raw }}</h5>
             </div>
         </div>
         <div class="card-body p-4">
             <div class="d-flex align-items-start">
-                <div class="bg-info bg-opacity-10 rounded-circle me-3 flex-shrink-0">
-                    <i class="fas fa-info-circle p-3 text-info"></i>
+                <div class="rounded me-3 flex-shrink-0" style="background-color: var(--stripe-blue-50); padding: 0.75rem;">
+                    <i class="fas fa-info-circle" style="color: var(--stripe-blue-600);"></i>
                 </div>
-                <div class="flex-grow-1">
+                <div class="flex-grow-1" style="color: var(--stripe-gray-700);">
                     {{ motdMessage|raw }}
                 </div>
             </div>
