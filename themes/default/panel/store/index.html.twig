@@ -6,7 +6,7 @@
     <div class="container-fluid mt-4">
         <div class="row">
             <div class="col-12">
-                <div class="bg-light rounded-3 p-4 mb-4">
+                <div class="dashboard-header rounded-3 p-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center">
                             <div class="bg-primary rounded-circle me-3">
@@ -23,14 +23,12 @@
         </div>
 
         {% if products|length > 0 %}
-            <div class="row mb-5">
+            <div class="row mb-3">
                 <div class="col-12">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-success bg-opacity-10 rounded-circle me-3">
-                            <i class="fas fa-box p-3 text-success"></i>
-                        </div>
-                        <h5 class="mb-0 fw-bold">{{ 'pteroca.store.products_with_no_category'|trans }}</h5>
-                    </div>
+                    <h5 class="mb-0 fw-semibold" style="color: var(--stripe-gray-900);">
+                        <i class="fas fa-box me-2" style="color: var(--stripe-gray-600);"></i>
+                        {{ 'pteroca.store.products_with_no_category'|trans }}
+                    </h5>
                 </div>
             </div>
             <div class="row g-4 mb-5">
@@ -43,14 +41,12 @@
         {% endif %}
 
         {% if categories|length > 0 %}
-            <div class="row mb-4">
+            <div class="row mb-3">
                 <div class="col-12">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary bg-opacity-10 rounded-circle me-3">
-                            <i class="fas fa-folder p-3 text-primary"></i>
-                        </div>
-                        <h5 class="mb-0 fw-bold">{{ 'pteroca.store.categories'|trans }}</h5>
-                    </div>
+                    <h5 class="mb-0 fw-semibold" style="color: var(--stripe-gray-900);">
+                        <i class="fas fa-folder me-2" style="color: var(--stripe-gray-600);"></i>
+                        {{ 'pteroca.store.categories'|trans }}
+                    </h5>
                 </div>
             </div>
             <div class="row g-4">

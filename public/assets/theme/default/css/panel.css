@@ -1352,3 +1352,115 @@ hr {
     background-color: rgb(82, 121, 167) !important;
     border-color: rgb(82, 121, 167) !important;
 }
+
+/* Cart and Product Pages - Icon containers */
+.list-group-item .bg-opacity-10 {
+    background-color: transparent !important;
+    opacity: 1 !important;
+}
+
+.list-group-item .bg-info.bg-opacity-10 i,
+.list-group-item .bg-warning.bg-opacity-10 i,
+.list-group-item .bg-success.bg-opacity-10 i,
+.list-group-item .bg-danger.bg-opacity-10 i,
+.list-group-item .bg-primary.bg-opacity-10 i,
+.list-group-item .bg-secondary.bg-opacity-10 i,
+.list-group-item .bg-dark.bg-opacity-10 i {
+    opacity: 1 !important;
+}
+
+/* Fix summary card header - remove colored backgrounds */
+.card-header.bg-success {
+    background-color: #fff !important;
+    border-bottom: 1px solid var(--stripe-gray-200);
+}
+
+.card-header.bg-success h5,
+.card-header.bg-success .card-title {
+    color: var(--stripe-gray-900) !important;
+}
+
+.card-header.bg-success i {
+    color: var(--stripe-gray-600) !important;
+}
+
+.card-header.bg-success .text-white {
+    color: var(--stripe-gray-900) !important;
+}
+
+/* Fix description card header */
+.card-header.bg-secondary {
+    background-color: #fff !important;
+    border-bottom: 1px solid var(--stripe-gray-200);
+}
+
+.card-header.bg-secondary h5,
+.card-header.bg-secondary .card-title {
+    color: var(--stripe-gray-900) !important;
+}
+
+.card-header.bg-secondary i {
+    color: var(--stripe-gray-600) !important;
+}
+
+.card-header.bg-secondary .text-white {
+    color: var(--stripe-gray-900) !important;
+}
+
+/* Product summary box styling */
+.product-summary-box {
+    background-color: var(--stripe-green-50) !important;
+    border: 1px solid var(--stripe-green-200) !important;
+}
+
+/* Top search bar styling - Stripe inspired */
+.form-widget:has(.content-search-icon) {
+    position: relative;
+}
+
+.content-search-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--stripe-gray-400) !important;
+    font-size: 0.875rem;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.content-search-label {
+    position: relative;
+    display: block;
+    margin: 0;
+}
+
+.content-search-label input[type="search"] {
+    padding-left: 2.5rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    border: 1px solid var(--stripe-gray-300) !important;
+    border-radius: var(--stripe-radius) !important;
+    background-color: #fff !important;
+    font-size: 0.875rem !important;
+    transition: all 0.15s ease !important;
+    min-width: 250px;
+}
+
+.content-search-label input[type="search"]:focus {
+    border-color: var(--stripe-blue-500) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    outline: none !important;
+}
+
+.content-search-label input[type="search"]::placeholder {
+    color: var(--stripe-gray-400) !important;
+}
+
+/* Hide default search icon from browser */
+.content-search-label input[type="search"]::-webkit-search-cancel-button,
+.content-search-label input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+}

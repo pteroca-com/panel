@@ -111,7 +111,8 @@ class UserPaymentCrudController extends AbstractPanelController
     public function configureFields(string $pageName): iterable
     {
         return [
-            TextField::new('sessionId', $this->translator->trans('pteroca.crud.payment.session_id')),
+            TextField::new('sessionId', $this->translator->trans('pteroca.crud.payment.session_id'))
+                ->formatValue(fn ($value) => strlen($value) > 20 ? substr($value, 0, 20) . '...' : $value),
             TextField::new('status', $this->translator->trans('pteroca.crud.payment.status'))
                 ->formatValue(fn ($value) => sprintf(
                     "<span class='badge %s'>%s</span>",

@@ -7,7 +7,7 @@
         <!-- Header Section -->
         <div class="row">
             <div class="col-12">
-                <div class="bg-light rounded-3 p-4 mb-4">
+                <div class="dashboard-header rounded-3 p-4 mb-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center">
                             <div class="bg-primary rounded-circle me-3">
@@ -42,26 +42,19 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-wallet me-2"></i>
-                                <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.cart_topup.order'|trans }}</h5>
+                                <h5 class="mb-0 fw-semibold">{{ 'pteroca.cart_topup.order'|trans }}</h5>
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
                                 <div>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="bg-success bg-opacity-10 rounded-circle me-3">
-                                            <i class="fas fa-coins p-3 text-success"></i>
-                                        </div>
-                                        <div>
-                                            <small>{{ 'pteroca.cart_topup.order_description'|trans }}</small>
-                                            <div class="fw-bold fs-5 text-success">
-                                                {{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <i class="fas fa-coins text-success me-3" style="font-size: 2.5rem;"></i>
                                 </div>
-                                <div class="text-end">
-                                    <i class="fas fa-plus-circle text-success" style="font-size: 3rem;"></i>
+                                <div>
+                                    <small class="text-muted">{{ 'pteroca.cart_topup.order_description'|trans }}</small>
+                                    <div class="fw-bold fs-4 text-success">
+                                        {{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -72,7 +65,7 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-credit-card me-2"></i>
-                                <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.cart_topup.payment_method'|trans }}</h5>
+                                <h5 class="mb-0 fw-semibold">{{ 'pteroca.cart_topup.payment_method'|trans }}</h5>
                             </div>
                         </div>
                         <div class="card-body p-4">
@@ -114,7 +107,7 @@
                         <div class="card-header bg-success text-white">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-receipt me-2"></i>
-                                <h5 class="mb-1 fw-bold text-white">{{ 'pteroca.cart_configuration.order_summary'|trans }}</h5>
+                                <h5 class="mb-0 fw-semibold">{{ 'pteroca.cart_configuration.order_summary'|trans }}</h5>
                             </div>
                         </div>
                         <div class="card-body p-4">
