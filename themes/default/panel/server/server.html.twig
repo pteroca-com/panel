@@ -11,19 +11,33 @@
     | {{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}
 {% endblock %}
 
-{% block content_title %}
-    {{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}
-{% endblock %}
+{% block content_title %}{% endblock %}
 
-{% block page_actions %}
-    <a class="btn btn-secondary" href="{{ path('panel') }}">
-        {{ 'pteroca.system.back'|trans }}
-    </a>
-{% endblock %}
+{% block page_actions %}{% endblock %}
+
+{% block content_header_wrapper %}{% endblock %}
 
 {% block main %}
+    <div class="container-fluid mt-4">
+        <!-- Header Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-header rounded-3 p-4 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle me-3">
+                            <i class="fas fa-server p-3 text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">{{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}</h4>
+                            <p class="text-muted mb-0">{{ 'pteroca.server.description'|trans|default('Manage your server') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     {% if isAdminView and app.user.email != server.user.email %}
-        <div class="container mt-4 mb-4">
+        <div class="container">
             <div class="alert alert-warning" role="alert">
                 <i class="fas fa-exclamation-triangle"></i>
                 {{ 'pteroca.server.admin_view_warning'|trans }}
@@ -31,7 +45,7 @@
         </div>
     {% endif %}
     {% if server.isSuspended %}
-        <div class="container mt-4 mb-4">
+        <div class="container">
             <div class="alert alert-danger" role="alert">
                 <i class="fas fa-exclamation-triangle"></i>
                 {% if server.expiresAt|date("Y-m-d H:i:s") < "now"|date("Y-m-d H:i:s") %}
@@ -48,7 +62,7 @@
     {% elseif serverData.isSuspended %}
         {% include 'panel/server/server_suspended.html.twig' %}
     {% else %}
-        <div class="container mt-4">
+        <div class="container">
             {% include 'panel/server/tabs/navigation.html.twig' %}
             <div class="tab-content">
                 {% for tab in visibleTabs %}

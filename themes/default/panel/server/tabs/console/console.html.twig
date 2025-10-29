@@ -5,9 +5,9 @@
 {% block main %}
     <div class="tab-pane active" id="console">
         <div class="row">
-            <div class="col-12 col-xl-9 mb-3">
+            <div class="col-12 col-xl-9">
                 {% if hasServerPermission(serverData.serverPermissions, 'websocket.connect') %}
-                <div class="row mb-5">
+                <div class="row mb-3">
                     <div class="col-12">
                         <div id="terminal"></div>
                     </div>
