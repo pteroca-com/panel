@@ -29,7 +29,9 @@
                         </div>
                         <div>
                             <h4 class="mb-1 fw-bold">{{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}</h4>
-                            <p class="text-muted mb-0">{{ 'pteroca.server.description'|trans|default('Manage your server') }}</p>
+                            {% if serverData.pterodactylServer.description is defined and serverData.pterodactylServer.description %}
+                                <p class="text-muted mb-0">{{ serverData.pterodactylServer.description }}</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

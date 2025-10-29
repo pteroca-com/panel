@@ -2,11 +2,11 @@
     {% if serverData.productEggConfiguration.options.startup.user_viewable is defined or serverData.productEggConfiguration.options.docker_image.user_viewable is defined or isAdminView %}
         <div class="row">
             <div class="col-12">
-                <h3 class="mb-4">{{ 'pteroca.server.default_options'|trans }}</h3>
+                <h3>{{ 'pteroca.server.default_options'|trans }}</h3>
             </div>
             {% if serverData.productEggConfiguration.options.startup.user_viewable is defined or isAdminView %}
                 <div class="col-12 col-xl-6">
-                    <div class="card mb-4">
+                    <div class="card">
                         <div class="card-header">
                             <h5 class="card-title">
                                 {{ 'pteroca.server.startup_command'|trans }}
@@ -37,7 +37,7 @@
             {% endif %}
             {% if serverData.productEggConfiguration.options.docker_image.user_viewable is defined %}
                 <div class="col-12 col-xl-6">
-                    <div class="card mb-4">
+                    <div class="card">
                         <div class="card-header">
                             <h5 class="card-title">
                                 {{ 'pteroca.server.docker_image'|trans }}

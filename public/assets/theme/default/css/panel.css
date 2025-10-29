@@ -477,6 +477,37 @@ input#command {
     color: var(--stripe-blue-600);
 }
 
+/* Bootstrap bg-* classes for badges */
+.badge.bg-secondary {
+    background-color: var(--stripe-gray-600) !important;
+    color: #fff !important;
+}
+
+.badge.bg-warning {
+    background-color: #f59e0b !important;
+    color: #fff !important;
+}
+
+.badge.bg-success {
+    background-color: var(--stripe-green-600) !important;
+    color: #fff !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc2626 !important;
+    color: #fff !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--stripe-blue-600) !important;
+    color: #fff !important;
+}
+
+.badge.bg-info {
+    background-color: var(--stripe-blue-500) !important;
+    color: #fff !important;
+}
+
 /* Ensure badge colors work in tables and anywhere else */
 table .badge-success,
 .table .badge-success {
@@ -562,6 +593,30 @@ table .badge-primary,
 .btn-success:hover i,
 .btn-success:focus i,
 .btn-success:active i {
+    color: #fff !important;
+}
+
+.btn-danger {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: #fff;
+}
+
+.btn-danger i {
+    color: #fff !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active {
+    background-color: #b91c1c !important;
+    border-color: #b91c1c !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.btn-danger:hover i,
+.btn-danger:focus i,
+.btn-danger:active i {
     color: #fff !important;
 }
 
@@ -1142,8 +1197,126 @@ hr {
     display: block;
 }
 
+/* Terminal Styling - Stripe inspired */
+#terminal {
+    background-color: #0d1117;
+    border: 1px solid var(--stripe-gray-200);
+    border-radius: var(--stripe-radius-lg);
+    box-shadow: var(--stripe-shadow-sm);
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
 #terminal > div {
-    padding: 10px;
+    padding: 1.25rem;
+}
+
+#terminal .xterm {
+    padding: 0.8rem;
+}
+
+#terminal .xterm-viewport {
+    border-radius: var(--stripe-radius);
+}
+
+/* Custom scrollbar for terminal - Stripe inspired */
+#terminal .xterm-viewport::-webkit-scrollbar {
+    width: 10px;
+}
+
+#terminal .xterm-viewport::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+#terminal .xterm-viewport::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    transition: background 0.2s ease;
+}
+
+#terminal .xterm-viewport::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#terminal .xterm-viewport::-webkit-scrollbar-thumb:active {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Firefox scrollbar */
+#terminal .xterm-viewport {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+}
+
+/* Command input styling */
+#command {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-size: 0.875rem;
+    background-color: #fff;
+    border: 1px solid var(--stripe-gray-300);
+    border-radius: var(--stripe-radius);
+    padding: 0.625rem 1rem;
+    transition: all 0.15s ease;
+}
+
+#command:focus {
+    border-color: var(--stripe-blue-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+#command::placeholder {
+    color: var(--stripe-gray-400);
+}
+
+#send-command {
+    border-radius: var(--stripe-radius);
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+#send-command:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Server Stats Cards */
+.server-stats-row .card {
+
+    height: auto;
+}
+
+.server-stats-row .card-body {
+    padding: 1rem;
+}
+
+.server-stats-row .card-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--stripe-gray-700);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.server-stats-row .card-text {
+    font-size: 0.9375rem;
+    color: var(--stripe-gray-900);
+    font-weight: 500;
+}
+
+.server-stats-row .fa-3x {
+    color: var(--stripe-gray-400);
+    font-size: 2.9rem;
+}
+
+.server-stats-row [data-uptime-icon].text-success {
+    color: var(--stripe-green-600) !important;
+}
+
+.server-stats-row [data-uptime-icon].text-danger {
+    color: #dc2626 !important;
 }
 
 .card-input-element + label {

@@ -2,23 +2,35 @@
     <div class="col-12 col-xl-3">
         <div class="row server-stats-row">
             <div class="col-12">
-                <div class="row">
+                <div class="row g-2">
                     {% if hasServerPermission(serverData.serverPermissions, 'control.start') %}
                     <div class="col-4">
-                        <button class="btn btn-primary w-100 bg-success" id="server-start">{{ 'pteroca.server.start'|trans }}</button>
+                        <button class="btn btn-success w-100" id="server-start">
+                            <i class="fas fa-play me-1"></i>
+                            {{ 'pteroca.server.start'|trans }}
+                        </button>
                     </div>
                     {% endif %}
                     {% if hasServerPermission(serverData.serverPermissions, 'control.restart') %}
                     <div class="col-4">
-                        <button class="btn btn-primary w-100" id="server-restart">{{ 'pteroca.server.restart'|trans }}</button>
+                        <button class="btn btn-primary w-100" id="server-restart">
+                            <i class="fas fa-sync me-1"></i>
+                            {{ 'pteroca.server.restart'|trans }}
+                        </button>
                     </div>
                     {% endif %}
                     {% if hasServerPermission(serverData.serverPermissions, 'control.stop') %}
                     <div class="col-4">
-                        <button class="btn btn-primary bg-danger w-100" id="server-stop">{{ 'pteroca.server.stop'|trans }}</button>
+                        <button class="btn btn-danger w-100" id="server-stop">
+                            <i class="fas fa-stop me-1"></i>
+                            {{ 'pteroca.server.stop'|trans }}
+                        </button>
                     </div>
                     <div class="col-4 d-none">
-                        <button class="btn btn-primary bg-danger w-100" id="server-kill">{{ 'pteroca.server.kill'|trans }}</button>
+                        <button class="btn btn-danger w-100" id="server-kill">
+                            <i class="fas fa-skull me-1"></i>
+                            {{ 'pteroca.server.kill'|trans }}
+                        </button>
                     </div>
                     {% endif %}
                 </div>

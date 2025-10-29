@@ -1,13 +1,13 @@
 {% block main %}
     {% if serverData.pterodactylServer.relationships.variables|length > 0 %}
-        <div class="row mt-3">
+        <div class="row">
             <div class="col-12">
-                <h3 class="mb-4">{{ 'pteroca.server.variables'|trans }}</h3>
+                <h3>{{ 'pteroca.server.variables'|trans }}</h3>
             </div>
             {% for key, variable in serverData.pterodactylServer.relationships.variables %}
                 {% if serverData.productEggConfiguration.variables[variable.id].user_viewable is defined or isAdminView %}
                     <div class="col-12 col-xl-6">
-                        <div class="card mb-4">
+                        <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">
                                     {{ variable.name }}
@@ -29,7 +29,7 @@
                                 <div class="row">
                                     {% set serverVariable = serverData.serverVariables.getByEnvVariable(variable.env_variable) %}
                                     {% if serverVariable.rules|length > 0 %}
-                                        <div class="col-12 mb-3 d-none server-variables" data-option-name="{{ variable.env_variable }}">
+                                        <div class="col-12 d-none server-variables" data-option-name="{{ variable.env_variable }}">
                                             <code>
                                                 <span class="badge badge-dark bg-dark bg-opacity-25 text-dark p-1">{{ 'pteroca.server.rules'|trans }}:</span>
                                                 {% for rule in serverVariable.rules %}
