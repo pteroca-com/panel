@@ -3,11 +3,12 @@
 namespace App\Core\Widget\Dashboard;
 
 use App\Core\Contract\UserInterface;
-use App\Core\Contract\Widget\DashboardWidgetInterface;
+use App\Core\Contract\Widget\WidgetInterface;
+use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
 use App\Core\Service\Logs\LogService;
 
-class ActivityWidget implements DashboardWidgetInterface
+class ActivityWidget implements WidgetInterface
 {
     public function __construct(
         private readonly LogService $logService
@@ -21,6 +22,11 @@ class ActivityWidget implements DashboardWidgetInterface
     public function getDisplayName(): string
     {
         return 'Recent Activity';
+    }
+
+    public function getSupportedContexts(): array
+    {
+        return [WidgetContext::DASHBOARD];
     }
 
     public function getPosition(): WidgetPosition
@@ -38,16 +44,19 @@ class ActivityWidget implements DashboardWidgetInterface
         return 'panel/dashboard/components/activity.html.twig';
     }
 
-    public function getData(UserInterface $user): array
+    public function getData(WidgetContext $context, array $contextData): array
     {
+        /** @var UserInterface $user */
+        $user = $contextData['user'] ?? throw new \InvalidArgumentException('User required in context data');
+
         return [
             'logs' => $this->logService->getLogsByUser($user, 5),
         ];
     }
 
-    public function isVisible(UserInterface $user): bool
+    public function isVisible(WidgetContext $context, array $contextData): bool
     {
-        return true; // Always visible for authenticated users
+        return $context === WidgetContext::DASHBOARD;
     }
 
     public function getColumnSize(): int

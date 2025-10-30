@@ -1,0 +1,49 @@
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header border-0 p-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-user-plus me-2 text-success"></i>
+                <h5 class="mb-0 fw-semibold">{{ 'pteroca.admin.overview.last_registered_users'|trans }}</h5>
+            </div>
+            <a href="{{ path('panel', { crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\UserCrudController' }) }}" class="btn btn-primary btn-sm">
+                {{ 'pteroca.admin.overview.view_all'|trans }} <i class="fa fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                <tr>
+                    <th scope="col" class="fw-semibold">#</th>
+                    <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.user'|trans }}</th>
+                    <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.balance'|trans }}</th>
+                    <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.status'|trans }}</th>
+                    <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.date'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in lastRegisteredUsers %}
+                    <tr>
+                        <th scope="row" class="fw-semibold">{{ user.id }}</th>
+                        <td>{{ user.email }}</td>
+                        <td class="fw-semibold">{{ user.balance|number_format(2, ',', ' ') }} {{ get_currency() }}</td>
+                        <td>
+                            {% if user.isVerified %}
+                                <span class="badge badge-success">
+                                    <i class="fas fa-check me-1"></i>{{ 'pteroca.admin.overview.verified'|trans }}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-warning">
+                                    <i class="fas fa-clock me-1"></i>{{ 'pteroca.admin.overview.unverified'|trans }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted">{{ user.createdAt|date('Y-m-d H:i') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+{#
+    Universal widget area renderer.
+
+    Renders all widgets for a given position and context.
+
+    Parameters:
+    - position: WidgetPosition enum (required)
+    - widgetContext: WidgetContext enum (required)
+    - widgetRegistry: WidgetRegistry instance (required)
+    - contextData: array - context-specific data (required)
+    - cssClass: string - additional CSS classes for the row (optional)
+#}
+
+{% set widgets = widgetRegistry.getWidgetsByPosition(position, widgetContext) %}
+{% if widgets|length > 0 %}
+    <div class="row g-4 {{ cssClass|default('') }}">
+        {% for widget in widgets %}
+            {% if widget.isVisible(widgetContext, contextData) %}
+                <div class="col-12 col-md-{{ widget.getColumnSize() }}">
+                    {% include widget.getTemplate() with widget.getData(widgetContext, contextData) only %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}

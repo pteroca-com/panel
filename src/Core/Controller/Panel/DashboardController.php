@@ -24,10 +24,11 @@ use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Enum\ViewNameEnum;
+use App\Core\Enum\WidgetContext;
 use App\Core\Event\Dashboard\DashboardAccessedEvent;
 use App\Core\Event\Dashboard\DashboardDataLoadedEvent;
-use App\Core\Event\Dashboard\DashboardWidgetsCollectedEvent;
-use App\Core\Service\Widget\DashboardWidgetRegistry;
+use App\Core\Event\Widget\WidgetsCollectedEvent;
+use App\Core\Service\Widget\WidgetRegistry;
 use App\Core\Widget\Dashboard\BalanceWidget;
 use App\Core\Widget\Dashboard\ServersWidget;
 use App\Core\Widget\Dashboard\MotdWidget;
@@ -87,14 +88,18 @@ class DashboardController extends AbstractDashboardController
         );
 
         // === Widget Registry System ===
-        $widgetRegistry = new DashboardWidgetRegistry();
+        $widgetRegistry = new WidgetRegistry();
 
         // Register builtin widgets
         $this->registerBuiltinWidgets($widgetRegistry);
 
         // Dispatch event for plugins to register custom widgets
-        $context = $this->buildMinimalEventContext($request);
-        $widgetEvent = new DashboardWidgetsCollectedEvent($widgetRegistry, $user, $context);
+        $contextData = ['user' => $user];
+        $widgetEvent = new WidgetsCollectedEvent(
+            $widgetRegistry,
+            WidgetContext::DASHBOARD,
+            $contextData
+        );
         $this->dispatchEvent($widgetEvent);
         // === End Widget Registry System ===
 
@@ -113,6 +118,8 @@ class DashboardController extends AbstractDashboardController
 
         $viewData = [
             'widgetRegistry' => $widgetRegistry,
+            'widgetContext' => WidgetContext::DASHBOARD,
+            'contextData' => $contextData,
             'servers' => $servers,
             'user' => $user,
             'logs' => $logs,
@@ -130,10 +137,10 @@ class DashboardController extends AbstractDashboardController
     /**
      * Register builtin (core) dashboard widgets.
      *
-     * @param DashboardWidgetRegistry $registry
+     * @param WidgetRegistry $registry
      * @return void
      */
-    private function registerBuiltinWidgets(DashboardWidgetRegistry $registry): void
+    private function registerBuiltinWidgets(WidgetRegistry $registry): void
     {
         $registry->registerWidget($this->quickActionsWidget);
         $registry->registerWidget($this->balanceWidget);

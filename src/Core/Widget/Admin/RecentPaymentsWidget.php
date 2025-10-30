@@ -1,32 +1,31 @@
 <?php
 
-namespace App\Core\Widget\Dashboard;
+namespace App\Core\Widget\Admin;
 
-use App\Core\Contract\UserInterface;
 use App\Core\Contract\Widget\WidgetInterface;
 use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
-use App\Core\Service\Server\ServerService;
 
-class ServersWidget implements WidgetInterface
+/**
+ * Recent payments widget for admin overview.
+ *
+ * Displays a table of the most recent payments (last 5).
+ */
+class RecentPaymentsWidget implements WidgetInterface
 {
-    public function __construct(
-        private readonly ServerService $serverService
-    ) {}
-
     public function getName(): string
     {
-        return 'servers';
+        return 'admin_recent_payments';
     }
 
     public function getDisplayName(): string
     {
-        return 'My Servers';
+        return 'Payment Overview';
     }
 
     public function getSupportedContexts(): array
     {
-        return [WidgetContext::DASHBOARD];
+        return [WidgetContext::ADMIN_OVERVIEW];
     }
 
     public function getPosition(): WidgetPosition
@@ -41,22 +40,26 @@ class ServersWidget implements WidgetInterface
 
     public function getTemplate(): string
     {
-        return 'panel/dashboard/components/servers.html.twig';
+        return 'panel/admin/widgets/recent_payments.html.twig';
     }
 
     public function getData(WidgetContext $context, array $contextData): array
     {
-        /** @var UserInterface $user */
-        $user = $contextData['user'] ?? throw new \InvalidArgumentException('User required in context data');
+        if ($context !== WidgetContext::ADMIN_OVERVIEW) {
+            return [];
+        }
+
+        $statistics = $contextData['statistics'] ?? [];
 
         return [
-            'servers' => $this->serverService->getServersWithAccess($user),
+            'lastPayments' => $statistics['lastPayments'] ?? [],
         ];
     }
 
     public function isVisible(WidgetContext $context, array $contextData): bool
     {
-        return $context === WidgetContext::DASHBOARD;
+        return $context === WidgetContext::ADMIN_OVERVIEW
+            && isset($contextData['statistics']);
     }
 
     public function getColumnSize(): int

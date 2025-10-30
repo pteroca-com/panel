@@ -1,0 +1,78 @@
+<div class="row g-3">
+    <!-- Active Servers Card -->
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small mb-1">
+                            <i class="fa-solid fa-server me-1"></i>
+                            {{ 'pteroca.admin.overview.servers'|trans }}
+                        </div>
+                        <div class="fw-bold fs-5">{{ activeServers }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Registered Last 30 Days Card -->
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small mb-1">
+                            <i class="fa-solid fa-users me-1"></i>
+                            {{ 'pteroca.admin.overview.users'|trans }}
+                        </div>
+                        <div class="fw-bold fs-5">{{ usersRegisteredLastMonth }}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments Created Last 30 Days Card -->
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small mb-1">
+                            <i class="fa-solid fa-money-bill me-1"></i>
+                            {{ 'pteroca.admin.overview.payments'|trans }}
+                        </div>
+                        <div class="fw-bold fs-5">{{ paymentsCreatedLastMonth }}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">{{ 'pteroca.admin.overview.last_30_days'|trans }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Links Card -->
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-3">
+                <div class="mb-2">
+                    <div class="text-muted small">
+                        <i class="fa-solid fa-life-ring me-1"></i>
+                        {{ 'pteroca.admin.overview.links'|trans }}
+                    </div>
+                </div>
+                <div class="d-flex flex-column gap-2" style="font-size: 0.875rem;">
+                    <a href="https://docs.pteroca.com/" target="_blank" class="text-decoration-none">
+                        <i class="fas fa-external-link-alt me-2 text-muted" style="font-size: 0.7rem;"></i>
+                        Documentation
+                    </a>
+                    <a href="https://discord.gg/Gz5phhuZym" target="_blank" class="text-decoration-none">
+                        <i class="fas fa-external-link-alt me-2 text-muted" style="font-size: 0.7rem;"></i>
+                        Discord Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

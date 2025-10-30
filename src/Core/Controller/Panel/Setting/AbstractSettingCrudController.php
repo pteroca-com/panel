@@ -77,7 +77,8 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
             ChoiceField::new('type', $this->translator->trans('pteroca.crud.setting.type'))
                 ->setChoices(SettingTypeEnum::getValues())
                 ->setDisabled()
-                ->setColumns(6),
+                ->setColumns(6)
+                ->hideOnIndex(),
         ];
 
         $valueLabel = $this->translator->trans('pteroca.crud.setting.value');
@@ -126,11 +127,13 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 ->setChoices(SettingContextEnum::getValues())
                 ->setRequired(true)
                 ->setDisabled()
-                ->setColumns(6);
+                ->setColumns(6)
+                ->hideOnIndex();
         $fields[] = NumberField::new('hierarchy', $this->translator->trans('pteroca.crud.setting.hierarchy'))
                 ->setRequired(true)
                 ->setDisabled()
-                ->setColumns(6);
+                ->setColumns(6)
+                ->hideOnIndex();
 
         return $fields;
     }

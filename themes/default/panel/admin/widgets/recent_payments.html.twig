@@ -1,0 +1,58 @@
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header border-0 p-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-credit-card me-2 text-primary"></i>
+                <h5 class="mb-0 fw-semibold">{{ 'pteroca.admin.overview.payment_overview'|trans }}</h5>
+            </div>
+            <a href="{{ path('panel', { crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\PaymentCrudController' }) }}" class="btn btn-primary btn-sm">
+                {{ 'pteroca.admin.overview.view_all'|trans }} <i class="fa fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        {% if not lastPayments %}
+            <div class="alert alert-info border-0 rounded-3">
+                <i class="fas fa-info-circle me-2"></i>
+                {{ 'pteroca.admin.overview.no_payments'|trans }}
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="fw-semibold">#</th>
+                        <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.user'|trans }}</th>
+                        <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.amount'|trans }}</th>
+                        <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.currency'|trans }}</th>
+                        <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.status'|trans }}</th>
+                        <th scope="col" class="fw-semibold">{{ 'pteroca.admin.overview.date'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for payment in lastPayments %}
+                        <tr>
+                            <th scope="row" class="fw-semibold">{{ payment.id }}</th>
+                            <td>{{ payment.user.email }}</td>
+                            <td class="fw-semibold">{{ payment.amount|number_format(2, ',', ' ') }}</td>
+                            <td><span class="badge bg-light text-dark">{{ payment.currency }}</span></td>
+                            <td>
+                                {% if payment.status == 'paid' %}
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check me-1"></i>{{ 'pteroca.recharge.transaction_paid'|trans }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-danger">
+                                        <i class="fas fa-times me-1"></i>{{ 'pteroca.recharge.transaction_unpaid'|trans }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">{{ payment.createdAt|date('Y-m-d H:i') }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>

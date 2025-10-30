@@ -2,11 +2,11 @@
 
 namespace App\Core\Widget\Dashboard;
 
-use App\Core\Contract\UserInterface;
-use App\Core\Contract\Widget\DashboardWidgetInterface;
+use App\Core\Contract\Widget\WidgetInterface;
+use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
 
-class BalanceWidget implements DashboardWidgetInterface
+class BalanceWidget implements WidgetInterface
 {
     public function getName(): string
     {
@@ -16,6 +16,11 @@ class BalanceWidget implements DashboardWidgetInterface
     public function getDisplayName(): string
     {
         return 'Account Balance';
+    }
+
+    public function getSupportedContexts(): array
+    {
+        return [WidgetContext::DASHBOARD];
     }
 
     public function getPosition(): WidgetPosition
@@ -33,15 +38,15 @@ class BalanceWidget implements DashboardWidgetInterface
         return 'panel/dashboard/components/balance.html.twig';
     }
 
-    public function getData(UserInterface $user): array
+    public function getData(WidgetContext $context, array $contextData): array
     {
         // Template uses app.user directly, no additional data needed
         return [];
     }
 
-    public function isVisible(UserInterface $user): bool
+    public function isVisible(WidgetContext $context, array $contextData): bool
     {
-        return true; // Always visible for authenticated users
+        return $context === WidgetContext::DASHBOARD;
     }
 
     public function getColumnSize(): int

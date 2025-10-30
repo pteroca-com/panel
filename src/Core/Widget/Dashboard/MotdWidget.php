@@ -2,13 +2,13 @@
 
 namespace App\Core\Widget\Dashboard;
 
-use App\Core\Contract\UserInterface;
-use App\Core\Contract\Widget\DashboardWidgetInterface;
+use App\Core\Contract\Widget\WidgetInterface;
 use App\Core\Enum\SettingEnum;
+use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
 use App\Core\Service\SettingService;
 
-class MotdWidget implements DashboardWidgetInterface
+class MotdWidget implements WidgetInterface
 {
     public function __construct(
         private readonly SettingService $settingService
@@ -22,6 +22,11 @@ class MotdWidget implements DashboardWidgetInterface
     public function getDisplayName(): string
     {
         return 'Message of the Day';
+    }
+
+    public function getSupportedContexts(): array
+    {
+        return [WidgetContext::DASHBOARD];
     }
 
     public function getPosition(): WidgetPosition
@@ -39,7 +44,7 @@ class MotdWidget implements DashboardWidgetInterface
         return 'panel/dashboard/components/motd.html.twig';
     }
 
-    public function getData(UserInterface $user): array
+    public function getData(WidgetContext $context, array $contextData): array
     {
         return [
             'motdEnabled' => $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value),
@@ -48,8 +53,12 @@ class MotdWidget implements DashboardWidgetInterface
         ];
     }
 
-    public function isVisible(UserInterface $user): bool
+    public function isVisible(WidgetContext $context, array $contextData): bool
     {
+        if ($context !== WidgetContext::DASHBOARD) {
+            return false;
+        }
+
         // Show only if MOTD is enabled in settings
         $motdEnabled = $this->settingService->getSetting(SettingEnum::CUSTOMER_MOTD_ENABLED->value);
         return (bool) $motdEnabled;

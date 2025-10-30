@@ -2,11 +2,11 @@
 
 namespace App\Core\Widget\Dashboard;
 
-use App\Core\Contract\UserInterface;
-use App\Core\Contract\Widget\DashboardWidgetInterface;
+use App\Core\Contract\Widget\WidgetInterface;
+use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
 
-class QuickActionsWidget implements DashboardWidgetInterface
+class QuickActionsWidget implements WidgetInterface
 {
     public function getName(): string
     {
@@ -16,6 +16,11 @@ class QuickActionsWidget implements DashboardWidgetInterface
     public function getDisplayName(): string
     {
         return 'Quick Actions';
+    }
+
+    public function getSupportedContexts(): array
+    {
+        return [WidgetContext::DASHBOARD];
     }
 
     public function getPosition(): WidgetPosition
@@ -33,15 +38,15 @@ class QuickActionsWidget implements DashboardWidgetInterface
         return 'panel/dashboard/components/quick_actions.html.twig';
     }
 
-    public function getData(UserInterface $user): array
+    public function getData(WidgetContext $context, array $contextData): array
     {
         // No additional data needed - links are defined in template
         return [];
     }
 
-    public function isVisible(UserInterface $user): bool
+    public function isVisible(WidgetContext $context, array $contextData): bool
     {
-        return true; // Always visible for authenticated users
+        return $context === WidgetContext::DASHBOARD;
     }
 
     public function getColumnSize(): int

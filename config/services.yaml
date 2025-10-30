@@ -14,14 +14,25 @@ services:
         autowire: false
         autoconfigure: false
 
-    # Dashboard Widget Registry
+    # Widget Registry (Universal)
+    App\Core\Service\Widget\WidgetRegistry:
+        public: true
+
+    # Dashboard Widget Registry (Legacy - for backward compatibility)
     App\Core\Service\Widget\DashboardWidgetRegistry:
         public: true
 
-    # Auto-register builtin widgets as services
+    # Auto-register builtin dashboard widgets as services
     App\Core\Widget\Dashboard\:
         resource: '../src/Core/Widget/Dashboard/*Widget.php'
         tags: ['dashboard.widget']
+        autowire: true
+        autoconfigure: true
+
+    # Auto-register builtin admin widgets as services
+    App\Core\Widget\Admin\:
+        resource: '../src/Core/Widget/Admin/*Widget.php'
+        tags: ['admin.widget']
         autowire: true
         autoconfigure: true
 

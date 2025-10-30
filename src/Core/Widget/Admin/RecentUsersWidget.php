@@ -1,32 +1,31 @@
 <?php
 
-namespace App\Core\Widget\Dashboard;
+namespace App\Core\Widget\Admin;
 
-use App\Core\Contract\UserInterface;
 use App\Core\Contract\Widget\WidgetInterface;
 use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
-use App\Core\Service\Server\ServerService;
 
-class ServersWidget implements WidgetInterface
+/**
+ * Recent users widget for admin overview.
+ *
+ * Displays a table of the most recently registered users (last 5).
+ */
+class RecentUsersWidget implements WidgetInterface
 {
-    public function __construct(
-        private readonly ServerService $serverService
-    ) {}
-
     public function getName(): string
     {
-        return 'servers';
+        return 'admin_recent_users';
     }
 
     public function getDisplayName(): string
     {
-        return 'My Servers';
+        return 'Last Registered Users';
     }
 
     public function getSupportedContexts(): array
     {
-        return [WidgetContext::DASHBOARD];
+        return [WidgetContext::ADMIN_OVERVIEW];
     }
 
     public function getPosition(): WidgetPosition
@@ -36,27 +35,31 @@ class ServersWidget implements WidgetInterface
 
     public function getPriority(): int
     {
-        return 100; // High priority - show first in left column
+        return 90; // Below recent payments (100), show second
     }
 
     public function getTemplate(): string
     {
-        return 'panel/dashboard/components/servers.html.twig';
+        return 'panel/admin/widgets/recent_users.html.twig';
     }
 
     public function getData(WidgetContext $context, array $contextData): array
     {
-        /** @var UserInterface $user */
-        $user = $contextData['user'] ?? throw new \InvalidArgumentException('User required in context data');
+        if ($context !== WidgetContext::ADMIN_OVERVIEW) {
+            return [];
+        }
+
+        $statistics = $contextData['statistics'] ?? [];
 
         return [
-            'servers' => $this->serverService->getServersWithAccess($user),
+            'lastRegisteredUsers' => $statistics['lastRegisteredUsers'] ?? [],
         ];
     }
 
     public function isVisible(WidgetContext $context, array $contextData): bool
     {
-        return $context === WidgetContext::DASHBOARD;
+        return $context === WidgetContext::ADMIN_OVERVIEW
+            && isset($contextData['statistics']);
     }
 
     public function getColumnSize(): int
