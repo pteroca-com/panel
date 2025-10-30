@@ -127,11 +127,17 @@
                             <hr class="my-3">
                             
                             <!-- Payment Method -->
-                            <div class="mb-3">
+                            <div class="mb-3" id="payment-method-section">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <small>{{ 'pteroca.cart_topup.payment_method'|trans }}:</small>
-                                        <div id="selected-payment-method" class="fw-semibold">Stripe</div>
+                                        <div id="selected-payment-method" class="fw-semibold">
+                                            {% if availableGateways is not empty %}
+                                                {{ availableGateways|first.displayName }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -196,6 +202,13 @@
             paymentRadios.forEach(radio => {
                 radio.addEventListener('change', updateSelectedPaymentMethod);
             });
+
+            // Disable order button if no payment gateways available
+            const orderButton = document.getElementById('order-submit');
+            if (paymentRadios.length === 0 && orderButton) {
+                orderButton.disabled = true;
+                orderButton.classList.add('disabled');
+            }
 
             calculatePrice();
             updateSelectedPaymentMethod();

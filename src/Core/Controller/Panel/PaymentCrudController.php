@@ -55,7 +55,8 @@ class PaymentCrudController extends AbstractPanelController
             AssociationField::new('usedVoucher', $this->translator->trans('pteroca.crud.payment.used_voucher')),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.payment.user')),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.payment.created_at')),
-            DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.payment.updated_at')),
+            DateTimeField::new('updatedAt', $this->translator->trans('pteroca.crud.payment.updated_at'))
+                ->hideOnIndex(),
         ];
     }
 
