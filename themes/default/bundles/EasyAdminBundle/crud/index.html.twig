@@ -1,0 +1,48 @@
+{% extends '@!EasyAdmin/crud/index.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3">
+                        <i class="fas fa-list p-3 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold">{{ ea.crud.entityLabelInPlural }}</h4>
+                        <p class="text-muted mb-0">{{ ea.crud.helpMessage|default('') }}</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    {% block header_custom_actions %}{% endblock %}
+
+                    {# Render filters if they exist #}
+                    {% if filters|default(false) and filters|length > 0 %}
+                        <div class="datagrid-filters">
+                            {% set applied_filters = ea.request.query.all['filters']|default([])|keys %}
+                            <div class="btn-group action-filters">
+                                <a href="#" data-href="{{ ea_url().setAction('renderFilters') }}" class="btn btn-outline-secondary btn-labeled btn-labeled-right action-filters-button disabled {{ applied_filters ? 'action-filters-applied' }}" data-bs-toggle="modal" data-bs-target="#modal-filters">
+                                    <i class="fa fa-filter"></i> {{ 'filter.title'|trans(domain = 'EasyAdminBundle') }}{% if applied_filters %} <span class="action-filters-button-count">({{ applied_filters|length }})</span>{% endif %}
+                                </a>
+                                {% if applied_filters %}
+                                    <a href="{{ ea_url().unset('filters').setAction('index') }}" class="btn btn-outline-secondary action-filters-reset">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Render global actions (like "New" button) #}
+                    {% block page_actions %}
+                        {% if global_actions|default(false) %}
+                            {% for action in global_actions %}
+                                {{ include(action.templatePath, { action: action }, with_context = false) }}
+                            {% endfor %}
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

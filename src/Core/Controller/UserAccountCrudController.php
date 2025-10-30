@@ -112,6 +112,7 @@ class UserAccountCrudController extends AbstractPanelController
             ->setEntityLabelInSingular($this->translator->trans('pteroca.dashboard.account_settings'))
             ->setEntityLabelInPlural($this->translator->trans('pteroca.dashboard.account_settings'))
             ->setEntityPermission(UserRoleEnum::ROLE_USER->name)
+            ->setHelp('edit', $this->translator->trans('pteroca.crud.user_account.description'))
             ->setSearchFields(null);
 
         return parent::configureCrud($crud);

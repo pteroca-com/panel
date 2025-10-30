@@ -1464,3 +1464,8 @@ hr {
     -webkit-appearance: none;
     appearance: none;
 }
+
+/* Hide empty form row separators that cause large gaps */
+.field-form_row.flex-fill {
+    display: none !important;
+}

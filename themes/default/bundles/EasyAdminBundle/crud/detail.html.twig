@@ -1,0 +1,22 @@
+{% extends '@!EasyAdmin/crud/detail.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3">
+                        <i class="fas fa-eye p-3 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold">{{ ea.crud.customPageTitle|default(ea.crud.entityLabelInSingular ~ ' Details') }}</h4>
+                        <p class="text-muted mb-0">{{ ea.crud.helpMessage|default('') }}</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    {% block page_actions %}{{ parent() }}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
