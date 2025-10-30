@@ -74,13 +74,14 @@ class ProductCrudController extends AbstractPanelController
             FormField::addTab($this->translator->trans('pteroca.crud.product.details'))
                 ->setIcon('fa fa-info-circle'),
             TextField::new('name', $this->translator->trans('pteroca.crud.product.name'))
-                ->setColumns(7),
-            TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description'))
-                ->setColumns(10),
-            BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active'))
-                ->setColumns(12),
+                ->setColumns(6),
             AssociationField::new('category', $this->translator->trans('pteroca.crud.product.category'))
-                ->setColumns(5),
+                ->setColumns(6),
+            TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description'))
+                ->setColumns(6)
+                ->hideOnIndex(),
+            BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active'))
+                ->setColumns(6),
             FormField::addRow(),
             ImageField::new('imagePath', $this->translator->trans('pteroca.crud.product.image'))
                 ->setBasePath($this->getParameter('products_base_path'))
@@ -88,14 +89,14 @@ class ProductCrudController extends AbstractPanelController
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
                 ->setRequired(false)
                 ->setHelp($this->translator->trans('pteroca.crud.product.image_help'))
-                ->setColumns(5),
+                ->setColumns(6),
             ImageField::new('bannerPath', $this->translator->trans('pteroca.crud.product.banner'))
                 ->setBasePath($this->getParameter('products_base_path'))
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
                 ->setRequired(false)
                 ->setHelp($this->translator->trans('pteroca.crud.product.banner_help'))
-                ->setColumns(5),
+                ->setColumns(6),
             $this->getProductHelpPanel(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
@@ -124,10 +125,12 @@ class ProductCrudController extends AbstractPanelController
             FormField::addRow(),
             NumberField::new('dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.db_count_hint'))
-                ->setColumns(4),
+                ->setColumns(4)
+                ->hideOnIndex(),
             NumberField::new('backups', $this->translator->trans('pteroca.crud.product.backups'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.backups_hint'))
-                ->setColumns(4),
+                ->setColumns(4)
+                ->hideOnIndex(),
             NumberField::new('ports', $this->translator->trans('pteroca.crud.product.ports'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.ports_hint'))
                 ->setColumns(4),

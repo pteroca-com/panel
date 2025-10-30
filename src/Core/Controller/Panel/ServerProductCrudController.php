@@ -75,21 +75,29 @@ class ServerProductCrudController extends AbstractPanelController
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_details'))
                 ->setIcon('fa fa-info-circle'),
             IdField::new('server.id')
-                ->hideOnForm(),
+                ->hideOnForm()
+                ->setColumns(3),
             IntegerField::new('server.pterodactylServerId', $this->translator->trans('pteroca.crud.server.pterodactyl_server_id'))
-                ->setDisabled(),
+                ->setDisabled()
+                ->setColumns(3),
             TextField::new('server.pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
-                ->setDisabled(),
+                ->setDisabled()
+                ->setColumns(3),
             TextField::new('server.user', $this->translator->trans('pteroca.crud.server.user'))
-                ->setDisabled(),
+                ->setDisabled()
+                ->setColumns(3),
             DateTimeField::new('server.createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
-                ->hideOnForm(),
+                ->setDisabled()
+                ->setColumns(3),
             DateTimeField::new('server.deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))
                 ->setDisabled()
-                ->hideOnForm(),
-            DateTimeField::new('server.expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
-            BooleanField::new('server.isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
+                ->setColumns(3),
+            DateTimeField::new('server.expiresAt', $this->translator->trans('pteroca.crud.server.expires_at'))
+                ->setColumns(3),
+            BooleanField::new('server.isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended'))
+                ->setColumns(3),
             BooleanField::new('server.autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
+                ->setColumns(3)
                 ->hideOnIndex(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.build_details'))
@@ -159,9 +167,11 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setRequired(true)
                 ->setFormTypeOption('attr', ['class' => 'nest-selector'])
                 ->setColumns(6),
-            HiddenField::new('eggsConfiguration')->onlyOnForms(),
+            HiddenField::new('eggsConfiguration')
+                ->onlyOnForms(),
             BooleanField::new('allowChangeEgg', $this->translator->trans('pteroca.crud.product.egg_allow_change'))
                 ->setRequired(false)
+                ->setColumns(6)
                 ->hideOnIndex(),
             ChoiceField::new('eggs', $this->translator->trans('pteroca.crud.product.eggs'))
                 ->setHelp($this->translator->trans('pteroca.crud.product.eggs_hint'))

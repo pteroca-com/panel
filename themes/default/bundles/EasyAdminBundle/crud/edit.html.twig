@@ -20,3 +20,11 @@
         </div>
     </div>
 {% endblock %}
+
+{% block main %}
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            {{ parent() }}
+        </div>
+    </div>
+{% endblock %}

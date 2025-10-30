@@ -72,17 +72,12 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                     }
                     return $value;
                 })
-                ->setHelp($this->getHelpText($this->currentEntity?->getName())),
+                ->setHelp($this->getHelpText($this->currentEntity?->getName()))
+                ->setColumns(6),
             ChoiceField::new('type', $this->translator->trans('pteroca.crud.setting.type'))
                 ->setChoices(SettingTypeEnum::getValues())
-                ->onlyWhenCreating(),
-            ChoiceField::new('context', $this->translator->trans('pteroca.crud.setting.context'))
-                ->setChoices(SettingContextEnum::getValues())
-                ->setRequired(true)
-                ->onlyWhenCreating(),
-            NumberField::new('hierarchy', $this->translator->trans('pteroca.crud.setting.hierarchy'))
-                ->setRequired(true)
-                ->onlyWhenCreating(),
+                ->setDisabled()
+                ->setColumns(6),
         ];
 
         $valueLabel = $this->translator->trans('pteroca.crud.setting.value');
@@ -122,8 +117,20 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 }),
         };
 
-        $valueField->setRequired(true);
+        $valueField
+            ->setRequired(true)
+            ->setColumns(6);
         $fields[] = $valueField;
+
+        $fields[] = ChoiceField::new('context', $this->translator->trans('pteroca.crud.setting.context'))
+                ->setChoices(SettingContextEnum::getValues())
+                ->setRequired(true)
+                ->setDisabled()
+                ->setColumns(6);
+        $fields[] = NumberField::new('hierarchy', $this->translator->trans('pteroca.crud.setting.hierarchy'))
+                ->setRequired(true)
+                ->setDisabled()
+                ->setColumns(6);
 
         return $fields;
     }

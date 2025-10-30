@@ -36,7 +36,8 @@ class PaymentCrudController extends AbstractPanelController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('sessionId', $this->translator->trans('pteroca.crud.payment.session_id')),
+            TextField::new('sessionId', $this->translator->trans('pteroca.crud.payment.session_id'))
+                ->formatValue(fn ($value) => $value ? substr($value, 0, 16) . '...' : ''),
             TextField::new('status', $this->translator->trans('pteroca.crud.payment.status'))
                 ->formatValue(fn ($value) => sprintf(
                     "<span class='badge %s'>%s</span>",

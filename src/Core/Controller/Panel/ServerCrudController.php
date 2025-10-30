@@ -54,19 +54,24 @@ class ServerCrudController extends AbstractPanelController
                 ->hideOnForm(),
             IntegerField::new('pterodactylServerId', $this->translator->trans('pteroca.crud.server.pterodactyl_server_id'))
                 ->setDisabled()
-                ->onlyOnForms(),
+                ->onlyOnForms()
+                ->setColumns(4),
             TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
-                ->setDisabled(),
+                ->setDisabled()
+                ->setColumns(4),
             AssociationField::new('serverProduct', $this->translator->trans('pteroca.crud.server.product_server_build'))
-                ->setDisabled(),
+                ->setDisabled()
+                ->setColumns(4),
             AssociationField::new('user', $this->translator->trans('pteroca.crud.server.user'))
                 ->setQueryBuilder(function ($queryBuilder) {
                     return $queryBuilder
                         ->andWhere('entity.deletedAt IS NULL');
-                }),
+                })
+                ->setColumns(4),
+            DateTimeField::new('expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
             BooleanField::new('autoRenewal', $this->translator->trans('pteroca.crud.server.auto_renewal'))
-                ->hideOnIndex(),
-
+                ->hideOnIndex()
+                ->setColumns(4),
             NumberField::new('serverProduct.diskSpace', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.disk_space')))
                 ->onlyOnIndex(),
             NumberField::new('serverProduct.memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
@@ -83,12 +88,12 @@ class ServerCrudController extends AbstractPanelController
                 ->onlyOnIndex(),
             NumberField::new('serverProduct.ports', $this->translator->trans('pteroca.crud.product.ports'))
                 ->onlyOnIndex(),
-
-            DateTimeField::new('expiresAt', $this->translator->trans('pteroca.crud.server.expires_at')),
-            BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended')),
-
-            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))->onlyOnDetail(),
-            DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))->onlyOnDetail(),
+            BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended'))
+                ->setColumns(4),
+            DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
+                ->onlyOnDetail(),
+            DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))
+                ->onlyOnDetail(),
         ];
     }
 

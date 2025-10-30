@@ -45,13 +45,16 @@ class CategoryCrudController extends AbstractPanelController
 
         return [
             NumberField::new('id', 'ID')->onlyOnIndex(),
-            TextField::new('name', $this->translator->trans('pteroca.crud.category.name')),
-            TextareaField::new('description', $this->translator->trans('pteroca.crud.category.description')),
+            TextField::new('name', $this->translator->trans('pteroca.crud.category.name'))
+                ->setColumns(6),
             ImageField::new('imagePath', $this->translator->trans('pteroca.crud.category.image'))
                 ->setBasePath($this->getParameter('categories_base_path'))
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
                 ->setRequired(false),
+            TextareaField::new('description', $this->translator->trans('pteroca.crud.category.description'))
+                ->setColumns(6),
+
         ];
     }
 
