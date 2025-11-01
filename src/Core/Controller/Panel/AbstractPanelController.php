@@ -3,6 +3,7 @@
 namespace App\Core\Controller\Panel;
 
 use App\Core\Enum\LogActionEnum;
+use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\Crud\CrudActionsConfiguredEvent;
 use App\Core\Event\Crud\CrudConfiguredEvent;
 use App\Core\Event\Crud\CrudEntityDeletedEvent;
@@ -27,7 +28,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractPanelController extends AbstractCrudController
 {
@@ -246,5 +249,17 @@ abstract class AbstractPanelController extends AbstractCrudController
     {
         $this->panelCrudService
             ->logEntityAction($action, $entityInstance, $this->getUser(), $this->getEntityFqcn());
+    }
+
+    protected function renderWithEvent(
+        ViewNameEnum $viewName,
+        string $template,
+        array $viewData,
+        Request $request
+    ): Response
+    {
+        $viewEvent = $this->prepareViewDataEvent($viewName, $viewData, $request);
+
+        return $this->render($template, $viewEvent->getViewData());
     }
 }

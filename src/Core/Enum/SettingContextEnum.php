@@ -11,6 +11,7 @@ enum SettingContextEnum: string
     case EMAIL = 'email_settings';
     case PTERODACTYL = 'pterodactyl_settings';
     case HIDDEN = 'hidden_settings';
+    case PLUGIN = 'plugin_settings';
 
     public static function getValues(): array
     {

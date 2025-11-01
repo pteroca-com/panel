@@ -27,3 +27,9 @@ junit.xml
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> pteroca/plugin-system ###
+# Ignore plugin contents but track the structure
+/plugins/*/
+!plugins/.gitkeep
+###< pteroca/plugin-system ###

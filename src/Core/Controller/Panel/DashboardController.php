@@ -5,6 +5,8 @@ namespace App\Core\Controller\Panel;
 use App\Core\Controller\Panel\Setting\EmailSettingCrudController;
 use App\Core\Controller\Panel\Setting\GeneralSettingCrudController;
 use App\Core\Controller\Panel\Setting\PaymentSettingCrudController;
+use App\Core\Controller\Panel\Setting\PluginCrudController;
+use App\Core\Controller\Panel\Setting\PluginSettingCrudController;
 use App\Core\Controller\Panel\Setting\PterodactylSettingCrudController;
 use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
 use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
@@ -14,6 +16,7 @@ use App\Core\Entity\Log;
 use App\Core\Entity\Panel\UserAccount;
 use App\Core\Entity\Panel\UserPayment;
 use App\Core\Entity\Payment;
+use App\Core\Entity\Plugin;
 use App\Core\Entity\Product;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerLog;
@@ -207,6 +210,7 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.payment_gateways'), 'fa fa-hand-holding-dollar', $this->generateSettingsUrl(SettingContextEnum::PAYMENT)),
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.email'), 'fa fa-envelope', $this->generateSettingsUrl(SettingContextEnum::EMAIL)),
                 MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.appearance'), 'fa fa-brush', $this->generateSettingsUrl(SettingContextEnum::THEME)),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.plugin.plugins'), 'fa fa-puzzle-piece', Plugin::class),
             ]);
             yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class);
             yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gifts')->setSubItems([

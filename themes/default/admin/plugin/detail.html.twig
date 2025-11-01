@@ -1,0 +1,164 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3">
+                        <i class="fas fa-puzzle-piece p-3 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold">{{ plugin.displayName }}</h4>
+                        <p class="text-muted mb-0">{{ 'pteroca.crud.plugin.plugin_details'|trans }}</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    {# Back to list button #}
+                    <a href="{{ ea_url({ crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController' }) }}"
+                       class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> {{ 'pteroca.crud.plugin.back_to_list'|trans }}
+                    </a>
+
+                    {# Show Settings button - for plugins that have been enabled at least once (have DB entry) #}
+                    {% if plugin.id is not null %}
+                        <a href="{{ ea_url({ crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginSettingCrudController', crudAction: 'index', pluginName: plugin.name }) }}"
+                           class="btn btn-secondary">
+                            <i class="fa fa-cog"></i> {{ 'pteroca.crud.plugin.settings'|trans }}
+                        </a>
+                    {% endif %}
+
+                    {# Enable button #}
+                    {% if plugin.state.value == 'discovered' or plugin.state.value == 'disabled' %}
+                        <a href="{{ ea_url({ crudAction: 'enablePlugin', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
+                           class="btn btn-success">
+                            <i class="fa fa-check"></i> {{ 'pteroca.crud.plugin.enable'|trans }}
+                        </a>
+                    {% endif %}
+
+                    {# Disable button #}
+                    {% if plugin.state.value == 'enabled' %}
+                        <a href="{{ ea_url({ crudAction: 'disablePlugin', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
+                           class="btn btn-warning">
+                            <i class="fa fa-times"></i> {{ 'pteroca.crud.plugin.disable'|trans }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3">{{ 'pteroca.crud.plugin.basic_information'|trans }}</h5>
+                    <table class="table table-borderless">
+                        <tbody>
+                        <tr>
+                            <th style="width: 40%;">{{ 'pteroca.crud.plugin.name_label'|trans }}</th>
+                            <td><code>{{ plugin.name }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.display_name_label'|trans }}</th>
+                            <td>{{ plugin.displayName }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.version_label'|trans }}</th>
+                            <td><span class="badge bg-info">{{ plugin.version }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.author_label'|trans }}</th>
+                            <td>{{ plugin.author }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.description_label'|trans }}</th>
+                            <td>{{ plugin.description|default('pteroca.crud.plugin.no_description_provided'|trans) }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.state_label'|trans }}</th>
+                            <td>
+                                <span class="badge bg-{{ plugin.state.badgeClass }}">
+                                    {{ plugin.state.label|trans }}
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-6">
+                    <h5 class="mb-3">{{ 'pteroca.crud.plugin.technical_details'|trans }}</h5>
+                    <table class="table table-borderless">
+                        <tbody>
+                        <tr>
+                            <th style="width: 40%;">{{ 'pteroca.crud.plugin.capabilities_label'|trans }}</th>
+                            <td>
+                                {% if plugin.capabilities|length > 0 %}
+                                    {% for capability in plugin.capabilities %}
+                                        <span class="badge bg-secondary">{{ capability }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <em>{{ 'pteroca.crud.plugin.none'|trans }}</em>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.min_pteroca_version_label'|trans }}</th>
+                            <td>{{ plugin.pterocaMinVersion|default('pteroca.crud.plugin.not_specified'|trans) }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.max_pteroca_version_label'|trans }}</th>
+                            <td>{{ plugin.pterocaMaxVersion|default('pteroca.crud.plugin.not_specified'|trans) }}</td>
+                        </tr>
+                        {% if plugin.enabledAt %}
+                            <tr>
+                                <th>{{ 'pteroca.crud.plugin.enabled_at_label'|trans }}</th>
+                                <td>{{ plugin.enabledAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if plugin.disabledAt %}
+                            <tr>
+                                <th>{{ 'pteroca.crud.plugin.disabled_at_label'|trans }}</th>
+                                <td>{{ plugin.disabledAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if plugin.faultReason %}
+                            <tr>
+                                <th>{{ 'pteroca.crud.plugin.fault_reason_label'|trans }}</th>
+                                <td class="text-danger">{{ plugin.faultReason }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if plugin.createdAt %}
+                            <tr>
+                                <th>{{ 'pteroca.crud.plugin.created_at_label'|trans }}</th>
+                                <td>{{ plugin.createdAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if plugin.state.value == 'faulted' and plugin.faultReason %}
+                <div class="alert alert-danger mt-4" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="fa fa-exclamation-triangle"></i> {{ 'pteroca.crud.plugin.plugin_error'|trans }}
+                    </h5>
+                    <p class="mb-0">{{ plugin.faultReason }}</p>
+                </div>
+            {% endif %}
+
+            {% if plugin.state.value == 'update_pending' %}
+                <div class="alert alert-warning mt-4" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="fa fa-info-circle"></i> {{ 'pteroca.crud.plugin.update_available'|trans }}
+                    </h5>
+                    <p class="mb-0">{{ 'pteroca.crud.plugin.update_available_message'|trans }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

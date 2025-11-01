@@ -16,6 +16,7 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "composer/semver": "^3.4",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "easycorp/easyadmin-bundle": "^4.8",
         "firebase/php-jwt": "^6.11",

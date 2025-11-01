@@ -3,3 +3,8 @@ controllers:
     path: ../../Controller/
     namespace: App\Core\Controller
   type: attribute
+
+# Plugin routes (dynamically loaded from enabled plugins)
+plugins:
+  resource: .
+  type: plugin

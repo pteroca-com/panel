@@ -17,4 +17,6 @@ enum LogActionEnum
    case USER_REGISTERED;
    case USER_VERIFY_EMAIL;
    case VOUCHER_REDEEMED;
+   case PLUGIN_ENABLED;
+   case PLUGIN_DISABLED;
 }
