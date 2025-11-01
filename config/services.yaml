@@ -1,6 +1,9 @@
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
 
+# Learn more about services, parameters and containers:
+# https://symfony.com/doc/current/service_container.html
+
 parameters:
 
 services:
@@ -8,104 +11,14 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    # Exclude events from autowiring - they are created manually, not by DI container
-    App\Core\Event\:
-        resource: '../src/Core/Event/*'
-        autowire: false
-        autoconfigure: false
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    # App\:
+    #     resource: '../src/*'
+    #     exclude:
+    #         - '../src/DependencyInjection/'
+    #         - '../src/Entity/'
+    #         - '../src/Kernel.php'
 
-    # Exclude exceptions from autowiring - they are created manually, not by DI container
-    App\Core\Exception\:
-        resource: '../src/Core/Exception/*'
-        autowire: false
-        autoconfigure: false
-
-    # Widget Registry (Universal)
-    App\Core\Service\Widget\WidgetRegistry:
-        public: true
-
-    # Dashboard Widget Registry (Legacy - for backward compatibility)
-    App\Core\Service\Widget\DashboardWidgetRegistry:
-        public: true
-
-    # Auto-register builtin dashboard widgets as services
-    App\Core\Widget\Dashboard\:
-        resource: '../src/Core/Widget/Dashboard/*Widget.php'
-        tags: ['dashboard.widget']
-        autowire: true
-        autoconfigure: true
-
-    # Auto-register builtin admin widgets as services
-    App\Core\Widget\Admin\:
-        resource: '../src/Core/Widget/Admin/*Widget.php'
-        tags: ['admin.widget']
-        autowire: true
-        autoconfigure: true
-
-    # Payment Gateway Manager
-    App\Core\Service\Payment\PaymentGatewayManager:
-        arguments:
-            $providers: !tagged_iterator payment.provider
-
-    # Auto-register payment providers as tagged services
-    App\Core\Provider\Payment\:
-        resource: '../src/Core/Provider/Payment/*Provider.php'
-        tags: ['payment.provider']
-        autowire: true
-        autoconfigure: true
-
-    # Server Tab Registry
-    App\Core\Service\Tab\ServerTabRegistry:
-        arguments:
-            $tabs: !tagged_iterator server.tab
-
-    # Auto-register builtin server tabs as tagged services
-    App\Core\Tab\Server\:
-        resource: '../src/Core/Tab/Server/*Tab.php'
-        tags: ['server.tab']
-        autowire: true
-        autoconfigure: true
-
-    # Plugin System Services
-    App\Core\Service\Plugin\ManifestParser:
-        autowire: true
-
-    App\Core\Service\Plugin\ManifestValidator:
-        arguments:
-            $pterocaVersion: '0.5.9'
-
-    App\Core\Service\Plugin\PluginScanner:
-        arguments:
-            $pluginsDirectory: '%kernel.project_dir%/plugins'
-
-    App\Core\Service\Plugin\PluginStateMachine:
-        autowire: true
-
-    App\Core\Service\Plugin\PluginAutoloader:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-
-    App\Core\Service\Plugin\PluginLoader:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-
-    App\Core\Service\Plugin\PluginMigrationService:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-
-    App\Core\Service\Plugin\PluginManager:
-        autowire: true
-        public: true
-
-    # Plugin Route Loader
-    App\Core\Routing\PluginRouteLoader:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-            $annotationLoader: '@routing.loader.attribute'
-        tags:
-            - { name: routing.loader }
-
-    # Plugin Boot Listener (registers autoloaders for enabled plugins)
-    App\Core\EventListener\PluginBootListener:
-        tags:
-            - { name: kernel.event_subscriber }
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones

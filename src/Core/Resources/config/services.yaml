@@ -17,7 +17,7 @@ services:
 
   App\Core\:
     resource: '../../*'
-    exclude: '../../{DependencyInjection,DTO,Entity,Migrations,Tests,Kernel.php,Adapter/Pterodactyl}'
+    exclude: '../../{DependencyInjection,DTO,Entity,Event,Exception,Migrations,Tests,Kernel.php,Adapter/Pterodactyl}'
     tags: ['controller.service_arguments']
 
   App\Core\Service\StoreService:
@@ -73,3 +73,93 @@ services:
 
   App\Core\Contract\Pterodactyl\Client\PterodactylServersInterface:
     alias: App\Core\Adapter\Pterodactyl\Client\PterodactylServers
+
+  # Widget Registry (Universal)
+  App\Core\Service\Widget\WidgetRegistry:
+    public: true
+
+  # Dashboard Widget Registry (Legacy - for backward compatibility)
+  App\Core\Service\Widget\DashboardWidgetRegistry:
+    public: true
+
+  # Auto-register builtin dashboard widgets as services
+  App\Core\Widget\Dashboard\:
+    resource: '../../Widget/Dashboard/*Widget.php'
+    tags: ['dashboard.widget']
+    autowire: true
+    autoconfigure: true
+
+  # Auto-register builtin admin widgets as services
+  App\Core\Widget\Admin\:
+    resource: '../../Widget/Admin/*Widget.php'
+    tags: ['admin.widget']
+    autowire: true
+    autoconfigure: true
+
+  # Payment Gateway Manager
+  App\Core\Service\Payment\PaymentGatewayManager:
+    arguments:
+      $providers: !tagged_iterator payment.provider
+
+  # Auto-register payment providers as tagged services
+  App\Core\Provider\Payment\:
+    resource: '../../Provider/Payment/*Provider.php'
+    tags: ['payment.provider']
+    autowire: true
+    autoconfigure: true
+
+  # Server Tab Registry
+  App\Core\Service\Tab\ServerTabRegistry:
+    arguments:
+      $tabs: !tagged_iterator server.tab
+
+  # Auto-register builtin server tabs as tagged services
+  App\Core\Tab\Server\:
+    resource: '../../Tab/Server/*Tab.php'
+    tags: ['server.tab']
+    autowire: true
+    autoconfigure: true
+
+  # Plugin System Services
+  App\Core\Service\Plugin\ManifestParser:
+    autowire: true
+
+  App\Core\Service\Plugin\ManifestValidator:
+    arguments:
+      $pterocaVersion: '0.5.9'
+
+  App\Core\Service\Plugin\PluginScanner:
+    arguments:
+      $pluginsDirectory: '%kernel.project_dir%/plugins'
+
+  App\Core\Service\Plugin\PluginStateMachine:
+    autowire: true
+
+  App\Core\Service\Plugin\PluginAutoloader:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+
+  App\Core\Service\Plugin\PluginLoader:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+
+  App\Core\Service\Plugin\PluginMigrationService:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+
+  App\Core\Service\Plugin\PluginManager:
+    autowire: true
+    public: true
+
+  # Plugin Route Loader
+  App\Core\Routing\PluginRouteLoader:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+      $annotationLoader: '@routing.loader.attribute'
+    tags:
+      - { name: routing.loader }
+
+  # Plugin Boot Listener (registers autoloaders for enabled plugins)
+  App\Core\EventListener\PluginBootListener:
+    tags:
+      - { name: kernel.event_subscriber }
