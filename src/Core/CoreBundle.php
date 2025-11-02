@@ -3,7 +3,10 @@
 namespace App\Core;
 
 use App\Core\DependencyInjection\Compiler\PluginCompilerPass;
+use App\Core\DependencyInjection\Compiler\PluginConsoleCommandCompilerPass;
+use App\Core\DependencyInjection\Compiler\PluginCronTaskCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginDoctrineCompilerPass;
+use App\Core\DependencyInjection\Compiler\PluginEventSubscriberCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginTranslationCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginTwigCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -36,5 +39,8 @@ class CoreBundle extends Bundle
         $container->addCompilerPass(new PluginDoctrineCompilerPass());
         $container->addCompilerPass(new PluginTwigCompilerPass());
         $container->addCompilerPass(new PluginTranslationCompilerPass());
+        $container->addCompilerPass(new PluginEventSubscriberCompilerPass());
+        $container->addCompilerPass(new PluginConsoleCommandCompilerPass());
+        $container->addCompilerPass(new PluginCronTaskCompilerPass());
     }
 }
