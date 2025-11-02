@@ -151,6 +151,11 @@ services:
     autowire: true
     public: true
 
+  App\Core\Service\Plugin\PluginAssetManager:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+      $publicDir: '%kernel.project_dir%/public'
+
   # Plugin Route Loader
   App\Core\Routing\PluginRouteLoader:
     arguments:

@@ -8,6 +8,8 @@
 /public/bundles/
 /public/uploads/**/*
 !public/uploads/**/.gitkeep
+/public/plugins/**/*
+!public/plugins/.gitkeep
 /var/
 /vendor/
 /.idea

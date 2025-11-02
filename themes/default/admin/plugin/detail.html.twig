@@ -98,7 +98,7 @@
                             <td>
                                 {% if plugin.capabilities|length > 0 %}
                                     {% for capability in plugin.capabilities %}
-                                        <span class="badge bg-secondary">{{ capability }}</span>
+                                        <span class="badge bg-secondary mb-2">{{ capability }}</span>
                                     {% endfor %}
                                 {% else %}
                                     <em>{{ 'pteroca.crud.plugin.none'|trans }}</em>

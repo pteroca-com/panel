@@ -2,13 +2,14 @@
 
 namespace App\Core\Routing;
 
-use App\Core\Repository\PluginRepository;
-use App\Core\Service\Plugin\PluginAutoloader;
-use Symfony\Component\Config\Loader\Loader;
+use App\Core\Entity\Plugin;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
+use App\Core\Repository\PluginRepository;
+use Symfony\Component\Config\Loader\Loader;
+use App\Core\Service\Plugin\PluginAutoloader;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Loader\AttributeClassLoader;
-use Psr\Log\LoggerInterface;
 
 class PluginRouteLoader extends Loader
 {
@@ -66,7 +67,7 @@ class PluginRouteLoader extends Loader
         return $routes;
     }
 
-    private function loadPluginRoutes(\App\Core\Entity\Plugin $plugin): RouteCollection
+    private function loadPluginRoutes(Plugin $plugin): RouteCollection
     {
         $routes = new RouteCollection();
 

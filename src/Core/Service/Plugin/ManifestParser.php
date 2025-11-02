@@ -65,6 +65,7 @@ class ManifestParser
         $routes = $data['routes'] ?? null;
         $console = $data['console'] ?? null;
         $cron = $data['cron'] ?? null;
+        $assets = $data['assets'] ?? null;
 
         // Ensure arrays are arrays
         if (!is_array($pteroca)) {
@@ -100,6 +101,7 @@ class ManifestParser
             routes: $routes,
             console: $console,
             cron: $cron,
+            assets: $assets,
             raw: $data,
         );
     }

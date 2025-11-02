@@ -27,6 +27,7 @@ readonly class PluginManifestDTO
      * @param array|null $routes Optional routes configuration
      * @param array|null $console Optional console commands configuration
      * @param array|null $cron Optional cron tasks configuration
+     * @param array|null $assets Optional assets configuration (css, js, img, fonts)
      * @param array $raw Raw manifest data (full plugin.json content)
      */
     public function __construct(
@@ -46,6 +47,7 @@ readonly class PluginManifestDTO
         public ?array $routes = null,
         public ?array $console = null,
         public ?array $cron = null,
+        public ?array $assets = null,
         public array $raw = [],
     ) {}
 
@@ -128,6 +130,45 @@ readonly class PluginManifestDTO
     }
 
     /**
+     * Check if plugin has any assets defined.
+     */
+    public function hasAssets(): bool
+    {
+        return $this->assets !== null && count($this->assets) > 0;
+    }
+
+    /**
+     * Get assets for a specific type (css, js, img, fonts).
+     *
+     * @param string $type Asset type (css, js, img, fonts)
+     * @return string[] Array of asset paths
+     */
+    public function getAssets(string $type): array
+    {
+        return $this->assets[$type] ?? [];
+    }
+
+    /**
+     * Get all CSS assets.
+     *
+     * @return string[]
+     */
+    public function getCssAssets(): array
+    {
+        return $this->getAssets('css');
+    }
+
+    /**
+     * Get all JS assets.
+     *
+     * @return string[]
+     */
+    public function getJsAssets(): array
+    {
+        return $this->getAssets('js');
+    }
+
+    /**
      * Convert to array representation.
      */
     public function toArray(): array
@@ -149,6 +190,7 @@ readonly class PluginManifestDTO
             'routes' => $this->routes,
             'console' => $this->console,
             'cron' => $this->cron,
+            'assets' => $this->assets,
         ];
     }
 }

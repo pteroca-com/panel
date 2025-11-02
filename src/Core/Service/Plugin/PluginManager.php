@@ -36,6 +36,7 @@ class PluginManager
         private readonly PluginMigrationService $migrationService,
         private readonly KernelInterface $kernel,
         private readonly PluginDependencyResolver $dependencyResolver,
+        private readonly PluginAssetManager $assetManager,
     ) {}
 
     /**
@@ -194,6 +195,9 @@ class PluginManager
                 $this->logger->info("Executed {$migrationResult['executed']} migrations for plugin {$plugin->getName()}");
             }
 
+            // Publish plugin assets
+            $this->assetManager->publishAssets($plugin);
+
         } catch (\Exception $e) {
             // If loading or migrations fail, mark as faulted
             $this->stateMachine->transitionToFaulted($plugin, $e->getMessage());
@@ -271,6 +275,9 @@ class PluginManager
 
         // Unload plugin (unregister autoloading, etc.)
         $this->pluginLoader->unload($plugin);
+
+        // Unpublish plugin assets
+        $this->assetManager->unpublishAssets($plugin);
 
         // Transition to DISABLED state
         $this->stateMachine->transitionToDisabled($plugin);

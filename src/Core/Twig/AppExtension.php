@@ -14,6 +14,7 @@ use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Service\Template\TemplateManager;
 use Symfony\Component\Routing\RouterInterface;
 use App\Core\Service\System\SystemVersionService;
+use App\Core\Service\Plugin\PluginAssetManager;
 
 class AppExtension extends AbstractExtension
 {
@@ -25,6 +26,7 @@ class AppExtension extends AbstractExtension
         private readonly TemplateManager $templateManager,
         private readonly Packages $packages,
         private readonly RouterInterface $router,
+        private readonly PluginAssetManager $pluginAssetManager,
     ) {}
 
     public function getFunctions(): array
@@ -44,6 +46,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
+            new TwigFunction('plugin_asset', [$this, 'pluginAsset']),
         ];
     }
 
@@ -178,5 +181,10 @@ class AppExtension extends AbstractExtension
     public function getCurrentTemplateOptions(): TemplateOptionsDTO
     {
         return $this->templateManager->getCurrentTemplateOptions();
+    }
+
+    public function pluginAsset(string $pluginName, string $path): string
+    {
+        return $this->pluginAssetManager->getAssetUrl($pluginName, $path);
     }
 }

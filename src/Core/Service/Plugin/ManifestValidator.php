@@ -77,6 +77,11 @@ class ManifestValidator
             $errors = array_merge($errors, $this->validateMarketplaceUrl($manifest->marketplaceUrl));
         }
 
+        // Validate assets (if provided)
+        if ($manifest->assets !== null) {
+            $errors = array_merge($errors, $this->validateAssets($manifest->assets));
+        }
+
         return $errors;
     }
 
@@ -314,6 +319,55 @@ class ManifestValidator
 
         if (strlen($url) > 500) {
             $errors[] = "Marketplace URL exceeds maximum length of 500 characters";
+        }
+
+        return $errors;
+    }
+
+    private function validateAssets(array $assets): array
+    {
+        $errors = [];
+        $allowedTypes = ['css', 'js', 'img', 'fonts'];
+
+        foreach ($assets as $type => $files) {
+            // Validate asset type
+            if (!in_array($type, $allowedTypes, true)) {
+                $errors[] = "Invalid asset type '{$type}'. Allowed types: " . implode(', ', $allowedTypes);
+                continue;
+            }
+
+            // Validate that files is an array
+            if (!is_array($files)) {
+                $errors[] = "Asset type '{$type}' must be an array of file paths";
+                continue;
+            }
+
+            // Validate each file path
+            foreach ($files as $index => $file) {
+                if (!is_string($file)) {
+                    $errors[] = "Asset path in '{$type}[{$index}]' must be a string";
+                    continue;
+                }
+
+                // Security: prevent directory traversal
+                if (str_contains($file, '..')) {
+                    $errors[] = "Asset path '{$file}' contains directory traversal (..)";
+                }
+
+                // Security: prevent absolute paths
+                if (str_starts_with($file, '/') || str_starts_with($file, '\\')) {
+                    $errors[] = "Asset path '{$file}' must be relative (cannot start with / or \\)";
+                }
+
+                // Validate file extension matches type
+                $extension = pathinfo($file, PATHINFO_EXTENSION);
+                if ($type === 'css' && $extension !== 'css') {
+                    $errors[] = "CSS asset '{$file}' must have .css extension";
+                }
+                if ($type === 'js' && $extension !== 'js') {
+                    $errors[] = "JS asset '{$file}' must have .js extension";
+                }
+            }
         }
 
         return $errors;
