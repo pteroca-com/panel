@@ -800,6 +800,27 @@ pteroca:
       update_available: 'Mise à jour disponible'
       update_available_message: 'Une nouvelle version de ce plugin est disponible dans le système de fichiers. Désactivez et réactivez le plugin pour appliquer la mise à jour.'
       no_plugins_found: 'Aucun plugin trouvé dans le répertoire /plugins/'
+      dependencies: 'Dépendances'
+      circular_dependency_detected: 'Dépendance circulaire détectée'
+      required_plugin: 'Plugin requis'
+      version_constraint: 'Contrainte de version'
+      installed_version: 'Version installée'
+      not_installed: 'Non installé'
+      missing: 'Manquant'
+      not_enabled: 'Non activé'
+      incompatible_version: 'Version incompatible'
+      satisfied: 'Satisfait'
+      dependent_plugins: 'Plugins dépendants'
+      dependents_warning: 'Les plugins suivants dépendent de ce plugin. Le désactiver peut affecter leur fonctionnalité.'
+      plugin_name: 'Nom du plugin'
+      current_state: 'État actuel'
+      dependency_error: "Impossible d'activer le plugin en raison de problèmes de dépendance"
+      dependents_exist_error: "Impossible de désactiver le plugin car d'autres plugins en dépendent"
+      plugin_enabled_successfully: 'Le plugin "%s" a été activé avec succès.'
+      plugin_disabled_successfully: 'Le plugin "%s" a été désactivé avec succès.'
+      failed_to_enable_plugin: "Échec de l'activation du plugin : %s"
+      failed_to_disable_plugin: "Échec de la désactivation du plugin : %s"
+      plugin_not_found: 'Plugin "%s" introuvable.'
     server:
       pterodactyl_server_id: 'ID du serveur Pterodactyl'
       pterodactyl_server_identifier: 'Identifiant du serveur Pterodactyl'

@@ -133,14 +133,31 @@ class PluginRepository extends ServiceEntityRepository
      */
     public function findDependents(string $pluginName): array
     {
-        $qb = $this->createQueryBuilder('p');
+        // Use native SQL because Doctrine DQL doesn't support JSON_CONTAINS_PATH
+        $sql = "SELECT p.* FROM plugin p
+                WHERE JSON_CONTAINS_PATH(p.manifest, 'one', :path) = 1
+                ORDER BY p.name ASC";
 
-        // JSON_CONTAINS_PATH to check if plugin exists in requires
-        $qb->where('JSON_CONTAINS_PATH(p.manifest, \'one\', :path) = 1')
-            ->setParameter('path', '$.requires."' . $pluginName . '"')
-            ->orderBy('p.name', 'ASC');
+        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm->addEntityResult(Plugin::class, 'p');
+        $rsm->addFieldResult('p', 'id', 'id');
+        $rsm->addFieldResult('p', 'name', 'name');
+        $rsm->addFieldResult('p', 'display_name', 'displayName');
+        $rsm->addFieldResult('p', 'version', 'version');
+        $rsm->addFieldResult('p', 'author', 'author');
+        $rsm->addFieldResult('p', 'description', 'description');
+        $rsm->addFieldResult('p', 'state', 'state');
+        $rsm->addFieldResult('p', 'manifest', 'manifest');
+        $rsm->addFieldResult('p', 'enabled_at', 'enabledAt');
+        $rsm->addFieldResult('p', 'disabled_at', 'disabledAt');
+        $rsm->addFieldResult('p', 'fault_reason', 'faultReason');
+        $rsm->addFieldResult('p', 'created_at', 'createdAt');
+        $rsm->addFieldResult('p', 'updated_at', 'updatedAt');
 
-        return $qb->getQuery()->getResult();
+        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
+        $query->setParameter('path', '$.requires."' . $pluginName . '"');
+
+        return $query->getResult();
     }
 
     public function save(Plugin $plugin, bool $flush = true): void

@@ -161,4 +161,119 @@
             {% endif %}
         </div>
     </div>
+
+    {# Dependencies Section #}
+    {% if dependencies|length > 0 %}
+        <div class="card border-0 shadow-sm rounded-3 mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fa fa-link"></i> {{ 'pteroca.crud.plugin.dependencies'|trans }}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if hasCircularDependency %}
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <strong>{{ 'pteroca.crud.plugin.circular_dependency_detected'|trans }}</strong><br>
+                        {{ circularDependencyPath|join(' → ') }}
+                    </div>
+                {% endif %}
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.required_plugin'|trans }}</th>
+                            <th>{{ 'pteroca.crud.plugin.version_constraint'|trans }}</th>
+                            <th>{{ 'pteroca.crud.plugin.installed_version'|trans }}</th>
+                            <th>{{ 'pteroca.crud.plugin.status'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dep in dependencies %}
+                            <tr>
+                                <td>
+                                    <code>{{ dep.name }}</code>
+                                    {% if dep.plugin %}
+                                        <br><small class="text-muted">{{ dep.plugin.displayName }}</small>
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge bg-secondary">{{ dep.constraint }}</span></td>
+                                <td>
+                                    {% if dep.installed %}
+                                        <span class="badge bg-info">{{ dep.version }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ 'pteroca.crud.plugin.not_installed'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not dep.installed %}
+                                        <span class="badge bg-danger">
+                                            <i class="fa fa-times"></i> {{ 'pteroca.crud.plugin.missing'|trans }}
+                                        </span>
+                                    {% elseif not dep.enabled %}
+                                        <span class="badge bg-warning">
+                                            <i class="fa fa-pause"></i> {{ 'pteroca.crud.plugin.not_enabled'|trans }}
+                                        </span>
+                                    {% elseif not dep.compatible %}
+                                        <span class="badge bg-danger">
+                                            <i class="fa fa-exclamation-triangle"></i> {{ 'pteroca.crud.plugin.incompatible_version'|trans }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-success">
+                                            <i class="fa fa-check"></i> {{ 'pteroca.crud.plugin.satisfied'|trans }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Dependents Section #}
+    {% if dependents|length > 0 %}
+        <div class="card border-0 shadow-sm rounded-3 border-warning mt-4">
+            <div class="card-header bg-warning bg-opacity-10">
+                <h5 class="mb-0">
+                    <i class="fa fa-exclamation-triangle text-warning"></i> {{ 'pteroca.crud.plugin.dependent_plugins'|trans }}
+                </h5>
+                <small class="text-muted">
+                    {{ 'pteroca.crud.plugin.dependents_warning'|trans }}
+                </small>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ 'pteroca.crud.plugin.plugin_name'|trans }}</th>
+                            <th>{{ 'pteroca.crud.plugin.version_constraint'|trans }}</th>
+                            <th>{{ 'pteroca.crud.plugin.current_state'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dependent in dependents %}
+                            <tr>
+                                <td>
+                                    <strong>{{ dependent.displayName }}</strong><br>
+                                    <small class="text-muted"><code>{{ dependent.name }}</code></small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ dependent.requires[plugin.name] ?? '*' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ dependent.state.badgeClass }}">
+                                        {{ dependent.state.label|trans }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

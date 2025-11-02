@@ -20,6 +20,8 @@ use App\Core\Event\Plugin\PluginIndexPageAccessedEvent;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Plugin\PluginManager;
+use App\Core\Service\Plugin\PluginDependencyResolver;
+use App\Core\Exception\Plugin\PluginDependencyException;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -33,6 +35,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Composer\Semver\Semver;
 
 class PluginCrudController extends AbstractPanelController
 {
@@ -43,6 +46,7 @@ class PluginCrudController extends AbstractPanelController
         private readonly TranslatorInterface $translator,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly LogService $logService,
+        private readonly PluginDependencyResolver $dependencyResolver,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -224,7 +228,10 @@ class PluginCrudController extends AbstractPanelController
         }
 
         if ($plugin === null) {
-            $this->addFlash('danger', sprintf('Plugin "%s" not found.', $pluginName));
+            $this->addFlash('danger', sprintf(
+                $this->translator->trans('pteroca.crud.plugin.plugin_not_found'),
+                $pluginName
+            ));
             return $this->redirectToRoute('admin');
         }
 
@@ -234,9 +241,37 @@ class PluginCrudController extends AbstractPanelController
             [$pluginName, $plugin]
         );
 
+        // Build dependency information for template
+        $dependencies = [];
+        $requires = $plugin->getRequires();
+
+        foreach ($requires as $depName => $constraint) {
+            $depPlugin = $this->pluginManager->getPluginByName($depName);
+            $dependencies[] = [
+                'name' => $depName,
+                'constraint' => $constraint,
+                'plugin' => $depPlugin,
+                'installed' => $depPlugin !== null,
+                'enabled' => $depPlugin && $depPlugin->isEnabled(),
+                'version' => $depPlugin ? $depPlugin->getVersion() : null,
+                'compatible' => $depPlugin && Semver::satisfies($depPlugin->getVersion(), $constraint),
+            ];
+        }
+
+        // Get dependents (plugins that depend on this one)
+        $dependents = $this->dependencyResolver->getDependents($plugin);
+
+        // Check for circular dependencies
+        $hasCircular = $this->dependencyResolver->hasCircularDependency($plugin);
+        $circularPath = $hasCircular ? $this->dependencyResolver->getCircularDependencyPath($plugin) : null;
+
         $viewData = [
             'plugin' => $plugin,
             'pageName' => Crud::PAGE_DETAIL,
+            'dependencies' => $dependencies,
+            'dependents' => $dependents,
+            'hasCircularDependency' => $hasCircular,
+            'circularDependencyPath' => $circularPath,
         ];
 
         return $this->renderWithEvent(
@@ -269,7 +304,23 @@ class PluginCrudController extends AbstractPanelController
                 ['plugin' => $pluginName]
             );
 
-            $this->addFlash('success', sprintf('Plugin "%s" has been enabled successfully.', $pluginEntity->getDisplayName()));
+            $this->addFlash('success', sprintf(
+                $this->translator->trans('pteroca.crud.plugin.plugin_enabled_successfully'),
+                $pluginEntity->getDisplayName()
+            ));
+        } catch (PluginDependencyException $e) {
+            // Specialized handling for dependency errors
+            $this->dispatchDataEvent(
+                PluginEnablementFailedEvent::class,
+                $request,
+                [$pluginName, $e->getMessage()]
+            );
+
+            $this->addFlash('danger', sprintf(
+                '%s:<br>%s',
+                $this->translator->trans('pteroca.crud.plugin.dependency_error'),
+                nl2br(htmlspecialchars($e->getMessage()))
+            ));
         } catch (\Exception $e) {
             $this->dispatchDataEvent(
                 PluginEnablementFailedEvent::class,
@@ -277,7 +328,10 @@ class PluginCrudController extends AbstractPanelController
                 [$pluginName, $e->getMessage()]
             );
 
-            $this->addFlash('danger', sprintf('Failed to enable plugin: %s', $e->getMessage()));
+            $this->addFlash('danger', sprintf(
+                $this->translator->trans('pteroca.crud.plugin.failed_to_enable_plugin'),
+                $e->getMessage()
+            ));
         }
 
         $url = $this->adminUrlGenerator
@@ -306,7 +360,7 @@ class PluginCrudController extends AbstractPanelController
                 throw new \RuntimeException('Plugin not found in database');
             }
 
-            $this->pluginManager->disablePlugin($pluginEntity);
+            $this->pluginManager->disablePlugin($pluginEntity, false); // cascade=false by default in UI
 
             $this->logService->logAction(
                 $this->getUser(),
@@ -314,7 +368,22 @@ class PluginCrudController extends AbstractPanelController
                 ['plugin' => $pluginName]
             );
 
-            $this->addFlash('success', sprintf('Plugin "%s" has been disabled successfully.', $pluginEntity->getDisplayName()));
+            $this->addFlash('success', sprintf(
+                $this->translator->trans('pteroca.crud.plugin.plugin_disabled_successfully'),
+                $pluginEntity->getDisplayName()
+            ));
+        } catch (PluginDependencyException $e) {
+            // Specialized handling for dependency errors (dependents exist)
+            $this->dispatchDataEvent(
+                PluginDisablementFailedEvent::class,
+                $request,
+                [$pluginName, $e->getMessage()]
+            );
+
+            $this->addFlash('warning', sprintf(
+                '%s',
+                nl2br(htmlspecialchars($e->getMessage()))
+            ));
         } catch (\Exception $e) {
             $this->dispatchDataEvent(
                 PluginDisablementFailedEvent::class,
@@ -322,7 +391,10 @@ class PluginCrudController extends AbstractPanelController
                 [$pluginName, $e->getMessage()]
             );
 
-            $this->addFlash('danger', sprintf('Failed to disable plugin: %s', $e->getMessage()));
+            $this->addFlash('danger', sprintf(
+                $this->translator->trans('pteroca.crud.plugin.failed_to_disable_plugin'),
+                $e->getMessage()
+            ));
         }
 
         $url = $this->adminUrlGenerator

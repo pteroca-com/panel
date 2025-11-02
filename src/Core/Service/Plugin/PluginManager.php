@@ -16,6 +16,9 @@ use App\Core\Event\Plugin\PluginDiscoveredEvent;
 use App\Core\Event\Plugin\PluginRegisteredEvent;
 use Symfony\Component\HttpKernel\KernelInterface;
 use App\Core\Exception\Plugin\InvalidStateTransitionException;
+use App\Core\Exception\Plugin\PluginDependencyException;
+use App\Core\Event\Plugin\PluginEnablementFailedEvent;
+use App\Core\Event\Plugin\PluginDisablementFailedEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PluginManager
@@ -32,6 +35,7 @@ class PluginManager
         private readonly PluginLoader $pluginLoader,
         private readonly PluginMigrationService $migrationService,
         private readonly KernelInterface $kernel,
+        private readonly PluginDependencyResolver $dependencyResolver,
     ) {}
 
     /**
@@ -132,6 +136,47 @@ class PluginManager
         // Validate state transition
         $this->stateMachine->validateTransition($plugin, PluginStateEnum::ENABLED);
 
+        // Validate dependencies
+        $dependencyErrors = $this->dependencyResolver->validateDependencies($plugin);
+
+        if (!empty($dependencyErrors)) {
+            $errorMessage = sprintf(
+                "Cannot enable plugin '%s' due to unmet dependencies:\n- %s",
+                $plugin->getName(),
+                implode("\n- ", $dependencyErrors)
+            );
+
+            $this->eventDispatcher->dispatch(
+                new PluginEnablementFailedEvent($plugin, $errorMessage)
+            );
+
+            $this->logger->warning("Plugin enablement failed: {$plugin->getName()}", [
+                'errors' => $dependencyErrors,
+            ]);
+
+            throw new PluginDependencyException($errorMessage);
+        }
+
+        // Check for circular dependencies
+        if ($this->dependencyResolver->hasCircularDependency($plugin)) {
+            $path = $this->dependencyResolver->getCircularDependencyPath($plugin);
+            $errorMessage = sprintf(
+                "Cannot enable plugin '%s': Circular dependency detected: %s",
+                $plugin->getName(),
+                implode(' → ', $path ?? [$plugin->getName()])
+            );
+
+            $this->eventDispatcher->dispatch(
+                new PluginEnablementFailedEvent($plugin, $errorMessage)
+            );
+
+            $this->logger->warning("Circular dependency detected: {$plugin->getName()}", [
+                'path' => $path,
+            ]);
+
+            throw new PluginDependencyException($errorMessage);
+        }
+
         // Transition to ENABLED state
         $this->stateMachine->transitionToEnabled($plugin);
 
@@ -169,12 +214,60 @@ class PluginManager
     }
 
     /**
+     * Disables a plugin and optionally all plugins that depend on it.
+     *
+     * @param Plugin $plugin The plugin to disable
+     * @param bool $cascade If true, also disable all dependent plugins
      * @throws InvalidStateTransitionException If plugin cannot be disabled
+     * @throws PluginDependencyException If plugin has dependents and cascade is false
      */
-    public function disablePlugin(Plugin $plugin): void
+    public function disablePlugin(Plugin $plugin, bool $cascade = false): void
     {
         // Validate state transition
         $this->stateMachine->validateTransition($plugin, PluginStateEnum::DISABLED);
+
+        // Find plugins that depend on this one
+        $dependents = $this->dependencyResolver->getDependents($plugin);
+
+        // Filter to only enabled dependents
+        $enabledDependents = array_filter($dependents, fn($p) => $p->isEnabled());
+
+        if (!empty($enabledDependents) && !$cascade) {
+            $dependentNames = array_map(
+                fn($p) => sprintf("'%s'", $p->getDisplayName()),
+                $enabledDependents
+            );
+
+            $errorMessage = sprintf(
+                "Cannot disable plugin '%s' because the following plugins depend on it: %s.\n" .
+                "Use cascade option to disable all dependent plugins.",
+                $plugin->getDisplayName(),
+                implode(', ', $dependentNames)
+            );
+
+            $this->eventDispatcher->dispatch(
+                new PluginDisablementFailedEvent($plugin, $errorMessage)
+            );
+
+            $this->logger->warning("Plugin disablement failed: {$plugin->getName()}", [
+                'dependents' => array_map(fn($p) => $p->getName(), $enabledDependents),
+            ]);
+
+            throw new PluginDependencyException($errorMessage);
+        }
+
+        // Disable dependents first (if cascade)
+        if ($cascade && !empty($enabledDependents)) {
+            $this->logger->info("Cascade disabling {count} dependent plugins", [
+                'count' => count($enabledDependents),
+                'plugin' => $plugin->getName(),
+            ]);
+
+            foreach ($enabledDependents as $dependent) {
+                $this->logger->info("Cascade disabling dependent plugin: {$dependent->getName()}");
+                $this->disablePlugin($dependent, true); // Recursive cascade
+            }
+        }
 
         // Unload plugin (unregister autoloading, etc.)
         $this->pluginLoader->unload($plugin);
