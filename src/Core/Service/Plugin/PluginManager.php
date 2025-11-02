@@ -37,6 +37,7 @@ class PluginManager
         private readonly KernelInterface $kernel,
         private readonly PluginDependencyResolver $dependencyResolver,
         private readonly PluginAssetManager $assetManager,
+        private readonly PluginSettingService $settingService,
     ) {}
 
     /**
@@ -187,6 +188,12 @@ class PluginManager
         // Load plugin (register autoloading, services, etc.)
         try {
             $this->pluginLoader->load($plugin);
+
+            // Initialize default settings from config_schema
+            $initializedSettings = $this->settingService->initializeDefaults($plugin);
+            if ($initializedSettings > 0) {
+                $this->logger->info("Initialized {$initializedSettings} default settings for plugin {$plugin->getName()}");
+            }
 
             // Execute database migrations
             $migrationResult = $this->migrationService->executeMigrations($plugin);

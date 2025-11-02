@@ -15,6 +15,10 @@ services:
     autowire: true
     autoconfigure: true
 
+  # Aliases for dependency injection
+  Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
+  Doctrine\ORM\EntityManagerInterface: '@doctrine.orm.entity_manager'
+
   App\Core\:
     resource: '../../*'
     exclude: '../../{DependencyInjection,DTO,Entity,Event,Exception,Migrations,Tests,Kernel.php,Adapter/Pterodactyl}'
@@ -155,6 +159,26 @@ services:
     arguments:
       $projectDir: '%kernel.project_dir%'
       $publicDir: '%kernel.project_dir%/public'
+
+  App\Core\Service\Plugin\PluginEventSubscriberRegistry:
+    autowire: true
+    public: true
+
+  App\Core\Service\Plugin\PluginCommandRegistry:
+    autowire: true
+    public: true
+
+  App\Core\Service\Plugin\PluginCronRegistry:
+    autowire: true
+    public: true
+
+  App\Core\Service\Plugin\PluginSettingService:
+    autowire: true
+    public: true
+
+  App\Core\Service\CronScheduler:
+    autowire: true
+    public: true
 
   # Plugin Route Loader
   App\Core\Routing\PluginRouteLoader:
