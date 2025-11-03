@@ -1,0 +1,6 @@
+<div class="user-balance me-4">
+    <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}">
+        <i class="fas fa-coins"></i>
+        {{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}
+    </a>
+</div>

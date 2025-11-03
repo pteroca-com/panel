@@ -80,6 +80,27 @@ class WidgetRegistry
     }
 
     /**
+     * Get all widgets for specific position (context-independent), sorted by priority (DESC).
+     *
+     * Useful for global widgets like navbar that appear across all contexts.
+     *
+     * @param WidgetPosition $position Position to filter by
+     * @return array<WidgetInterface> Sorted widgets (highest priority first)
+     */
+    public function getWidgetsByPositionOnly(WidgetPosition $position): array
+    {
+        $widgets = array_filter(
+            $this->widgets,
+            fn(WidgetInterface $widget) => $widget->getPosition() === $position
+        );
+
+        // Sort by priority DESC (higher priority first)
+        usort($widgets, fn($a, $b) => $b->getPriority() <=> $a->getPriority());
+
+        return $widgets;
+    }
+
+    /**
      * Check if widget with given name is registered.
      *
      * @param string $name Widget name

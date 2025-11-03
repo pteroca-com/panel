@@ -600,6 +600,8 @@ pteroca:
     user_registered: 'उपयोगकर्ता पंजीकृत हुआ'
     user_verify_email: 'ईमेल सत्यापित किया गया'
     voucher_redeemed: 'वाउचर भुनाया गया'
+    plugin_enabled: 'प्लगइन सक्षम'
+    plugin_disabled: 'प्लगइन अक्षम'
 
   server_actions:
     change_details: 'सर्वर विवरण बदला गया'

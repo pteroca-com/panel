@@ -594,6 +594,8 @@ pteroca:
     user_registered: 'Пользователь зарегистрирован'
     user_verify_email: 'Email подтверждён'
     voucher_redeemed: 'Купон использован'
+    plugin_enabled: 'Плагин включен'
+    plugin_disabled: 'Плагин отключен'
 
   server_actions:
     change_details: 'Данные сервера изменены'

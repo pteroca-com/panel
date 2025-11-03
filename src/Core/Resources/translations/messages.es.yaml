@@ -600,6 +600,8 @@ pteroca:
     user_registered: 'Registro de cuenta'
     user_verify_email: 'Verificación de correo electrónico'
     voucher_redeemed: 'Cupón canjeado'
+    plugin_enabled: 'Plugin activado'
+    plugin_disabled: 'Plugin desactivado'
 
   server_actions:
     change_details: 'Detalles del servidor cambiados'

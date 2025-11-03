@@ -100,6 +100,13 @@ services:
     autowire: true
     autoconfigure: true
 
+  # Auto-register builtin header widgets as services (navbar widgets)
+  App\Core\Widget\Header\:
+    resource: '../../Widget/Header/*Widget.php'
+    tags: ['header.widget']
+    autowire: true
+    autoconfigure: true
+
   # Payment Gateway Manager
   App\Core\Service\Payment\PaymentGatewayManager:
     arguments:

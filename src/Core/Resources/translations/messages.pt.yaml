@@ -602,6 +602,8 @@ pteroca:
     user_registered: 'Conta registrada'
     user_verify_email: 'Verificação de e-mail'
     voucher_redeemed: 'Voucher resgatado'
+    plugin_enabled: 'Plugin ativado'
+    plugin_disabled: 'Plugin desativado'
 
   server_actions:
     change_details: 'Detalhes do servidor alterados'

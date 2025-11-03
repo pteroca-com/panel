@@ -9,6 +9,7 @@ use App\Core\DependencyInjection\Compiler\PluginDoctrineCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginEventSubscriberCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginTranslationCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginTwigCompilerPass;
+use App\Core\DependencyInjection\Compiler\WidgetRegistryCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -33,6 +34,9 @@ class CoreBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
+
+        // Register core system compiler passes
+        $container->addCompilerPass(new WidgetRegistryCompilerPass());
 
         // Register plugin compiler passes
         $container->addCompilerPass(new PluginCompilerPass());

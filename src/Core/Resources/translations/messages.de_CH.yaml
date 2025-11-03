@@ -593,6 +593,8 @@ pteroca:
     user_registered: 'Benutzer registriert'
     user_verify_email: 'E-Mail verifiziert'
     voucher_redeemed: 'Gutschein eingelöst'
+    plugin_enabled: 'Plugin aktiviert'
+    plugin_disabled: 'Plugin deaktiviert'
 
   server_actions:
     change_details: 'Serverdetails geändert'

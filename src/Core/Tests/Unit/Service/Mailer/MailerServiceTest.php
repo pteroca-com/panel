@@ -6,6 +6,8 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Service\Mailer\MailerService;
 use App\Core\Service\SettingService;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
@@ -17,6 +19,9 @@ class MailerServiceTest extends TestCase
         $twig = $this->createMock(Environment::class);
         $settingsService = $this->createMock(SettingService::class);
         $mailer = $this->createMock(MailerInterface::class);
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $requestStack = $this->createMock(RequestStack::class);
+        $defaultLogoPath = '/path/to/default/logo.png';
 
         $settingsService->method('getSetting')
             ->will($this->returnValueMap([
@@ -24,6 +29,7 @@ class MailerServiceTest extends TestCase
                 [SettingEnum::EMAIL_SMTP_PORT->value, '587'],
                 [SettingEnum::EMAIL_SMTP_USERNAME->value, 'user@example.com'],
                 [SettingEnum::EMAIL_SMTP_PASSWORD->value, 'password'],
+                [SettingEnum::EMAIL_SMTP_FROM->value, 'no-reply@example.com'],
                 [SettingEnum::LOGO->value, 'logo.png'],
             ]));
 
@@ -31,7 +37,21 @@ class MailerServiceTest extends TestCase
             ->with('email/template.html.twig', $this->anything())
             ->willReturn('<html>Email Content</html>');
 
-        $mailerService = new MailerService($twig, $settingsService);
+        // Mock event dispatcher to return the event as-is
+        $eventDispatcher->method('dispatch')
+            ->willReturnArgument(0);
+
+        // Mock request stack to return null (no current request in test)
+        $requestStack->method('getCurrentRequest')
+            ->willReturn(null);
+
+        $mailerService = new MailerService(
+            $twig,
+            $settingsService,
+            $defaultLogoPath,
+            $eventDispatcher,
+            $requestStack
+        );
 
         $reflection = new \ReflectionClass($mailerService);
         $property = $reflection->getProperty('mailer');
@@ -40,6 +60,9 @@ class MailerServiceTest extends TestCase
         $property = $reflection->getProperty('from');
         $property->setAccessible(true);
         $property->setValue($mailerService, 'no-reply@example.com');
+        $property = $reflection->getProperty('logo');
+        $property->setAccessible(true);
+        $property->setValue($mailerService, $defaultLogoPath);
 
 
         $mailer->expects($this->once())

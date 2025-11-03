@@ -600,6 +600,8 @@ pteroca:
     user_registered: '账户注册'
     user_verify_email: '验证电子邮件'
     voucher_redeemed: '代金券已兑换'
+    plugin_enabled: '插件已启用'
+    plugin_disabled: '插件已禁用'
 
   server_actions:
     change_details: '更改了服务器详细信息'

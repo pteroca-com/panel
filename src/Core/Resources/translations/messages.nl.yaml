@@ -568,6 +568,8 @@ pteroca:
     user_registered: 'Gebruiker geregistreerd'
     user_verify_email: 'E-mailadres geverifieerd'
     voucher_redeemed: 'Voucher ingewisseld'
+    plugin_enabled: 'Plugin ingeschakeld'
+    plugin_disabled: 'Plugin uitgeschakeld'
   server_actions:
     change_details: 'Gewijzigde servergegevens'
     reinstall: 'Herinstalleer server'

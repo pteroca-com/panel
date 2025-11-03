@@ -599,6 +599,8 @@ pteroca:
     user_registered: 'Реєстрація облікового запису'
     user_verify_email: 'Підтвердження електронної пошти'
     voucher_redeemed: 'Ваучер використано'
+    plugin_enabled: 'Плагін увімкнено'
+    plugin_disabled: 'Плагін вимкнено'
 
   server_actions:
     change_details: 'Змінено деталі сервера'

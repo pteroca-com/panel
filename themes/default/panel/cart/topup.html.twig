@@ -28,11 +28,14 @@
             </div>
         </div>
 
-        <form action="{{ path('panel', { routeName: 'cart_topup' }) }}" method="post">
-            <input type="hidden" name="amount" value="{{ request.amount }}" id="topup-amount">
-            <input type="hidden" name="currency" value="{{ request.currency }}">
-            <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="payment_discount">
-            <input type="hidden" name="gateway" value="{{ availableGateways|first.identifier ?? 'stripe' }}" id="selected-gateway">
+        {{ form_start(form, {
+            'action': path('panel', { routeName: 'cart_topup' }),
+            'method': 'POST',
+            'attr': {'id': 'topup-form'}
+        }) }}
+            {{ form_widget(form.amount, {'type': 'hidden', 'attr': {'id': 'topup-amount'}}) }}
+            {{ form_widget(form.currency) }}
+            {{ form_widget(form.voucher, {'attr': {'id': 'voucher-code', 'data-voucher-type': 'payment_discount', 'value': ''}}) }}
             
             <div class="row g-4">
                 <!-- Main Content -->
@@ -76,24 +79,29 @@
                                 </div>
                             {% else %}
                                 <div class="row g-3">
-                                    {% for gateway in availableGateways %}
-                                        <div class="col-12 col-sm-6 col-md-6 col-lg-4">
-                                            <input type="radio"
-                                                   name="payment_provider"
-                                                   id="gateway_{{ gateway.identifier }}"
-                                                   value="{{ gateway.identifier }}"
-                                                   class="card-input-element d-none"
-                                                   {% if loop.first %}checked{% endif %}>
-                                            <label for="gateway_{{ gateway.identifier }}" class="card border-2 shadow-sm rounded-3 card-input h-100">
-                                                <div class="card-body text-center p-4">
-                                                    <i class="{{ gateway.icon }} mb-3" style="font-size: 2.5rem; {% if gateway.metadata.color is defined %}color: {{ gateway.metadata.color }};{% endif %}"></i>
-                                                    <h6 class="card-title mb-0 fw-semibold">{{ gateway.displayName }}</h6>
-                                                    {% if gateway.description %}
-                                                        <small class="text-muted d-block mt-1">{{ gateway.description }}</small>
-                                                    {% endif %}
-                                                </div>
-                                            </label>
-                                        </div>
+                                    {% for radio in form.gateway %}
+                                        {% set gatewayIdentifier = radio.vars.value %}
+                                        {% set gateway = null %}
+                                        {% for gw in availableGateways %}
+                                            {% if gw.identifier == gatewayIdentifier %}
+                                                {% set gateway = gw %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if gateway %}
+                                            <div class="col-12 col-sm-6 col-md-6 col-lg-4">
+                                                {{ form_widget(radio) }}
+                                                <label for="{{ radio.vars.id }}" class="card border-2 shadow-sm rounded-3 card-input h-100">
+                                                    <div class="card-body text-center p-4">
+                                                        <i class="{{ gateway.icon }} mb-3" style="font-size: 2.5rem; {% if gateway.metadata.color is defined %}color: {{ gateway.metadata.color }};{% endif %}"></i>
+                                                        <h6 class="card-title mb-0 fw-semibold">{{ gateway.displayName }}</h6>
+                                                        {% if gateway.description %}
+                                                            <small class="text-muted d-block mt-1">{{ gateway.description }}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             {% endif %}
@@ -174,7 +182,7 @@
 
                             <!-- Order Button -->
                             <div class="d-grid">
-                                <button type="submit" id="order-submit" class="btn btn-success btn-lg rounded-pill fw-semibold">
+                                <button type="submit" id="order-submit" class="btn btn-success btn-lg rounded-3 fw-semibold">
                                     <i class="fa fa-shopping-basket me-2"></i>
                                     {{ 'pteroca.product.order_now'|trans }}
                                 </button>
@@ -183,7 +191,7 @@
                     </div>
                 </div>
             </div>
-        </form>
+        {{ form_end(form, {'render_rest': false}) }}
     </div>
 
     {% include 'components/use_voucher_modal.html.twig' %}
@@ -198,7 +206,7 @@
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
 
             // Add event listeners for payment method selection
-            const paymentRadios = document.querySelectorAll('input[name="payment_provider"]');
+            const paymentRadios = document.querySelectorAll('input[name="top_up_balance[gateway]"]');
             paymentRadios.forEach(radio => {
                 radio.addEventListener('change', updateSelectedPaymentMethod);
             });
@@ -231,13 +239,11 @@
         }
 
         function updateSelectedPaymentMethod() {
-            const selectedRadio = document.querySelector('input[name="payment_provider"]:checked');
+            const selectedRadio = document.querySelector('input[name="top_up_balance[gateway]"]:checked');
             if (selectedRadio) {
                 const label = document.querySelector(`label[for="${selectedRadio.id}"]`);
                 const methodName = label.querySelector('.card-title').textContent;
                 document.querySelector('#selected-payment-method').textContent = methodName;
-                // Update hidden gateway field
-                document.querySelector('#selected-gateway').value = selectedRadio.value;
             }
         }
     </script>

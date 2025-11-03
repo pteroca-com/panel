@@ -28,9 +28,13 @@
             </div>
         </div>
 
-        <form action="{{ path('panel', { routeName: 'cart_renew_buy' }) }}" method="post">
-            <input type="hidden" name="id" value="{{ server.id }}">
-            <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="server_discount">
+        {{ form_start(form, {
+            'action': path('panel', { routeName: 'cart_renew_buy' }),
+            'method': 'POST',
+            'attr': {'id': 'renew-form'}
+        }) }}
+            {{ form_widget(form.id) }}
+            {{ form_widget(form.voucher, {'attr': {'id': 'voucher-code', 'data-voucher-type': 'server_discount'}}) }}
             
             <div class="row g-4">
                 <!-- Server Information -->
@@ -168,7 +172,6 @@
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <input type="hidden" name="product" value="{{ server.id }}">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label for="duration" class="form-label fw-semibold">
@@ -199,8 +202,7 @@
                                         <i class="fas fa-layer-group me-2 text-warning"></i>
                                         {{ 'pteroca.product.slots'|trans }}
                                     </label>
-                                    <input type="number" class="form-control form-control-lg" id="server-slots" name="server-slots" 
-                                           value="{{ serverSlots|default(1) }}" readonly readonly>
+                                    {{ form_widget(form['server-slots'], {'attr': {'id': 'server-slots'}}) }}
                                 </div>
                                 {% endif %}
 
@@ -212,24 +214,7 @@
                                             <small class="text-muted">({{ 'pteroca.cart_configuration.owner_only'|trans }})</small>
                                         {% endif %}
                                     </label>
-                                    <select id="auto-renewal" name="auto-renewal" class="form-select form-select-lg" {% if not isOwner %}disabled{% endif %}>
-                                        <option value="{{ server.autoRenewal ? '1' : '0' }}" selected>
-                                            {% if server.autoRenewal %}
-                                                {{ 'pteroca.cart_configuration.enable'|trans }}
-                                            {% else %}
-                                                {{ 'pteroca.cart_configuration.disable'|trans }}
-                                            {% endif %}
-                                        </option>
-                                        {% if isOwner %}
-                                            <option value="{{ server.autoRenewal ? '0' : '1' }}">
-                                                {% if server.autoRenewal %}
-                                                    {{ 'pteroca.cart_configuration.disable'|trans }}
-                                                {% else %}
-                                                    {{ 'pteroca.cart_configuration.enable'|trans }}
-                                                {% endif %}
-                                            </option>
-                                        {% endif %}
-                                    </select>
+                                    {{ form_widget(form['auto-renewal'], {'attr': {'id': 'auto-renewal'}}) }}
                                 </div>
                             </div>
                         </div>
@@ -312,7 +297,7 @@
                     </div>
                 </div>
             </div>
-        </form>
+        {{ form_end(form, {'render_rest': false}) }}
     </div>
 
     {% include 'components/use_voucher_modal.html.twig' %}

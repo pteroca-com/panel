@@ -28,9 +28,13 @@
             </div>
         </div>
 
-        <form action="{{ path('panel', { routeName: 'cart_buy' }) }}" method="post">
-            <input type="hidden" name="id" value="{{ product.id }}">
-            <input type="hidden" name="voucher" value="" id="voucher-code" data-voucher-type="server_discount">
+        {{ form_start(form, {
+            'action': path('panel', { routeName: 'cart_buy' }),
+            'method': 'POST',
+            'attr': {'id': 'configure-form'}
+        }) }}
+            {{ form_widget(form.id) }}
+            {{ form_widget(form.voucher, {'attr': {'id': 'voucher-code', 'data-voucher-type': 'server_discount'}}) }}
             
             <div class="row g-4">
                 <!-- Product Configuration -->
@@ -143,14 +147,13 @@
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <input type="hidden" name="product" value="{{ product.id }}">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label for="duration" class="form-label fw-semibold">
                                         <i class="fas fa-clock me-2 text-primary"></i>
                                         {{ 'pteroca.cart_configuration.period'|trans }}
                                     </label>
-                                    <select id="duration" name="duration" class="form-select form-select-lg">
+                                    <select id="duration" name="server_order[duration]" class="form-select form-select-lg">
                                         {% for price in product.prices %}
                                             {% if price.type.value == 'static' %}
                                                 <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if request.duration is defined and request.duration == price.id %}selected{% endif %}>
@@ -173,7 +176,7 @@
                                         <i class="fas fa-cog me-2 text-warning"></i>
                                         {{ 'pteroca.product.egg'|trans }}
                                     </label>
-                                    <select id="egg" name="egg" class="form-select form-select-lg">
+                                    <select id="egg" name="server_order[egg]" class="form-select form-select-lg">
                                         {% for egg in eggs %}
                                             <option value="{{ egg.id }}" {% if request.egg is defined and request.egg == egg.id %}selected{% endif %}>
                                                 {{ egg.name }}
@@ -204,7 +207,7 @@
                                         <i class="fas fa-tag me-2 text-success"></i>
                                         {{ 'pteroca.cart_configuration.server_name'|trans }}
                                     </label>
-                                    <input type="text" class="form-control form-control-lg" id="server-name" name="server-name" placeholder="{{ product.name }}">
+                                    {{ form_widget(form['server-name'], {'attr': {'placeholder': product.name, 'id': 'server-name'}}) }}
                                 </div>
 
                                 <div class="col-md-6">
@@ -212,14 +215,7 @@
                                         <i class="fas fa-sync-alt me-2 text-info"></i>
                                         {{ 'pteroca.cart_configuration.auto_renewal'|trans }}
                                     </label>
-                                    <select id="auto-renewal" name="auto-renewal" class="form-select form-select-lg">
-                                        <option value="1">
-                                            {{ 'pteroca.cart_configuration.enable'|trans }}
-                                        </option>
-                                        <option value="0">
-                                            {{ 'pteroca.cart_configuration.disable'|trans }}
-                                        </option>
-                                    </select>
+                                    {{ form_widget(form['auto-renewal'], {'attr': {'id': 'auto-renewal'}}) }}
                                 </div>
                             </div>
                         </div>
@@ -300,7 +296,7 @@
 
                             <!-- Order Button -->
                             <div class="d-grid">
-                                <button type="submit" id="order-submit" class="btn btn-success btn-lg rounded-pill fw-semibold" disabled>
+                                <button type="submit" id="order-submit" class="btn btn-success btn-lg rounded-3 fw-semibold" disabled>
                                     <i class="fa fa-shopping-basket me-2"></i>
                                     {{ 'pteroca.product.order_now'|trans }}
                                 </button>
@@ -309,7 +305,7 @@
                     </div>
                 </div>
             </div>
-        </form>
+        {{ form_end(form, {'render_rest': false}) }}
     </div>
 
     {% include 'components/use_voucher_modal.html.twig' %}

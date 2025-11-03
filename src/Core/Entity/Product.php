@@ -182,7 +182,6 @@ class Product implements ProductInterface
         return $this->deletedAt;
     }
 
-    // TODO add to interface?
     public function getPrices(): Collection
     {
         return $this->prices->filter(function (ProductPriceInterface $price) {

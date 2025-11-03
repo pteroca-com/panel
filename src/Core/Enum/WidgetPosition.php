@@ -9,4 +9,5 @@ enum WidgetPosition: string
     case RIGHT = 'right';
     case BOTTOM = 'bottom';
     case FULL_WIDTH = 'full_width';
+    case NAVBAR = 'navbar';
 }

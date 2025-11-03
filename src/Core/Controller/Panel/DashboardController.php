@@ -30,6 +30,7 @@ use App\Core\Enum\ViewNameEnum;
 use App\Core\Enum\WidgetContext;
 use App\Core\Event\Dashboard\DashboardAccessedEvent;
 use App\Core\Event\Dashboard\DashboardDataLoadedEvent;
+use App\Core\Event\Menu\MenuItemsCollectedEvent;
 use App\Core\Event\Widget\WidgetsCollectedEvent;
 use App\Core\Service\Widget\WidgetRegistry;
 use App\Core\Widget\Dashboard\BalanceWidget;
@@ -179,55 +180,91 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::section($this->translator->trans('pteroca.crud.menu.menu'));
-        yield MenuItem::linkToDashboard($this->translator->trans('pteroca.crud.menu.dashboard'), 'fa fa-home');
-        yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.my_servers'), 'fa fa-server', 'servers');
-        yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart', 'store');
-        yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.wallet'), 'fa fa-wallet', 'recharge_balance');
-        yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.my_account'), 'fa fa-user')->setSubItems([
-            MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', UserPayment::class),
-            MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.account_settings'), 'fa fa-user-cog', UserAccount::class),
-        ]);
+        // Build menu items structure
+        $menuItems = [];
 
+        // Main section (user menu)
+        $menuItems['main'] = [
+            MenuItem::section($this->translator->trans('pteroca.crud.menu.menu')),
+            MenuItem::linkToDashboard($this->translator->trans('pteroca.crud.menu.dashboard'), 'fa fa-home'),
+            MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.my_servers'), 'fa fa-server', 'servers'),
+            MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart', 'store'),
+            MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.wallet'), 'fa fa-wallet', 'recharge_balance'),
+            MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.my_account'), 'fa fa-user')->setSubItems([
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', UserPayment::class),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.account_settings'), 'fa fa-user-cog', UserAccount::class),
+            ]),
+        ];
+
+        // Admin section (only for admins)
         if ($this->isGranted(UserRoleEnum::ROLE_ADMIN->name)) {
-            yield MenuItem::section($this->translator->trans('pteroca.crud.menu.administration'));
-            yield MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.overview'), 'fa fa-gauge', 'admin_overview');
-            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart')->setSubItems([
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.categories'), 'fa fa-list', Category::class),
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.products'), 'fa fa-sliders-h', Product::class),
-            ]);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', Payment::class);
-            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered')->setSubItems([
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class),
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.email_logs'), 'fa fa-envelope', EmailLog::class),
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars', ServerLog::class),
-            ]);
-            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([
-                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.general'), 'fa fa-cog', $this->generateSettingsUrl(SettingContextEnum::GENERAL)),
-                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.pterodactyl'), 'fa fa-network-wired', $this->generateSettingsUrl(SettingContextEnum::PTERODACTYL)),
-                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.security'), 'fa fa-shield-halved', $this->generateSettingsUrl(SettingContextEnum::SECURITY)),
-                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.payment_gateways'), 'fa fa-hand-holding-dollar', $this->generateSettingsUrl(SettingContextEnum::PAYMENT)),
-                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.email'), 'fa fa-envelope', $this->generateSettingsUrl(SettingContextEnum::EMAIL)),
-                MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.appearance'), 'fa fa-brush', $this->generateSettingsUrl(SettingContextEnum::THEME)),
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.plugin.plugins'), 'fa fa-puzzle-piece', Plugin::class),
-            ]);
-            yield MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class);
-            yield MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gifts')->setSubItems([
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gift', Voucher::class),
-                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.voucher_usages'), 'fa fa-list', VoucherUsage::class),
-            ]);
+            $menuItems['admin'] = [
+                MenuItem::section($this->translator->trans('pteroca.crud.menu.administration')),
+                MenuItem::linkToRoute($this->translator->trans('pteroca.crud.menu.overview'), 'fa fa-gauge', 'admin_overview'),
+                MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.shop'), 'fa fa-shopping-cart')->setSubItems([
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.categories'), 'fa fa-list', Category::class),
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.products'), 'fa fa-sliders-h', Product::class),
+                ]),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.servers'), 'fa fa-server', Server::class),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.payments'), 'fa fa-money', Payment::class),
+                MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered')->setSubItems([
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.logs'), 'fa fa-bars-staggered', Log::class),
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.email_logs'), 'fa fa-envelope', EmailLog::class),
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.server_logs'), 'fa fa-bars', ServerLog::class),
+                ]),
+                MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.settings'), 'fa fa-cogs')->setSubItems([
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.general'), 'fa fa-cog', $this->generateSettingsUrl(SettingContextEnum::GENERAL)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.pterodactyl'), 'fa fa-network-wired', $this->generateSettingsUrl(SettingContextEnum::PTERODACTYL)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.security'), 'fa fa-shield-halved', $this->generateSettingsUrl(SettingContextEnum::SECURITY)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.payment_gateways'), 'fa fa-hand-holding-dollar', $this->generateSettingsUrl(SettingContextEnum::PAYMENT)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.email'), 'fa fa-envelope', $this->generateSettingsUrl(SettingContextEnum::EMAIL)),
+                    MenuItem::linkToUrl($this->translator->trans('pteroca.crud.menu.appearance'), 'fa fa-brush', $this->generateSettingsUrl(SettingContextEnum::THEME)),
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.plugin.plugins'), 'fa fa-puzzle-piece', Plugin::class),
+                ]),
+                MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.users'), 'fa fa-user', User::class),
+                MenuItem::subMenu($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gifts')->setSubItems([
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.vouchers'), 'fa fa-gift', Voucher::class),
+                    MenuItem::linkToCrud($this->translator->trans('pteroca.crud.menu.voucher_usages'), 'fa fa-list', VoucherUsage::class),
+                ]),
+            ];
         }
 
-        yield MenuItem::section();
+        // Footer section
+        $menuItems['footer'] = [
+            MenuItem::section(),
+        ];
+
         if ($this->settingService->getSetting(SettingEnum::SHOW_PHPMYADMIN_URL->value)) {
-            yield MenuItem::linkToUrl(
+            $menuItems['footer'][] = MenuItem::linkToUrl(
                 $this->translator->trans('pteroca.crud.menu.phpmyadmin'),
                 'fa fa-database',
                 $this->settingService->getSetting(SettingEnum::PHPMYADMIN_URL->value),
             )->setLinkTarget('_blank');
         }
-        yield MenuItem::linkToLogout($this->translator->trans('pteroca.crud.menu.logout'), 'fa fa-sign-out-alt');
+
+        $menuItems['footer'][] = MenuItem::linkToLogout($this->translator->trans('pteroca.crud.menu.logout'), 'fa fa-sign-out-alt');
+
+        // Dispatch event for plugins to add/modify menu items
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $request ? $this->buildMinimalEventContext($request) : [];
+
+        $event = new MenuItemsCollectedEvent(
+            $this->getUser(),
+            $menuItems,
+            $context
+        );
+
+        $event = $this->dispatchEvent($event);
+
+        // Get modified menu items from event
+        $menuItems = $event->getMenuItems();
+
+        // Yield all items in order: main -> admin -> footer
+        foreach ($menuItems as $section => $items) {
+            foreach ($items as $item) {
+                yield $item;
+            }
+        }
     }
 
     public function configureAssets(): Assets
