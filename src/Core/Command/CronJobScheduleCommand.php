@@ -19,6 +19,7 @@ class CronJobScheduleCommand extends Command
 {
     private const SCHEDULED_COMMANDS = [
         'app:suspend-unpaid-servers',
+        'plugin:cron:run',
         'app:delete-inactive-servers' => [
             [
                 'settingName' => SettingEnum::DELETE_SUSPENDED_SERVERS_ENABLED,

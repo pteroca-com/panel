@@ -2,8 +2,8 @@
 
 namespace App\Core\Service;
 
+use App\Core\Contract\Plugin\PluginCronTaskInterface;
 use App\Core\Service\Plugin\PluginCronRegistry;
-use App\Core\Service\Plugin\PluginCronTaskInterface;
 use Cron\CronExpression;
 use Psr\Log\LoggerInterface;
 
@@ -15,6 +15,12 @@ use Psr\Log\LoggerInterface;
  */
 class CronScheduler
 {
+    /** @var int Minutes between summary logs when no tasks are due */
+    private const SUMMARY_LOG_INTERVAL_MINUTES = 15;
+
+    /** @var \DateTime|null Last time a summary was logged */
+    private ?\DateTime $lastSummaryLogTime = null;
+
     public function __construct(
         private readonly PluginCronRegistry $cronRegistry,
         private readonly LoggerInterface $logger,
@@ -35,10 +41,18 @@ class CronScheduler
         $results = [];
         $enabledTasks = $this->cronRegistry->getEnabledTasks();
 
-        $this->logger->info('Cron scheduler started', [
-            'time' => $currentTime->format('Y-m-d H:i:s'),
-            'total_tasks' => count($enabledTasks),
-        ]);
+        // Check if there are due tasks to determine if we should log
+        $dueTasks = $this->getDueTasksInternal($currentTime, $enabledTasks);
+        $shouldLog = !empty($dueTasks) || $this->shouldLogSummary($currentTime);
+
+        // Log start only when there are due tasks or it's time for periodic summary
+        if ($shouldLog) {
+            $this->logger->info('Cron scheduler started', [
+                'time' => $currentTime->format('Y-m-d H:i:s'),
+                'total_tasks' => count($enabledTasks),
+                'due_tasks' => count($dueTasks),
+            ]);
+        }
 
         foreach ($enabledTasks as $task) {
             $taskName = $task->getName();
@@ -67,12 +81,18 @@ class CronScheduler
             }
         }
 
-        $this->logger->info('Cron scheduler finished', [
-            'time' => $currentTime->format('Y-m-d H:i:s'),
-            'executed' => count(array_filter($results, fn($r) => $r['status'] === 'success')),
-            'failed' => count(array_filter($results, fn($r) => $r['status'] === 'error')),
-            'skipped' => count(array_filter($results, fn($r) => $r['status'] === 'skipped')),
-        ]);
+        // Log finish only when we logged start
+        if ($shouldLog) {
+            $this->logger->info('Cron scheduler finished', [
+                'time' => $currentTime->format('Y-m-d H:i:s'),
+                'executed' => count(array_filter($results, fn($r) => $r['status'] === 'success')),
+                'failed' => count(array_filter($results, fn($r) => $r['status'] === 'error')),
+                'skipped' => count(array_filter($results, fn($r) => $r['status'] === 'skipped')),
+            ]);
+
+            // Update last summary log time
+            $this->lastSummaryLogTime = \DateTime::createFromInterface($currentTime);
+        }
 
         return $results;
     }
@@ -255,6 +275,41 @@ class CronScheduler
         } catch (\Exception $e) {
             return 'Invalid cron expression';
         }
+    }
+
+    /**
+     * Check if summary should be logged (every N minutes when no tasks are due).
+     *
+     * @param \DateTimeInterface $currentTime Current time
+     * @return bool True if summary should be logged
+     */
+    private function shouldLogSummary(\DateTimeInterface $currentTime): bool
+    {
+        if ($this->lastSummaryLogTime === null) {
+            return true; // First run - always log
+        }
+
+        $minutesSinceLastLog = ($currentTime->getTimestamp() - $this->lastSummaryLogTime->getTimestamp()) / 60;
+
+        return $minutesSinceLastLog >= self::SUMMARY_LOG_INTERVAL_MINUTES;
+    }
+
+    /**
+     * Get due tasks without logging (internal helper).
+     *
+     * @param \DateTimeInterface $currentTime Time to check against
+     * @param PluginCronTaskInterface[] $enabledTasks Tasks to check
+     * @return PluginCronTaskInterface[] Due tasks
+     */
+    private function getDueTasksInternal(\DateTimeInterface $currentTime, array $enabledTasks): array
+    {
+        $dueTasks = [];
+        foreach ($enabledTasks as $task) {
+            if ($this->shouldRun($task, $currentTime)) {
+                $dueTasks[] = $task;
+            }
+        }
+        return $dueTasks;
     }
 
     /**

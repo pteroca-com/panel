@@ -1,0 +1,43 @@
+<div class="card border-0 shadow-sm rounded-3 h-100">
+    <div class="card-header border-0 p-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-plug me-2 text-primary"></i>
+            <h5 class="mb-0 fw-semibold">{{ 'pteroca.widget.plugin_status.title'|trans }}</h5>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold text-muted">{{ 'pteroca.widget.plugin_status.total'|trans }}:</span>
+                <span class="fw-bold fs-5">{{ total }}</span>
+            </div>
+        </div>
+        <hr class="my-3">
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold text-muted">{{ 'pteroca.widget.plugin_status.enabled'|trans }}:</span>
+                <span class="text-success fw-semibold">
+                    <i class="fa-solid fa-check me-1"></i>{{ enabled }}
+                </span>
+            </div>
+        </div>
+        <hr class="my-3">
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold text-muted">{{ 'pteroca.widget.plugin_status.disabled'|trans }}:</span>
+                <span class="text-muted fw-semibold">
+                    <i class="fa-solid fa-pause me-1"></i>{{ disabled }}
+                </span>
+            </div>
+        </div>
+        <hr class="my-3">
+        <div class="mb-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold text-muted">{{ 'pteroca.widget.plugin_status.faulted'|trans }}:</span>
+                <span class="{{ faulted > 0 ? 'text-danger' : 'text-muted' }} fw-semibold">
+                    <i class="fa-solid {{ faulted > 0 ? 'fa-exclamation-triangle' : 'fa-check' }} me-1"></i>{{ faulted }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

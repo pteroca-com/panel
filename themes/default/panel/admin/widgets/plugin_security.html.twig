@@ -1,0 +1,55 @@
+<div class="card border-0 shadow-sm rounded-3 h-100">
+    <div class="card-header border-0 p-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-shield-alt me-2 text-danger"></i>
+            <h5 class="mb-0 fw-semibold">{{ 'pteroca.widget.plugin_security.title'|trans }}</h5>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        {% if total_issues == 0 %}
+            <div class="text-center py-3">
+                <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">{{ 'pteroca.widget.plugin_security.no_issues'|trans }}</p>
+            </div>
+        {% else %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold text-muted">{{ 'pteroca.widget.plugin_security.total_issues'|trans }}:</span>
+                    <span class="fw-bold fs-5 text-danger">{{ total_issues }}</span>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold text-muted">{{ 'pteroca.widget.plugin_security.critical_issues'|trans }}:</span>
+                    <span class="{{ critical_issues > 0 ? 'text-danger' : 'text-muted' }} fw-semibold">
+                        <i class="fa-solid fa-exclamation-circle me-1"></i>{{ critical_issues }}
+                    </span>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold text-muted">{{ 'pteroca.widget.plugin_security.high_issues'|trans }}:</span>
+                    <span class="{{ high_issues > 0 ? 'text-warning' : 'text-muted' }} fw-semibold">
+                        <i class="fa-solid fa-exclamation-triangle me-1"></i>{{ high_issues }}
+                    </span>
+                </div>
+            </div>
+            {% if affected_plugins is not empty %}
+                <hr class="my-3">
+                <div class="mb-0">
+                    <span class="fw-semibold text-muted d-block mb-2">{{ 'pteroca.widget.plugin_security.affected_plugins'|trans }}:</span>
+                    <div class="small">
+                        {% for plugin in affected_plugins %}
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-truncate me-2">{{ plugin.name }}</span>
+                                <span class="badge bg-danger">{{ plugin.issues_count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

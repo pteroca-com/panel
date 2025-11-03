@@ -38,6 +38,7 @@ class PluginManager
         private readonly PluginDependencyResolver $dependencyResolver,
         private readonly PluginAssetManager $assetManager,
         private readonly PluginSettingService $settingService,
+        private readonly PluginSecurityValidator $securityValidator,
     ) {}
 
     /**
@@ -177,6 +178,41 @@ class PluginManager
             ]);
 
             throw new PluginDependencyException($errorMessage);
+        }
+
+        // Security validation - check for critical security issues
+        $securityIssues = $this->securityValidator->validate($plugin);
+        $criticalIssues = array_filter($securityIssues, fn($issue) => $issue['severity'] === 'critical');
+
+        if (!empty($criticalIssues)) {
+            $errorMessage = sprintf(
+                "Cannot enable plugin '%s' due to critical security issues:\n- %s",
+                $plugin->getName(),
+                implode("\n- ", array_map(fn($issue) => $issue['message'], $criticalIssues))
+            );
+
+            // Mark plugin as faulted due to security issues
+            $this->stateMachine->transitionToFaulted($plugin, $errorMessage);
+            $this->pluginRepository->save($plugin, true);
+
+            $this->eventDispatcher->dispatch(
+                new PluginEnablementFailedEvent($plugin, $errorMessage)
+            );
+            $this->eventDispatcher->dispatch(new PluginFaultedEvent($plugin, $errorMessage));
+
+            $this->logger->error("Plugin enablement blocked due to security issues: {$plugin->getName()}", [
+                'critical_issues' => $criticalIssues,
+            ]);
+
+            throw new \RuntimeException($errorMessage);
+        }
+
+        // Log high severity issues as warnings (but allow plugin to be enabled)
+        $highIssues = array_filter($securityIssues, fn($issue) => $issue['severity'] === 'high');
+        if (!empty($highIssues)) {
+            $this->logger->warning("Plugin has high severity security issues: {$plugin->getName()}", [
+                'high_issues' => $highIssues,
+            ]);
         }
 
         // Transition to ENABLED state

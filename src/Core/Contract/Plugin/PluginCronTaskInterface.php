@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Service\Plugin;
+namespace App\Core\Contract\Plugin;
 
 /**
  * Interface for plugin cron tasks.
@@ -13,7 +13,7 @@ namespace App\Core\Service\Plugin;
  * ```php
  * namespace Plugins\MyPlugin\CronTask;
  *
- * use App\Core\Service\Plugin\PluginCronTaskInterface;
+ * use App\Core\Contract\Plugin\PluginCronTaskInterface;
  *
  * class DatabaseCleanupTask implements PluginCronTaskInterface
  * {

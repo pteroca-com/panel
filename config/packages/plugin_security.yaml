@@ -1,0 +1,37 @@
+parameters:
+    # Plugin security configuration
+
+    # Capability enforcement mode: 'soft' or 'strict'
+    # - soft: Log warnings but allow plugins to run without capabilities (backward compatible)
+    # - strict: Block plugins that don't have required capabilities
+    # Environment variable: PLUGIN_CAPABILITY_ENFORCEMENT (default: soft)
+    plugin_security.enforcement_mode: '%env(default:soft:PLUGIN_CAPABILITY_ENFORCEMENT)%'
+
+    # Dangerous PHP functions that plugins should not use
+    # Security validator will scan for these functions
+    plugin_security.dangerous_functions:
+        - eval
+        - exec
+        - shell_exec
+        - system
+        - passthru
+        - proc_open
+        - popen
+        - pcntl_exec
+        - assert # When used with string argument
+
+    # Paths that plugins are allowed to access
+    # Security validator will check file system operations
+    plugin_security.allowed_paths:
+        - '%kernel.project_dir%/plugins'
+        - '%kernel.cache_dir%'
+        - '%kernel.logs_dir%'
+        - '%kernel.project_dir%/public/plugin-assets'
+
+    # Enable/disable specific security checks
+    plugin_security.checks:
+        dangerous_functions: true
+        path_traversal: true
+        sql_injection: true
+        xss_patterns: true
+        file_permissions: true

@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Plugin;
 
+use App\Core\Contract\Plugin\PluginCronTaskInterface;
 use App\Core\Entity\Plugin;
 use App\Core\Repository\PluginRepository;
 use Psr\Log\LoggerInterface;
@@ -294,6 +295,9 @@ class PluginCronRegistry
                 }
             }
 
+            // Register core system tasks
+            $this->registerCoreSystemTasks();
+
             $this->tasksLoaded = true;
         } catch (\Exception $e) {
             $this->logger->error('Failed to load cron tasks from enabled plugins', [
@@ -301,6 +305,96 @@ class PluginCronRegistry
             ]);
             // Mark as loaded anyway to prevent repeated failures
             $this->tasksLoaded = true;
+        }
+    }
+
+    /**
+     * Register core system cron tasks.
+     *
+     * Discovers and registers cron tasks from the core system
+     * (src/Core/Service/Plugin/CronTask directory).
+     */
+    private function registerCoreSystemTasks(): void
+    {
+        $tasksPath = __DIR__ . '/CronTask';
+
+        if (!is_dir($tasksPath)) {
+            $this->logger->debug('Core system cron tasks directory not found');
+            return;
+        }
+
+        try {
+            $files = glob($tasksPath . '/*Task.php');
+
+            if ($files === false || empty($files)) {
+                $this->logger->debug('No core system cron tasks found');
+                return;
+            }
+
+            foreach ($files as $file) {
+                $className = basename($file, '.php');
+                $fullClassName = 'App\\Core\\Service\\Plugin\\CronTask\\' . $className;
+
+                // Check if class exists
+                if (!class_exists($fullClassName)) {
+                    $this->logger->warning('Core system task class not found', [
+                        'class' => $fullClassName,
+                        'file' => $file,
+                    ]);
+                    continue;
+                }
+
+                // Check if class implements PluginCronTaskInterface
+                if (!is_subclass_of($fullClassName, PluginCronTaskInterface::class)) {
+                    $this->logger->warning('Core system task does not implement PluginCronTaskInterface', [
+                        'class' => $fullClassName,
+                    ]);
+                    continue;
+                }
+
+                // Instantiate task
+                $task = $this->instantiateTask($fullClassName);
+
+                if ($task === null) {
+                    $this->logger->warning('Failed to instantiate core system task', [
+                        'class' => $fullClassName,
+                    ]);
+                    continue;
+                }
+
+                $taskName = 'system:' . $task->getName();
+
+                // Check for duplicate task names
+                if (isset($this->registeredTasks[$taskName])) {
+                    $this->logger->warning('Core system task with this name is already registered, skipping', [
+                        'task_name' => $taskName,
+                        'class' => $fullClassName,
+                    ]);
+                    continue;
+                }
+
+                // Register task
+                $this->registeredTasks[$taskName] = $task;
+
+                // Track by "system" as plugin name
+                if (!isset($this->tasksByPlugin['system'])) {
+                    $this->tasksByPlugin['system'] = [];
+                }
+                $this->tasksByPlugin['system'][] = $taskName;
+
+                $this->logger->info('Registered core system cron task', [
+                    'class' => $fullClassName,
+                    'task_name' => $taskName,
+                    'schedule' => $task->getSchedule(),
+                    'description' => $task->getDescription(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to register core system cron tasks', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            // Don't throw - allow plugin system to continue without core tasks
         }
     }
 

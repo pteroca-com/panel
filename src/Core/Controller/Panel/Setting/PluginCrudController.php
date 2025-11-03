@@ -21,6 +21,8 @@ use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginDependencyResolver;
+use App\Core\Service\Plugin\PluginHealthCheckService;
+use App\Core\Service\Plugin\PluginSecurityValidator;
 use App\Core\Exception\Plugin\PluginDependencyException;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -47,6 +49,8 @@ class PluginCrudController extends AbstractPanelController
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly LogService $logService,
         private readonly PluginDependencyResolver $dependencyResolver,
+        private readonly PluginHealthCheckService $healthCheckService,
+        private readonly PluginSecurityValidator $securityValidator,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -265,6 +269,26 @@ class PluginCrudController extends AbstractPanelController
         $hasCircular = $this->dependencyResolver->hasCircularDependency($plugin);
         $circularPath = $hasCircular ? $this->dependencyResolver->getCircularDependencyPath($plugin) : null;
 
+        // Run health check if plugin is enabled or has been enabled before
+        $healthCheckResult = null;
+        if ($plugin->getId() !== null) {
+            try {
+                $healthCheckResult = $this->healthCheckService->runHealthCheck($plugin);
+            } catch (\Exception $e) {
+                // Silently fail if health check fails
+                $healthCheckResult = null;
+            }
+        }
+
+        // Run security scan if plugin exists on filesystem
+        $securityIssues = [];
+        try {
+            $securityIssues = $this->securityValidator->validate($plugin);
+        } catch (\Exception $e) {
+            // Silently fail if security scan fails
+            $securityIssues = [];
+        }
+
         $viewData = [
             'plugin' => $plugin,
             'pageName' => Crud::PAGE_DETAIL,
@@ -272,6 +296,8 @@ class PluginCrudController extends AbstractPanelController
             'dependents' => $dependents,
             'hasCircularDependency' => $hasCircular,
             'circularDependencyPath' => $circularPath,
+            'healthCheckResult' => $healthCheckResult,
+            'securityIssues' => $securityIssues,
         ];
 
         return $this->renderWithEvent(

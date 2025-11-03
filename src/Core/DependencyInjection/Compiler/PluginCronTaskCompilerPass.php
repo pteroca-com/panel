@@ -2,7 +2,7 @@
 
 namespace App\Core\DependencyInjection\Compiler;
 
-use App\Core\Service\Plugin\PluginCronTaskInterface;
+use App\Core\Contract\Plugin\PluginCronTaskInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 

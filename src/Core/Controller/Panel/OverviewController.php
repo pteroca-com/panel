@@ -2,23 +2,26 @@
 
 namespace App\Core\Controller\Panel;
 
-use App\Core\Controller\AbstractController;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Enum\ViewNameEnum;
 use App\Core\Enum\WidgetContext;
-use App\Core\Event\Admin\AdminOverviewAccessedEvent;
-use App\Core\Event\Admin\AdminOverviewDataLoadedEvent;
-use App\Core\Event\Widget\WidgetsCollectedEvent;
-use App\Core\Service\Statistics\AdminStatisticsService;
-use App\Core\Service\System\SystemInformationService;
+use App\Core\Controller\AbstractController;
 use App\Core\Service\Widget\WidgetRegistry;
-use App\Core\Widget\Admin\RecentPaymentsWidget;
-use App\Core\Widget\Admin\RecentUsersWidget;
 use App\Core\Widget\Admin\SystemInfoWidget;
+use App\Core\Widget\Admin\RecentUsersWidget;
 use App\Core\Widget\Admin\SystemStatsWidget;
-use Symfony\Component\HttpFoundation\RequestStack;
+use App\Core\Widget\Admin\PluginHealthWidget;
+use App\Core\Widget\Admin\PluginStatusWidget;
 use Symfony\Component\HttpFoundation\Response;
+use App\Core\Widget\Admin\PluginSecurityWidget;
+use App\Core\Widget\Admin\RecentPaymentsWidget;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Core\Event\Widget\WidgetsCollectedEvent;
+use Symfony\Component\HttpFoundation\RequestStack;
+use App\Core\Event\Admin\AdminOverviewAccessedEvent;
+use App\Core\Service\System\SystemInformationService;
+use App\Core\Event\Admin\AdminOverviewDataLoadedEvent;
+use App\Core\Service\Statistics\AdminStatisticsService;
 
 class OverviewController extends AbstractController
 {
@@ -28,6 +31,9 @@ class OverviewController extends AbstractController
         private readonly RecentPaymentsWidget $recentPaymentsWidget,
         private readonly RecentUsersWidget $recentUsersWidget,
         private readonly SystemInfoWidget $systemInfoWidget,
+        private readonly PluginStatusWidget $pluginStatusWidget,
+        private readonly PluginSecurityWidget $pluginSecurityWidget,
+        private readonly PluginHealthWidget $pluginHealthWidget,
     ) {}
 
     #[Route('/admin/overview', name: 'admin_overview')]
@@ -110,5 +116,9 @@ class OverviewController extends AbstractController
         $registry->registerWidget($this->recentPaymentsWidget);
         $registry->registerWidget($this->recentUsersWidget);
         $registry->registerWidget($this->systemInfoWidget);
+
+        $registry->registerWidget($this->pluginStatusWidget);
+        $registry->registerWidget($this->pluginSecurityWidget);
+        $registry->registerWidget($this->pluginHealthWidget);
     }
 }

@@ -1,6 +1,7 @@
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - plugin # Plugin system audit logging
 
 when@dev:
     monolog:
@@ -27,6 +28,11 @@ when@dev:
                 channels: [ deprecation ]
                 path: php://stderr
                 formatter: monolog.formatter.json
+            plugin:
+                type: stream
+                channels: [ plugin ]
+                path: "%kernel.logs_dir%/plugin.log"
+                level: info
 
 when@test:
     monolog:
@@ -60,3 +66,9 @@ when@prod:
                 type: console
                 process_psr_3_messages: false
                 channels: ["!event", "!doctrine"]
+            plugin:
+                type: stream
+                channels: [ plugin ]
+                path: "%kernel.logs_dir%/plugin.log"
+                level: warning
+                formatter: monolog.formatter.json
