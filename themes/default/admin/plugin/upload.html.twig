@@ -1,0 +1,86 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3">
+                        <i class="fas fa-upload p-3 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold">{{ 'pteroca.plugin.upload.page_title'|trans }}</h4>
+                        <p class="text-muted mb-0">{{ 'pteroca.plugin.upload.page_description'|trans }}</p>
+                    </div>
+                </div>
+                <div>
+                    <a href="{{ ea_url({ crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController' }) }}"
+                       class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left me-2"></i>{{ 'pteroca.plugin.upload.back_to_list'|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                <i class="fas fa-file-archive me-2"></i>{{ 'pteroca.plugin.upload.upload_plugin_package'|trans }}
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            {{ form_start(form, {
+                'attr': {
+                    'enctype': 'multipart/form-data',
+                    'class': 'plugin-upload-form',
+                    'action': ea_url({ crudAction: 'processUpload', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController' })
+                }
+            }) }}
+
+            <div class="mb-4">
+                {{ form_label(form.pluginFile, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.pluginFile, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.pluginFile) }}
+                <div class="form-text">
+                    {{ 'pteroca.plugin.upload.file_help_text'|trans }}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="form-check">
+                    {{ form_widget(form.enableAfterUpload) }}
+                    {{ form_label(form.enableAfterUpload, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+                <div class="form-text">
+                    {{ 'pteroca.plugin.upload.enable_help_text'|trans }}
+                </div>
+            </div>
+
+            <div class="alert alert-info mb-4">
+                <h6 class="alert-heading">
+                    <i class="fas fa-info-circle me-2"></i>{{ 'pteroca.plugin.upload.requirements_title'|trans }}
+                </h6>
+                <ul class="mb-0">
+                    <li>{{ 'pteroca.plugin.upload.requirement_zip'|trans }}</li>
+                    <li>{{ 'pteroca.plugin.upload.requirement_size'|trans }}</li>
+                    <li>{{ 'pteroca.plugin.upload.requirement_manifest'|trans }}</li>
+                    <li>{{ 'pteroca.plugin.upload.requirement_name'|trans }}</li>
+                    <li>{{ 'pteroca.plugin.upload.requirement_compatibility'|trans }}</li>
+                </ul>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ ea_url({ crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController' }) }}"
+                   class="btn btn-secondary">
+                    <i class="fa fa-times me-2"></i>{{ 'pteroca.plugin.upload.cancel'|trans }}
+                </a>
+                {{ form_widget(form.submit) }}
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

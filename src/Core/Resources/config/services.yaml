@@ -10,6 +10,12 @@ parameters:
   avatar_allowed_extensions: ['image/jpeg', 'image/png']
   default_logo_path: '%kernel.project_dir%/public/assets/img/logo/logo.png'
 
+  # Plugin upload settings
+  plugin_upload.max_file_size: 52428800        # 50 MB
+  plugin_upload.max_extracted_size: 104857600  # 100 MB
+  plugin_upload.temp_directory: '%kernel.project_dir%/var/tmp/plugin-uploads'
+  plugin_upload.enable_pre_scan: true          # Security scan before upload
+
 services:
   _defaults:
     autowire: true
@@ -182,6 +188,12 @@ services:
   App\Core\Service\Plugin\PluginSettingService:
     autowire: true
     public: true
+
+  App\Core\Service\Plugin\PluginUploadService:
+    arguments:
+      $pluginsDirectory: '%kernel.project_dir%/plugins'
+      $tempDirectory: '%plugin_upload.temp_directory%'
+      $enablePreScan: '%plugin_upload.enable_pre_scan%'
 
   App\Core\Service\CronScheduler:
     autowire: true

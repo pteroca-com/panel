@@ -23,7 +23,9 @@ use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginDependencyResolver;
 use App\Core\Service\Plugin\PluginHealthCheckService;
 use App\Core\Service\Plugin\PluginSecurityValidator;
+use App\Core\Service\Plugin\PluginUploadService;
 use App\Core\Exception\Plugin\PluginDependencyException;
+use App\Core\Form\PluginUploadFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -39,6 +41,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Composer\Semver\Semver;
 
+/**
+ * Plugin CRUD Controller
+ */
 class PluginCrudController extends AbstractPanelController
 {
     public function __construct(
@@ -51,6 +56,7 @@ class PluginCrudController extends AbstractPanelController
         private readonly PluginDependencyResolver $dependencyResolver,
         private readonly PluginHealthCheckService $healthCheckService,
         private readonly PluginSecurityValidator $securityValidator,
+        private readonly PluginUploadService $pluginUploadService,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -423,6 +429,104 @@ class PluginCrudController extends AbstractPanelController
             ));
         }
 
+        $url = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::INDEX)
+            ->generateUrl();
+
+        return new RedirectResponse($url);
+    }
+
+    public function uploadPlugin(AdminContext $context): Response
+    {
+        $form = $this->createForm(PluginUploadFormType::class);
+
+        return $this->render('admin/plugin/upload.html.twig', [
+            'form' => $form->createView(),
+            'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
+        ]);
+    }
+
+    public function processUpload(AdminContext $context): Response
+    {
+        $request = $context->getRequest();
+        $form = $this->createForm(PluginUploadFormType::class);
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            return $this->render('admin/plugin/upload.html.twig', [
+                'form' => $form->createView(),
+                'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
+            ]);
+        }
+
+        try {
+            $file = $form->get('pluginFile')->getData();
+            $enableAfterUpload = $form->get('enableAfterUpload')->getData();
+
+            // Upload plugin
+            $result = $this->pluginUploadService->uploadPlugin($file);
+            $manifest = $result['manifest'];
+            $securityIssues = $result['security_issues'];
+
+            // Register in database
+            $plugin = $this->pluginManager->getOrCreatePlugin($manifest->name);
+
+            // Log upload
+            $this->logService->logAction(
+                $this->getUser(),
+                LogActionEnum::PLUGIN_UPLOADED,
+                ['plugin' => $plugin->getName(), 'version' => $plugin->getVersion()]
+            );
+
+            // Optional: Enable
+            if ($enableAfterUpload) {
+                try {
+                    $this->pluginManager->enablePlugin($plugin);
+
+                    $this->addFlash('success', sprintf(
+                        $this->translator->trans('pteroca.plugin.upload.success_enabled'),
+                        $plugin->getDisplayName(),
+                        $plugin->getVersion()
+                    ));
+                } catch (\Exception $e) {
+                    $this->addFlash('warning', sprintf(
+                        $this->translator->trans('pteroca.plugin.upload.uploaded_but_failed_to_enable'),
+                        $plugin->getDisplayName(),
+                        $e->getMessage()
+                    ));
+                }
+            } else {
+                // Show security warnings if any
+                $warningMessage = sprintf(
+                    $this->translator->trans('pteroca.plugin.upload.success'),
+                    $plugin->getDisplayName(),
+                    $plugin->getVersion()
+                );
+
+                if (!empty($securityIssues)) {
+                    $highIssues = array_filter($securityIssues, fn($i) => $i['severity'] === 'HIGH');
+                    if (!empty($highIssues)) {
+                        $warningMessage .= ' ' . $this->translator->trans('pteroca.plugin.upload.security_warnings_detected');
+                    }
+                }
+
+                $this->addFlash('success', $warningMessage);
+            }
+
+        } catch (\Exception $e) {
+            $this->addFlash('danger', sprintf(
+                $this->translator->trans('pteroca.plugin.upload.failed'),
+                $e->getMessage()
+            ));
+
+            return $this->render('admin/plugin/upload.html.twig', [
+                'form' => $form->createView(),
+                'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
+            ]);
+        }
+
+        // Redirect to plugin list
         $url = $this->adminUrlGenerator
             ->setController(self::class)
             ->setAction(Action::INDEX)

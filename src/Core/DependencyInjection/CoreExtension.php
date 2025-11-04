@@ -72,7 +72,6 @@ class CoreExtension extends Extension implements PrependExtensionInterface
             $translationsPath = $pluginPath . '/translations';
             if (is_dir($translationsPath)) {
                 $translationPaths[] = $translationsPath;
-                error_log("CoreExtension: Adding translation path for plugin {$dir}: {$translationsPath}");
             }
         }
 
@@ -82,8 +81,6 @@ class CoreExtension extends Extension implements PrependExtensionInterface
                     'paths' => $translationPaths,
                 ],
             ]);
-
-            error_log("CoreExtension: Added " . count($translationPaths) . " plugin translation paths");
         }
     }
 }
