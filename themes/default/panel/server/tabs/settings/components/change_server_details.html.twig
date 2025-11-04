@@ -92,9 +92,11 @@
                     key: serverName.value,
                     value: serverDescription.value,
                 })
-            }).then(response => {
+            }).then(async response => {
+                const data = await response.json().catch(() => ({}));
+
                 if (!response.ok) {
-                    alert('{{ 'pteroca.server.data_update_error'|trans }}');
+                    alert(data.error || '{{ 'pteroca.server.data_update_error'|trans }}');
                     serverName.value = savedValues.serverName;
                     serverDescription.value = savedValues.serverDescription;
                     return;

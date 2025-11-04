@@ -191,6 +191,7 @@ pteroca:
     no_categories: '商店中尚未添加任何类别。'
     no_products: '该类别中没有产品。'
     price_not_found: '找不到价格'
+    invalid_form_data: '表单数据无效。请检查所有字段并重试。'
     description: '请选择您感兴趣的类别或产品'
     products_with_no_category: '无类别产品'
     categories: '类别'

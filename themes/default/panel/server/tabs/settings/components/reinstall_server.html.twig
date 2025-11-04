@@ -56,12 +56,16 @@
                     key: eggId,
                     value: 0,
                 })
-            }).then(response => {
+            }).then(async response => {
+                const data = await response.json().catch(() => ({}));
+
                 if (!response.ok) {
-                    alert('{{ 'pteroca.server.data_update_error'|trans }}');
+                    alert(data.error || '{{ 'pteroca.server.data_update_error'|trans }}');
                 } else {
                     location.reload();
                 }
+            }).catch(error => {
+                alert('{{ 'pteroca.server.data_update_error'|trans }}');
             })
         }
     </script>

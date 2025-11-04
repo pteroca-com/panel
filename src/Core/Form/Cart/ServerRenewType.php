@@ -34,7 +34,7 @@ class ServerRenewType extends AbstractType
                     'pteroca.cart_configuration.disable' => '0',
                 ],
                 'data' => $options['current_auto_renewal'] ? '1' : '0',
-                'required' => true,
+                'required' => $options['is_owner'],
                 'disabled' => !$options['is_owner'],
                 'attr' => [
                     'class' => 'form-select form-select-lg',

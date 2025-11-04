@@ -191,6 +191,7 @@ pteroca:
     no_categories: 'There are no categories yet.'
     no_products: 'There are no products yet.'
     price_not_found: 'Price not found'
+    invalid_form_data: 'Invalid form data. Please check all fields and try again.'
     description: 'Select the category or product you are interested in'
     products_with_no_category: 'Products without category'
     categories: 'Categories'

@@ -18,6 +18,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
 {
     public function __construct(
         private readonly PterodactylApplicationService $pterodactylApplicationService,
+        private readonly ServerConfigurationStartupService $serverConfigurationStartupService,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
         private readonly EventContextService $eventContextService,
@@ -32,17 +33,14 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         string $variableValue,
     ): void
     {
-        // Build event context
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
         $serverDetails = $this->getServerDetails($server, ['variables']);
         $serverVariable = $this->getServerVariable($serverDetails, $variableKey);
 
-        // Get old value for the event
         $oldValue = $serverVariable['server_value'] ?? '';
 
-        // Emit ServerStartupVariableUpdateRequestedEvent (pre, stoppable)
         $requestedEvent = new ServerStartupVariableUpdateRequestedEvent(
             $user->getId(),
             $server->getId(),
@@ -53,7 +51,6 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         );
         $this->eventDispatcher->dispatch($requestedEvent);
 
-        // Check if event was stopped
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Server startup variable update was blocked';
             throw new \Exception($reason);
@@ -61,12 +58,25 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
 
         $this->validateVariable($server, $serverDetails, $serverVariable, $variableValue, $user);
 
-        $this->pterodactylApplicationService
-            ->getClientApi($user)
-            ->servers()
-            ->updateServerStartupVariable($server, $variableKey, $variableValue);
+        $isReadOnlyVariable = $serverVariable['user_editable'] === false;
 
-        // Emit ServerStartupVariableUpdatedEvent (post-commit)
+        if ($isReadOnlyVariable && in_array(UserRoleEnum::ROLE_ADMIN->value, $user->getRoles())) {
+            // Use Application API for read-only variables (admin only)
+            $fullServerDetails = $this->getServerDetails($server, ['egg']);
+            $payload = $this->serverConfigurationStartupService->getEnvironmentVariablePayload(
+                $variableKey,
+                $variableValue,
+                $fullServerDetails
+            );
+            $this->serverConfigurationStartupService->updateServerStartup($server, $payload);
+        } else {
+            // Use Client API for user-editable variables
+            $this->pterodactylApplicationService
+                ->getClientApi($user)
+                ->servers()
+                ->updateServerStartupVariable($server->getPterodactylServerIdentifier(), $variableKey, $variableValue);
+        }
+
         $updatedEvent = new ServerStartupVariableUpdatedEvent(
             $user->getId(),
             $server->getId(),

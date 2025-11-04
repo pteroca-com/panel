@@ -29,7 +29,7 @@
         </div>
 
         {{ form_start(form, {
-            'action': path('panel', { routeName: 'cart_buy' }),
+            'action': path('panel', { routeName: 'cart_buy', 'id': product.id }),
             'method': 'POST',
             'attr': {'id': 'configure-form'}
         }) }}
@@ -305,7 +305,7 @@
                     </div>
                 </div>
             </div>
-        {{ form_end(form, {'render_rest': false}) }}
+        {{ form_end(form) }}
     </div>
 
     {% include 'components/use_voucher_modal.html.twig' %}

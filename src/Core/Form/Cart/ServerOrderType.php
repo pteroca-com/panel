@@ -30,26 +30,32 @@ class ServerOrderType extends AbstractType
             ])
             ->add('egg', ChoiceType::class, [
                 'choices' => $options['eggs'],
-                'placeholder' => 'pteroca.store.select_game',
-                'label' => 'pteroca.store.game',
+                'label' => false,
                 'required' => true,
+                'mapped' => false,
                 'constraints' => [
                     new Assert\NotBlank(message: 'pteroca.store.please_select_game'),
                 ],
                 'attr' => [
-                    'class' => 'form-select',
+                    'style' => 'display:none',
+                ],
+                'label_attr' => [
+                    'style' => 'display:none',
                 ],
             ])
             ->add('duration', ChoiceType::class, [
                 'choices' => $options['prices'],
-                'placeholder' => 'pteroca.store.select_duration',
-                'label' => 'pteroca.store.duration',
+                'label' => false,
                 'required' => true,
+                'mapped' => false,
                 'constraints' => [
                     new Assert\NotBlank(message: 'pteroca.store.please_select_duration'),
                 ],
                 'attr' => [
-                    'class' => 'form-select',
+                    'style' => 'display:none',
+                ],
+                'label_attr' => [
+                    'style' => 'display:none',
                 ],
             ])
             ->add('server-name', TextType::class, [

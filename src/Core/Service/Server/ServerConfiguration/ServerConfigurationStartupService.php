@@ -45,4 +45,18 @@ class ServerConfigurationStartupService
 
         return $preparedPayload;
     }
+
+    public function getEnvironmentVariablePayload(string $variableKey, string $variableValue, array $serverDetails): array
+    {
+        $environment = $serverDetails['container']['environment'];
+        $environment[$variableKey] = $variableValue;
+
+        return [
+            'startup' => $serverDetails['container']['startup_command'],
+            'egg' => $serverDetails['egg'],
+            'environment' => $environment,
+            'image' => $serverDetails['container']['image'],
+            'skip_scripts' => false,
+        ];
+    }
 }

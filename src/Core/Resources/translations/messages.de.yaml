@@ -191,6 +191,7 @@ pteroca:
     no_categories: 'Es wurden noch keine Kategorien zum Shop hinzugefügt.'
     no_products: 'Es gibt noch keine Produkte in dieser Kategorie.'
     price_not_found: 'Preis nicht gefunden'
+    invalid_form_data: 'Ungültige Formulardaten. Bitte überprüfen Sie alle Felder und versuchen Sie es erneut.'
     description: 'Wählen Sie die Kategorie oder das Produkt, das Sie interessiert'
     products_with_no_category: 'Produkte ohne Kategorie'
     categories: 'Kategorien'

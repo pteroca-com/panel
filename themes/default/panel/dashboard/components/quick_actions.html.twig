@@ -20,7 +20,7 @@
                 </a>
             </div>
             <div class="col-md-3 col-6">
-                <a href="{{ path('panel', { routeName: 'settings' }) }}" class="btn btn-outline-secondary w-100">
+                <a href="{{ ea_url().setController('App\\Core\\Controller\\UserAccountCrudController').setAction('edit').setEntityId(app.user.id) }}" class="btn btn-outline-secondary w-100">
                     <i class="fas fa-cog me-2"></i>
                     {{ 'pteroca.dashboard.quick_action_settings'|trans }}
                 </a>

@@ -399,6 +399,12 @@ class CartController extends AbstractController
                 $serverSlots,
             );
 
+            // Update auto-renewal if owner changed it
+            if ($isOwner && isset($formData['auto-renewal'])) {
+                $server->setAutoRenewal($formData['auto-renewal'] === '1');
+                $this->serverRepository->save($server);
+            }
+
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
         } catch (\Exception $exception) {
             $flashMessage = sprintf(

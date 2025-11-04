@@ -1,6 +1,6 @@
 {% extends '@EasyAdmin/page/login_minimal.html.twig' %}
 
-{% block body_class 'page-login bg-light' %}
+{% block body_class 'page-login' %}
 {% block page_title %}{{ get_title() }} | {{ 'pteroca.verification.title'|trans }}{% endblock %}
 
 {% block head_stylesheets %}
@@ -20,14 +20,14 @@
             <!-- Logo Section - poza kartą -->
             <div class="text-center mb-4">
                 {% block header_logo %}
-                    <div class="mb-3">
+                    <div class="rounded-3 p-3 d-inline-block shadow-sm" style="background-color: rgb(93, 137, 186);">
                         <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid" style="max-height: 80px;" />
                     </div>
                 {% endblock header_logo %}
             </div>
             
-            <div class="card shadow border-0">
-                <div class="card-body p-4">
+            <div class="card shadow-lg border rounded-3">
+                <div class="card-body p-5">
                     <!-- Title Section -->
                     <div class="text-center mb-4">
                         <i class="fas fa-envelope-open-text fa-3x text-warning mb-3"></i>
@@ -83,11 +83,11 @@
 
             <!-- Footer -->
             <div class="text-center mt-3">
-                <p class="text-white small mb-0">
-                    Powered by 
-                    <a href="https://pteroca.com" target="_blank" class="text-white text-decoration-none">
+                <p class="text-muted small mb-0">
+                    Powered by
+                    <a href="https://pteroca.com" target="_blank" class="text-muted text-decoration-none">
                         PteroCA v{{ get_app_version() }}
-                    </a> 
+                    </a>
                     &copy; {{ 'now'|date('Y') }}
                 </p>
             </div>

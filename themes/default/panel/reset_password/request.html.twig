@@ -1,61 +1,88 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
 
 {% block body_class 'page-login' %}
-{% block title %}{{ get_title() }} | {{ 'pteroca.recovery.title'|trans }}{% endblock %}
+{% block page_title %}{{ get_title() }} | {{ 'pteroca.recovery.title'|trans }}{% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ template_asset('css/app.css') }}">
+{% block head_stylesheets %}
+    {{ parent() }}
     <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
 {% endblock %}
 
-{% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                {% include '@EasyAdmin/flash_messages.html.twig' %}
+{% block head_favicon %}
+    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
+{% endblock %}
 
-                <div class="login-wrapper">
-                    <header class="main-header">
-                        <div id="header-logo">
-                            <div class="logo">
-                                <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="panel-login-logo">
-                            </div>
-                        </div>
-                    </header>
-                    <section class="content">
-                        <div class="login-title">
-                            {{ 'pteroca.recovery.title'|trans }}
-                        </div>
-                        {% if error|default(false) %}
-                            <div class="w-100 alert alert-danger rounded mb-3">
-                                <i class="fas fa-times-circle mr-1"></i>
+{% block wrapper_wrapper %}
+    {% set page_title = block('page_title') %}
+
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+        <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+            <!-- Logo Section -->
+            <div class="text-center mb-4">
+                <div class="rounded-3 p-3 d-inline-block shadow-sm" style="background-color: rgb(93, 137, 186);">
+                    <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid" style="max-height: 80px;" />
+                </div>
+            </div>
+
+            <div class="card shadow-lg border rounded-3">
+                <div class="card-body p-5">
+                    <!-- Title Section -->
+                    <div class="text-center mb-4">
+                        <h1 class="h4 fw-bold text-dark mb-1">{{ 'pteroca.recovery.title'|trans }}</h1>
+                        <p class="text-muted small mb-0">{{ 'pteroca.recovery.subtitle'|trans }}</p>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% include '@EasyAdmin/flash_messages.html.twig' %}
+
+                    <!-- Error Message -->
+                    {% if error|default(false) %}
+                        <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
                                 {{ error.messageKey|trans(error.messageData, 'security') }}
                             </div>
-                        {% endif %}
-
-                        {{ form_errors(requestForm) }}
-
-                        {{ form_start(requestForm) }}
-                        <div class="form-group">
-                            <label class="form-control-label required" for="email">{{ field_label(requestForm.email) }}</label>
-                            <div class="form-widget">
-                                <input type="email" id="email" name="{{ field_name(requestForm.email) }}" class="form-control" value="{{ field_value(requestForm.email) }}" required autofocus autocomplete="email">
-                            </div>
                         </div>
+                    {% endif %}
 
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-lg btn-block">{{ 'pteroca.recovery.submit'|trans }}</button>
+                    {{ form_errors(requestForm) }}
+
+                    <!-- Reset Password Form -->
+                    {{ form_start(requestForm) }}
+
+                        {{ form_row(requestForm.email) }}
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg fw-semibold">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                {{ 'pteroca.recovery.submit'|trans }}
+                            </button>
                         </div>
-                        {{ form_end(requestForm) }}
-                    </section>
-                    <div class="col-12 text-center mt-2 powered-by">
-                        Powered by <a href="https://pteroca.com" target="_blank">Pteroca v{{ get_app_version() }}</a> &copy; {{ 'now'|date('Y') }}
+                    {{ form_end(requestForm) }}
+
+                    <!-- Back to Login Link -->
+                    <div class="text-center">
+                        <p class="text-muted small mb-0">
+                            <a href="{{ path('app_login') }}" class="text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                {{ 'pteroca.recovery.back_to_login'|trans }}
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-3">
+                <p class="text-muted small mb-0">
+                    Powered by
+                    <a href="https://pteroca.com" target="_blank" class="text-muted text-decoration-none">
+                        PteroCA v{{ get_app_version() }}
+                    </a>
+                    &copy; {{ 'now'|date('Y') }}
+                </p>
+            </div>
         </div>
     </div>
-
-
-
 {% endblock %}

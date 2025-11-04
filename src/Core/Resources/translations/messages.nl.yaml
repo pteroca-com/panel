@@ -184,6 +184,7 @@ pteroca:
     no_categories: 'Er zijn nog geen categorieën.'
     no_products: 'Er zijn nog geen producten.'
     price_not_found: 'Prijs niet gevonden'
+    invalid_form_data: 'Ongeldige formuliergegevens. Controleer alle velden en probeer het opnieuw.'
     description: 'Selecteer de categorie of het product waarin u geïnteresseerd bent'
     products_with_no_category: 'Producten zonder categorie'
     categories: 'Categorieën'

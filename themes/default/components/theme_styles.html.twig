@@ -11,14 +11,36 @@
         --bs-border-color: var(--bs-border-color-translucent);
     }
     .ea-dark-scheme {
+        /* Stripe-inspired Dark Mode Colors */
         --primary-color: {{ defaultThemeColors.theme_default_dark_primary_color }};
-        --secondary-color: {{ defaultThemeColors.theme_default_dark_secondary_color }};
+        --secondary-color: #243B53;
         --pagination-active-bg: {{ defaultThemeColors.theme_default_dark_primary_color }};
-        --body-bg: {{ defaultThemeColors.theme_default_dark_background_color }};
-        --link-color: {{ defaultThemeColors.theme_default_dark_link_color }};
-        --link-hover-color: {{ defaultThemeColors.theme_default_dark_link_hover_color }};
-        --table-hover-cell-bg: var(--secondary-color);
-        --bs-border-color:  var(--bs-border-color-translucent);
+        --body-bg: #0E1E2F;
+        --link-color: #6BA5F2;
+        --link-hover-color: #8ABAFF;
+        --table-hover-cell-bg: #243B53;
+        --bs-border-color: #2D3F52;
+
+        /* Stripe-specific color variables */
+        --stripe-dark-bg-main: #0E1E2F;
+        --stripe-dark-bg-card: #1A2B3D;
+        --stripe-dark-bg-sidebar: #0A2540;
+        --stripe-dark-bg-header: #061524;
+        --stripe-dark-border: #2D3F52;
+        --stripe-dark-hover: #243B53;
+        --stripe-dark-text: #E6EDF3;
+        --stripe-dark-text-secondary: #9AA5B1;
+        --stripe-dark-text-heading: #F8FAFC;
+
+        /* Bootstrap overrides for Stripe style */
+        --bs-body-bg: #0E1E2F;
+        --bs-body-color: #E6EDF3;
+        --bs-heading-color: #F8FAFC;
+        --bs-secondary-color: #9AA5B1;
+        --bs-border-color: #2D3F52;
+        --bs-card-bg: #1A2B3D;
+        --bs-card-cap-bg: #1A2B3D;
+
         .bg-light {
             background-color: var(--table-hover-cell-bg) !important;
         }

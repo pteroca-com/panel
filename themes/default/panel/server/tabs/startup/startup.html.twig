@@ -133,9 +133,11 @@
                     key: settingName,
                     value: element.value,
                 }),
-            }).then(response => {
+            }).then(async response => {
+                const data = await response.json().catch(() => ({}));
+
                 if (!response.ok) {
-                   return handleError('{{ 'pteroca.server.data_update_error'|trans }}');
+                    return handleError(data.error || '{{ 'pteroca.server.data_update_error'|trans }}');
                 }
 
                 alert('{{ 'pteroca.server.data_updated_successfully'|trans }}');

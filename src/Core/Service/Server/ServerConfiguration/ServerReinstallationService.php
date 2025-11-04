@@ -69,27 +69,21 @@ class ServerReinstallationService extends AbstractServerConfiguration
         );
         $this->eventDispatcher->dispatch($initiatedEvent);
 
-        try {
-            $this->pterodactylApplicationService
-                ->getClientApi($user)
-                ->servers()
-                ->reinstallServer($server);
+        $this->pterodactylApplicationService
+            ->getClientApi($user)
+            ->servers()
+            ->reinstallServer($server->getPterodactylServerIdentifier());
 
-            $reinstalledEvent = new ServerReinstalledEvent(
-                $user->getId(),
-                $server->getId(),
-                $server->getPterodactylServerIdentifier(),
-                $selectedEgg,
-                $currentEgg,
-                $eggChanged,
-                $context
-            );
-            $this->eventDispatcher->dispatch($reinstalledEvent);
-        } catch (\Exception $e) {
-            if ($e->getMessage() !== '[]') {
-                throw new \Exception('Failed to reinstall server: ' . $e->getMessage());
-            }
-        }
+        $reinstalledEvent = new ServerReinstalledEvent(
+            $user->getId(),
+            $server->getId(),
+            $server->getPterodactylServerIdentifier(),
+            $selectedEgg,
+            $currentEgg,
+            $eggChanged,
+            $context
+        );
+        $this->eventDispatcher->dispatch($reinstalledEvent);
     }
 
     private function validateEgg(Server $server, int $selectedEgg): void

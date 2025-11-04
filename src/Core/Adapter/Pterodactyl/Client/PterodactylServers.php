@@ -80,8 +80,17 @@ class PterodactylServers extends AbstractPterodactylClientAdapter implements Pte
 
     public function reinstallServer(string $serverId): bool
     {
-        $response = $this->makeRequest('POST', "servers/{$serverId}/reinstall");
-        return $response->getStatusCode() === 202;
+        $response = $this->makeRequest('POST', "servers/{$serverId}/settings/reinstall");
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode !== 202) {
+            $content = $response->getContent(false);
+            throw new \Exception(
+                sprintf('Failed to reinstall server. Status: %d, Response: %s', $statusCode, $content)
+            );
+        }
+
+        return true;
     }
 
     public function getServerResources(string $serverId): array
@@ -133,8 +142,12 @@ class PterodactylServers extends AbstractPterodactylClientAdapter implements Pte
             ]
         ]);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception('Failed to update server startup variable');
+        $statusCode = $response->getStatusCode();
+        if ($statusCode !== 200) {
+            $content = $response->getContent(false);
+            throw new \Exception(
+                sprintf('Failed to update server startup variable. Status: %d, Response: %s', $statusCode, $content)
+            );
         }
 
         $data = $response->toArray();
