@@ -12,12 +12,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * - Scans plugins directory for ALL plugins with 'entities' capability (from plugin.json)
  * - Registers their Entity directories in Doctrine's mapping configuration
  * - Uses PSR-4 namespace mapping: Plugins\{PluginName}\Entity
- *
- * NOTE: Registers ALL plugins (not just enabled) because:
- * - Doctrine needs entity metadata at compile-time
- * - Entity classes are lazy-loaded (only loaded when actually used)
- * - Enabled/disabled state is runtime concern, not compile-time
- * - No database connection needed during container compilation
  */
 class PluginDoctrineCompilerPass implements CompilerPassInterface
 {

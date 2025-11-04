@@ -11,10 +11,9 @@ use Symfony\Component\Yaml\Yaml;
  * Compiler pass to dynamically register plugin services.
  *
  * This runs during container compilation and:
- * - Finds all ENABLED plugins from database
+ * - Scans plugins directory for ALL plugins (from plugin.json files)
+ * - Registers their controllers (if 'routes' capability)
  * - Loads their services from Resources/config/services.yaml
- * - Registers event subscribers
- * - Creates service locators for plugin isolation
  */
 class PluginCompilerPass implements CompilerPassInterface
 {
@@ -23,15 +22,14 @@ class PluginCompilerPass implements CompilerPassInterface
         // Get project directory
         $projectDir = $container->getParameter('kernel.project_dir');
 
-        // Get enabled plugins from database
-        // Note: We need to bootstrap the database connection during compilation
-        $enabledPlugins = $this->getEnabledPlugins($container);
+        // Scan plugins directory for ALL plugins (no database query needed)
+        $plugins = $this->scanPluginsFromFilesystem($projectDir);
 
-        if (empty($enabledPlugins)) {
+        if (empty($plugins)) {
             return; // No plugins to load
         }
 
-        foreach ($enabledPlugins as $pluginData) {
+        foreach ($plugins as $pluginData) {
             $this->registerPlugin($container, $pluginData, $projectDir);
         }
     }
@@ -156,111 +154,79 @@ class PluginCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * Get enabled plugins from database.
+     * Scan plugins directory and return ALL plugins.
      *
-     * This method establishes a temporary database connection during compilation.
+     * Reads plugin.json files from filesystem (no database connection needed).
+     * Returns ALL plugins found in /plugins/ directory, regardless of enabled/disabled state.
      *
-     * @param ContainerBuilder $container
-     * @return array
+     * @param string $projectDir
+     * @return array Array of plugin data: ['name' => string, 'manifest' => array]
      */
-    private function getEnabledPlugins(ContainerBuilder $container): array
+    private function scanPluginsFromFilesystem(string $projectDir): array
     {
+        $pluginsDir = $projectDir . '/plugins';
+
+        // Check if plugins directory exists
+        if (!is_dir($pluginsDir)) {
+            return [];
+        }
+
+        $plugins = [];
+
         try {
-            // Get database URL from environment variable
-            $databaseUrl = getenv('DATABASE_URL');
+            $directories = scandir($pluginsDir);
 
-            // Check if database URL is set
-            if (empty($databaseUrl)) {
-                // Try to get from container parameter (might be set in parameters.yaml)
-                if ($container->hasParameter('database_url')) {
-                    $databaseUrl = $container->getParameter('database_url');
-                } else {
-                    return []; // No database configured
+            if ($directories === false) {
+                return [];
+            }
+
+            foreach ($directories as $dir) {
+                // Skip . and ..
+                if ($dir === '.' || $dir === '..') {
+                    continue;
                 }
-            }
 
-            // Create temporary PDO connection (supports MySQL and PostgreSQL)
-            $pdo = $this->createDatabaseConnection($databaseUrl);
+                $pluginPath = $pluginsDir . '/' . $dir;
 
-            if (!$pdo) {
-                return [];
-            }
+                // Skip if not a directory
+                if (!is_dir($pluginPath)) {
+                    continue;
+                }
 
-            // Query for enabled plugins
-            $stmt = $pdo->query("
-                SELECT name, manifest
-                FROM plugin
-                WHERE state = 'enabled'
-                ORDER BY name ASC
-            ");
+                // Check for plugin.json
+                $manifestPath = $pluginPath . '/plugin.json';
 
-            if (!$stmt) {
-                return [];
-            }
+                if (!file_exists($manifestPath)) {
+                    continue;
+                }
 
-            $plugins = [];
-            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                // Read and parse manifest
+                $manifestContent = file_get_contents($manifestPath);
+
+                if ($manifestContent === false) {
+                    error_log("Could not read plugin manifest: {$manifestPath}");
+                    continue;
+                }
+
+                $manifest = json_decode($manifestContent, true);
+
+                if (!$manifest || json_last_error() !== JSON_ERROR_NONE) {
+                    error_log("Invalid JSON in plugin manifest: {$manifestPath}");
+                    continue;
+                }
+
+                // Add plugin to result (no capability filtering - register all)
                 $plugins[] = [
-                    'name' => $row['name'],
-                    'manifest' => json_decode($row['manifest'], true),
+                    'name' => $dir,
+                    'manifest' => $manifest,
                 ];
             }
 
             return $plugins;
 
         } catch (\Exception $e) {
-            // Silently fail - plugin table might not exist yet during initial setup
-            error_log("Could not load plugins during compilation: {$e->getMessage()}");
+            error_log("Error scanning plugins directory: {$e->getMessage()}");
             return [];
-        }
-    }
-
-    /**
-     * Create database connection from DATABASE_URL.
-     *
-     * Supports both MySQL and PostgreSQL.
-     *
-     * @param string $databaseUrl
-     * @return \PDO|null
-     */
-    private function createDatabaseConnection(string $databaseUrl): ?\PDO
-    {
-        try {
-            // Parse DATABASE_URL (format: mysql://user:pass@host:port/dbname or postgresql://...)
-            $parsed = parse_url($databaseUrl);
-
-            if (!$parsed) {
-                return null;
-            }
-
-            $scheme = $parsed['scheme'] ?? '';
-            $host = $parsed['host'] ?? 'localhost';
-            $dbname = ltrim($parsed['path'] ?? '', '/');
-            $user = $parsed['user'] ?? '';
-            $password = $parsed['pass'] ?? '';
-
-            // Determine driver and default port
-            if (in_array($scheme, ['mysql', 'mysqli'])) {
-                $driver = 'mysql';
-                $port = $parsed['port'] ?? 3306;
-            } elseif (in_array($scheme, ['postgresql', 'postgres', 'pgsql'])) {
-                $driver = 'pgsql';
-                $port = $parsed['port'] ?? 5432;
-            } else {
-                error_log("Unsupported database driver: {$scheme}");
-                return null;
-            }
-
-            $dsn = "{$driver}:host={$host};port={$port};dbname={$dbname}";
-
-            return new \PDO($dsn, $user, $password, [
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-            ]);
-
-        } catch (\Exception $e) {
-            error_log("Failed to create database connection: {$e->getMessage()}");
-            return null;
         }
     }
 

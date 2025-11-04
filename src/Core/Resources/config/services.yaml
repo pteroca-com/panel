@@ -195,7 +195,7 @@ services:
     tags:
       - { name: routing.loader }
 
-  # Plugin Boot Listener (registers autoloaders, Twig namespaces, translations for enabled plugins)
+  # Plugin Boot Listener (registers autoloaders and Twig namespaces for enabled plugins)
   App\Core\EventListener\PluginBootListener:
     arguments:
       $twigLoader: '@twig.loader.native_filesystem'
