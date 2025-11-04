@@ -3,16 +3,6 @@ security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
-    providers:
-        users_in_database:
-            entity:
-                class: App\Core\Entity\User
-                property: email
-        # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
-            entity:
-                class: App\Core\Entity\User
-                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/

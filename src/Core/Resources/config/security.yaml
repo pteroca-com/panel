@@ -1,0 +1,10 @@
+security:
+    providers:
+        users_in_database:
+            entity:
+                class: App\Core\Entity\User
+                property: email
+        app_user_provider:
+            entity:
+                class: App\Core\Entity\User
+                property: email

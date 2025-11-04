@@ -1,0 +1,22 @@
+monolog:
+    channels:
+        - plugin # Plugin system audit logging
+
+when@dev:
+    monolog:
+        handlers:
+            plugin:
+                type: stream
+                channels: [ plugin ]
+                path: "%kernel.logs_dir%/plugin.log"
+                level: info
+
+when@prod:
+    monolog:
+        handlers:
+            plugin:
+                type: stream
+                channels: [ plugin ]
+                path: "%kernel.logs_dir%/plugin.log"
+                level: warning
+                formatter: monolog.formatter.json
