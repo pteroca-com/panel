@@ -7,8 +7,6 @@ use App\Core\DependencyInjection\Compiler\PluginConsoleCommandCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginCronTaskCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginDoctrineCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginEventSubscriberCompilerPass;
-use App\Core\DependencyInjection\Compiler\PluginTranslationCompilerPass;
-use App\Core\DependencyInjection\Compiler\PluginTwigCompilerPass;
 use App\Core\DependencyInjection\Compiler\WidgetRegistryCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -39,10 +37,9 @@ class CoreBundle extends Bundle
         $container->addCompilerPass(new WidgetRegistryCompilerPass());
 
         // Register plugin compiler passes
+        // NOTE: Twig and Translation registration moved to runtime (PluginBootListener)
         $container->addCompilerPass(new PluginCompilerPass());
         $container->addCompilerPass(new PluginDoctrineCompilerPass());
-        $container->addCompilerPass(new PluginTwigCompilerPass());
-        $container->addCompilerPass(new PluginTranslationCompilerPass());
         $container->addCompilerPass(new PluginEventSubscriberCompilerPass());
         $container->addCompilerPass(new PluginConsoleCommandCompilerPass());
         $container->addCompilerPass(new PluginCronTaskCompilerPass());
