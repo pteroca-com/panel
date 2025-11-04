@@ -6,6 +6,7 @@ use App\Core\Adapter\StripeAdapter;
 use App\Core\DTO\PaymentSessionDTO;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
+use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StripePaymentProvider implements PaymentProviderInterface
@@ -19,12 +20,15 @@ class StripePaymentProvider implements PaymentProviderInterface
     ) {
     }
 
+    /**
+     * @throws Exception
+     */
     private function setStripeApiKey(): void
     {
         $apiKey = $this->settingService
             ->getSetting(SettingEnum::STRIPE_SECRET_KEY->value);
         if (empty($apiKey)) {
-            throw new \Exception($this->translator->trans('pteroca.recharge.payment_is_not_configured'));
+            throw new Exception($this->translator->trans('pteroca.recharge.payment_is_not_configured'));
         }
         $this->stripeAdapter->setApiKey($apiKey);
         $this->isConfigured = true;
@@ -40,6 +44,9 @@ class StripePaymentProvider implements PaymentProviderInterface
         return array_map('trim', $methods);
     }
 
+    /**
+     * @throws Exception
+     */
     public function createSession(
         float $amount,
         string $currency,
@@ -69,11 +76,14 @@ class StripePaymentProvider implements PaymentProviderInterface
                 'success_url' => $successUrl,
                 'cancel_url' => $cancelUrl,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return null;
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function retrieveSession(string $sessionId): ?PaymentSessionDTO
     {
         if (!$this->isConfigured) {
@@ -82,7 +92,7 @@ class StripePaymentProvider implements PaymentProviderInterface
 
         try {
             $stripeSession = $this->stripeAdapter->retrieveSession($sessionId);
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
 

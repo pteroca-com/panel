@@ -7,6 +7,9 @@ use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Contract\UserInterface;
 use App\Core\Service\SettingService;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,12 +18,12 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class EmailVerificationSubscriber implements EventSubscriberInterface
+readonly class EmailVerificationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly Security $security,
-        private readonly SettingService $settingService,
-        private readonly UrlGeneratorInterface $urlGenerator
+        private Security              $security,
+        private SettingService        $settingService,
+        private UrlGeneratorInterface $urlGenerator
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -30,6 +33,9 @@ class EmailVerificationSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function onKernelController(ControllerEvent $event): void
     {
         $controller = $event->getController();
@@ -46,12 +52,12 @@ class EmailVerificationSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $methodReflection = new \ReflectionMethod($controllerObj, $method);
+        $methodReflection = new ReflectionMethod($controllerObj, $method);
         $methodAttributes = $methodReflection->getAttributes(RequiresVerifiedEmail::class);
         
         $classAttributes = [];
         if (empty($methodAttributes)) {
-            $classReflection = new \ReflectionClass($controllerObj);
+            $classReflection = new ReflectionClass($controllerObj);
             $classAttributes = $classReflection->getAttributes(RequiresVerifiedEmail::class);
         }
 

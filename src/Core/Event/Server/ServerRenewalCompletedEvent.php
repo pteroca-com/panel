@@ -3,6 +3,7 @@
 namespace App\Core\Event\Server;
 
 use App\Core\Event\AbstractDomainEvent;
+use DateTimeInterface;
 
 class ServerRenewalCompletedEvent extends AbstractDomainEvent
 {
@@ -10,7 +11,7 @@ class ServerRenewalCompletedEvent extends AbstractDomainEvent
         private readonly int $serverId,
         private readonly int $userId,
         private readonly float $pricePaid,
-        private readonly \DateTimeInterface $newExpiresAt,
+        private readonly DateTimeInterface $newExpiresAt,
     ) {
         parent::__construct();
     }
@@ -30,7 +31,7 @@ class ServerRenewalCompletedEvent extends AbstractDomainEvent
         return $this->pricePaid;
     }
 
-    public function getNewExpiresAt(): \DateTimeInterface
+    public function getNewExpiresAt(): DateTimeInterface
     {
         return $this->newExpiresAt;
     }

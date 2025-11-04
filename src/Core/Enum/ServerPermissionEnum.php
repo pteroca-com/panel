@@ -3,6 +3,7 @@
 namespace App\Core\Enum;
 
 use App\Core\DTO\Collection\ServerPermissionCollection;
+use ValueError;
 
 enum ServerPermissionEnum: string
 {
@@ -132,7 +133,7 @@ enum ServerPermissionEnum: string
         foreach ($permissions as $permission) {
             try {
                 $result[] = self::from($permission);
-            } catch (\ValueError $e) {
+            } catch (ValueError) {
                 // Ignore invalid permissions
             }
         }

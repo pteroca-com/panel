@@ -3,8 +3,9 @@
 namespace App\Core\Exception\Plugin;
 
 use App\Core\Enum\PluginStateEnum;
+use RuntimeException;
 
-class InvalidStateTransitionException extends \RuntimeException
+class InvalidStateTransitionException extends RuntimeException
 {
     public function __construct(
         string $pluginName,
@@ -20,7 +21,7 @@ class InvalidStateTransitionException extends \RuntimeException
         );
 
         if ($reason !== '') {
-            $message .= ". Reason: {$reason}";
+            $message .= ". Reason: $reason";
         }
 
         parent::__construct($message);

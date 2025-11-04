@@ -3,16 +3,17 @@
 namespace App\Core\Event\User\Registration;
 
 use App\Core\Event\AbstractDomainEvent;
+use DateTimeInterface;
 
 class EmailVerificationResendRequestedEvent extends AbstractDomainEvent
 {
     public function __construct(
-        private readonly int $userId,
-        private readonly string $email,
-        private readonly ?\DateTimeInterface $lastSentAt,
-        private readonly bool $canResend,
-        private readonly array $context = [],
-        ?string $eventId = null,
+        private readonly int                $userId,
+        private readonly string             $email,
+        private readonly ?DateTimeInterface $lastSentAt,
+        private readonly bool               $canResend,
+        private readonly array              $context = [],
+        ?string                             $eventId = null,
     ) {
         parent::__construct($eventId);
     }
@@ -27,7 +28,7 @@ class EmailVerificationResendRequestedEvent extends AbstractDomainEvent
         return $this->email;
     }
 
-    public function getLastSentAt(): ?\DateTimeInterface
+    public function getLastSentAt(): ?DateTimeInterface
     {
         return $this->lastSentAt;
     }

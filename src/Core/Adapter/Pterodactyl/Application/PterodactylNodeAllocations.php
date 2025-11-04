@@ -5,6 +5,12 @@ namespace App\Core\Adapter\Pterodactyl\Application;
 use App\Core\Contract\Pterodactyl\Application\PterodactylNodeAllocationsInterface;
 use App\Core\DTO\Pterodactyl\Application\PterodactylNodeAllocation;
 use App\Core\DTO\Pterodactyl\Collection;
+use Exception;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class PterodactylNodeAllocations extends AbstractPterodactylApplicationAdapter implements PterodactylNodeAllocationsInterface
 {
@@ -14,15 +20,21 @@ class PterodactylNodeAllocations extends AbstractPterodactylApplicationAdapter i
      * @param int $nodeId
      * @param array $query
      * @return Collection
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
      */
     public function paginate(int $nodeId, array $query = []): Collection
     {
-        $response = $this->makeRequest('GET', "nodes/{$nodeId}/allocations", [
+        $response = $this->makeRequest('GET', "nodes/$nodeId/allocations", [
             'query' => $query
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf('Failed to get node allocations: %d %s',
                     $response->getStatusCode(),
                     $response->getContent(false)
@@ -48,6 +60,11 @@ class PterodactylNodeAllocations extends AbstractPterodactylApplicationAdapter i
      * @param int $nodeId
      * @param array $query
      * @return Collection
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function all(int $nodeId, array $query = []): Collection
     {
@@ -62,15 +79,21 @@ class PterodactylNodeAllocations extends AbstractPterodactylApplicationAdapter i
      * @param int $nodeId
      * @param array $data
      * @return Collection
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
      */
     public function create(int $nodeId, array $data): Collection
     {
-        $response = $this->makeRequest('POST', "nodes/{$nodeId}/allocations", [
+        $response = $this->makeRequest('POST', "nodes/$nodeId/allocations", [
             'json' => $data
         ]);
 
         if ($response->getStatusCode() !== 201) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf('Failed to create node allocations: %d %s',
                     $response->getStatusCode(),
                     $response->getContent(false)
@@ -99,13 +122,18 @@ class PterodactylNodeAllocations extends AbstractPterodactylApplicationAdapter i
      * @param int $nodeId
      * @param int $allocationId
      * @return void
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
      */
     public function delete(int $nodeId, int $allocationId): void
     {
-        $response = $this->makeRequest('DELETE', "nodes/{$nodeId}/allocations/{$allocationId}");
+        $response = $this->makeRequest('DELETE', "nodes/$nodeId/allocations/$allocationId");
 
         if ($response->getStatusCode() !== 204) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf('Failed to delete node allocation: %d %s',
                     $response->getStatusCode(),
                     $response->getContent(false)

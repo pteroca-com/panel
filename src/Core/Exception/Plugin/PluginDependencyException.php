@@ -2,6 +2,9 @@
 
 namespace App\Core\Exception\Plugin;
 
+use RuntimeException;
+use Throwable;
+
 /**
  * Exception thrown when plugin dependency validation fails.
  *
@@ -23,9 +26,9 @@ namespace App\Core\Exception\Plugin;
  * }
  * ```
  */
-class PluginDependencyException extends \RuntimeException
+class PluginDependencyException extends RuntimeException
 {
-    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

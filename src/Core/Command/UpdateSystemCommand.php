@@ -8,6 +8,7 @@ use App\Core\Service\Update\SystemStateManager;
 use App\Core\Service\Update\UpdateLockManager;
 use App\Core\Service\Update\ValidationService;
 use Doctrine\DBAL\Connection;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -122,7 +123,7 @@ class UpdateSystemCommand extends Command
                 return Command::SUCCESS;
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error('Update failed: ' . $e->getMessage());
 
             if ($options['verbose']) {

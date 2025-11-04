@@ -8,6 +8,7 @@ use App\Core\Event\Cli\CreateUser\UserCreationProcessCompletedEvent;
 use App\Core\Event\Cli\CreateUser\UserCreationProcessFailedEvent;
 use App\Core\Event\Cli\CreateUser\UserCreationProcessStartedEvent;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
+use App\Core\Exception\PterodactylAccountEmailAlreadyExists;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
@@ -17,7 +18,6 @@ use Exception;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 
 class CreateNewUserHandler implements HandlerInterface
 {
@@ -36,6 +36,10 @@ class CreateNewUserHandler implements HandlerInterface
         private readonly EventContextService $eventContextService,
     ) {}
 
+    /**
+     * @throws CouldNotCreatePterodactylClientApiKeyException
+     * @throws PterodactylAccountEmailAlreadyExists
+     */
     public function handle(bool $allowToCreateWithNoPterodactylApiKey = false): void
     {
         $startTime = new DateTimeImmutable();
@@ -92,10 +96,8 @@ class CreateNewUserHandler implements HandlerInterface
 
             try {
                 $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $this->userPassword);
-            } catch (ValidationException $exception) {
-                $errors = $exception->errors()['errors'] ?? [];
-                $errors = array_map(fn($error) => $error['detail'], $errors);
-                $message = sprintf('%s Errors: %s', $exception->getMessage(), implode(', ', $errors));
+            } catch (Exception $exception) {
+                $message = 'Could not create Pterodactyl account: ' . $exception->getMessage();
 
                 $this->eventDispatcher->dispatch(
                     new UserCreationProcessFailedEvent(
@@ -180,10 +182,7 @@ class CreateNewUserHandler implements HandlerInterface
                     $context
                 )
             );
-        } catch (RuntimeException $e) {
-            // Already emitted FailedEvent, just re-throw
-            throw $e;
-        } catch (CouldNotCreatePterodactylClientApiKeyException $e) {
+        } catch (RuntimeException|CouldNotCreatePterodactylClientApiKeyException $e) {
             // Already emitted FailedEvent, just re-throw
             throw $e;
         } catch (Exception $e) {

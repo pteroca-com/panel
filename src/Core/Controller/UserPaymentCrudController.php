@@ -29,6 +29,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -37,7 +38,7 @@ class UserPaymentCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly RequestStack $requestStack,
+        RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingService $settingService,
         private readonly PaymentService $paymentService,
@@ -50,11 +51,14 @@ class UserPaymentCrudController extends AbstractPanelController
         return UserPayment::class;
     }
 
+    /**
+     * @throws Exception
+     */
     public function continuePayment(AdminContext $context): RedirectResponse
     {
         $entity = $context->getEntity()->getInstance();
         if (!$entity instanceof Payment) {
-            throw new \Exception('Invalid entity type');
+            throw new Exception('Invalid entity type');
         }
 
         $request = $context->getRequest();

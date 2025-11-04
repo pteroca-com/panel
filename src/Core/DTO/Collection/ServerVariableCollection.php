@@ -4,10 +4,10 @@ namespace App\Core\DTO\Collection;
 
 use App\Core\DTO\ServerVariableDTO;
 
-class ServerVariableCollection
+readonly class ServerVariableCollection
 {
     public function __construct(
-        private readonly array $variables,
+        private array $variables,
     )
     {
     }

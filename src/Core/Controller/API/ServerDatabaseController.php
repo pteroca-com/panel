@@ -7,6 +7,7 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerDatabaseService;
 use App\Core\Trait\InternalServerApiTrait;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +38,7 @@ class ServerDatabaseController extends APIAbstractController
                 $this->getUser(),
             );
             $response->setData($pterodactylDatabases);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to get all Pterodactyl databases', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()->getId(),
@@ -67,7 +68,7 @@ class ServerDatabaseController extends APIAbstractController
                 $payload['name'],
                 $payload['connections_from'],
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to create Pterodactyl database', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()->getId(),
@@ -97,7 +98,7 @@ class ServerDatabaseController extends APIAbstractController
                 $this->getUser(),
                 $databaseId,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to delete Pterodactyl database', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()->getId(),
@@ -127,7 +128,7 @@ class ServerDatabaseController extends APIAbstractController
                 $databaseId,
             );
             $response->setData($changedDatabaseData);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to rotate Pterodactyl database password', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()->getId(),

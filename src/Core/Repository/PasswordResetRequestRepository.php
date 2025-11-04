@@ -4,6 +4,7 @@ namespace App\Core\Repository;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\PasswordResetRequest;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,7 +32,7 @@ class PasswordResetRequestRepository extends ServiceEntityRepository
             ->andWhere('prr.expiresAt > :now')
             ->andWhere('prr.isUsed = false')
             ->setParameter('user', $user)
-            ->setParameter('now', new \DateTime())
+            ->setParameter('now', new DateTime())
             ->getQuery()
             ->getSingleScalarResult() > 0;
     }

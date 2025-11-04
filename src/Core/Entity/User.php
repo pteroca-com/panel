@@ -5,6 +5,8 @@ namespace App\Core\Entity;
 use App\Core\Contract\UserInterface;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\UserRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -44,10 +46,10 @@ class User implements UserInterface
     private string $surname;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $createdAt;
+    private DateTimeInterface $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
+    private ?DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
@@ -62,7 +64,7 @@ class User implements UserInterface
     private ?File $avatarFile = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $deletedAt = null;
+    private ?DateTime $deletedAt = null;
 
     #[ORM\OneToMany(targetEntity: Log::class, mappedBy: 'user', cascade: ['remove'])]
     private PersistentCollection $logs;
@@ -70,7 +72,7 @@ class User implements UserInterface
     private ?string $plainPassword = null;
 
     /**
-     * @var string The hashed password
+     * @var ?string The hashed password
      */
     #[ORM\Column]
     private ?string $password = null;
@@ -244,7 +246,7 @@ class User implements UserInterface
         if (null !== $avatarFile) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTime();
+            $this->updatedAt = new DateTime();
         }
 
         return $this;
@@ -253,10 +255,10 @@ class User implements UserInterface
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
@@ -264,10 +266,10 @@ class User implements UserInterface
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?DateTimeInterface
     {
         return $this->updatedAt;
     }
@@ -292,12 +294,12 @@ class User implements UserInterface
         $this->plainPassword = null;
     }
 
-    public function getDeletedAt(): ?\DateTime
+    public function getDeletedAt(): ?DateTime
     {
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTime $deletedAt): self
+    public function setDeletedAt(?DateTime $deletedAt): self
     {
         $this->deletedAt = $deletedAt;
 
@@ -311,7 +313,7 @@ class User implements UserInterface
 
     public function softDelete(): self
     {
-        $this->deletedAt = new \DateTime();
+        $this->deletedAt = new DateTime();
 
         return $this;
     }

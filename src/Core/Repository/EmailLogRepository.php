@@ -6,6 +6,7 @@ use App\Core\Contract\UserInterface;
 use App\Core\Entity\EmailLog;
 use App\Core\Entity\Server;
 use App\Core\Enum\EmailTypeEnum;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -56,7 +57,7 @@ class EmailLogRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function countByServerAndTypeInPeriod(Server $server, EmailTypeEnum $emailType, \DateTimeInterface $since): int
+    public function countByServerAndTypeInPeriod(Server $server, EmailTypeEnum $emailType, DateTimeInterface $since): int
     {
         return (int) $this->createQueryBuilder('el')
             ->select('COUNT(el.id)')
@@ -70,7 +71,7 @@ class EmailLogRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function deleteOldLogs(\DateTimeInterface $cutoffDate): int
+    public function deleteOldLogs(DateTimeInterface $cutoffDate): int
     {
         $qb = $this->createQueryBuilder('el')
             ->delete()

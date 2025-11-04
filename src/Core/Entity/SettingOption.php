@@ -3,6 +3,7 @@
 namespace App\Core\Entity;
 
 use App\Core\Repository\SettingOptionRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SettingOptionRepository::class)]
@@ -27,15 +28,15 @@ class SettingOption
     private int $sortOrder = 0;
 
     #[ORM\Column(type: "datetime")]
-    private \DateTime $createdAt;
+    private DateTime $createdAt;
 
     #[ORM\Column(type: "datetime")]
-    private \DateTime $updatedAt;
+    private DateTime $updatedAt;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     public function getId(): int
@@ -87,23 +88,23 @@ class SettingOption
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): self
+    public function setCreatedAt(DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt): self
+    public function setUpdatedAt(DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;

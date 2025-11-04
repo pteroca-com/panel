@@ -7,11 +7,12 @@ use App\Core\Contract\Widget\WidgetInterface;
 use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
 use App\Core\Service\Server\ServerService;
+use InvalidArgumentException;
 
-class ServersWidget implements WidgetInterface
+readonly class ServersWidget implements WidgetInterface
 {
     public function __construct(
-        private readonly ServerService $serverService
+        private ServerService $serverService
     ) {}
 
     public function getName(): string
@@ -47,7 +48,7 @@ class ServersWidget implements WidgetInterface
     public function getData(WidgetContext $context, array $contextData): array
     {
         /** @var UserInterface $user */
-        $user = $contextData['user'] ?? throw new \InvalidArgumentException('User required in context data');
+        $user = $contextData['user'] ?? throw new InvalidArgumentException('User required in context data');
 
         return [
             'servers' => $this->serverService->getServersWithAccess($user),

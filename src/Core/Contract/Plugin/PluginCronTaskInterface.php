@@ -2,6 +2,8 @@
 
 namespace App\Core\Contract\Plugin;
 
+use Exception;
+
 /**
  * Interface for plugin cron tasks.
  *
@@ -42,7 +44,7 @@ interface PluginCronTaskInterface
      * This method contains the actual task logic that will be executed
      * according to the schedule.
      *
-     * @throws \Exception If task execution fails
+     * @throws Exception If task execution fails
      */
     public function execute(): void;
 

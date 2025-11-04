@@ -4,6 +4,7 @@ namespace App\Core\Command;
 
 use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginAssetManager;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -49,25 +50,25 @@ class PluginAssetsPublishCommand extends Command
 
     private function publishSinglePlugin(string $pluginName, SymfonyStyle $io): int
     {
-        $io->info("Publishing assets for plugin: {$pluginName}");
+        $io->info("Publishing assets for plugin: $pluginName");
 
         $plugin = $this->pluginManager->getPluginByName($pluginName);
 
         if ($plugin === null) {
-            $io->error("Plugin '{$pluginName}' not found");
+            $io->error("Plugin '$pluginName' not found");
             return Command::FAILURE;
         }
 
         if (!$plugin->isEnabled()) {
-            $io->warning("Plugin '{$pluginName}' is not enabled");
+            $io->warning("Plugin '$pluginName' is not enabled");
             return Command::FAILURE;
         }
 
         try {
             $this->assetManager->publishAssets($plugin);
-            $io->success("Assets published for plugin: {$pluginName}");
+            $io->success("Assets published for plugin: $pluginName");
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error("Failed to publish assets: {$e->getMessage()}");
             return Command::FAILURE;
         }
@@ -86,16 +87,14 @@ class PluginAssetsPublishCommand extends Command
 
         $published = 0;
         $failed = 0;
-        $errors = [];
 
         foreach ($enabledPlugins as $plugin) {
             try {
                 $this->assetManager->publishAssets($plugin);
                 ++$published;
                 $io->writeln("  <info>✓</info> {$plugin->getDisplayName()}");
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 ++$failed;
-                $errors[$plugin->getName()] = $e->getMessage();
                 $io->writeln("  <error>✗</error> {$plugin->getDisplayName()}: {$e->getMessage()}");
             }
         }
@@ -103,11 +102,11 @@ class PluginAssetsPublishCommand extends Command
         $io->newLine();
 
         if ($failed > 0) {
-            $io->warning("Published assets for {$published} plugin(s), {$failed} failed");
+            $io->warning("Published assets for $published plugin(s), $failed failed");
             return Command::FAILURE;
         }
 
-        $io->success("Published assets for {$published} plugin(s)");
+        $io->success("Published assets for $published plugin(s)");
         return Command::SUCCESS;
     }
 }

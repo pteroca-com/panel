@@ -3,6 +3,7 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\Contract\UserInterface;
+use App\Core\DTO\PluginManifestDTO;
 use App\Core\Entity\Plugin;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Logs\LogService;
@@ -96,19 +97,49 @@ class PluginAuditLogger
 
     /**
      * Log plugin discovered event (system action, no user).
+     *
+     * Accepts either a Plugin entity (after registration) or path + manifest data (during discovery).
      */
-    public function logPluginDiscovered(Plugin $plugin): void
+    public function logPluginDiscovered(Plugin|string $pluginOrPath, ?PluginManifestDTO $manifest = null): void
     {
-        $this->logPluginAction(
-            $plugin,
-            LogActionEnum::PLUGIN_DISCOVERED,
-            null,
-            [
-                'path' => $plugin->getPath(),
-                'pteroca_min_version' => $plugin->getPterocaMinVersion(),
-                'pteroca_max_version' => $plugin->getPterocaMaxVersion(),
-            ]
-        );
+        if ($pluginOrPath instanceof Plugin) {
+            // Plugin entity provided (already registered)
+            $this->logPluginAction(
+                $pluginOrPath,
+                LogActionEnum::PLUGIN_DISCOVERED,
+                null,
+                [
+                    'path' => $pluginOrPath->getPath(),
+                    'pteroca_min_version' => $pluginOrPath->getPterocaMinVersion(),
+                    'pteroca_max_version' => $pluginOrPath->getPterocaMaxVersion(),
+                ]
+            );
+        } else {
+            // Path + manifest provided (during discovery, before registration)
+            if ($manifest === null) {
+                throw new \InvalidArgumentException('Manifest is required when providing plugin path');
+            }
+
+            $details = [
+                'plugin_name' => $manifest->name,
+                'plugin_display_name' => $manifest->displayName,
+                'plugin_version' => $manifest->version,
+                'path' => $pluginOrPath,
+                'pteroca_min_version' => $manifest->pterocaMinVersion,
+                'pteroca_max_version' => $manifest->pterocaMaxVersion,
+            ];
+
+            // Log to plugin.log file only (no database log as plugin isn't registered yet)
+            $this->pluginLogger->info(
+                sprintf('Plugin action: %s - %s', LogActionEnum::PLUGIN_DISCOVERED->name, $manifest->name),
+                [
+                    'action' => LogActionEnum::PLUGIN_DISCOVERED->name,
+                    'plugin' => $manifest->name,
+                    'user' => 'system',
+                    'context' => $details,
+                ]
+            );
+        }
     }
 
     /**

@@ -74,9 +74,9 @@ interface ProductInterface
     public function getSlotPrices(): Collection;
 
     /**
-     * @param iterable<ProductPriceInterface> $prices
+     * @param iterable<ProductPriceInterface> $incomingPrices
      */
-    public function setStaticPrices(iterable $prices): self;
+    public function setStaticPrices(iterable $incomingPrices): self;
 
     /**
      * @param iterable<ProductPriceInterface> $prices

@@ -49,7 +49,7 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $repeatPassword = null;
 
     /**
-     * @var string The hashed password
+     * @var ?string The hashed password
      */
     #[ORM\Column]
     private ?string $password = null;

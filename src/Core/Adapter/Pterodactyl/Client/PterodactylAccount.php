@@ -6,9 +6,22 @@ use App\Core\Contract\Pterodactyl\Client\PterodactylAccountInterface;
 use App\Core\DTO\Pterodactyl\Client\PterodactylAccount as PterodactylAccountDto;
 use App\Core\DTO\Pterodactyl\Client\PterodactylApiKey;
 use App\Core\DTO\Pterodactyl\Collection;
+use Exception;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class PterodactylAccount extends AbstractPterodactylClientAdapter implements PterodactylAccountInterface
 {
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function getAccount(): PterodactylAccountDto
     {
         $response = $this->makeRequest('GET', 'account');
@@ -17,12 +30,18 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
         return new PterodactylAccountDto($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function updateAccount(array $details): bool
     {
         $response = $this->makeRequest('PUT', 'account', ['json' => $details]);
         return in_array($response->getStatusCode(), [200, 201, 204]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function updateEmail(string $email, string $currentPassword): bool
     {
         $response = $this->makeRequest('PUT', 'account/email', [
@@ -34,6 +53,9 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
         return in_array($response->getStatusCode(), [200, 201, 204]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function updatePassword(string $currentPassword, string $newPassword, string $passwordConfirmation): bool
     {
         $response = $this->makeRequest('PUT', 'account/password', [
@@ -46,6 +68,9 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
         return in_array($response->getStatusCode(), [200, 201, 204]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function enableTwoFactor(string $code): bool
     {
         $response = $this->makeRequest('POST', 'account/two-factor', [
@@ -54,6 +79,9 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
         return $response->getStatusCode() === 200;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function disableTwoFactor(string $password): bool
     {
         $response = $this->makeRequest('POST', 'account/two-factor/disable', [
@@ -62,17 +90,31 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
         return $response->getStatusCode() === 204;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
     public function getTwoFactorQrCode(): string
     {
         $response = $this->makeRequest('GET', 'account/two-factor/qr');
         
         if ($response->getStatusCode() !== 200) {
-            throw new \Exception('Failed to retrieve QR code');
+            throw new Exception('Failed to retrieve QR code');
         }
 
         return $response->getContent();
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function getApiKeys(): Collection
     {
         $response = $this->makeRequest('GET', 'account/api-keys');
@@ -86,6 +128,13 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
         return new Collection($items, $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function createApiKey(string $description, array $allowedIps = []): PterodactylApiKey
     {
         $payload = ['description' => $description];
@@ -105,9 +154,12 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
         return new PterodactylApiKey($attributes, $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function deleteApiKey(string $identifier): bool
     {
-        $response = $this->makeRequest('DELETE', "account/api-keys/{$identifier}");
+        $response = $this->makeRequest('DELETE', "account/api-keys/$identifier");
         return $response->getStatusCode() === 204;
     }
 }

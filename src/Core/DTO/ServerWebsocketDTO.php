@@ -4,12 +4,12 @@ namespace App\Core\DTO;
 
 use App\Core\Entity\Server;
 
-class ServerWebsocketDTO
+readonly class ServerWebsocketDTO
 {
     public function __construct(
-        private readonly ?string $token = null,
-        private readonly ?string $socket = null,
-        private readonly ?Server $server = null,
+        private ?string $token = null,
+        private ?string $socket = null,
+        private ?Server $server = null,
     ) {}
 
     public function getToken(): ?string

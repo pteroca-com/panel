@@ -7,6 +7,7 @@ use App\Core\Event\Form\FormSubmitEvent;
 use App\Core\Form\ResetPasswordFormType;
 use App\Core\Form\ResetPasswordRequestFormType;
 use App\Core\Service\Authorization\PasswordRecoveryService;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,6 +20,9 @@ class PasswordRecoveryController extends AbstractController
         private readonly TranslatorInterface $translator,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     #[Route('/reset-password', name: 'app_forgot_password_request')]
     public function request(Request $request): Response
     {
@@ -66,6 +70,9 @@ class PasswordRecoveryController extends AbstractController
         );
     }
 
+    /**
+     * @throws Exception
+     */
     #[Route('/reset-password/{token}', name: 'app_reset_password')]
     public function reset(Request $request, string $token): Response
     {

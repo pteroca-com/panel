@@ -5,6 +5,7 @@ namespace App\Core\DTO;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerLogSourceTypeEnum;
+use DateTimeInterface;
 
 class ServerLogDTO
 {
@@ -14,7 +15,7 @@ class ServerLogDTO
         public string $actionId,
         public ?UserInterface $user,
         public Server $server,
-        public \DateTimeInterface $createdAt,
+        public DateTimeInterface $createdAt,
         public ?string $details = null,
     ) {}
 }

@@ -4,6 +4,7 @@ namespace App\Core\Repository;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -29,7 +30,7 @@ class ServerRepository extends ServiceEntityRepository
     /**
      * @return Server[]
      */
-    public function getServersExpiredBefore(\DateTime $expiresBefore): array
+    public function getServersExpiredBefore(DateTime $expiresBefore): array
     {
         return $this->createQueryBuilder('s')
             ->where('s.isSuspended = true')
@@ -40,7 +41,7 @@ class ServerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getServersToSuspend(\DateTime $expiresBefore): array
+    public function getServersToSuspend(DateTime $expiresBefore): array
     {
         return $this->createQueryBuilder('s')
             ->where('s.isSuspended = false')

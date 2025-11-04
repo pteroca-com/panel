@@ -6,6 +6,7 @@ use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\SSO\SSORedirectRequestedEvent;
 use App\Core\Event\SSO\SSORedirectInitiatedEvent;
 use App\Core\Service\Authorization\SSOLoginRedirectService;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,7 +64,7 @@ class SSOLoginRedirectController extends AbstractController
                 $viewData,
                 $request
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // SSOFailedEvent is already emitted in service
             $errorMessage = $this->translator->trans('pteroca.sso.redirect_failed') . ': ' . $e->getMessage();
             $this->addFlash('danger', $errorMessage);

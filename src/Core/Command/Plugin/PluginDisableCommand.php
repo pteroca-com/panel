@@ -6,6 +6,7 @@ use App\Core\Exception\Plugin\InvalidStateTransitionException;
 use App\Core\Exception\Plugin\PluginDependencyException;
 use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginDependencyResolver;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -49,17 +50,17 @@ class PluginDisableCommand extends Command
         $pluginName = $input->getArgument('plugin');
         $cascade = $input->getOption('cascade');
 
-        $io->title("Disable Plugin: {$pluginName}");
+        $io->title("Disable Plugin: $pluginName");
 
         $plugin = $this->pluginManager->getPluginByName($pluginName);
         if ($plugin === null) {
-            $io->error("Plugin '{$pluginName}' not found. Run 'plugin:list' to see available plugins.");
+            $io->error("Plugin '$pluginName' not found. Run 'plugin:list' to see available plugins.");
 
             return Command::FAILURE;
         }
 
         if ($plugin->getState()->value === 'disabled') {
-            $io->warning("Plugin '{$pluginName}' is already disabled");
+            $io->warning("Plugin '$pluginName' is already disabled");
 
             return Command::SUCCESS;
         }
@@ -123,7 +124,7 @@ class PluginDisableCommand extends Command
         try {
             $this->pluginManager->disablePlugin($plugin, $cascade);
 
-            $io->success("Plugin '{$pluginName}' has been disabled successfully");
+            $io->success("Plugin '$pluginName' has been disabled successfully");
 
             if ($cascade && !empty($enabledDependents)) {
                 $io->note(sprintf('Also disabled %d dependent plugin(s)', count($enabledDependents)));
@@ -139,7 +140,7 @@ class PluginDisableCommand extends Command
             $io->error("Dependency error: {$e->getMessage()}");
 
             return Command::FAILURE;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error("Failed to disable plugin: {$e->getMessage()}");
 
             return Command::FAILURE;

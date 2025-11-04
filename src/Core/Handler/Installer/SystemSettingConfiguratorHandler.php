@@ -10,6 +10,7 @@ use App\Core\Service\System\EnvironmentConfigurationService;
 use App\Core\Service\System\WebConfigurator\EmailConnectionVerificationService;
 use App\Core\Service\System\WebConfigurator\PterodactylConnectionVerificationService;
 use App\Core\Service\System\WebConfigurator\UserValidationService;
+use Random\RandomException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class SystemSettingConfiguratorHandler
@@ -25,6 +26,9 @@ class SystemSettingConfiguratorHandler
         private readonly UserValidationService $userValidationService,
     ) {}
 
+    /**
+     * @throws RandomException
+     */
     public function configureSystemSettings(SymfonyStyle $io): void
     {
         $isAlreadyConfigured = $this->settingService->getSetting(SettingEnum::IS_CONFIGURED->value);
@@ -228,6 +232,9 @@ class SystemSettingConfiguratorHandler
         }
     }
 
+    /**
+     * @throws RandomException
+     */
     private function generateAppSecretKeyIfNeeded(SymfonyStyle $io): void
     {
         $appKey = $this->environmentConfigurationHandler->getEnvValue('/^APP_SECRET=(.*)$/m');

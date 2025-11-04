@@ -64,7 +64,7 @@ class PluginListCommand extends Command
             [[$stats['total'], $stats['enabled'], $stats['disabled'], $stats['faulted']]]
         );
 
-        $io->section('Plugins' . ($stateFilter ? " (state: {$stateFilter})" : ''));
+        $io->section('Plugins' . ($stateFilter ? " (state: $stateFilter)" : ''));
 
         $rows = [];
         foreach ($plugins as $plugin) {
@@ -72,9 +72,9 @@ class PluginListCommand extends Command
             $stateLabel = $state->getLabel();
 
             $stateDisplay = match ($state->value) {
-                'enabled' => "<fg=green>{$stateLabel}</>",
-                'disabled' => "<fg=yellow>{$stateLabel}</>",
-                'faulted' => "<fg=red>{$stateLabel}</>",
+                'enabled' => "<fg=green>$stateLabel</>",
+                'disabled' => "<fg=yellow>$stateLabel</>",
+                'faulted' => "<fg=red>$stateLabel</>",
                 default => $stateLabel,
             };
 

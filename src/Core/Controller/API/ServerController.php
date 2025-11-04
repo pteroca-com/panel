@@ -14,6 +14,7 @@ use App\Core\Service\Pterodactyl\ServerEulaService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
 use App\Core\Trait\InternalServerApiTrait;
+use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -109,7 +110,7 @@ class ServerController extends APIAbstractController
         try {
             $result = $this->serverEulaService->acceptServerEula($server, $this->getUser());
             return new JsonResponse($result);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
     }

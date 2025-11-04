@@ -2,17 +2,17 @@
 
 namespace App\Core\DTO;
 
-class ServerVariableDTO
+readonly class ServerVariableDTO
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $description,
-        public readonly string $envVariable,
-        public readonly string $defaultValue,
-        public readonly string $serverValue,
-        public readonly bool $isUserEditable,
-        public readonly bool $isUserViewable,
-        public readonly array $rules,
+        public string $name,
+        public string $description,
+        public string $envVariable,
+        public string $defaultValue,
+        public string $serverValue,
+        public bool   $isUserEditable,
+        public bool   $isUserViewable,
+        public array  $rules,
     )
     {
     }

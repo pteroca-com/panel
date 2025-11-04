@@ -5,6 +5,8 @@ namespace App\Core\Entity;
 use App\Core\Contract\UserInterface;
 use App\Core\Enum\EmailTypeEnum;
 use App\Core\Repository\EmailLogRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EmailLogRepository::class)]
@@ -37,7 +39,7 @@ class EmailLog
     private ?array $metadata = null;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTimeInterface $sentAt;
+    private DateTimeInterface $sentAt;
 
     #[ORM\Column(type: 'string', length: 20, options: ['default' => 'sent'])]
     private string $status = 'sent';
@@ -45,7 +47,7 @@ class EmailLog
     #[ORM\PrePersist]
     public function setSentAtValue(): void
     {
-        $this->sentAt = new \DateTime();
+        $this->sentAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -119,7 +121,7 @@ class EmailLog
         return $this;
     }
 
-    public function getSentAt(): \DateTimeInterface
+    public function getSentAt(): DateTimeInterface
     {
         return $this->sentAt;
     }

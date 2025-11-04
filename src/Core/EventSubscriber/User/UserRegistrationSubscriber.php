@@ -6,10 +6,10 @@ use App\Core\Event\User\Registration\UserRegisteredEvent;
 use App\Core\Service\User\UserEmailService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class UserRegistrationSubscriber implements EventSubscriberInterface
+readonly class UserRegistrationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly UserEmailService $userEmailService,
+        private UserEmailService $userEmailService,
     ) {}
 
     public static function getSubscribedEvents(): array

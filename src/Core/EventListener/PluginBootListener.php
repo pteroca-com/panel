@@ -6,6 +6,7 @@ namespace App\Core\EventListener;
 
 use App\Core\Repository\PluginRepository;
 use App\Core\Service\Plugin\PluginAutoloader;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -72,7 +73,7 @@ class PluginBootListener implements EventSubscriberInterface
 
             self::$booted = true;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Silently fail during boot (e.g., database not available yet)
             $this->logger->warning("Failed to boot plugins: {$e->getMessage()}");
         }
@@ -115,7 +116,7 @@ class PluginBootListener implements EventSubscriberInterface
                     'namespace' => $namespace,
                     'path' => $templatePath,
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error("Failed to register Twig namespace", [
                     'plugin' => $plugin->getName(),
                     'error' => $e->getMessage(),

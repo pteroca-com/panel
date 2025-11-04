@@ -2,6 +2,7 @@
 
 namespace App\Core\Twig;
 
+use Exception;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use App\Core\Enum\SettingEnum;
@@ -57,11 +58,14 @@ class AppExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function getCurrency(): string
     {
         $currency = $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
         if (empty($currency)) {
-            throw new \Exception('Internal currency is not set');
+            throw new Exception('Internal currency is not set');
         }
         return $currency;
     }

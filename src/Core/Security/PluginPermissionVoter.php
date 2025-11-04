@@ -7,6 +7,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Throwable;
 
 /**
  * Symfony Voter for plugin-registered custom permissions.
@@ -112,7 +113,7 @@ class PluginPermissionVoter extends Voter
         if ($customChecker !== null && is_callable($customChecker)) {
             try {
                 $customCheckPassed = (bool) $customChecker($user, $subject, $attribute);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->logger->error("Custom permission checker threw exception", [
                     'permission' => $attribute,
                     'exception' => $e->getMessage(),

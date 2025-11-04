@@ -4,12 +4,12 @@ namespace App\Core\DTO\Action\Result;
 
 use App\Core\Contract\UserInterface;
 
-class RegisterUserActionResult
+readonly class RegisterUserActionResult
 {
     public function __construct(
-        public readonly bool $success,
-        public readonly ?UserInterface $user = null,
-        public readonly ?string $error = null
+        public bool           $success,
+        public ?UserInterface $user = null,
+        public ?string        $error = null
     )
     {
     }

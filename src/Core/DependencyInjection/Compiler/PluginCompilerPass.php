@@ -2,6 +2,11 @@
 
 namespace App\Core\DependencyInjection\Compiler;
 
+use App\Core\Trait\PluginDirectoryScannerTrait;
+use Exception;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -17,13 +22,15 @@ use Symfony\Component\Yaml\Yaml;
  */
 class PluginCompilerPass implements CompilerPassInterface
 {
+    use PluginDirectoryScannerTrait;
     public function process(ContainerBuilder $container): void
     {
         // Get project directory
         $projectDir = $container->getParameter('kernel.project_dir');
+        $pluginsDir = $projectDir . '/plugins';
 
         // Scan plugins directory for ALL plugins (no database query needed)
-        $plugins = $this->scanPluginsFromFilesystem($projectDir);
+        $plugins = $this->scanPluginDirectory($pluginsDir);
 
         if (empty($plugins)) {
             return; // No plugins to load
@@ -74,10 +81,10 @@ class PluginCompilerPass implements CompilerPassInterface
             // Register each service from the plugin
             $this->registerPluginServices($container, $servicesConfig['services'], $pluginName);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log error but don't break compilation
             // In production, you might want to mark plugin as FAULTED
-            error_log("Failed to load services for plugin {$pluginName}: {$e->getMessage()}");
+            error_log("Failed to load services for plugin $pluginName: {$e->getMessage()}");
         }
     }
 
@@ -92,12 +99,12 @@ class PluginCompilerPass implements CompilerPassInterface
     {
         foreach ($services as $serviceId => $serviceConfig) {
             // Skip special keys like _defaults
-            if (strpos($serviceId, '_') === 0) {
+            if (str_starts_with($serviceId, '_')) {
                 continue;
             }
 
             // Prefix service ID with plugin name for isolation
-            $prefixedServiceId = "plugin.{$pluginName}.{$serviceId}";
+            $prefixedServiceId = "plugin.$pluginName.$serviceId";
 
             // Get service class
             $class = $serviceConfig['class'] ?? $serviceId;
@@ -141,7 +148,7 @@ class PluginCompilerPass implements CompilerPassInterface
         $resolved = [];
 
         foreach ($arguments as $argument) {
-            if (is_string($argument) && strpos($argument, '@') === 0) {
+            if (is_string($argument) && str_starts_with($argument, '@')) {
                 // Service reference
                 $serviceName = substr($argument, 1);
                 $resolved[] = new Reference($serviceName);
@@ -151,83 +158,6 @@ class PluginCompilerPass implements CompilerPassInterface
         }
 
         return $resolved;
-    }
-
-    /**
-     * Scan plugins directory and return ALL plugins.
-     *
-     * Reads plugin.json files from filesystem (no database connection needed).
-     * Returns ALL plugins found in /plugins/ directory, regardless of enabled/disabled state.
-     *
-     * @param string $projectDir
-     * @return array Array of plugin data: ['name' => string, 'manifest' => array]
-     */
-    private function scanPluginsFromFilesystem(string $projectDir): array
-    {
-        $pluginsDir = $projectDir . '/plugins';
-
-        // Check if plugins directory exists
-        if (!is_dir($pluginsDir)) {
-            return [];
-        }
-
-        $plugins = [];
-
-        try {
-            $directories = scandir($pluginsDir);
-
-            if ($directories === false) {
-                return [];
-            }
-
-            foreach ($directories as $dir) {
-                // Skip . and ..
-                if ($dir === '.' || $dir === '..') {
-                    continue;
-                }
-
-                $pluginPath = $pluginsDir . '/' . $dir;
-
-                // Skip if not a directory
-                if (!is_dir($pluginPath)) {
-                    continue;
-                }
-
-                // Check for plugin.json
-                $manifestPath = $pluginPath . '/plugin.json';
-
-                if (!file_exists($manifestPath)) {
-                    continue;
-                }
-
-                // Read and parse manifest
-                $manifestContent = file_get_contents($manifestPath);
-
-                if ($manifestContent === false) {
-                    error_log("Could not read plugin manifest: {$manifestPath}");
-                    continue;
-                }
-
-                $manifest = json_decode($manifestContent, true);
-
-                if (!$manifest || json_last_error() !== JSON_ERROR_NONE) {
-                    error_log("Invalid JSON in plugin manifest: {$manifestPath}");
-                    continue;
-                }
-
-                // Add plugin to result (no capability filtering - register all)
-                $plugins[] = [
-                    'name' => $dir,
-                    'manifest' => $manifest,
-                ];
-            }
-
-            return $plugins;
-
-        } catch (\Exception $e) {
-            error_log("Error scanning plugins directory: {$e->getMessage()}");
-            return [];
-        }
     }
 
     /**
@@ -252,8 +182,8 @@ class PluginCompilerPass implements CompilerPassInterface
 
         try {
             // Find all PHP files in Controller directory
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($controllerPath, \RecursiveDirectoryIterator::SKIP_DOTS)
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($controllerPath, FilesystemIterator::SKIP_DOTS)
             );
 
             foreach ($iterator as $file) {
@@ -277,8 +207,8 @@ class PluginCompilerPass implements CompilerPassInterface
                 $definition->addTag('container.service_subscriber');
             }
 
-        } catch (\Exception $e) {
-            error_log("Failed to register controllers for plugin {$pluginName}: {$e->getMessage()}");
+        } catch (Exception $e) {
+            error_log("Failed to register controllers for plugin $pluginName: {$e->getMessage()}");
         }
     }
 
@@ -292,7 +222,7 @@ class PluginCompilerPass implements CompilerPassInterface
     {
         // Convert "hello-world" to "HelloWorld"
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
-        return "Plugins\\{$className}";
+        return "Plugins\\$className";
     }
 
     /**
@@ -315,7 +245,7 @@ class PluginCompilerPass implements CompilerPassInterface
 
         spl_autoload_register(function ($class) use ($namespace, $srcPath) {
             // Check if class belongs to this namespace
-            if (strpos($class, $namespace) !== 0) {
+            if (!str_starts_with($class, $namespace)) {
                 return;
             }
 

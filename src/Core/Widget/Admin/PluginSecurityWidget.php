@@ -12,11 +12,11 @@ use App\Core\Service\Plugin\PluginSecurityValidator;
  * Plugin security widget for admin overview.
  * Displays security scan results and warnings.
  */
-class PluginSecurityWidget implements WidgetInterface
+readonly class PluginSecurityWidget implements WidgetInterface
 {
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
-        private readonly PluginSecurityValidator $securityValidator,
+        private PluginRepository        $pluginRepository,
+        private PluginSecurityValidator $securityValidator,
     ) {}
 
     public function getName(): string

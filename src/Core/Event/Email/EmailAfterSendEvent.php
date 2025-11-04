@@ -4,6 +4,7 @@ namespace App\Core\Event\Email;
 
 use App\Core\Event\AbstractDomainEvent;
 use Symfony\Component\Mime\Email;
+use Throwable;
 
 /**
  * Event dispatched after an email has been sent (or failed to send).
@@ -63,13 +64,13 @@ use Symfony\Component\Mime\Email;
 class EmailAfterSendEvent extends AbstractDomainEvent
 {
     public function __construct(
-        private readonly Email $email,
-        private readonly string $templateName,
-        private readonly string $recipient,
-        private readonly bool $success,
-        private readonly ?\Throwable $exception = null,
-        private readonly array $eventContext = [],
-        ?string $eventId = null,
+        private readonly Email      $email,
+        private readonly string     $templateName,
+        private readonly string     $recipient,
+        private readonly bool       $success,
+        private readonly ?Throwable $exception = null,
+        private readonly array      $eventContext = [],
+        ?string                     $eventId = null,
     ) {
         parent::__construct($eventId);
     }
@@ -119,9 +120,9 @@ class EmailAfterSendEvent extends AbstractDomainEvent
      *
      * Returns null if email was sent successfully.
      *
-     * @return \Throwable|null
+     * @return Throwable|null
      */
-    public function getException(): ?\Throwable
+    public function getException(): ?Throwable
     {
         return $this->exception;
     }

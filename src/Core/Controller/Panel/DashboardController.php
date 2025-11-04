@@ -5,8 +5,6 @@ namespace App\Core\Controller\Panel;
 use App\Core\Controller\Panel\Setting\EmailSettingCrudController;
 use App\Core\Controller\Panel\Setting\GeneralSettingCrudController;
 use App\Core\Controller\Panel\Setting\PaymentSettingCrudController;
-use App\Core\Controller\Panel\Setting\PluginCrudController;
-use App\Core\Controller\Panel\Setting\PluginSettingCrudController;
 use App\Core\Controller\Panel\Setting\PterodactylSettingCrudController;
 use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
 use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
@@ -260,7 +258,7 @@ class DashboardController extends AbstractDashboardController
         $menuItems = $event->getMenuItems();
 
         // Yield all items in order: main -> admin -> footer
-        foreach ($menuItems as $section => $items) {
+        foreach ($menuItems as $items) {
             foreach ($items as $item) {
                 yield $item;
             }

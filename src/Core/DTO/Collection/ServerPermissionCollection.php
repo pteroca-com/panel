@@ -3,13 +3,14 @@
 namespace App\Core\DTO\Collection;
 
 use App\Core\Enum\ServerPermissionEnum;
+use ValueError;
 
 class ServerPermissionCollection
 {
     /**
      * @var ServerPermissionEnum[]
      */
-    private array $permissions = [];
+    private array $permissions;
 
     /**
      * @param ServerPermissionEnum[] $permissions
@@ -24,7 +25,7 @@ class ServerPermissionCollection
         if (is_string($permission)) {
             try {
                 $permission = ServerPermissionEnum::from($permission);
-            } catch (\ValueError $e) {
+            } catch (ValueError) {
                 return false;
             }
         }

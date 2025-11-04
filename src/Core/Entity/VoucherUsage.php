@@ -4,6 +4,8 @@ namespace App\Core\Entity;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Repository\VoucherUsageRepository;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VoucherUsageRepository::class)]
@@ -23,11 +25,11 @@ class VoucherUsage
     private ?UserInterface $user = null;
 
     #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $usedAt;
+    private DateTimeInterface $usedAt;
 
     public function __construct()
     {
-        $this->usedAt = new \DateTime();
+        $this->usedAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -57,12 +59,12 @@ class VoucherUsage
         return $this;
     }
 
-    public function getUsedAt(): \DateTimeInterface
+    public function getUsedAt(): DateTimeInterface
     {
         return $this->usedAt;
     }
 
-    public function setUsedAt(\DateTimeInterface $usedAt): self
+    public function setUsedAt(DateTimeInterface $usedAt): self
     {
         $this->usedAt = $usedAt;
         return $this;

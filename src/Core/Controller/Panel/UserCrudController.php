@@ -13,7 +13,6 @@ use App\Core\Service\User\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Service\Crud\PanelCrudService;
-use Symfony\Component\HttpFoundation\Response;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -35,7 +34,7 @@ class UserCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly RequestStack $requestStack,
+        RequestStack $requestStack,
         private readonly UserService $userService,
         private readonly TranslatorInterface $translator,
         private readonly LogService $logService,

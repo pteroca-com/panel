@@ -1674,8 +1674,50 @@ hr {
 }
 
 /* Buttons in dark mode */
+.ea-dark-scheme .btn-outline-primary:hover,
+.ea-dark-scheme .btn-outline-primary:focus,
+.ea-dark-scheme .btn-outline-primary:active {
+    background-color: var(--stripe-dark-hover, #243B53) !important;
+    border-color: var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ea-dark-scheme .btn-outline-primary:hover i,
+.ea-dark-scheme .btn-outline-primary:focus i,
+.ea-dark-scheme .btn-outline-primary:active i {
+    color: var(--bs-body-color) !important;
+}
+
 .ea-dark-scheme .btn-outline-secondary:hover {
     background-color: var(--stripe-dark-hover, #243B53) !important;
+}
+
+.ea-dark-scheme .btn-outline-success:hover,
+.ea-dark-scheme .btn-outline-success:focus,
+.ea-dark-scheme .btn-outline-success:active {
+    background-color: var(--stripe-dark-hover, #243B53) !important;
+    border-color: var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ea-dark-scheme .btn-outline-success:hover i,
+.ea-dark-scheme .btn-outline-success:focus i,
+.ea-dark-scheme .btn-outline-success:active i {
+    color: var(--bs-body-color) !important;
+}
+
+.ea-dark-scheme .btn-outline-info:hover,
+.ea-dark-scheme .btn-outline-info:focus,
+.ea-dark-scheme .btn-outline-info:active {
+    background-color: var(--stripe-dark-hover, #243B53) !important;
+    border-color: var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ea-dark-scheme .btn-outline-info:hover i,
+.ea-dark-scheme .btn-outline-info:focus i,
+.ea-dark-scheme .btn-outline-info:active i {
+    color: var(--bs-body-color) !important;
 }
 
 /* Links */
@@ -1869,4 +1911,35 @@ hr {
 
 .ea-dark-scheme .btn-close:hover {
     opacity: 1;
+}
+
+/* Remove bg-opacity-10 backgrounds in dark mode (same as light mode) */
+.ea-dark-scheme .bg-opacity-10 {
+    background-color: transparent !important;
+    opacity: 1 !important;
+}
+
+/* Ensure icons are visible in dark mode without background */
+.ea-dark-scheme i.text-primary {
+    color: #6BA5F2 !important;
+}
+
+.ea-dark-scheme i.text-info {
+    color: #6BA5F2 !important;
+}
+
+.ea-dark-scheme i.text-success {
+    color: #22c55e !important;
+}
+
+.ea-dark-scheme i.text-warning {
+    color: #f59e0b !important;
+}
+
+.ea-dark-scheme i.text-danger {
+    color: #ef4444 !important;
+}
+
+.ea-dark-scheme i.text-secondary {
+    color: #9ca3af !important;
 }

@@ -3,6 +3,7 @@
 namespace App\Core\DTO;
 
 use App\Core\Entity\Plugin;
+use DateTimeImmutable;
 
 /**
  * Data Transfer Object for plugin health check results.
@@ -21,14 +22,14 @@ readonly class PluginHealthCheckResultDTO
      * @param bool $healthy Overall health status (true if all checks passed)
      * @param array<string, bool> $checks Individual check results (check_name => passed)
      * @param array<string, string> $errors Error messages for failed checks (check_name => error_message)
-     * @param \DateTimeImmutable $checkedAt When the health check was performed
+     * @param DateTimeImmutable $checkedAt When the health check was performed
      */
     public function __construct(
         public Plugin $plugin,
         public bool $healthy,
         public array $checks,
         public array $errors,
-        public \DateTimeImmutable $checkedAt,
+        public DateTimeImmutable $checkedAt,
     ) {}
 
     /**
@@ -45,7 +46,7 @@ readonly class PluginHealthCheckResultDTO
             healthy: true,
             checks: $checks,
             errors: [],
-            checkedAt: new \DateTimeImmutable(),
+            checkedAt: new DateTimeImmutable(),
         );
     }
 
@@ -64,7 +65,7 @@ readonly class PluginHealthCheckResultDTO
             healthy: false,
             checks: $checks,
             errors: $errors,
-            checkedAt: new \DateTimeImmutable(),
+            checkedAt: new DateTimeImmutable(),
         );
     }
 

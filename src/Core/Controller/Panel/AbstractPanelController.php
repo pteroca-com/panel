@@ -153,9 +153,8 @@ abstract class AbstractPanelController extends AbstractCrudController
         );
 
         $event = $this->dispatchEvent($event);
-        $qb = $event->getQueryBuilder();
 
-        return $qb;
+        return $event->getQueryBuilder();
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void

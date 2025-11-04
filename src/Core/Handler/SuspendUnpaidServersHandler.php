@@ -11,18 +11,16 @@ use App\Core\Event\Cli\SuspendUnpaidServers\SuspendUnpaidServersProcessCompleted
 use App\Core\Event\Cli\SuspendUnpaidServers\SuspendUnpaidServersProcessFailedEvent;
 use App\Core\Event\Cli\SuspendUnpaidServers\SuspendUnpaidServersProcessStartedEvent;
 use App\Core\Repository\ServerRepository;
-use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Mailer\ServerSuspensionEmailService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\StoreService;
+use DateTime;
 use DateTimeImmutable;
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class SuspendUnpaidServersHandler implements HandlerInterface
 {
@@ -33,14 +31,14 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
         private StoreService $storeService,
         private RenewServerService $renewServerService,
         private ServerSlotPricingService $serverSlotPricingService,
-        private TranslatorInterface $translator,
-        private MessageBusInterface $messageBus,
-        private EmailNotificationService $emailNotificationService,
         private ServerSuspensionEmailService $serverSuspensionEmailService,
         private EventDispatcherInterface $eventDispatcher,
         private EventContextService $eventContextService,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function handle(): void
     {
         $startTime = new DateTimeImmutable();
@@ -82,7 +80,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
 
     private function handleServersToSuspend(array &$stats, array $context): void
     {
-        $serversToSuspend = $this->serverRepository->getServersToSuspend(new \DateTime());
+        $serversToSuspend = $this->serverRepository->getServersToSuspend(new DateTime());
 
         foreach ($serversToSuspend as $server) {
             $stats['checked']++;
@@ -179,7 +177,7 @@ readonly class SuspendUnpaidServersHandler implements HandlerInterface
             return [
                 'cost' => $cost,
             ];
-        } catch (Exception $e) {
+        } catch (Exception) {
             return null;
         }
     }

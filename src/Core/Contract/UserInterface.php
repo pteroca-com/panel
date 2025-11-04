@@ -2,6 +2,8 @@
 
 namespace App\Core\Contract;
 
+use DateTime;
+use DateTimeInterface;
 use Symfony\Component\Security\Core\User\UserInterface as SymfonyUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -47,16 +49,16 @@ interface UserInterface extends SymfonyUserInterface, PasswordAuthenticatedUserI
     public function getAvatarFile(): ?File;
     public function setAvatarFile(?File $avatarFile = null): self;
 
-    public function getCreatedAt(): \DateTimeInterface;
-    public function getUpdatedAt(): ?\DateTimeInterface;
+    public function getCreatedAt(): DateTimeInterface;
+    public function getUpdatedAt(): ?DateTimeInterface;
 
     public function getPlainPassword(): ?string;
     public function setPlainPassword(?string $plainPassword): self;
 
     public function eraseCredentials(): void;
 
-    public function getDeletedAt(): ?\DateTime;
-    public function setDeletedAt(?\DateTime $deletedAt): self;
+    public function getDeletedAt(): ?DateTime;
+    public function setDeletedAt(?DateTime $deletedAt): self;
     public function isDeleted(): bool;
     public function softDelete(): self;
     public function restore(): self;

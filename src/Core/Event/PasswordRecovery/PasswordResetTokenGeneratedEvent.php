@@ -3,6 +3,7 @@
 namespace App\Core\Event\PasswordRecovery;
 
 use App\Core\Event\AbstractDomainEvent;
+use DateTimeInterface;
 
 class PasswordResetTokenGeneratedEvent extends AbstractDomainEvent
 {
@@ -10,7 +11,7 @@ class PasswordResetTokenGeneratedEvent extends AbstractDomainEvent
         private readonly int $userId,
         private readonly string $email,
         private readonly string $tokenHash,
-        private readonly \DateTimeInterface $expiresAt,
+        private readonly DateTimeInterface $expiresAt,
         private readonly array $context = [],
         ?string $eventId = null,
     ) {
@@ -32,7 +33,7 @@ class PasswordResetTokenGeneratedEvent extends AbstractDomainEvent
         return $this->tokenHash;
     }
 
-    public function getExpiresAt(): \DateTimeInterface
+    public function getExpiresAt(): DateTimeInterface
     {
         return $this->expiresAt;
     }

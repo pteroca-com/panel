@@ -4,6 +4,7 @@ namespace App\Core\Trait;
 
 use App\Core\Enum\ViewNameEnum;
 use App\Core\Event\View\ViewDataEvent;
+use LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use App\Core\Service\Event\EventContextService;
 use Symfony\Contracts\Service\Attribute\Required;
@@ -107,7 +108,7 @@ trait EventContextTrait
     private function getEventContextService(): EventContextService
     {
         if ($this->eventContextService === null) {
-            throw new \LogicException(
+            throw new LogicException(
                 'EventContextService not injected. Make sure the controller is registered as a service with autowiring enabled.'
             );
         }
@@ -118,7 +119,7 @@ trait EventContextTrait
     private function getEventDispatcher(): EventDispatcherInterface
     {
         if ($this->eventDispatcher === null) {
-            throw new \LogicException(
+            throw new LogicException(
                 'EventDispatcher not injected. Make sure the controller is registered as a service with autowiring enabled.'
             );
         }

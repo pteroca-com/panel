@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -35,8 +36,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ServerProductCrudController extends AbstractPanelController
@@ -71,7 +74,8 @@ class ServerProductCrudController extends AbstractPanelController
         $nests = $this->getNestsChoices();
         $internalCurrency = $this->settingService
             ->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
-        $fields = [
+
+        return [
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_details'))
                 ->setIcon('fa fa-info-circle'),
             IdField::new('server.id')
@@ -182,8 +186,6 @@ class ServerProductCrudController extends AbstractPanelController
                 ->setFormTypeOption('attr', ['class' => 'egg-selector'])
                 ->setColumns(12),
         ];
-
-        return $fields;
     }
 
     public function configureActions(Actions $actions): Actions
@@ -229,7 +231,7 @@ class ServerProductCrudController extends AbstractPanelController
         return parent::configureCrud($crud);
     }
 
-    public function edit(AdminContext $context)
+    public function edit(AdminContext $context): KeyValueStore|RedirectResponse|Response
     {
         try {
             $entityId = $context->getRequest()->get('entityId');
@@ -239,7 +241,7 @@ class ServerProductCrudController extends AbstractPanelController
                 ->servers()
                 ->getServerResources($serverProduct->getServer()->getPterodactylServerIdentifier());
             $this->isServerOffline = $pterodactylServerResources['current_state'] !== 'running';
-        } catch (\Exception $exception) {
+        } catch (Exception) {
             $this->isServerOffline = true;
         }
 

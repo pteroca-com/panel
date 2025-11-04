@@ -121,7 +121,7 @@ class CartController extends AbstractController
                 );
 
                 return $this->redirect($paymentUrl);
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $this->addFlash('danger', $exception->getMessage());
             }
         }
@@ -406,7 +406,7 @@ class CartController extends AbstractController
             }
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $flashMessage = sprintf(
                 '%s: %s',
                 $this->translator->trans('pteroca.store.error_during_creating_server'),

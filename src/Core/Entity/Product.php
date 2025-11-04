@@ -4,7 +4,6 @@ namespace App\Core\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use App\Core\Entity\ProductPrice;
 use App\Core\Trait\ProductEntityTrait;
 use App\Core\Contract\ProductInterface;
 use App\Core\Enum\ProductPriceTypeEnum;
@@ -189,15 +188,15 @@ class Product implements ProductInterface
         });
     }
 
-    public function setStaticPrices(iterable $prices): self
+    public function setStaticPrices(iterable $incomingPrices): self
     {
         foreach ($this->getStaticPrices() as $existingPrice) {
-            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
-                $existingPrice->setDeletedAt(new \DateTime());
+            if (!in_array($existingPrice, $incomingPrices->toArray() ?? [], true)) {
+                $existingPrice->setDeletedAt(new DateTime());
             }
         }
 
-        $this->syncPrices($this->getStaticPrices(), $prices);
+        $this->syncPrices($this->getStaticPrices(), $incomingPrices);
 
         return $this;
     }
@@ -211,7 +210,7 @@ class Product implements ProductInterface
     {
         foreach ($this->getDynamicPrices() as $existingPrice) {
             if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
-                $existingPrice->setDeletedAt(new \DateTime());
+                $existingPrice->setDeletedAt(new DateTime());
             }
         }
 
@@ -229,7 +228,7 @@ class Product implements ProductInterface
     {
         foreach ($this->getSlotPrices() as $existingPrice) {
             if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
-                $existingPrice->setDeletedAt(new \DateTime());
+                $existingPrice->setDeletedAt(new DateTime());
             }
         }
 
@@ -257,7 +256,7 @@ class Product implements ProductInterface
     {
         if ($this->prices->removeElement($price) && $price instanceof ProductPrice) {
             if ($price->getProduct() === $this) {
-                $price->setDeletedAt(new \DateTime());
+                $price->setDeletedAt(new DateTime());
             }
         }
 

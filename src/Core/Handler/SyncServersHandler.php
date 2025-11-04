@@ -42,6 +42,9 @@ class SyncServersHandler implements HandlerInterface
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(bool $dryRun = false, bool $auto = false): void
     {
         $startTime = new DateTimeImmutable();

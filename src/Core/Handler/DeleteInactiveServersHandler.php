@@ -30,6 +30,9 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
         private EventContextService $eventContextService,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function handle(): void
     {
         $startTime = new DateTimeImmutable();
@@ -73,6 +76,9 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function handleDeleteInactiveServers(array &$stats, int $daysAfter, array $context): void
     {
         $dateObject = new DateTime(sprintf('now - %d days', $daysAfter));
@@ -83,13 +89,13 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
 
             try {
                 $expiredAt = $server->getExpiresAt();
-                $expiredAtImmutable = $expiredAt ? DateTimeImmutable::createFromMutable($expiredAt) : new DateTimeImmutable();
+                $expiredAtImmutable = DateTimeImmutable::createFromMutable($expiredAt);
 
                 $requestedEvent = new InactiveServerDeletionRequestedEvent(
                     $server->getUser()->getId() ?? 0,
                     $server->getId(),
                     $server->getPterodactylServerIdentifier(),
-                    $server->getName(),
+                    $server->getServerProduct()->getName(),
                     $expiredAtImmutable,
                     $daysAfter,
                     $context
@@ -115,7 +121,7 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
                         $server->getUser()->getId() ?? 0,
                         $server->getId(),
                         $server->getPterodactylServerIdentifier(),
-                        $server->getName(),
+                        $server->getServerProduct()->getName(),
                         $expiredAtImmutable,
                         new DateTimeImmutable(),
                         $daysAfter,
@@ -127,14 +133,14 @@ readonly class DeleteInactiveServersHandler implements HandlerInterface
                 $stats['failed']++;
 
                 $expiredAt = $server->getExpiresAt();
-                $expiredAtImmutable = $expiredAt ? DateTimeImmutable::createFromMutable($expiredAt) : new DateTimeImmutable();
+                $expiredAtImmutable = DateTimeImmutable::createFromMutable($expiredAt);
 
                 $this->eventDispatcher->dispatch(
                     new InactiveServerDeletionFailedEvent(
                         $server->getUser()->getId() ?? 0,
                         $server->getId(),
                         $server->getPterodactylServerIdentifier(),
-                        $server->getName(),
+                        $server->getServerProduct()->getName(),
                         $expiredAtImmutable,
                         $e->getMessage(),
                         $context

@@ -3,6 +3,7 @@
 namespace App\Core\Handler;
 
 use App\Core\Contract\UserInterface;
+use App\Core\DTO\Pterodactyl\Application\PterodactylUser;
 use App\Core\Entity\Server;
 use App\Core\Entity\ServerProduct;
 use App\Core\Entity\ServerProductPrice;
@@ -24,11 +25,11 @@ use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerEggService;
 use App\Core\Service\SettingService;
+use DateTime;
 use DateTimeImmutable;
 use Exception;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Timdesm\PterodactylPhpApi\Resources\User as PterodactylUser;
 
 class MigrateServersHandler implements HandlerInterface
 {
@@ -64,6 +65,9 @@ class MigrateServersHandler implements HandlerInterface
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(bool $dryRun = false): void
     {
         $startTime = new DateTimeImmutable();
@@ -249,8 +253,7 @@ class MigrateServersHandler implements HandlerInterface
                         $pterodactylServerOwner->get('email'),
                         $duration,
                         $price,
-                        $context,
-                        $stats
+                        $context
                     );
 
                     $stats['serversMigrated']++;
@@ -323,13 +326,15 @@ class MigrateServersHandler implements HandlerInterface
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function migrateServer(
         array $pterodactylServer,
         string $pterodactylServerOwnerEmail,
         int $duration,
         float $price,
-        array $context,
-        array &$stats
+        array $context
     ): int
     {
         $pterocaUser = $this->userRepository->findOneBy(['email' => $pterodactylServerOwnerEmail]);
@@ -342,7 +347,7 @@ class MigrateServersHandler implements HandlerInterface
 
         $serverEntity = $this->migrateServerEntity($pterocaUser, $pterodactylServer, $duration);
         $serverProductEntity = $this->migrateServerProductEntity($serverEntity, $pterodactylServer);
-        $serverProductPriceEntity = $this->migrateServerProductPriceEntity($serverProductEntity, $duration, $price);
+        $this->migrateServerProductPriceEntity($serverProductEntity, $duration, $price);
 
         // Emit ServerMigratedEvent
         $expiresAtImmutable = $serverEntity->getExpiresAt()
@@ -371,7 +376,7 @@ class MigrateServersHandler implements HandlerInterface
         ServerProduct $serverProductEntity,
         int $duration,
         float $price
-    ): ServerProductPrice
+    ): void
     {
         $serverProductPriceEntity = (new ServerProductPrice())
             ->setServerProduct($serverProductEntity)
@@ -382,7 +387,6 @@ class MigrateServersHandler implements HandlerInterface
             ->setIsSelected(true);
         $this->serverProductPriceRepository->save($serverProductPriceEntity);
 
-        return $serverProductPriceEntity;
     }
 
     private function migrateServerProductEntity(Server $serverEntity, array $pterodactylServer): ServerProduct
@@ -414,7 +418,7 @@ class MigrateServersHandler implements HandlerInterface
 
     private function migrateServerEntity(UserInterface $serverOwner, array $pterodactylServer, int $duration): Server
     {
-        $expireAt = (new \DateTime())
+        $expireAt = (new DateTime())
             ->modify(sprintf('+%d days', $duration));
 
         $serverEntity = (new Server())

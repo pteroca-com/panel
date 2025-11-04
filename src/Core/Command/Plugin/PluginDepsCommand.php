@@ -71,7 +71,7 @@ class PluginDepsCommand extends Command
         $plugin = $this->pluginManager->getPluginByName($pluginName);
 
         if ($plugin === null) {
-            $io->error("Plugin '{$pluginName}' not found");
+            $io->error("Plugin '$pluginName' not found");
             return Command::FAILURE;
         }
 

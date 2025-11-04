@@ -3,7 +3,9 @@
 namespace App\Core\Routing;
 
 use App\Core\Entity\Plugin;
+use Exception;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Finder\Finder;
 use App\Core\Repository\PluginRepository;
 use Symfony\Component\Config\Loader\Loader;
@@ -28,7 +30,7 @@ class PluginRouteLoader extends Loader
     public function load(mixed $resource, string $type = null): RouteCollection
     {
         if (true === $this->isLoaded) {
-            throw new \RuntimeException('Do not add the "plugin" loader twice');
+            throw new RuntimeException('Do not add the "plugin" loader twice');
         }
 
         $this->isLoaded = true;
@@ -58,7 +60,7 @@ class PluginRouteLoader extends Loader
                     $this->logger->info("Loaded {$pluginRoutes->count()} routes from plugin {$plugin->getName()}");
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Database not available (e.g., during cache warmup without DB connection)
             // or plugin table doesn't exist yet
             $this->logger->warning("Could not load plugin routes: {$e->getMessage()}");
@@ -75,7 +77,7 @@ class PluginRouteLoader extends Loader
 
         // Check if Controller directory exists
         if (!is_dir($controllerPath)) {
-            $this->logger->debug("Controller directory not found for plugin {$plugin->getName()}: {$controllerPath}");
+            $this->logger->debug("Controller directory not found for plugin {$plugin->getName()}: $controllerPath");
             return $routes;
         }
 
@@ -99,21 +101,21 @@ class PluginRouteLoader extends Loader
                         // Load routes from controller class
                         $classRoutes = $this->annotationLoader->load($className);
 
-                        if ($classRoutes instanceof RouteCollection && $classRoutes->count() > 0) {
+                        if ($classRoutes->count() > 0) {
                             // Add prefix to all routes
                             $classRoutes->addPrefix('/plugins/' . $plugin->getName());
 
                             // Add routes to collection
                             $routes->addCollection($classRoutes);
 
-                            $this->logger->debug("Loaded {$classRoutes->count()} routes from {$className}");
+                            $this->logger->debug("Loaded {$classRoutes->count()} routes from $className");
                         }
-                    } catch (\Exception $e) {
-                        $this->logger->error("Failed to load routes from {$className}: {$e->getMessage()}");
+                    } catch (Exception $e) {
+                        $this->logger->error("Failed to load routes from $className: {$e->getMessage()}");
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed to load routes from plugin {$plugin->getName()}: {$e->getMessage()}");
         }
 
@@ -125,7 +127,7 @@ class PluginRouteLoader extends Loader
         // Convert "hello-world" to "HelloWorld"
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
 
-        return "Plugins\\{$className}";
+        return "Plugins\\$className";
     }
 
     private function getClassNameFromFile(string $filePath, string $baseNamespace): ?string
@@ -144,7 +146,7 @@ class PluginRouteLoader extends Loader
         // Convert path to namespace
         $classPath = str_replace('/', '\\', $relativePath);
 
-        return "{$baseNamespace}\\Controller\\{$classPath}";
+        return "$baseNamespace\\Controller\\$classPath";
     }
 
     public function supports(mixed $resource, string $type = null): bool

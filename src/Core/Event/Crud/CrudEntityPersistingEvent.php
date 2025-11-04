@@ -4,7 +4,6 @@ namespace App\Core\Event\Crud;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Event\StoppableEventTrait;
-use Symfony\Contracts\EventDispatcher\Event;
 
 class CrudEntityPersistingEvent extends AbstractCrudEvent
 {

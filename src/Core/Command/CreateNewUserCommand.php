@@ -5,6 +5,7 @@ namespace App\Core\Command;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Handler\CreateNewUserHandler;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,6 +35,10 @@ class CreateNewUserCommand extends Command
         ;
     }
 
+    /**
+     * @throws CouldNotCreatePterodactylClientApiKeyException
+     * @throws Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

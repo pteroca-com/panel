@@ -6,12 +6,11 @@ use App\Core\Entity\ServerProductPrice;
 use App\Core\Enum\ProductPriceTypeEnum;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ServerProductPriceDynamicFormType extends AbstractPriceDynamicFormType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
@@ -26,11 +25,11 @@ class ServerProductPriceDynamicFormType extends AbstractPriceDynamicFormType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => ServerProductPrice::class,
-            'empty_data' => function (FormInterface $form) {
+            'empty_data' => function () {
                 return (new ServerProductPrice())
                     ->setType(ProductPriceTypeEnum::ON_DEMAND);
             },

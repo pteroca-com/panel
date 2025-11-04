@@ -4,6 +4,7 @@ namespace App\Core\EventSubscriber;
 
 use App\Core\Enum\WidgetPosition;
 use App\Core\Service\Widget\WidgetRegistry;
+use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -18,12 +19,12 @@ use Twig\Environment;
  *
  * Navbar widgets are context-independent and appear across all pages.
  */
-class GlobalWidgetSubscriber implements EventSubscriberInterface
+readonly class GlobalWidgetSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly WidgetRegistry $widgetRegistry,
-        private readonly Environment $twig,
-        private readonly Security $security,
+        private WidgetRegistry $widgetRegistry,
+        private Environment    $twig,
+        private Security       $security,
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -62,7 +63,7 @@ class GlobalWidgetSubscriber implements EventSubscriberInterface
                     }
 
                     return $widget->isVisible($context, $contextData);
-                } catch (\Exception $e) {
+                } catch (Exception) {
                     // Hide widget if visibility check fails
                     return false;
                 }

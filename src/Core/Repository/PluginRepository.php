@@ -5,6 +5,7 @@ namespace App\Core\Repository;
 use App\Core\Entity\Plugin;
 use App\Core\Enum\PluginStateEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 
 class PluginRepository extends ServiceEntityRepository
@@ -138,7 +139,7 @@ class PluginRepository extends ServiceEntityRepository
                 WHERE JSON_CONTAINS_PATH(p.manifest, 'one', :path) = 1
                 ORDER BY p.name ASC";
 
-        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(Plugin::class, 'p');
         $rsm->addFieldResult('p', 'id', 'id');
         $rsm->addFieldResult('p', 'name', 'name');

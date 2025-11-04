@@ -2,8 +2,11 @@
 
 namespace App\Core\DependencyInjection\Compiler;
 
+use App\Core\Trait\PluginDirectoryScannerTrait;
+use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * Compiler pass to dynamically register plugin entity paths in Doctrine ORM.
@@ -15,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class PluginDoctrineCompilerPass implements CompilerPassInterface
 {
+    use PluginDirectoryScannerTrait;
     public function process(ContainerBuilder $container): void
     {
         // Check if Doctrine ORM is available
@@ -23,9 +27,10 @@ class PluginDoctrineCompilerPass implements CompilerPassInterface
         }
 
         $projectDir = $container->getParameter('kernel.project_dir');
+        $pluginsDir = $projectDir . '/plugins';
 
         // Scan plugins directory for plugins with 'entities' capability
-        $plugins = $this->scanPluginsFromFilesystem($projectDir);
+        $plugins = $this->scanPluginDirectory($pluginsDir);
 
         if (empty($plugins)) {
             return;
@@ -43,15 +48,15 @@ class PluginDoctrineCompilerPass implements CompilerPassInterface
      * Register entity paths for a single plugin.
      *
      * @param ContainerBuilder $container
-     * @param \Symfony\Component\DependencyInjection\Definition $chainDriver
+     * @param Definition $chainDriver
      * @param array $pluginData
      * @param string $projectDir
      */
     private function registerPluginEntities(
         ContainerBuilder $container,
-        $chainDriver,
-        array $pluginData,
-        string $projectDir
+        Definition       $chainDriver,
+        array            $pluginData,
+        string           $projectDir
     ): void {
         $pluginName = $pluginData['name'];
         $manifest = $pluginData['manifest'];
@@ -85,89 +90,6 @@ class PluginDoctrineCompilerPass implements CompilerPassInterface
         ]);
     }
 
-    /**
-     * Scan plugins directory and return plugins with 'entities' capability.
-     *
-     * Reads plugin.json files from filesystem (no database connection needed).
-     * Returns ALL plugins with entities capability, regardless of enabled/disabled state.
-     *
-     * @param string $projectDir
-     * @return array Array of plugin data: ['name' => string, 'manifest' => array]
-     */
-    private function scanPluginsFromFilesystem(string $projectDir): array
-    {
-        $pluginsDir = $projectDir . '/plugins';
-
-        // Check if plugins directory exists
-        if (!is_dir($pluginsDir)) {
-            return [];
-        }
-
-        $plugins = [];
-
-        try {
-            $directories = scandir($pluginsDir);
-
-            if ($directories === false) {
-                return [];
-            }
-
-            foreach ($directories as $dir) {
-                // Skip . and ..
-                if ($dir === '.' || $dir === '..') {
-                    continue;
-                }
-
-                $pluginPath = $pluginsDir . '/' . $dir;
-
-                // Skip if not a directory
-                if (!is_dir($pluginPath)) {
-                    continue;
-                }
-
-                // Check for plugin.json
-                $manifestPath = $pluginPath . '/plugin.json';
-
-                if (!file_exists($manifestPath)) {
-                    continue;
-                }
-
-                // Read and parse manifest
-                $manifestContent = file_get_contents($manifestPath);
-
-                if ($manifestContent === false) {
-                    error_log("Could not read plugin manifest: {$manifestPath}");
-                    continue;
-                }
-
-                $manifest = json_decode($manifestContent, true);
-
-                if (!$manifest || json_last_error() !== JSON_ERROR_NONE) {
-                    error_log("Invalid JSON in plugin manifest: {$manifestPath}");
-                    continue;
-                }
-
-                // Check if plugin has 'entities' capability
-                $capabilities = $manifest['capabilities'] ?? [];
-
-                if (!in_array('entities', $capabilities, true)) {
-                    continue;
-                }
-
-                // Add plugin to result
-                $plugins[] = [
-                    'name' => $dir,
-                    'manifest' => $manifest,
-                ];
-            }
-
-            return $plugins;
-
-        } catch (\Exception $e) {
-            error_log("Error scanning plugins directory: {$e->getMessage()}");
-            return [];
-        }
-    }
 
     /**
      * Get plugin namespace from plugin name.
@@ -178,6 +100,6 @@ class PluginDoctrineCompilerPass implements CompilerPassInterface
     private function getPluginNamespace(string $pluginName): string
     {
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
-        return "Plugins\\{$className}";
+        return "Plugins\\$className";
     }
 }

@@ -4,6 +4,7 @@ namespace App\Core\Event\Server;
 
 use App\Core\Event\AbstractDomainEvent;
 use App\Core\Event\StoppableEventTrait;
+use DateTimeInterface;
 
 class ServerAboutToBeRenewedEvent extends AbstractDomainEvent
 {
@@ -12,8 +13,8 @@ class ServerAboutToBeRenewedEvent extends AbstractDomainEvent
     public function __construct(
         private readonly int $userId,
         private readonly int $serverId,
-        private readonly \DateTimeInterface $currentExpiresAt,
-        private readonly \DateTimeInterface $newExpiresAt,
+        private readonly DateTimeInterface $currentExpiresAt,
+        private readonly DateTimeInterface $newExpiresAt,
         private readonly ?int $slots,
     ) {
         parent::__construct();
@@ -29,12 +30,12 @@ class ServerAboutToBeRenewedEvent extends AbstractDomainEvent
         return $this->serverId;
     }
 
-    public function getCurrentExpiresAt(): \DateTimeInterface
+    public function getCurrentExpiresAt(): DateTimeInterface
     {
         return $this->currentExpiresAt;
     }
 
-    public function getNewExpiresAt(): \DateTimeInterface
+    public function getNewExpiresAt(): DateTimeInterface
     {
         return $this->newExpiresAt;
     }

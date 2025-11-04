@@ -4,6 +4,7 @@ namespace App\Core\Command\Plugin;
 
 use App\Core\Repository\PluginRepository;
 use App\Core\Service\Plugin\PluginSecurityValidator;
+use App\Core\Trait\PluginSelectionTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,6 +19,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class PluginSecurityScanCommand extends Command
 {
+    use PluginSelectionTrait;
+
     public function __construct(
         private readonly PluginRepository $pluginRepository,
         private readonly PluginSecurityValidator $securityValidator,
@@ -51,21 +54,12 @@ class PluginSecurityScanCommand extends Command
         }
 
         // Get plugins to scan
-        if ($pluginName) {
-            $plugin = $this->pluginRepository->findByName($pluginName);
-            if ($plugin === null) {
-                $io->error(sprintf('Plugin "%s" not found', $pluginName));
-                return Command::FAILURE;
-            }
-            $plugins = [$plugin];
-        } else {
-            $plugins = $scanAll
-                ? $this->pluginRepository->findAll()
-                : $this->pluginRepository->findEnabled();
+        $plugins = $this->getPluginsForCommand($this->pluginRepository, $io, $pluginName, $scanAll);
+        if ($plugins === null) {
+            return Command::FAILURE;
         }
 
-        if (empty($plugins)) {
-            $io->info('No plugins to scan.');
+        if (!$this->validatePluginList($io, $plugins, 'scan')) {
             return Command::SUCCESS;
         }
 

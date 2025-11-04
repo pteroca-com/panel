@@ -4,6 +4,7 @@ namespace App\Core\Command\Plugin;
 
 use App\Core\Repository\PluginRepository;
 use App\Core\Service\Plugin\PluginHealthCheckService;
+use App\Core\Trait\PluginSelectionTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,6 +19,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class PluginHealthCheckCommand extends Command
 {
+    use PluginSelectionTrait;
+
     public function __construct(
         private readonly PluginRepository $pluginRepository,
         private readonly PluginHealthCheckService $healthCheckService,
@@ -41,21 +44,12 @@ class PluginHealthCheckCommand extends Command
         $checkAll = $input->getOption('all');
 
         // Get plugins to check
-        if ($pluginName) {
-            $plugin = $this->pluginRepository->findByName($pluginName);
-            if ($plugin === null) {
-                $io->error(sprintf('Plugin "%s" not found', $pluginName));
-                return Command::FAILURE;
-            }
-            $plugins = [$plugin];
-        } else {
-            $plugins = $checkAll
-                ? $this->pluginRepository->findAll()
-                : $this->pluginRepository->findEnabled();
+        $plugins = $this->getPluginsForCommand($this->pluginRepository, $io, $pluginName, $checkAll);
+        if ($plugins === null) {
+            return Command::FAILURE;
         }
 
-        if (empty($plugins)) {
-            $io->info('No plugins to check.');
+        if (!$this->validatePluginList($io, $plugins, 'check')) {
             return Command::SUCCESS;
         }
 

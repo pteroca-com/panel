@@ -4,6 +4,7 @@ namespace App\Core\Contract;
 
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
+use DateTime;
 
 interface ProductPriceInterface
 {
@@ -21,8 +22,8 @@ interface ProductPriceInterface
     public function getPrice(): float;
     public function setPrice(float $price): self;
 
-    public function getDeletedAt(): ?\DateTime;
-    public function setDeletedAt(?\DateTime $deletedAt): self;
+    public function getDeletedAt(): ?DateTime;
+    public function setDeletedAt(?DateTime $deletedAt): self;
 
     public function __toString(): string;
 }

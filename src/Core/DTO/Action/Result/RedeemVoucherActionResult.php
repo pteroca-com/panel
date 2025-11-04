@@ -2,13 +2,13 @@
 
 namespace App\Core\DTO\Action\Result;
 
-class RedeemVoucherActionResult
+readonly class RedeemVoucherActionResult
 {
     public function __construct(
-        public readonly bool $success,
-        public readonly string $message,
-        public readonly ?string $type,
-        public readonly ?float $value,
+        public bool    $success,
+        public string  $message,
+        public ?string $type,
+        public ?float  $value,
     ) {}
 
     public function isSuccess(): bool

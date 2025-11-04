@@ -3,6 +3,9 @@
 namespace App\Core\Command\Plugin;
 
 use App\Core\Service\CronScheduler;
+use DateTime;
+use DateTimeInterface;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -38,7 +41,7 @@ class PluginCronRunCommand extends Command
         $force = $input->getOption('force');
         $dryRun = $input->getOption('dry-run');
 
-        $currentTime = new \DateTime();
+        $currentTime = new DateTime();
 
         if ($taskName) {
             // Run specific task
@@ -54,7 +57,7 @@ class PluginCronRunCommand extends Command
         string $taskName,
         bool $force,
         bool $dryRun,
-        \DateTimeInterface $currentTime
+        DateTimeInterface $currentTime
     ): int {
         $io->title(sprintf('Running Task: %s', $taskName));
 
@@ -89,7 +92,7 @@ class PluginCronRunCommand extends Command
                 $io->error(sprintf('Task failed: %s', $result['error'] ?? 'Unknown error'));
                 return Command::FAILURE;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error(sprintf('Failed to run task: %s', $e->getMessage()));
             return Command::FAILURE;
         }
@@ -98,7 +101,7 @@ class PluginCronRunCommand extends Command
     private function runDueTasks(
         SymfonyStyle $io,
         bool $dryRun,
-        \DateTimeInterface $currentTime
+        DateTimeInterface $currentTime
     ): int {
         $io->title('Running Due Plugin Cron Tasks');
         $io->writeln(sprintf('Current time: <info>%s</info>', $currentTime->format('Y-m-d H:i:s')));
@@ -177,7 +180,7 @@ class PluginCronRunCommand extends Command
         $io->writeln([
             sprintf('Total executed: <info>%d</info>', $successCount + $failureCount),
             sprintf('Successful: <info>%d</info>', $successCount),
-            sprintf('Failed: %s', $failureCount > 0 ? "<error>{$failureCount}</error>" : '<info>0</info>'),
+            sprintf('Failed: %s', $failureCount > 0 ? "<error>$failureCount</error>" : '<info>0</info>'),
         ]);
 
         if ($skippedCount > 0) {

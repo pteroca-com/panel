@@ -4,23 +4,31 @@ namespace App\Core\EventListener;
 
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
+use Exception;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 #[AsEventListener(event: 'kernel.exception')]
-class ExceptionListener
+readonly class ExceptionListener
 {
     public function __construct(
-        private readonly Environment $twig,
-        private readonly SettingService $settingService,
-        private readonly KernelInterface $kernel,
+        private Environment     $twig,
+        private SettingService  $settingService,
+        private KernelInterface $kernel,
     ) {
     }
 
+    /**
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
     public function __invoke(ExceptionEvent $event): void
     {
         if ($this->kernel->getEnvironment() !== 'prod') {
@@ -47,11 +55,15 @@ class ExceptionListener
 
             $response = new Response($content, $statusCode);
             $event->setResponse($response);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return;
         }
     }
 
+    /**
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
     private function findTemplate(int $statusCode, string $currentTheme): ?string
     {
         if ($currentTheme === 'default') {
@@ -92,12 +104,16 @@ class ExceptionListener
         return null;
     }
 
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     */
     private function templateExists(string $template): bool
     {
         try {
             $this->twig->load($template);
             return true;
-        } catch (\Twig\Error\LoaderError $e) {
+        } catch (LoaderError) {
             return false;
         }
     }

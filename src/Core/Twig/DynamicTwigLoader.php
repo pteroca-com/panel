@@ -3,12 +3,16 @@
 namespace App\Core\Twig;
 
 use App\Core\Service\Template\TemplateManager;
+use Twig\Error\LoaderError;
 use Twig\Loader\FilesystemLoader;
 
 class DynamicTwigLoader extends FilesystemLoader
 {
     private const DEFAULT_TEMPLATE = 'default';
 
+    /**
+     * @throws LoaderError
+     */
     public function __construct(
         private readonly TemplateManager $templateManager,
         string $templatesBaseDir,

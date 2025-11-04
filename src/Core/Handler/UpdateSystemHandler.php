@@ -13,8 +13,8 @@ use App\Core\Service\Update\Operation\ComposerOperationService;
 use App\Core\Service\Update\Operation\DatabaseOperationService;
 use App\Core\Service\Update\Operation\SystemOperationService;
 use Doctrine\DBAL\Connection;
+use Exception;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 class UpdateSystemHandler implements HandlerInterface
 {
@@ -34,13 +34,11 @@ class UpdateSystemHandler implements HandlerInterface
         BackupService $backupService = null,
         SystemStateManager $stateManager = null,
         ValidationService $validationService = null,
-        Filesystem $filesystem = null
     ) {
         $lockManager = $lockManager ?? new UpdateLockManager();
         $backupService = $backupService ?? new BackupService();
         $stateManager = $stateManager ?? new SystemStateManager();
         $validationService = $validationService ?? new ValidationService($connection);
-        $filesystem = $filesystem ?? new Filesystem();
 
         // Create operation services
         $gitService = new GitOperationService();
@@ -70,6 +68,9 @@ class UpdateSystemHandler implements HandlerInterface
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(): void
     {
         $this->orchestrator->handle();

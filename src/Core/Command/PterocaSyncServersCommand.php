@@ -3,6 +3,7 @@
 namespace App\Core\Command;
 
 use App\Core\Handler\SyncServersHandler;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,6 +46,9 @@ class PterocaSyncServersCommand extends Command
         );
     }
 
+    /**
+     * @throws Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

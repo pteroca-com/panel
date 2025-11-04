@@ -3,6 +3,7 @@
 namespace App\Core\Event\Server;
 
 use App\Core\Event\AbstractDomainEvent;
+use DateTimeInterface;
 
 class ServerEntityCreatedEvent extends AbstractDomainEvent
 {
@@ -10,7 +11,7 @@ class ServerEntityCreatedEvent extends AbstractDomainEvent
         private readonly int $serverId,
         private readonly int $userId,
         private readonly int $pterodactylServerId,
-        private readonly \DateTimeInterface $expiresAt,
+        private readonly DateTimeInterface $expiresAt,
     ) {
         parent::__construct();
     }
@@ -30,7 +31,7 @@ class ServerEntityCreatedEvent extends AbstractDomainEvent
         return $this->pterodactylServerId;
     }
 
-    public function getExpiresAt(): \DateTimeInterface
+    public function getExpiresAt(): DateTimeInterface
     {
         return $this->expiresAt;
     }

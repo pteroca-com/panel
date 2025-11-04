@@ -4,6 +4,7 @@ namespace App\Core\Trait;
 
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 trait ProductPriceEntityTrait
@@ -26,7 +27,7 @@ trait ProductPriceEntityTrait
     private float $price;
 
     #[ORM\Column(type: "datetime", nullable: true)]
-    private ?\DateTime $deletedAt = null;
+    private ?DateTime $deletedAt = null;
 
     public function getId(): int
     {
@@ -77,12 +78,12 @@ trait ProductPriceEntityTrait
         return $this;
     }
 
-    public function getDeletedAt(): ?\DateTime
+    public function getDeletedAt(): ?DateTime
     {
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTime $deletedAt): self
+    public function setDeletedAt(?DateTime $deletedAt): self
     {
         $this->deletedAt = $deletedAt;
         return $this;

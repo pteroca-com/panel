@@ -3,6 +3,7 @@
 namespace App\Core\Repository;
 
 use App\Core\Entity\ServerLog;
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -28,7 +29,7 @@ class ServerLogRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function deleteOldLogs(\DateTimeInterface $cutoffDate): int
+    public function deleteOldLogs(DateTimeInterface $cutoffDate): int
     {
         $qb = $this->createQueryBuilder('sl')
             ->delete()

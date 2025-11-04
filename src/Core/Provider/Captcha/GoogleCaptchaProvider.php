@@ -5,10 +5,10 @@ namespace App\Core\Provider\Captcha;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 
-class GoogleCaptchaProvider implements CaptchaProviderInterface
+readonly class GoogleCaptchaProvider implements CaptchaProviderInterface
 {
     public function __construct(
-        private readonly SettingService $settingService,
+        private SettingService $settingService,
     ) {}
 
     public function validateCaptcha(string $captchaResponse): bool

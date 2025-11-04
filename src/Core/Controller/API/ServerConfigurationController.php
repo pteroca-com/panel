@@ -14,6 +14,7 @@ use App\Core\Service\Server\ServerConfiguration\ServerConfigurationOptionService
 use App\Core\Service\Server\ServerConfiguration\ServerConfigurationVariableService;
 use App\Core\Service\Server\ServerConfiguration\ServerReinstallationService;
 use App\Core\Trait\InternalServerApiTrait;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,7 +59,7 @@ class ServerConfigurationController extends APIAbstractController
             );
 
             return new JsonResponse(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update server variable', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()?->getId(),
@@ -100,7 +101,7 @@ class ServerConfigurationController extends APIAbstractController
             );
 
             return new JsonResponse(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update startup option', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()?->getId(),
@@ -139,7 +140,7 @@ class ServerConfigurationController extends APIAbstractController
             );
 
             return new JsonResponse(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update server details', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()?->getId(),
@@ -173,7 +174,7 @@ class ServerConfigurationController extends APIAbstractController
             );
 
             return new JsonResponse(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to reinstall server', [
                 'server_id' => $id,
                 'user_id' => $this->getUser()?->getId(),
@@ -186,6 +187,9 @@ class ServerConfigurationController extends APIAbstractController
         }
     }
 
+    /**
+     * @throws Exception
+     */
     #[Route('/panel/api/server/{id}/auto-renewal/toggle', name: 'server_auto_renewal_toggle', methods: ['POST'])]
     public function toggleAutoRenewal(
         Request $request,
@@ -211,12 +215,15 @@ class ServerConfigurationController extends APIAbstractController
         return new JsonResponse();
     }
 
+    /**
+     * @throws Exception
+     */
     private function getValidatedRequestData(Request $request): array
     {
         $variableData = $request->toArray();
         
         if (!isset($variableData['key'])) {
-            throw new \Exception('Invalid data');
+            throw new Exception('Invalid data');
         }
 
         return $variableData;

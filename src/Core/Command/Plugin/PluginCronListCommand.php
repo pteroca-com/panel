@@ -4,6 +4,8 @@ namespace App\Core\Command\Plugin;
 
 use App\Core\Service\CronScheduler;
 use App\Core\Service\Plugin\PluginCronRegistry;
+use DateTime;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -63,7 +65,7 @@ class PluginCronListCommand extends Command
 
         // Prepare table data
         $rows = [];
-        $currentTime = new \DateTime();
+        $currentTime = new DateTime();
 
         foreach ($tasks as $task) {
             $enabled = $task->isEnabled() ? '<fg=green>✓</>' : '<fg=red>✗</>';
@@ -72,7 +74,7 @@ class PluginCronListCommand extends Command
             try {
                 $nextRun = $this->scheduler->getNextRunTime($task, $currentTime);
                 $nextRunFormatted = $nextRun->format('Y-m-d H:i:s');
-            } catch (\Exception $e) {
+            } catch (Exception) {
                 $nextRunFormatted = '<fg=red>Invalid schedule</>';
             }
 

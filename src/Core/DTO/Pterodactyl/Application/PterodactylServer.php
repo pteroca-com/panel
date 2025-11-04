@@ -2,7 +2,6 @@
 
 namespace App\Core\DTO\Pterodactyl\Application;
 
-use App\Core\DTO\Pterodactyl\Collection;
 use App\Core\DTO\Pterodactyl\Resource;
 
 class PterodactylServer extends Resource

@@ -6,6 +6,7 @@ use App\Core\Exception\Plugin\InvalidStateTransitionException;
 use App\Core\Exception\Plugin\PluginDependencyException;
 use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginDependencyResolver;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -56,17 +57,17 @@ class PluginEnableCommand extends Command
         $withDependencies = $input->getOption('with-dependencies');
         $force = $input->getOption('force');
 
-        $io->title("Enable Plugin: {$pluginName}");
+        $io->title("Enable Plugin: $pluginName");
 
         $plugin = $this->pluginManager->getPluginByName($pluginName);
         if ($plugin === null) {
-            $io->error("Plugin '{$pluginName}' not found. Run 'plugin:list' to see available plugins.");
+            $io->error("Plugin '$pluginName' not found. Run 'plugin:list' to see available plugins.");
 
             return Command::FAILURE;
         }
 
         if ($plugin->isEnabled()) {
-            $io->warning("Plugin '{$pluginName}' is already enabled");
+            $io->warning("Plugin '$pluginName' is already enabled");
 
             return Command::SUCCESS;
         }
@@ -108,7 +109,7 @@ class PluginEnableCommand extends Command
                     $io->writeln(sprintf('  - %s (%s)', $dep->getDisplayName(), $dep->getVersion()));
                 }
 
-                if (!$io->confirm('Continue?', true)) {
+                if (!$io->confirm('Continue?')) {
                     $io->note('Operation cancelled');
                     return Command::FAILURE;
                 }
@@ -118,7 +119,7 @@ class PluginEnableCommand extends Command
                         $io->text("Enabling dependency: {$depPlugin->getDisplayName()}...");
                         $this->pluginManager->enablePlugin($depPlugin);
                         $io->writeln(" <fg=green>✓ Done</>");
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $io->error("Failed to enable dependency {$depPlugin->getName()}: {$e->getMessage()}");
                         return Command::FAILURE;
                     }
@@ -138,7 +139,7 @@ class PluginEnableCommand extends Command
         try {
             $this->pluginManager->enablePlugin($plugin);
 
-            $io->success("Plugin '{$pluginName}' has been enabled successfully");
+            $io->success("Plugin '$pluginName' has been enabled successfully");
 
             return Command::SUCCESS;
         } catch (InvalidStateTransitionException $e) {
@@ -150,7 +151,7 @@ class PluginEnableCommand extends Command
             $io->error("Dependency error: {$e->getMessage()}");
 
             return Command::FAILURE;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error("Failed to enable plugin: {$e->getMessage()}");
 
             return Command::FAILURE;

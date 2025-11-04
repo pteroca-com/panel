@@ -5,6 +5,12 @@ namespace App\Core\Adapter\Pterodactyl\Application;
 use App\Core\Contract\Pterodactyl\Application\PterodactylNestsInterface;
 use App\Core\DTO\Pterodactyl\Application\PterodactylNest;
 use App\Core\DTO\Pterodactyl\Collection;
+use Exception;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class PterodactylNests extends AbstractPterodactylApplicationAdapter implements PterodactylNestsInterface
 {
@@ -13,6 +19,12 @@ class PterodactylNests extends AbstractPterodactylApplicationAdapter implements 
      *
      * @param array $query
      * @return Collection
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
      */
     public function paginate(array $query = []): Collection
     {
@@ -21,7 +33,7 @@ class PterodactylNests extends AbstractPterodactylApplicationAdapter implements 
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf('Failed to get nests: %d %s',
                     $response->getStatusCode(),
                     $response->getContent(false)
@@ -46,6 +58,11 @@ class PterodactylNests extends AbstractPterodactylApplicationAdapter implements 
      *
      * @param array $query
      * @return Collection
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function all(array $query = []): Collection
     {
@@ -59,16 +76,22 @@ class PterodactylNests extends AbstractPterodactylApplicationAdapter implements 
      *
      * @param int $nestId
      * @param array $query
-     * @return \App\Core\DTO\Pterodactyl\Application\PterodactylNest
+     * @return PterodactylNest
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws Exception
      */
     public function get(int $nestId, array $query = []): PterodactylNest
     {
-        $response = $this->makeRequest('GET', "nests/{$nestId}", [
+        $response = $this->makeRequest('GET', "nests/$nestId", [
             'query' => $query
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf('Failed to get nest: %d %s',
                     $response->getStatusCode(),
                     $response->getContent(false)

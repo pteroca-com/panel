@@ -66,7 +66,7 @@ class MenuItemsCollectedEvent extends AbstractDomainEvent
     /**
      * @var array<string, MenuItem[]>
      */
-    private array $menuItems = [];
+    private array $menuItems;
 
     public function __construct(
         private readonly UserInterface $user,

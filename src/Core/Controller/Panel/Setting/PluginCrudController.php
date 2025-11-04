@@ -35,6 +35,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Exception;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -82,7 +84,7 @@ class PluginCrudController extends AbstractPanelController
                 ->hideOnIndex(),
             TextField::new('state', $this->translator->trans('pteroca.crud.plugin.state'))
                 ->setColumns(2)
-                ->formatValue(function ($value, $entity) {
+                ->formatValue(function ($value) {
                     return sprintf(
                         '<span class="badge bg-%s">%s</span>',
                         $value->getBadgeClass(),
@@ -263,7 +265,7 @@ class PluginCrudController extends AbstractPanelController
                 'plugin' => $depPlugin,
                 'installed' => $depPlugin !== null,
                 'enabled' => $depPlugin && $depPlugin->isEnabled(),
-                'version' => $depPlugin ? $depPlugin->getVersion() : null,
+                'version' => $depPlugin?->getVersion(),
                 'compatible' => $depPlugin && Semver::satisfies($depPlugin->getVersion(), $constraint),
             ];
         }
@@ -280,17 +282,15 @@ class PluginCrudController extends AbstractPanelController
         if ($plugin->getId() !== null) {
             try {
                 $healthCheckResult = $this->healthCheckService->runHealthCheck($plugin);
-            } catch (\Exception $e) {
+            } catch (Exception) {
                 // Silently fail if health check fails
-                $healthCheckResult = null;
             }
         }
 
         // Run security scan if plugin exists on filesystem
-        $securityIssues = [];
         try {
             $securityIssues = $this->securityValidator->validate($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             // Silently fail if security scan fails
             $securityIssues = [];
         }
@@ -353,7 +353,7 @@ class PluginCrudController extends AbstractPanelController
                 $this->translator->trans('pteroca.crud.plugin.dependency_error'),
                 nl2br(htmlspecialchars($e->getMessage()))
             ));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->dispatchDataEvent(
                 PluginEnablementFailedEvent::class,
                 $request,
@@ -389,10 +389,10 @@ class PluginCrudController extends AbstractPanelController
             $pluginEntity = $this->pluginManager->getPluginByName($pluginName);
 
             if ($pluginEntity === null) {
-                throw new \RuntimeException('Plugin not found in database');
+                throw new RuntimeException('Plugin not found in database');
             }
 
-            $this->pluginManager->disablePlugin($pluginEntity, false); // cascade=false by default in UI
+            $this->pluginManager->disablePlugin($pluginEntity); // cascade=false by default in UI
 
             $this->logService->logAction(
                 $this->getUser(),
@@ -416,7 +416,7 @@ class PluginCrudController extends AbstractPanelController
                 '%s',
                 nl2br(htmlspecialchars($e->getMessage()))
             ));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->dispatchDataEvent(
                 PluginDisablementFailedEvent::class,
                 $request,
@@ -437,7 +437,7 @@ class PluginCrudController extends AbstractPanelController
         return new RedirectResponse($url);
     }
 
-    public function uploadPlugin(AdminContext $context): Response
+    public function uploadPlugin(): Response
     {
         $form = $this->createForm(PluginUploadFormType::class);
 
@@ -489,7 +489,7 @@ class PluginCrudController extends AbstractPanelController
                         $plugin->getDisplayName(),
                         $plugin->getVersion()
                     ));
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->addFlash('warning', sprintf(
                         $this->translator->trans('pteroca.plugin.upload.uploaded_but_failed_to_enable'),
                         $plugin->getDisplayName(),
@@ -514,7 +514,7 @@ class PluginCrudController extends AbstractPanelController
                 $this->addFlash('success', $warningMessage);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addFlash('danger', sprintf(
                 $this->translator->trans('pteroca.plugin.upload.failed'),
                 $e->getMessage()

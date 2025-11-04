@@ -15,21 +15,24 @@ use DateTimeImmutable;
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class SynchronizeDataHandler implements HandlerInterface
+readonly class SynchronizeDataHandler implements HandlerInterface
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly EventContextService $eventContextService,
+        private UserRepository                 $userRepository,
+        private PterodactylClientApiKeyService $pterodactylClientApiKeyService,
+        private EventDispatcherInterface       $eventDispatcher,
+        private EventContextService            $eventContextService,
     )
     {
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(): void
     {
         $startTime = new DateTimeImmutable();
-        $context = $this->eventContextService->buildCliContext('app:synchronize-data', []);
+        $context = $this->eventContextService->buildCliContext('app:synchronize-data');
 
         $this->eventDispatcher->dispatch(
             new DataSyncProcessStartedEvent($startTime, $context)

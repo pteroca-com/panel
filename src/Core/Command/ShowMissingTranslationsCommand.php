@@ -2,6 +2,7 @@
 
 namespace App\Core\Command;
 
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -47,7 +48,7 @@ class ShowMissingTranslationsCommand extends Command
         try {
             $mainData = Yaml::parseFile($mainFile);
             $compareData = Yaml::parseFile($compareFile);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error('Error parsing YAML files: ' . $e->getMessage());
             return Command::FAILURE;
         }

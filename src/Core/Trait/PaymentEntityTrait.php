@@ -5,6 +5,7 @@ namespace App\Core\Trait;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\User;
 use App\Core\Entity\Voucher;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 trait PaymentEntityTrait
@@ -41,21 +42,21 @@ trait PaymentEntityTrait
     private UserInterface $user;
 
     #[ORM\Column(type: 'datetime')]
-    private \DateTime $createdAt;
+    private DateTime $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    private ?DateTime $updatedAt = null;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -151,12 +152,12 @@ trait PaymentEntityTrait
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }

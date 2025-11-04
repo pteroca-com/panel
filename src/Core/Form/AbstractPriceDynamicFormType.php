@@ -11,7 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 abstract class AbstractPriceDynamicFormType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('value', IntegerType::class, [

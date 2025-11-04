@@ -3,6 +3,7 @@
 namespace App\Core\Entity\Panel;
 
 use App\Core\Trait\PaymentEntityTrait;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: 'payment')]
@@ -17,7 +18,7 @@ class UserPayment
         return sprintf('%0.2f %s', $this->getAmount(), strtoupper($this->getCurrency()));
     }
 
-    public function getLastUpdate(): \DateTimeInterface
+    public function getLastUpdate(): DateTimeInterface
     {
         return $this->getUpdatedAt() ?? $this->getCreatedAt();
     }

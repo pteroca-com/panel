@@ -9,8 +9,8 @@ use App\Core\Event\User\Registration\UserRegisteredEvent;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
-use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
+use RuntimeException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[AsDoctrineListener(event: Events::prePersist)]
@@ -43,7 +43,7 @@ class UserEventListener
 
         // Jeśli event został odrzucony, możemy rzucić wyjątek
         if ($event->isRejected()) {
-            throw new \RuntimeException($event->getRejectionReason() ?? 'User creation rejected');
+            throw new RuntimeException($event->getRejectionReason() ?? 'User creation rejected');
         }
     }
 
@@ -65,7 +65,7 @@ class UserEventListener
         $this->eventDispatcher->dispatch($event);
     }
 
-    public function postFlush(PostFlushEventArgs $args): void
+    public function postFlush(): void
     {
         // UWAGA KRYTYCZNA: Ten listener jest SINGLETON - shared state może powodować wycieki między requestami!
         // Zabezpieczenie: emituj eventy tylko raz per transakcja

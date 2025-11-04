@@ -5,10 +5,22 @@ namespace App\Core\Adapter\Pterodactyl\Application;
 use App\Core\Contract\Pterodactyl\Application\PterodactylServersInterface;
 use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
 use App\Core\DTO\Pterodactyl\Collection;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class PterodactylServers extends AbstractPterodactylApplicationAdapter implements PterodactylServersInterface
 {
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function all(array $parameters = []): Collection
     {
         $options = [];
@@ -27,6 +39,13 @@ class PterodactylServers extends AbstractPterodactylApplicationAdapter implement
         return new Collection($servers, $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function getServer(string $serverId, array $include = []): PterodactylServer
     {
         $options = [];
@@ -34,48 +53,73 @@ class PterodactylServers extends AbstractPterodactylApplicationAdapter implement
             $options['query'] = ['include' => implode(',', $include)];
         }
 
-        $response = $this->makeRequest('GET', "servers/{$serverId}", $options);
+        $response = $this->makeRequest('GET', "servers/$serverId", $options);
         $data = $this->validateServerResponse($response, 200);
         
         return new PterodactylServer($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function suspendServer(string $serverId): bool
     {
-        $response = $this->makeRequest('POST', "servers/{$serverId}/suspend");
+        $response = $this->makeRequest('POST', "servers/$serverId/suspend");
         return $response->getStatusCode() === 204;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function unsuspendServer(string $serverId): bool
     {
-        $response = $this->makeRequest('POST', "servers/{$serverId}/unsuspend");
+        $response = $this->makeRequest('POST', "servers/$serverId/unsuspend");
         return $response->getStatusCode() === 204;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function updateServerDetails(string $serverId, array $details): bool
     {
-        $response = $this->makeRequest('PATCH', "servers/{$serverId}/details", ['json' => $details]);
+        $response = $this->makeRequest('PATCH', "servers/$serverId/details", ['json' => $details]);
         return in_array($response->getStatusCode(), [200, 204]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function updateServerBuild(string $serverId, array $buildDetails): bool
     {
-        $response = $this->makeRequest('PATCH', "servers/{$serverId}/build", ['json' => $buildDetails]);
+        $response = $this->makeRequest('PATCH', "servers/$serverId/build", ['json' => $buildDetails]);
         return in_array($response->getStatusCode(), [200, 204]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function updateServerStartup(string $serverId, array $startupDetails): bool
     {
-        $response = $this->makeRequest('PATCH', "servers/{$serverId}/startup", ['json' => $startupDetails]);
+        $response = $this->makeRequest('PATCH', "servers/$serverId/startup", ['json' => $startupDetails]);
         return in_array($response->getStatusCode(), [200, 204]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function deleteServer(string $serverId): bool
     {
-        $response = $this->makeRequest('DELETE', "servers/{$serverId}");
+        $response = $this->makeRequest('DELETE', "servers/$serverId");
         return $response->getStatusCode() === 204;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function createServer(array $details): PterodactylServer
     {
         $response = $this->makeRequest('POST', 'servers', ['json' => $details]);
@@ -84,6 +128,13 @@ class PterodactylServers extends AbstractPterodactylApplicationAdapter implement
         return new PterodactylServer($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function paginate(int $page = 1, array $query = []): Collection
     {
         $options = ['query' => array_merge(['page' => $page], $query)];
@@ -99,6 +150,13 @@ class PterodactylServers extends AbstractPterodactylApplicationAdapter implement
         return new Collection($servers, $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function getServerByExternalId(string $externalId, array $query = []): PterodactylServer
     {
         $options = [];
@@ -106,21 +164,27 @@ class PterodactylServers extends AbstractPterodactylApplicationAdapter implement
             $options['query'] = $query;
         }
 
-        $response = $this->makeRequest('GET', "servers/external/{$externalId}", $options);
+        $response = $this->makeRequest('GET', "servers/external/$externalId", $options);
         $data = $this->validateServerResponse($response, 200);
         
         return new PterodactylServer($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function reinstallServer(string $serverId): bool
     {
-        $response = $this->makeRequest('POST', "servers/{$serverId}/reinstall");
+        $response = $this->makeRequest('POST', "servers/$serverId/reinstall");
         return $response->getStatusCode() === 202;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function forceDeleteServer(string $serverId): bool
     {
-        $response = $this->makeRequest('DELETE', "servers/{$serverId}/force");
+        $response = $this->makeRequest('DELETE', "servers/$serverId/force");
         return $response->getStatusCode() === 204;
     }
 

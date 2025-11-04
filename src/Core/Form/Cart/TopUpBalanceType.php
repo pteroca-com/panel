@@ -6,7 +6,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -29,8 +28,8 @@ class TopUpBalanceType extends AbstractType
                     new Assert\NotBlank(message: 'pteroca.recharge.amount_required'),
                     new Assert\Positive(message: 'pteroca.recharge.amount_must_be_positive'),
                     new Assert\Range(
-                        min: 0.01,
-                        minMessage: 'pteroca.recharge.amount_must_be_positive'
+                        minMessage: 'pteroca.recharge.amount_must_be_positive',
+                        min: 0.01
                     ),
                 ],
                 'attr' => [
@@ -56,7 +55,7 @@ class TopUpBalanceType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank(message: 'pteroca.recharge.payment_method_required'),
                 ],
-                'choice_attr' => function($choice, $key, $value) {
+                'choice_attr' => function() {
                     return ['class' => 'card-input-element d-none'];
                 },
             ]);

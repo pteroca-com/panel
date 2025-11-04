@@ -50,7 +50,7 @@ class PluginScanCommand extends Command
             $io->section('Valid Plugins (' . count($validPlugins) . ')');
 
             $rows = [];
-            foreach ($validPlugins as $name => $data) {
+            foreach ($validPlugins as $data) {
                 $manifest = $data['manifest'];
                 $rows[] = [
                     $manifest->name,
@@ -72,7 +72,7 @@ class PluginScanCommand extends Command
             $io->section('Invalid Plugins (' . count($invalidPlugins) . ')');
 
             foreach ($invalidPlugins as $name => $data) {
-                $io->error("Plugin: {$name}");
+                $io->error("Plugin: $name");
                 $io->listing($data['errors']);
             }
         }

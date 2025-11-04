@@ -16,11 +16,11 @@ trait ProductPricesManagerTrait
         });
     }
 
-    public function setStaticPrices(iterable $incomingPrices): self
+    public function setStaticPrices(iterable $incomingIncomingPrices): self
     {
         $this->syncPrices(
             $this->getStaticPrices(),
-            $incomingPrices
+            $incomingIncomingPrices
         );
 
         return $this;

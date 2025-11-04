@@ -22,7 +22,7 @@ class EmailLogCrudController extends AbstractPanelController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly RequestStack $requestStack,
+        RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($panelCrudService, $requestStack);

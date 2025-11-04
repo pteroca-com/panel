@@ -3,6 +3,8 @@
 namespace App\Core\Entity;
 
 use App\Core\Contract\UserInterface;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Core\Repository\LogRepository")]
@@ -24,7 +26,7 @@ class Log
     private string $ipAddress;
 
     #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $createdAt;
+    private DateTimeInterface $createdAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -33,7 +35,7 @@ class Log
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     public function getId(): int
@@ -74,7 +76,7 @@ class Log
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }

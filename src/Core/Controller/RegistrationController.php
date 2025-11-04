@@ -8,6 +8,7 @@ use App\Core\Contract\UserInterface;
 use App\Core\Form\RegistrationFormType;
 use App\Core\Event\Form\FormSubmitEvent;
 use App\Core\Enum\EmailVerificationValueEnum;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -102,7 +103,7 @@ class RegistrationController extends AbstractController
         try {
             $this->registrationService->verifyEmail($token);
             $this->addFlash('success', $this->translator->trans('pteroca.register.verification_success'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addFlash('danger', $e->getMessage());
         }
 
@@ -153,7 +154,7 @@ class RegistrationController extends AbstractController
         try {
             $this->emailVerificationService->resendVerificationEmail($user);
             $this->addFlash('success', $this->translator->trans('pteroca.email.verification.resend_success'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addFlash('danger', $e->getMessage());
         }
 

@@ -13,7 +13,6 @@ use Exception;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Timdesm\PterodactylPhpApi\Exceptions\ValidationException;
 
 class ChangeUserPasswordHandler implements HandlerInterface
 {
@@ -29,13 +28,16 @@ class ChangeUserPasswordHandler implements HandlerInterface
         private readonly EventContextService $eventContextService,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function handle(): void
     {
         $startTime = new DateTimeImmutable();
 
         // Validate credentials first
         if (empty($this->userEmail) || empty($this->userPassword)) {
-            $context = $this->eventContextService->buildCliContext('app:change-user-password', []);
+            $context = $this->eventContextService->buildCliContext('app:change-user-password');
 
             $this->eventDispatcher->dispatch(
                 new PasswordChangeProcessFailedEvent(
@@ -80,16 +82,10 @@ class ChangeUserPasswordHandler implements HandlerInterface
             $hashedPassword = $this->passwordHasher->hashPassword($user, $this->userPassword);
             $user->setPassword($hashedPassword);
 
-            $passwordChangedInPterodactyl = false;
-
             try {
                 $this->pterodactylAccountService->updatePterodactylAccountPassword($user, $this->userPassword);
-                $passwordChangedInPterodactyl = true;
-            } catch (ValidationException $exception) {
-                $errors = $exception->errors()['errors'] ?? [];
-                $errors = array_map(fn($error) => $error['detail'], $errors);
-                $message = sprintf('%s Errors: %s', $exception->getMessage(), implode(', ', $errors));
-
+            } catch (Exception $exception) {
+                $message = 'Failed to change password in Pterodactyl: ' . $exception->getMessage();
                 $this->eventDispatcher->dispatch(
                     new PasswordChangeProcessFailedEvent(
                         $message,
@@ -112,7 +108,7 @@ class ChangeUserPasswordHandler implements HandlerInterface
                 new PasswordChangeProcessCompletedEvent(
                     $user->getId() ?? 0,
                     $this->userEmail,
-                    $passwordChangedInPterodactyl,
+                    true,
                     $duration,
                     $endTime,
                     $context

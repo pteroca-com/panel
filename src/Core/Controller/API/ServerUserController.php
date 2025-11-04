@@ -7,6 +7,7 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerUserService;
 use App\Core\Trait\InternalServerApiTrait;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,7 +31,7 @@ class ServerUserController extends APIAbstractController
         try {
             $subusers = $this->serverUserService->getAllSubusers($server, $this->getUser());
             $response->setData($subusers);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -46,13 +47,13 @@ class ServerUserController extends APIAbstractController
         
         $data = json_decode($request->getContent(), true);
         
-        if (!isset($data['email']) || empty($data['email'])) {
+        if (empty($data['email'])) {
             $response->setStatusCode(400);
             $response->setData(['error' => 'Email is required']);
             return $response;
         }
 
-        if (!isset($data['permissions']) || !is_array($data['permissions']) || empty($data['permissions'])) {
+        if (!is_array($data['permissions']) || empty($data['permissions'])) {
             $response->setStatusCode(400);
             $response->setData(['error' => 'At least one permission is required']);
             return $response;
@@ -63,10 +64,10 @@ class ServerUserController extends APIAbstractController
                 $server,
                 $this->getUser(),
                 $data['email'],
-                $data['permissions'] ?? []
+                $data['permissions']
             );
             $response->setData($result);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -83,7 +84,7 @@ class ServerUserController extends APIAbstractController
         try {
             $subuser = $this->serverUserService->getSubuser($server, $this->getUser(), $userUuid);
             $response->setData($subuser);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -111,7 +112,7 @@ class ServerUserController extends APIAbstractController
             return $response;
         }
 
-        if (!isset($data['email']) || empty($data['email'])) {
+        if (empty($data['email'])) {
             $response->setStatusCode(400);
             $response->setData(['error' => 'Email is required']);
             return $response;
@@ -126,7 +127,7 @@ class ServerUserController extends APIAbstractController
                 $data['permissions']
             );
             $response->setData($result);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -142,7 +143,7 @@ class ServerUserController extends APIAbstractController
 
         $data = json_decode($request->getContent(), true);
         
-        if (!isset($data['email']) || empty($data['email'])) {
+        if (empty($data['email'])) {
             $response->setStatusCode(400);
             $response->setData(['error' => 'Email is required']);
             return $response;
@@ -151,7 +152,7 @@ class ServerUserController extends APIAbstractController
         try {
             $this->serverUserService->deleteSubuser($server, $this->getUser(), $userUuid, $data['email']);
             $response->setData(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }

@@ -8,10 +8,10 @@ use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
 use App\Core\Service\SettingService;
 
-class MotdWidget implements WidgetInterface
+readonly class MotdWidget implements WidgetInterface
 {
     public function __construct(
-        private readonly SettingService $settingService
+        private SettingService $settingService
     ) {}
 
     public function getName(): string

@@ -3,6 +3,7 @@
 namespace App\Core\Entity;
 
 use App\Core\Contract\UserInterface;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -24,7 +25,7 @@ class PasswordResetRequest
     private string $token;
 
     #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $expiresAt;
+    private DateTimeInterface $expiresAt;
 
     #[ORM\Column(type: "boolean")]
     private bool $isUsed = false;
@@ -56,12 +57,12 @@ class PasswordResetRequest
         return $this;
     }
 
-    public function getExpiresAt(): \DateTimeInterface
+    public function getExpiresAt(): DateTimeInterface
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(\DateTimeInterface $expiresAt): self
+    public function setExpiresAt(DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
         return $this;

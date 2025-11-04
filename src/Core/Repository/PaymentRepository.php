@@ -4,6 +4,7 @@ namespace App\Core\Repository;
 
 use App\Core\Entity\Payment;
 use App\Core\Enum\PaymentStatusEnum;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,7 +21,7 @@ class PaymentRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function getPaymentsCreatedAfterCount(\DateTime $date): int
+    public function getPaymentsCreatedAfterCount(DateTime $date): int
     {
         return $this->createQueryBuilder('p')
             ->select('COUNT(p.id)')

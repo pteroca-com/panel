@@ -11,10 +11,10 @@ use App\Core\Repository\PluginRepository;
  * Plugin status widget for admin overview.
  * Displays statistics about plugins: total, enabled, disabled, faulted.
  */
-class PluginStatusWidget implements WidgetInterface
+readonly class PluginStatusWidget implements WidgetInterface
 {
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
+        private PluginRepository $pluginRepository,
     ) {}
 
     public function getName(): string

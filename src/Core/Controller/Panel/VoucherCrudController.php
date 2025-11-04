@@ -26,6 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use RuntimeException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -154,7 +155,7 @@ class VoucherCrudController extends AbstractPanelController
         $creationRequestedEvent = $this->dispatchEvent($creationRequestedEvent);
 
         if ($creationRequestedEvent->isPropagationStopped()) {
-            throw new \RuntimeException($this->translator->trans('pteroca.crud.voucher.creation_blocked'));
+            throw new RuntimeException($this->translator->trans('pteroca.crud.voucher.creation_blocked'));
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -182,7 +183,7 @@ class VoucherCrudController extends AbstractPanelController
         $updateRequestedEvent = $this->dispatchEvent($updateRequestedEvent);
 
         if ($updateRequestedEvent->isPropagationStopped()) {
-            throw new \RuntimeException($this->translator->trans('pteroca.crud.voucher.update_blocked'));
+            throw new RuntimeException($this->translator->trans('pteroca.crud.voucher.update_blocked'));
         }
 
         parent::updateEntity($entityManager, $entityInstance);
@@ -206,7 +207,7 @@ class VoucherCrudController extends AbstractPanelController
         $deletionRequestedEvent = $this->dispatchEvent($deletionRequestedEvent);
 
         if ($deletionRequestedEvent->isPropagationStopped()) {
-            throw new \RuntimeException($this->translator->trans('pteroca.crud.voucher.deletion_blocked'));
+            throw new RuntimeException($this->translator->trans('pteroca.crud.voucher.deletion_blocked'));
         }
 
         // Store voucher data before deletion

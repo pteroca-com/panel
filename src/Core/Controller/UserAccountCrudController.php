@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
@@ -26,7 +27,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use InvalidArgumentException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -38,7 +45,7 @@ class UserAccountCrudController extends AbstractPanelController
         private readonly TranslatorInterface $translator,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         PanelCrudService $panelCrudService,
-        private readonly RequestStack $requestStack,
+        RequestStack $requestStack,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -127,7 +134,7 @@ class UserAccountCrudController extends AbstractPanelController
         return $queryBuilder;
     }
 
-    public function index(AdminContext $context)
+    public function index(AdminContext $context): KeyValueStore|RedirectResponse|Response
     {
         $user = $this->getUser();
 
@@ -142,11 +149,15 @@ class UserAccountCrudController extends AbstractPanelController
         ]);
     }
 
-    public function edit(AdminContext $context)
+    public function edit(AdminContext $context): KeyValueStore|RedirectResponse|Response
     {
         return $this->validateAccount($context);
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof UserAccount) {
@@ -157,7 +168,7 @@ class UserAccountCrudController extends AbstractPanelController
             // Sprawdź, czy hasła się zgadzają
             if ($entityInstance->getPlainPassword() && $entityInstance->getRepeatPassword()) {
                 if ($entityInstance->getPlainPassword() !== $entityInstance->getRepeatPassword()) {
-                    throw new \InvalidArgumentException($this->translator->trans('pteroca.crud.user.passwords_must_match'));
+                    throw new InvalidArgumentException($this->translator->trans('pteroca.crud.user.passwords_must_match'));
                 }
             }
 
@@ -172,7 +183,7 @@ class UserAccountCrudController extends AbstractPanelController
             $updateRequestedEvent = $this->dispatchEvent($updateRequestedEvent);
 
             if ($updateRequestedEvent->isPropagationStopped()) {
-                throw new \RuntimeException($this->translator->trans('pteroca.crud.user.update_blocked'));
+                throw new RuntimeException($this->translator->trans('pteroca.crud.user.update_blocked'));
             }
 
             $passwordWasChanged = false;
@@ -229,7 +240,7 @@ class UserAccountCrudController extends AbstractPanelController
         }
     }
 
-    private function validateAccount(AdminContext $context)
+    private function validateAccount(AdminContext $context): KeyValueStore|RedirectResponse|Response
     {
         $user = $this->getUser();
         if (empty($user)) {

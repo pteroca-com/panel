@@ -11,6 +11,7 @@ use App\Core\Repository\LogRepository;
 use App\Core\Repository\ServerLogRepository;
 use App\Core\Repository\SettingRepository;
 use App\Core\Service\Event\EventContextService;
+use DateTime;
 use DateTimeImmutable;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -37,6 +38,9 @@ class DeleteOldLogsCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @throws Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -52,7 +56,7 @@ class DeleteOldLogsCommand extends Command
                         'Invalid log cleanup days setting',
                         null,
                         new DateTimeImmutable(),
-                        $this->eventContextService->buildCliContext('app:delete-old-logs', [])
+                        $this->eventContextService->buildCliContext('app:delete-old-logs')
                     )
                 );
 
@@ -60,8 +64,8 @@ class DeleteOldLogsCommand extends Command
             }
 
             $daysAfterInt = (int) $daysAfter;
-            $cutoffDate = new \DateTime();
-            $cutoffDate->modify("-{$daysAfterInt} days");
+            $cutoffDate = new DateTime();
+            $cutoffDate->modify("-$daysAfterInt days");
             $cutoffDateImmutable = DateTimeImmutable::createFromMutable($cutoffDate);
 
             $context = $this->eventContextService->buildCliContext('app:delete-old-logs', [
@@ -121,9 +125,9 @@ class DeleteOldLogsCommand extends Command
             $this->eventDispatcher->dispatch(
                 new LogDeletionProcessFailedEvent(
                     $e->getMessage(),
-                    isset($daysAfterInt) ? $daysAfterInt : null,
+                    $daysAfterInt ?? null,
                     new DateTimeImmutable(),
-                    $this->eventContextService->buildCliContext('app:delete-old-logs', [])
+                    $this->eventContextService->buildCliContext('app:delete-old-logs')
                 )
             );
 

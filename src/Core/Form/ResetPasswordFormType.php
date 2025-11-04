@@ -2,7 +2,6 @@
 
 namespace App\Core\Form;
 
-use App\Core\Entity\User;
 use App\Core\Event\Form\FormBuildEvent;
 use App\Core\Service\Event\EventContextService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -61,7 +60,7 @@ class ResetPasswordFormType extends AbstractType
         $this->eventDispatcher->dispatch($formBuildEvent);
     }
 
-    public function validatePasswordMatch($object, ExecutionContextInterface $context): void
+    public function validatePasswordMatch(ExecutionContextInterface $context): void
     {
         $form = $context->getRoot();
         $newPassword = $form->get('newPassword')->getData();

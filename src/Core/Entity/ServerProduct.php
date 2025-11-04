@@ -6,7 +6,6 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use App\Core\Trait\ProductEntityTrait;
 use App\Core\Contract\ProductInterface;
-use App\Core\Entity\ServerProductPrice;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\ProductPriceUnitEnum;
 use Doctrine\Common\Collections\Collection;
@@ -66,15 +65,15 @@ class ServerProduct implements ProductInterface
         return $this->prices->filter(fn(ServerProductPrice $price) => !$price->getDeletedAt() && $price->isSelected())->first() ?: null;
     }
 
-    public function setStaticPrices(iterable $prices): self
+    public function setStaticPrices(iterable $incomingPrices): self
     {
         foreach ($this->getStaticPrices() as $existingPrice) {
-            if (!in_array($existingPrice, $prices->toArray() ?? [], true)) {
+            if (!in_array($existingPrice, $incomingPrices->toArray() ?? [], true)) {
                 $existingPrice->setDeletedAt(new \DateTime());
             }
         }
 
-        $this->syncPrices($this->getStaticPrices(), $prices);
+        $this->syncPrices($this->getStaticPrices(), $incomingPrices);
 
         return $this;
     }

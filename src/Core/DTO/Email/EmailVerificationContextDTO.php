@@ -4,12 +4,12 @@ namespace App\Core\DTO\Email;
 
 use App\Core\Contract\UserInterface;
 
-class EmailVerificationContextDTO
+readonly class EmailVerificationContextDTO
 {
     public function __construct(
-        public readonly UserInterface $user,
-        public readonly string $verificationUrl,
-        public readonly string $siteName,
-        public readonly string $siteUrl,
+        public UserInterface $user,
+        public string        $verificationUrl,
+        public string        $siteName,
+        public string        $siteUrl,
     ) {}
 }

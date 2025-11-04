@@ -34,11 +34,6 @@ class UserRegistrationValidatedEvent extends AbstractDomainEvent
         return $this->roles;
     }
 
-    public function setRoles(array $roles): void
-    {
-        $this->roles = $roles;
-    }
-
     public function getContext(): array
     {
         return $this->context;

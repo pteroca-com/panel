@@ -5,8 +5,10 @@ namespace App\Core\Command;
 use App\Core\Enum\SettingEnum;
 use App\Core\Exception\DisabledCommandException;
 use App\Core\Repository\SettingRepository;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -41,6 +43,9 @@ class CronJobScheduleCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -62,7 +67,7 @@ class CronJobScheduleCommand extends Command
                 $application->find($scheduledCommand)->run($input, $output);
             } catch (DisabledCommandException $e) {
                 $io->info($e->getMessage());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $io->error(sprintf('Error executing command: %s', $scheduledCommand));
                 $io->error($e->getMessage());
             }
@@ -72,6 +77,9 @@ class CronJobScheduleCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @throws DisabledCommandException
+     */
     private function checkRequiredSettings(string $scheduledCommand, array $requiredSettings): void
     {
         foreach ($requiredSettings as $requiredSetting) {

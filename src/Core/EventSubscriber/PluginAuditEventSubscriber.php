@@ -19,11 +19,11 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * User context is extracted from Security when available (web requests),
  * otherwise logs as system action (CLI, background tasks).
  */
-class PluginAuditEventSubscriber implements EventSubscriberInterface
+readonly class PluginAuditEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly PluginAuditLogger $auditLogger,
-        private readonly Security $security,
+        private PluginAuditLogger $auditLogger,
+        private Security          $security,
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -55,7 +55,7 @@ class PluginAuditEventSubscriber implements EventSubscriberInterface
     public function onPluginDiscovered(PluginDiscoveredEvent $event): void
     {
         // System action - no user
-        $this->auditLogger->logPluginDiscovered($event->getPlugin());
+        $this->auditLogger->logPluginDiscovered($event->getPluginPath(), $event->getManifest());
     }
 
     public function onPluginRegistered(PluginRegisteredEvent $event): void

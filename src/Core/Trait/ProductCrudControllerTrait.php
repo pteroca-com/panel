@@ -3,6 +3,7 @@
 namespace App\Core\Trait;
 
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use Exception;
 
 trait ProductCrudControllerTrait
 {
@@ -30,7 +31,7 @@ trait ProductCrudControllerTrait
             }
 
             return $choices;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->flashMessages[] = $exception->getMessage();
             return [];
         }
@@ -51,7 +52,7 @@ trait ProductCrudControllerTrait
             }
 
             return $choices;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->flashMessages[] = $exception->getMessage();
             return [];
         }
@@ -74,7 +75,7 @@ trait ProductCrudControllerTrait
             }
 
             return $choices;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->flashMessages[] = $exception->getMessage();
             return [];
         }

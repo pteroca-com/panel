@@ -7,11 +7,12 @@ use App\Core\Contract\Widget\WidgetInterface;
 use App\Core\Enum\WidgetContext;
 use App\Core\Enum\WidgetPosition;
 use App\Core\Service\Logs\LogService;
+use InvalidArgumentException;
 
-class ActivityWidget implements WidgetInterface
+readonly class ActivityWidget implements WidgetInterface
 {
     public function __construct(
-        private readonly LogService $logService
+        private LogService $logService
     ) {}
 
     public function getName(): string
@@ -47,7 +48,7 @@ class ActivityWidget implements WidgetInterface
     public function getData(WidgetContext $context, array $contextData): array
     {
         /** @var UserInterface $user */
-        $user = $contextData['user'] ?? throw new \InvalidArgumentException('User required in context data');
+        $user = $contextData['user'] ?? throw new InvalidArgumentException('User required in context data');
 
         return [
             'logs' => $this->logService->getLogsByUser($user, 5),

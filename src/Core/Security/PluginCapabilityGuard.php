@@ -166,13 +166,12 @@ class PluginCapabilityGuard
         return match ($action) {
             'register_routes' => 'routes',
             'register_widgets' => 'widgets',
-            'register_entities' => 'entities',
+            'register_entities', 'run_migrations' => 'entities',
             'register_commands' => 'console',
             'register_cron_tasks' => 'cron',
             'register_event_subscribers' => 'eda',
             'access_translations' => 'translations',
             'access_assets' => 'assets',
-            'run_migrations' => 'entities',
             default => null,
         };
     }

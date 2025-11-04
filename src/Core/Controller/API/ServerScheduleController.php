@@ -7,6 +7,7 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerScheduleService;
 use App\Core\Trait\InternalServerApiTrait;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -65,7 +66,7 @@ class ServerScheduleController extends APIAbstractController
             );
 
             $response->setData(['success' => true, 'schedule' => $result]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -105,7 +106,7 @@ class ServerScheduleController extends APIAbstractController
             );
 
             $response->setData(['success' => true, 'schedule' => $result]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -122,7 +123,7 @@ class ServerScheduleController extends APIAbstractController
         try {
             $this->serverScheduleService->deleteSchedule($server, $this->getUser(), $scheduleId);
             $response->setData(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -139,7 +140,7 @@ class ServerScheduleController extends APIAbstractController
         try {
             $schedule = $this->serverScheduleService->getSchedule($server, $this->getUser(), $scheduleId);
             $response->setData($schedule);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -152,19 +153,12 @@ class ServerScheduleController extends APIAbstractController
     {
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
         $response = new JsonResponse();
-        
+
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['action']) || empty($data['action'])) {
-            $response->setStatusCode(400);
-            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.action_required')]);
-            return $response;
-        }
-
-        if (!isset($data['payload']) || empty($data['payload'])) {
-            $response->setStatusCode(400);
-            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.payload_required')]);
-            return $response;
+        $validationError = $this->validateScheduleTaskData($data);
+        if ($validationError !== null) {
+            return $validationError;
         }
 
         try {
@@ -180,7 +174,7 @@ class ServerScheduleController extends APIAbstractController
             );
 
             $response->setData(['success' => true, 'task' => $result]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -193,19 +187,12 @@ class ServerScheduleController extends APIAbstractController
     {
         $server = $this->getServer($id, ServerPermissionEnum::SCHEDULE_UPDATE);
         $response = new JsonResponse();
-        
+
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['action']) || empty($data['action'])) {
-            $response->setStatusCode(400);
-            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.action_required')]);
-            return $response;
-        }
-
-        if (!isset($data['payload']) || empty($data['payload'])) {
-            $response->setStatusCode(400);
-            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.payload_required')]);
-            return $response;
+        $validationError = $this->validateScheduleTaskData($data);
+        if ($validationError !== null) {
+            return $validationError;
         }
 
         try {
@@ -220,7 +207,7 @@ class ServerScheduleController extends APIAbstractController
             );
 
             $response->setData(['success' => true, 'task' => $result]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
@@ -237,11 +224,36 @@ class ServerScheduleController extends APIAbstractController
         try {
             $this->serverScheduleService->deleteScheduleTask($server, $this->getUser(), $scheduleId, $taskId);
             $response->setData(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response->setStatusCode(400);
             $response->setData(['error' => $e->getMessage()]);
         }
 
         return $response;
+    }
+
+    /**
+     * Validate schedule task data (action and payload).
+     *
+     * @param array|null $data The data to validate
+     * @return JsonResponse|null Returns JsonResponse with error if validation fails, null if validation passes
+     */
+    private function validateScheduleTaskData(?array $data): ?JsonResponse
+    {
+        if (empty($data['action'])) {
+            $response = new JsonResponse();
+            $response->setStatusCode(400);
+            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.action_required')]);
+            return $response;
+        }
+
+        if (empty($data['payload'])) {
+            $response = new JsonResponse();
+            $response->setStatusCode(400);
+            $response->setData(['error' => $this->translator->trans('pteroca.api.schedule.payload_required')]);
+            return $response;
+        }
+
+        return null;
     }
 }

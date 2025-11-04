@@ -13,10 +13,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * This subscriber ensures that the PluginCommandRegistry has access to the
  * Console Application instance for registering plugin commands dynamically.
  */
-class PluginCommandRegistrySubscriber implements EventSubscriberInterface
+readonly class PluginCommandRegistrySubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly PluginCommandRegistry $commandRegistry,
+        private PluginCommandRegistry $commandRegistry,
     ) {}
 
     public static function getSubscribedEvents(): array

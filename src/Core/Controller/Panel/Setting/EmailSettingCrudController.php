@@ -13,6 +13,8 @@ use App\Core\Service\System\WebConfigurator\EmailConnectionVerificationService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,7 +24,7 @@ class EmailSettingCrudController extends AbstractSettingCrudController
 {
     public function __construct(
         PanelCrudService $panelCrudService,
-        private readonly RequestStack $requestStack,
+        RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly SettingRepository $settingRepository,
         SettingOptionRepository $settingOptionRepository,
@@ -64,7 +66,7 @@ class EmailSettingCrudController extends AbstractSettingCrudController
             $smtpPassword = $this->settingRepository->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD);
 
             if (empty($smtpServer) || empty($smtpPort) || empty($smtpUsername) || empty($smtpPassword)) {
-                throw new \InvalidArgumentException('Missing SMTP configuration');
+                throw new InvalidArgumentException('Missing SMTP configuration');
             }
 
             $result = $this->emailConnectionVerificationService->validateConnection(
@@ -80,7 +82,7 @@ class EmailSettingCrudController extends AbstractSettingCrudController
                 $this->addFlash('danger', $this->translator->trans('pteroca.crud.setting.smtp_connection_failed'));
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception) {
             $this->addFlash('danger', $this->translator->trans('pteroca.crud.setting.smtp_connection_failed'));
         }
 

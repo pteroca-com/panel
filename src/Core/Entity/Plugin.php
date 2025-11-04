@@ -4,6 +4,7 @@ namespace App\Core\Entity;
 
 use App\Core\Enum\PluginStateEnum;
 use App\Core\Repository\PluginRepository;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -51,31 +52,31 @@ class Plugin
     private ?string $pterocaMaxVersion = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $enabledAt = null;
+    private ?DateTimeImmutable $enabledAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $disabledAt = null;
+    private ?DateTimeImmutable $disabledAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $faultReason = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeImmutable $createdAt;
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeImmutable $updatedAt;
+    private DateTimeImmutable $updatedAt;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
         $this->state = PluginStateEnum::DISCOVERED;
     }
 
     #[ORM\PreUpdate]
     public function updateTimestamp(): void
     {
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -215,24 +216,24 @@ class Plugin
         return $this;
     }
 
-    public function getEnabledAt(): ?\DateTimeImmutable
+    public function getEnabledAt(): ?DateTimeImmutable
     {
         return $this->enabledAt;
     }
 
-    public function setEnabledAt(?\DateTimeImmutable $enabledAt): self
+    public function setEnabledAt(?DateTimeImmutable $enabledAt): self
     {
         $this->enabledAt = $enabledAt;
 
         return $this;
     }
 
-    public function getDisabledAt(): ?\DateTimeImmutable
+    public function getDisabledAt(): ?DateTimeImmutable
     {
         return $this->disabledAt;
     }
 
-    public function setDisabledAt(?\DateTimeImmutable $disabledAt): self
+    public function setDisabledAt(?DateTimeImmutable $disabledAt): self
     {
         $this->disabledAt = $disabledAt;
 
@@ -251,12 +252,12 @@ class Plugin
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): \DateTimeImmutable
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
@@ -305,7 +306,7 @@ class Plugin
     public function markAsEnabled(): self
     {
         $this->state = PluginStateEnum::ENABLED;
-        $this->enabledAt = new \DateTimeImmutable();
+        $this->enabledAt = new DateTimeImmutable();
         $this->disabledAt = null;
         $this->faultReason = null;
 
@@ -315,7 +316,7 @@ class Plugin
     public function markAsDisabled(): self
     {
         $this->state = PluginStateEnum::DISABLED;
-        $this->disabledAt = new \DateTimeImmutable();
+        $this->disabledAt = new DateTimeImmutable();
 
         return $this;
     }

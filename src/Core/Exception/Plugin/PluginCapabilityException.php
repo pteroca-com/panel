@@ -2,6 +2,9 @@
 
 namespace App\Core\Exception\Plugin;
 
+use RuntimeException;
+use Throwable;
+
 /**
  * Exception thrown when plugin capability validation fails.
  *
@@ -22,13 +25,13 @@ namespace App\Core\Exception\Plugin;
  * }
  * ```
  */
-class PluginCapabilityException extends \RuntimeException
+class PluginCapabilityException extends RuntimeException
 {
     public static function missingCapability(
         string $pluginName,
         string $capability,
         string $operation,
-        ?\Throwable $previous = null
+        ?Throwable $previous = null
     ): self {
         $message = sprintf(
             "Plugin '%s' attempted to %s but does not have '%s' capability declared in manifest. " .
@@ -46,7 +49,7 @@ class PluginCapabilityException extends \RuntimeException
         string $pluginName,
         string $capability,
         array $validCapabilities,
-        ?\Throwable $previous = null
+        ?Throwable $previous = null
     ): self {
         $message = sprintf(
             "Plugin '%s' declares invalid capability '%s'. Valid capabilities are: %s",
@@ -62,7 +65,7 @@ class PluginCapabilityException extends \RuntimeException
         string $pluginName,
         string $capability,
         string $reason,
-        ?\Throwable $previous = null
+        ?Throwable $previous = null
     ): self {
         $message = sprintf(
             "Plugin '%s' has a conflict with capability '%s': %s",

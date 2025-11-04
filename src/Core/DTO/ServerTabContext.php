@@ -5,14 +5,14 @@ namespace App\Core\DTO;
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
 
-class ServerTabContext
+readonly class ServerTabContext
 {
     public function __construct(
-        public readonly Server $server,
-        public readonly object $serverData, // ServerData DTO
-        public readonly UserInterface $user,
-        public readonly bool $isAdminView,
-        public readonly bool $isOwner,
+        public Server        $server,
+        public object        $serverData, // ServerData DTO
+        public UserInterface $user,
+        public bool          $isAdminView,
+        public bool          $isOwner,
     ) {}
 
     public function hasPermission(string $permission): bool
@@ -51,7 +51,7 @@ class ServerTabContext
         return true;
     }
 
-    public function getProductFeature(string $feature): mixed
+    public function getProductFeature(string $feature): ?int
     {
         $product = $this->server->getServerProduct();
 

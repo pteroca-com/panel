@@ -4,6 +4,7 @@ namespace App\Core\Trait;
 
 use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
+use Exception;
 
 trait InternalServerApiTrait
 {
@@ -28,7 +29,7 @@ trait InternalServerApiTrait
                 ->getServer($server->getPterodactylServerId(), [
                     'subusers'
                 ]);
-        } catch (\Exception) {
+        } catch (Exception) {
             throw $this->createNotFoundException();
         }
 

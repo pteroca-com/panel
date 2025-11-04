@@ -3,10 +3,13 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\DTO\PluginManifestDTO;
+use App\Core\Trait\PluginDirectoryScannerTrait;
 use Psr\Log\LoggerInterface;
 
 class PluginScanner
 {
+    use PluginDirectoryScannerTrait;
+
     private const MANIFEST_FILENAME = 'plugin.json';
 
     private string $pluginsDirectory;
@@ -39,29 +42,13 @@ class PluginScanner
 
         $discovered = [];
 
-        // Get all subdirectories in /plugins/
-        $entries = scandir($this->pluginsDirectory);
+        // Use trait to scan plugin directories (don't parse yet)
+        $rawPlugins = $this->scanPluginDirectory($this->pluginsDirectory, false);
 
-        if ($entries === false) {
-            $this->logger->error("Failed to read plugins directory: {$this->pluginsDirectory}");
+        foreach ($rawPlugins as $rawPlugin) {
+            $pluginPath = $rawPlugin['path'];
 
-            return [];
-        }
-
-        foreach ($entries as $entry) {
-            // Skip special directories and hidden files
-            if ($entry === '.' || $entry === '..' || str_starts_with($entry, '.')) {
-                continue;
-            }
-
-            $pluginPath = $this->pluginsDirectory . '/' . $entry;
-
-            // Skip if not a directory
-            if (!is_dir($pluginPath)) {
-                continue;
-            }
-
-            // Try to discover plugin
+            // Try to discover and validate plugin
             $pluginData = $this->discoverPlugin($pluginPath);
 
             if ($pluginData !== null) {

@@ -3,6 +3,7 @@
 namespace App\Core\Event\SSO;
 
 use App\Core\Event\AbstractDomainEvent;
+use DateTimeInterface;
 
 class SSOTokenGeneratedEvent extends AbstractDomainEvent
 {
@@ -10,7 +11,7 @@ class SSOTokenGeneratedEvent extends AbstractDomainEvent
         private readonly int $userId,
         private readonly int $pterodactylUserId,
         private readonly string $tokenHash,
-        private readonly \DateTimeInterface $expiresAt,
+        private readonly DateTimeInterface $expiresAt,
         private readonly string $targetUrl,
         private readonly array $context = [],
         ?string $eventId = null,
@@ -33,7 +34,7 @@ class SSOTokenGeneratedEvent extends AbstractDomainEvent
         return $this->tokenHash;
     }
 
-    public function getExpiresAt(): \DateTimeInterface
+    public function getExpiresAt(): DateTimeInterface
     {
         return $this->expiresAt;
     }

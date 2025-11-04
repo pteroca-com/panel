@@ -12,11 +12,11 @@ use App\Core\Service\Plugin\PluginHealthCheckService;
  * Plugin health widget for admin overview.
  * Displays health check results for enabled plugins.
  */
-class PluginHealthWidget implements WidgetInterface
+readonly class PluginHealthWidget implements WidgetInterface
 {
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
-        private readonly PluginHealthCheckService $healthCheckService,
+        private PluginRepository         $pluginRepository,
+        private PluginHealthCheckService $healthCheckService,
     ) {}
 
     public function getName(): string

@@ -59,7 +59,7 @@ class UserBalanceWidget implements WidgetInterface
     public function isVisible(WidgetContext $context, array $contextData): bool
     {
         // Always visible when user is authenticated
-        return isset($contextData['user']) && $contextData['user'] !== null;
+        return isset($contextData['user']);
     }
 
     public function getColumnSize(): int
