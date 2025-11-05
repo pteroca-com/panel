@@ -1,0 +1,13 @@
+{% trans_default_domain ea.hasContext ? ea.i18n.translationDomain : (translation_domain is defined ? translation_domain ?? 'messages') %}
+
+{% set flash_messages = app.flashes %}
+
+{% if flash_messages|length > 0 %}
+    {% for label, messages in flash_messages %}
+        {% for message in messages %}
+            <twig:ea:Alert variant="{{ label }}" withDismissButton class="mb-4">
+                {{ message|trans|raw }}
+            </twig:ea:Alert>
+        {% endfor %}
+    {% endfor %}
+{% endif %}

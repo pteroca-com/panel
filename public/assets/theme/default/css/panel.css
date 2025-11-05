@@ -107,43 +107,42 @@
     background: #f6f9fc !important;
 }
 
-.ea-dark-scheme .page-login {
-    background: var(--body-bg) !important;
+body.page-login #flash-messages {
+    position: relative !important;
+    margin-bottom: 1rem;
 }
 
-@media (prefers-color-scheme: dark) {
-    .page-login {
-        background: #0E1E2F !important;
-    }
+.ea-dark-scheme.page-login {
+    background: #0E1E2F !important;
+}
 
-    .page-login .card {
-        background-color: #1A2B3D !important;
-        border-color: #2D3F52 !important;
-    }
+.ea-dark-scheme.page-login .card {
+    background-color: #1A2B3D !important;
+    border-color: #2D3F52 !important;
+}
 
-    .page-login .text-dark {
-        color: #F8FAFC !important;
-    }
+.ea-dark-scheme.page-login .text-dark {
+    color: #F8FAFC !important;
+}
 
-    .page-login .text-muted {
-        color: #9AA5B1 !important;
-    }
+.ea-dark-scheme.page-login .text-muted {
+    color: #9AA5B1 !important;
+}
 
-    .page-login .form-control {
-        background-color: #243B53 !important;
-        border-color: #2D3F52 !important;
-        color: #E6EDF3 !important;
-    }
+.ea-dark-scheme.page-login .form-control {
+    background-color: #243B53 !important;
+    border-color: #2D3F52 !important;
+    color: #E6EDF3 !important;
+}
 
-    .page-login .form-control:focus {
-        background-color: #243B53 !important;
-        border-color: rgb(93, 137, 186) !important;
-        color: #E6EDF3 !important;
-    }
+.ea-dark-scheme.page-login .form-control:focus {
+    background-color: #243B53 !important;
+    border-color: rgb(93, 137, 186) !important;
+    color: #E6EDF3 !important;
+}
 
-    .page-login .form-control::placeholder {
-        color: #9AA5B1;
-    }
+.ea-dark-scheme.page-login .form-control::placeholder {
+    color: #9AA5B1;
 }
 
 .login-wrapper .form-widget input {
@@ -1919,6 +1918,10 @@ hr {
 
 .btn-close:hover {
     opacity: 1;
+}
+
+.form-check {
+    padding-left: 0 !important;
 }
 
 /* Close button visibility in dark mode */

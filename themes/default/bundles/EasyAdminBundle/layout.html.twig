@@ -71,10 +71,6 @@
     {% endblock javascript_page_color_scheme %}
 
     {% block wrapper_wrapper %}
-        {% block flash_messages %}
-            {{ include(ea.templatePath('flash_messages')) }}
-        {% endblock flash_messages %}
-
         {% set user_menu_avatar %}
             {% if ea.user.avatarPath is null %}
                 <span class="user-avatar me-2 mb-1">
@@ -176,7 +172,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="dropdown-item dropdown-appearance-item active" data-ea-color-scheme="auto">
+                                <a href="#" class="dropdown-item dropdown-appearance-item" data-ea-color-scheme="auto">
                                     <i class="fas fa-desktop fa-fw"></i>
                                     {{ 'settings.appearance.auto'|trans(domain = 'EasyAdminBundle') }}
                                 </a>
@@ -345,13 +341,17 @@
                         {% endblock content_top_header %}
                     </aside>
 
-                    {% if show_email_verification_alert() and not app.user.verified %}
-                        <div class="col-12">
+                    <div class="content-wrapper d-block mt-4 pb-0">
+                        {% block flash_messages %}
+                            {{ include(ea.templatePath('flash_messages')) }}
+                        {% endblock %}
+
+                        {% if show_email_verification_alert() and not app.user.verified %}
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                                 <strong>{{ 'pteroca.system.email_not_verified'|trans }} <a href="{{ path('verify_notice') }}">{{ 'pteroca.system.or_resend_verification_email'|trans }}</a></strong>
                             </div>
-                        </div>
-                    {% endif %}
+                        {% endif %}
+                    </div>
 
                     <div class="content-wrapper">
                         {% block content %}

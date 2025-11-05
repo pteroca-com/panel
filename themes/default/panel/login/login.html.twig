@@ -8,7 +8,11 @@
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     {% endif %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version() ~ '-fix3') }}">
+{% endblock %}
+
+{% block head_javascript %}
+    {{ parent() }}
 {% endblock %}
 
 {% block head_favicon %}
@@ -17,6 +21,19 @@
 
 {% block wrapper_wrapper %}
     {% set page_title = block('page_title') %}
+
+    <!-- Apply color scheme immediately to prevent flash -->
+    <script>
+        (function() {
+            const savedScheme = localStorage.getItem('ea/colorScheme') || 'light';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const scheme = savedScheme === 'auto' ? (prefersDark ? 'dark' : 'light') : savedScheme;
+            document.body.classList.remove('ea-light-scheme', 'ea-dark-scheme');
+            document.body.classList.add(scheme === 'dark' ? 'ea-dark-scheme' : 'ea-light-scheme');
+            document.body.setAttribute('data-bs-theme', scheme);
+            document.body.style.colorScheme = scheme;
+        })();
+    </script>
 
     <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
         <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
