@@ -11,11 +11,14 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Events;
 use RuntimeException;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[AsDoctrineListener(event: Events::prePersist)]
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postFlush)]
+#[AsEventListener(event: KernelEvents::TERMINATE)]
 class UserEventListener
 {
     private array $persistedUsers = [];
@@ -33,7 +36,7 @@ class UserEventListener
             return;
         }
 
-        // Tylko dla nowych użytkowników (nie ma jeszcze ID)
+        // Only for new users (no ID assigned yet)
         if ($entity->getId() !== null) {
             return;
         }
@@ -41,7 +44,7 @@ class UserEventListener
         $event = new UserAboutToBeCreatedEvent($entity);
         $this->eventDispatcher->dispatch($event);
 
-        // Jeśli event został odrzucony, możemy rzucić wyjątek
+        // If event was rejected, throw an exception
         if ($event->isRejected()) {
             throw new RuntimeException($event->getRejectionReason() ?? 'User creation rejected');
         }
@@ -55,7 +58,7 @@ class UserEventListener
             return;
         }
 
-        // Zapamiętaj użytkownika do postFlush
+        // Remember user for postFlush processing
         $this->persistedUsers[$entity->getId()] = $entity;
 
         $event = new UserCreatedEvent(
@@ -67,31 +70,41 @@ class UserEventListener
 
     public function postFlush(): void
     {
-        // UWAGA KRYTYCZNA: Ten listener jest SINGLETON - shared state może powodować wycieki między requestami!
-        // Zabezpieczenie: emituj eventy tylko raz per transakcja
-        
+        // CRITICAL: This listener is a SINGLETON - shared state can cause leaks between requests!
+        // Safeguard: emit events only once per transaction
+
         if (empty($this->persistedUsers) || $this->eventsFiredInCurrentTransaction) {
             return;
         }
 
-        // Ustaw flagę PRZED emisją, aby uniknąć pętli jeśli postFlush zostanie wywołany ponownie
+        // Set flag BEFORE emission to avoid loops if postFlush is called again
         $this->eventsFiredInCurrentTransaction = true;
 
-        // Skopiuj tablicę i wyczyść natychmiast, aby uniknąć problemów z kolejnymi wywołaniami
+        // Copy array and clear immediately to avoid issues with subsequent calls
         $usersToProcess = $this->persistedUsers;
         $this->persistedUsers = [];
 
-        // Emituj UserRegisteredEvent dla wszystkich nowo utworzonych użytkowników
-        foreach ($usersToProcess as $user) {
-            $event = new UserRegisteredEvent(
-                $user->getId(),
-                $user->getEmail(),
-                $user->isVerified()
-            );
-            $this->eventDispatcher->dispatch($event);
+        try {
+            // Emit UserRegisteredEvent for all newly created users
+            foreach ($usersToProcess as $user) {
+                $event = new UserRegisteredEvent(
+                    $user->getId(),
+                    $user->getEmail(),
+                    $user->isVerified()
+                );
+                $this->eventDispatcher->dispatch($event);
+            }
+        } finally {
+            // ALWAYS reset flag, even on exception
+            $this->eventsFiredInCurrentTransaction = false;
         }
+    }
 
-        // Zresetuj flagę po zakończeniu
+    public function onKernelTerminate(): void
+    {
+        // Safety net: clear state after request completion
+        // This ensures no state leaks between requests in long-running processes
+        $this->persistedUsers = [];
         $this->eventsFiredInCurrentTransaction = false;
     }
 }
