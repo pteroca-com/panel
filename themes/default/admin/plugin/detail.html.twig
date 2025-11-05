@@ -52,10 +52,10 @@
 {% block main %}
     <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-4">
-            <div class="row">
-                <div class="col-md-6">
+            <div class="row align-items-stretch">
+                <div class="col-md-6 d-flex flex-column">
                     <h5 class="mb-3">{{ 'pteroca.crud.plugin.basic_information'|trans }}</h5>
-                    <table class="table table-borderless">
+                    <table class="table table-borderless flex-grow-1">
                         <tbody>
                         <tr>
                             <th style="width: 40%;">{{ 'pteroca.crud.plugin.name_label'|trans }}</th>
@@ -89,17 +89,19 @@
                     </table>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 d-flex flex-column">
                     <h5 class="mb-3">{{ 'pteroca.crud.plugin.technical_details'|trans }}</h5>
-                    <table class="table table-borderless">
+                    <table class="table table-borderless flex-grow-1">
                         <tbody>
                         <tr>
                             <th style="width: 40%;">{{ 'pteroca.crud.plugin.capabilities_label'|trans }}</th>
                             <td>
                                 {% if plugin.capabilities|length > 0 %}
-                                    {% for capability in plugin.capabilities %}
-                                        <span class="badge bg-secondary mb-2">{{ capability }}</span>
-                                    {% endfor %}
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for capability in plugin.capabilities %}
+                                            <span class="badge bg-secondary">{{ capability }}</span>
+                                        {% endfor %}
+                                    </div>
                                 {% else %}
                                     <em>{{ 'pteroca.crud.plugin.none'|trans }}</em>
                                 {% endif %}
@@ -107,11 +109,23 @@
                         </tr>
                         <tr>
                             <th>{{ 'pteroca.crud.plugin.min_pteroca_version_label'|trans }}</th>
-                            <td>{{ plugin.pterocaMinVersion|default('pteroca.crud.plugin.not_specified'|trans) }}</td>
+                            <td>
+                                {% if plugin.pterocaMinVersion %}
+                                    <span class="badge bg-info">{{ plugin.pterocaMinVersion }}</span>
+                                {% else %}
+                                    <em>{{ 'pteroca.crud.plugin.not_specified'|trans }}</em>
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <th>{{ 'pteroca.crud.plugin.max_pteroca_version_label'|trans }}</th>
-                            <td>{{ plugin.pterocaMaxVersion|default('pteroca.crud.plugin.not_specified'|trans) }}</td>
+                            <td>
+                                {% if plugin.pterocaMaxVersion %}
+                                    <span class="badge bg-info">{{ plugin.pterocaMaxVersion }}</span>
+                                {% else %}
+                                    <em>{{ 'pteroca.crud.plugin.not_specified'|trans }}</em>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% if plugin.enabledAt %}
                             <tr>
@@ -313,7 +327,7 @@
                     </span>
                 {% else %}
                     <span class="badge bg-success ms-2">
-                        <i class="fa fa-check"></i> OK
+                        <i class="fa fa-check me-1"></i> OK
                     </span>
                 {% endif %}
             </h5>

@@ -1757,16 +1757,24 @@ hr {
 /* Table improvements */
 .ea-dark-scheme .table {
     color: #E6EDF3;
+    border-radius: 0.5rem;
+    overflow: hidden;
 }
 
 .ea-dark-scheme .table thead th {
     background-color: #1A2B3D;
     border-color: #2D3F52;
     color: #F8FAFC;
+    padding: 0.75rem 1rem;
 }
 
 .ea-dark-scheme .table tbody td {
     border-color: #2D3F52;
+    padding: 1rem;
+}
+
+.ea-dark-scheme .table tbody th {
+    padding: 1rem;
 }
 
 .ea-dark-scheme .table-hover tbody tr:hover {
@@ -1776,6 +1784,16 @@ hr {
 /* Badge styling */
 .ea-dark-scheme .badge {
     border: 1px solid #2D3F52;
+}
+
+.ea-dark-scheme .badge.bg-secondary {
+    background-color: #4b5563 !important;
+    color: #ffffff !important;
+}
+
+/* Override EasyAdmin badge margin for flex-wrap containers (e.g. plugin capabilities) */
+.d-flex.flex-wrap .badge + .badge {
+    margin-inline-start: 0 !important;
 }
 
 /* Dropdown menus */
