@@ -77,7 +77,8 @@ class PluginSecurityScanCommand extends Command
             $io->section(sprintf('Plugin: %s (%s)', $plugin->getDisplayName(), $plugin->getName()));
 
             // Run security scan
-            $issues = $this->securityValidator->validate($plugin);
+            $securityCheckResult = $this->securityValidator->validate($plugin);
+            $issues = $securityCheckResult->issues;
 
             // Filter by severity if requested
             if ($severityFilter) {

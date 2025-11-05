@@ -293,13 +293,13 @@ class PluginUploadService
             $this->filesystem->rename($pluginRoot, $tempScanPath);
 
             $tempPlugin->setName(basename($tempScanPath));
-            $issues = $this->securityValidator->validate($tempPlugin);
+            $securityCheckResult = $this->securityValidator->validate($tempPlugin);
 
             // Move back
             $this->filesystem->rename($tempScanPath, $pluginRoot);
 
             // Check for CRITICAL issues
-            $criticalIssues = array_filter($issues, fn($issue) => $issue['severity'] === 'CRITICAL');
+            $criticalIssues = array_filter($securityCheckResult->issues, fn($issue) => $issue['severity'] === 'CRITICAL');
             if (!empty($criticalIssues)) {
                 $criticalMessages = array_map(fn($issue) => $issue['message'], $criticalIssues);
                 throw new RuntimeException(
@@ -307,7 +307,7 @@ class PluginUploadService
                 );
             }
 
-            return $issues;
+            return $securityCheckResult->issues;
 
         } catch (Exception $e) {
             $this->logger->warning('Security scan failed during upload', [

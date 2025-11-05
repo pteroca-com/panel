@@ -259,139 +259,164 @@
                 </h5>
             </div>
             <div class="card-body">
-                {% if healthCheckResult.healthy %}
-                    <div class="alert alert-success mb-0">
-                        <i class="fa fa-check-circle"></i> {{ 'pteroca.plugin.health.all_checks_passed'|trans }}
-                    </div>
-                {% else %}
-                    <table class="table table-hover mb-0">
-                        <thead>
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ 'pteroca.plugin.health.check'|trans }}</th>
+                            <th>{{ 'pteroca.plugin.health.status'|trans }}</th>
+                            <th>{{ 'pteroca.plugin.health.error_details'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for checkName, passed in healthCheckResult.checks %}
                             <tr>
-                                <th>{{ 'pteroca.plugin.health.check'|trans }}</th>
-                                <th>{{ 'pteroca.plugin.health.status'|trans }}</th>
-                                <th>{{ 'pteroca.plugin.health.error_details'|trans }}</th>
+                                <td>
+                                    {% if checkName == 'files_integrity' %}
+                                        {{ 'pteroca.plugin.health.files_integrity'|trans }}
+                                    {% elseif checkName == 'dependencies' %}
+                                        {{ 'pteroca.plugin.health.dependencies'|trans }}
+                                    {% elseif checkName == 'configuration' %}
+                                        {{ 'pteroca.plugin.health.configuration'|trans }}
+                                    {% elseif checkName == 'service_registration' %}
+                                        {{ 'pteroca.plugin.health.service_registration'|trans }}
+                                    {% else %}
+                                        {{ checkName }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if passed %}
+                                        <span class="badge bg-success">
+                                            <i class="fa fa-check me-1"></i> {{ 'pteroca.plugin.health.passed'|trans }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fa fa-times me-1"></i> {{ 'pteroca.plugin.health.failed'|trans }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not passed and healthCheckResult.errors[checkName] is defined %}
+                                        <small class="text-danger">{{ healthCheckResult.errors[checkName] }}</small>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for checkName, passed in healthCheckResult.checks %}
-                                <tr>
-                                    <td>
-                                        {% if checkName == 'files_integrity' %}
-                                            {{ 'pteroca.plugin.health.files_integrity'|trans }}
-                                        {% elseif checkName == 'dependencies' %}
-                                            {{ 'pteroca.plugin.health.dependencies'|trans }}
-                                        {% elseif checkName == 'configuration' %}
-                                            {{ 'pteroca.plugin.health.configuration'|trans }}
-                                        {% elseif checkName == 'service_registration' %}
-                                            {{ 'pteroca.plugin.health.service_registration'|trans }}
-                                        {% else %}
-                                            {{ checkName }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if passed %}
-                                            <span class="badge bg-success">
-                                                <i class="fa fa-check"></i> {{ 'pteroca.plugin.health.passed'|trans }}
-                                            </span>
-                                        {% else %}
-                                            <span class="badge bg-danger">
-                                                <i class="fa fa-times"></i> {{ 'pteroca.plugin.health.failed'|trans }}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if not passed and healthCheckResult.errors[checkName] is defined %}
-                                            <small class="text-danger">{{ healthCheckResult.errors[checkName] }}</small>
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     {% endif %}
 
     {# Security Status Section #}
-    <div class="card border-0 shadow-sm rounded-3 mt-4">
-        <div class="card-header bg-light">
-            <h5 class="mb-0">
-                <i class="fa fa-shield-alt {{ securityIssues|length > 0 ? 'text-danger' : 'text-success' }}"></i>
-                {{ 'pteroca.plugin.security.security_status'|trans }}
-                {% if securityIssues|length > 0 %}
-                    <span class="badge bg-danger ms-2">
-                        {{ securityIssues|length }} {{ 'pteroca.plugin.security.issues'|trans }}
+    {% if securityCheckResult is not null %}
+        <div class="card border-0 shadow-sm rounded-3 mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fa fa-shield-alt {{ securityCheckResult.secure ? 'text-success' : 'text-danger' }}"></i>
+                    {{ 'pteroca.plugin.security.security_status'|trans }}
+                    <span class="badge {{ securityCheckResult.secure ? 'bg-success' : 'bg-danger' }} ms-2">
+                        {{ securityCheckResult.securityPercentage|number_format(0) }}%
                     </span>
-                {% else %}
-                    <span class="badge bg-success ms-2">
-                        <i class="fa fa-check me-1"></i> OK
-                    </span>
-                {% endif %}
-            </h5>
-        </div>
-        <div class="card-body">
-            {% if securityIssues|length == 0 %}
-                <div class="alert alert-success mb-0">
-                    <i class="fa fa-check-circle"></i> {{ 'pteroca.plugin.security.all_clear'|trans }}
-                </div>
-            {% else %}
-                <div class="mb-3">
-                    <strong>{{ 'pteroca.plugin.security.total_issues_found'|trans }}:</strong> {{ securityIssues|length }}
-                </div>
+                </h5>
+            </div>
+            <div class="card-body">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>{{ 'pteroca.plugin.security.severity'|trans }}</th>
-                            <th>{{ 'pteroca.plugin.security.type'|trans }}</th>
-                            <th>{{ 'pteroca.plugin.security.file'|trans }}</th>
-                            <th>{{ 'pteroca.plugin.security.line'|trans }}</th>
-                            <th>{{ 'pteroca.plugin.security.message'|trans }}</th>
+                            <th>{{ 'pteroca.plugin.health.check'|trans }}</th>
+                            <th>{{ 'pteroca.plugin.health.status'|trans }}</th>
+                            <th>{{ 'pteroca.plugin.security.issues'|trans }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for issue in securityIssues %}
+                        {% for checkName, passed in securityCheckResult.checks %}
                             <tr>
                                 <td>
-                                    {% if issue.severity == 'critical' %}
+                                    {{ ('pteroca.plugin.security.check.' ~ checkName)|trans }}
+                                </td>
+                                <td>
+                                    {% if passed %}
+                                        <span class="badge bg-success">
+                                            <i class="fa fa-check me-1"></i> {{ 'pteroca.plugin.health.passed'|trans }}
+                                        </span>
+                                    {% else %}
                                         <span class="badge bg-danger">
-                                            <i class="fa fa-exclamation-circle"></i> {{ 'pteroca.plugin.security.critical'|trans|upper }}
+                                            <i class="fa fa-times me-1"></i> {{ 'pteroca.plugin.health.failed'|trans }}
                                         </span>
-                                    {% elseif issue.severity == 'high' %}
-                                        <span class="badge bg-warning">
-                                            <i class="fa fa-exclamation-triangle"></i> {{ 'pteroca.plugin.security.high'|trans|upper }}
-                                        </span>
-                                    {% elseif issue.severity == 'medium' %}
-                                        <span class="badge bg-info">{{ 'pteroca.plugin.security.medium'|trans|upper }}</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">{{ 'pteroca.plugin.security.low'|trans|upper }}</span>
-                                    {% endif %}
-                                </td>
-                                <td><code>{{ issue.type }}</code></td>
-                                <td>
-                                    {% if issue.file is defined %}
-                                        <small>{{ issue.file }}</small>
-                                    {% else %}
-                                        -
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if issue.line is defined %}
-                                        {{ issue.line }}
+                                    {% set issueCount = securityCheckResult.getIssueCountByType(checkName) %}
+                                    {% if issueCount > 0 %}
+                                        <span class="badge bg-danger">{{ issueCount }}</span>
                                     {% else %}
-                                        -
+                                        <span class="text-muted">0</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ issue.message }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            {% endif %}
+
+                {# Show detailed issues if any exist #}
+                {% if not securityCheckResult.secure %}
+                    <div class="mt-4">
+                        <h6>{{ 'pteroca.plugin.security.total_issues_found'|trans }}: {{ securityCheckResult.totalIssues }}</h6>
+                        <table class="table table-hover mt-3">
+                            <thead>
+                                <tr>
+                                    <th>{{ 'pteroca.plugin.security.severity'|trans }}</th>
+                                    <th>{{ 'pteroca.plugin.security.type'|trans }}</th>
+                                    <th>{{ 'pteroca.plugin.security.file'|trans }}</th>
+                                    <th>{{ 'pteroca.plugin.security.line'|trans }}</th>
+                                    <th>{{ 'pteroca.plugin.security.message'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for issue in securityCheckResult.issues %}
+                                    <tr>
+                                        <td>
+                                            {% if issue.severity == 'critical' %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fa fa-exclamation-circle"></i> {{ 'pteroca.plugin.security.critical'|trans|upper }}
+                                                </span>
+                                            {% elseif issue.severity == 'high' %}
+                                                <span class="badge bg-warning">
+                                                    <i class="fa fa-exclamation-triangle"></i> {{ 'pteroca.plugin.security.high'|trans|upper }}
+                                                </span>
+                                            {% elseif issue.severity == 'medium' %}
+                                                <span class="badge bg-info">{{ 'pteroca.plugin.security.medium'|trans|upper }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ 'pteroca.plugin.security.low'|trans|upper }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><code>{{ issue.type }}</code></td>
+                                        <td>
+                                            {% if issue.file is defined %}
+                                                <small>{{ issue.file }}</small>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if issue.line is defined %}
+                                                {{ issue.line }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ issue.message }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     {# Dependents Section #}
     {% if dependents|length > 0 %}

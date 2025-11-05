@@ -1321,6 +1321,12 @@ pteroca:
       file_permissions: 'File Permissions'
       security_status: 'Security Status'
       total_issues_found: 'Total Issues Found'
+      check:
+        dangerous_functions: 'Dangerous Functions'
+        path_traversal: 'Path Traversal'
+        sql_injection: 'SQL Injection'
+        xss_patterns: 'XSS Patterns'
+        file_permissions: 'File Permissions'
     health:
       title: 'Plugin Health'
       check: 'Health Check'

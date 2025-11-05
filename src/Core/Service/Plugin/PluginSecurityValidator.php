@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Plugin;
 
+use App\Core\DTO\PluginSecurityCheckResultDTO;
 use App\Core\Entity\Plugin;
 use ArrayIterator;
 use Exception;
@@ -45,12 +46,13 @@ class PluginSecurityValidator
      * Validate plugin security.
      *
      * @param Plugin $plugin Plugin to validate
-     * @return array Array of security issues
+     * @return PluginSecurityCheckResultDTO Security check results with all checks and issues
      * @throws Exception
      */
-    public function validate(Plugin $plugin): array
+    public function validate(Plugin $plugin): PluginSecurityCheckResultDTO
     {
-        $issues = [];
+        $allIssues = [];
+        $checks = [];
 
         $this->logger->info("Running security validation for plugin", [
             'plugin' => $plugin->getName(),
@@ -58,40 +60,55 @@ class PluginSecurityValidator
 
         // Check 1: Dangerous functions
         if ($this->securityChecks['dangerous_functions'] ?? true) {
-            $issues = array_merge($issues, $this->scanForDangerousFunctions($plugin->getPath()));
+            $dangerousFunctionIssues = $this->scanForDangerousFunctions($plugin->getPath());
+            $allIssues = array_merge($allIssues, $dangerousFunctionIssues);
+            $checks['dangerous_functions'] = empty($dangerousFunctionIssues);
         }
 
         // Check 2: Path traversal
         if ($this->securityChecks['path_traversal'] ?? true) {
-            $issues = array_merge($issues, $this->scanForPathTraversal($plugin->getPath()));
+            $pathTraversalIssues = $this->scanForPathTraversal($plugin->getPath());
+            $allIssues = array_merge($allIssues, $pathTraversalIssues);
+            $checks['path_traversal'] = empty($pathTraversalIssues);
         }
 
         // Check 3: SQL injection patterns
         if ($this->securityChecks['sql_injection'] ?? true) {
-            $issues = array_merge($issues, $this->analyzeDatabaseQueries($plugin->getPath()));
+            $sqlInjectionIssues = $this->analyzeDatabaseQueries($plugin->getPath());
+            $allIssues = array_merge($allIssues, $sqlInjectionIssues);
+            $checks['sql_injection'] = empty($sqlInjectionIssues);
         }
 
         // Check 4: XSS patterns
         if ($this->securityChecks['xss_patterns'] ?? true) {
-            $issues = array_merge($issues, $this->scanForXSSPatterns($plugin->getPath()));
+            $xssIssues = $this->scanForXSSPatterns($plugin->getPath());
+            $allIssues = array_merge($allIssues, $xssIssues);
+            $checks['xss_patterns'] = empty($xssIssues);
         }
 
         // Check 5: File permissions
         if ($this->securityChecks['file_permissions'] ?? true) {
-            $issues = array_merge($issues, $this->checkFilePermissions($plugin->getPath()));
+            $permissionIssues = $this->checkFilePermissions($plugin->getPath());
+            $allIssues = array_merge($allIssues, $permissionIssues);
+            $checks['file_permissions'] = empty($permissionIssues);
         }
 
-        $criticalCount = count(array_filter($issues, fn($i) => $i['severity'] === self::SEVERITY_CRITICAL));
-        $highCount = count(array_filter($issues, fn($i) => $i['severity'] === self::SEVERITY_HIGH));
+        $criticalCount = count(array_filter($allIssues, fn($i) => $i['severity'] === self::SEVERITY_CRITICAL));
+        $highCount = count(array_filter($allIssues, fn($i) => $i['severity'] === self::SEVERITY_HIGH));
 
         $this->logger->info("Security validation completed", [
             'plugin' => $plugin->getName(),
-            'total_issues' => count($issues),
+            'total_issues' => count($allIssues),
             'critical' => $criticalCount,
             'high' => $highCount,
         ]);
 
-        return $issues;
+        // Return DTO with all checks and issues
+        if (empty($allIssues)) {
+            return PluginSecurityCheckResultDTO::secure($plugin, $checks);
+        }
+
+        return PluginSecurityCheckResultDTO::insecure($plugin, $checks, $allIssues);
     }
 
     /**

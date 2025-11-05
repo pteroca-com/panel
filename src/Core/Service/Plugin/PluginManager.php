@@ -178,8 +178,8 @@ readonly class PluginManager
         }
 
         // Security validation - check for critical security issues
-        $securityIssues = $this->securityValidator->validate($plugin);
-        $criticalIssues = array_filter($securityIssues, fn($issue) => $issue['severity'] === 'critical');
+        $securityCheckResult = $this->securityValidator->validate($plugin);
+        $criticalIssues = array_filter($securityCheckResult->issues, fn($issue) => $issue['severity'] === 'critical');
 
         if (!empty($criticalIssues)) {
             $errorMessage = sprintf(
@@ -205,7 +205,7 @@ readonly class PluginManager
         }
 
         // Log high severity issues as warnings (but allow plugin to be enabled)
-        $highIssues = array_filter($securityIssues, fn($issue) => $issue['severity'] === 'high');
+        $highIssues = array_filter($securityCheckResult->issues, fn($issue) => $issue['severity'] === 'high');
         if (!empty($highIssues)) {
             $this->logger->warning("Plugin has high severity security issues: {$plugin->getName()}", [
                 'high_issues' => $highIssues,

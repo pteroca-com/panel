@@ -62,22 +62,17 @@ readonly class PluginSecurityWidget implements WidgetInterface
         $affectedPlugins = [];
 
         foreach ($enabledPlugins as $plugin) {
-            $issues = $this->securityValidator->validate($plugin);
+            $securityCheckResult = $this->securityValidator->validate($plugin);
 
-            if (!empty($issues)) {
+            if (!$securityCheckResult->secure) {
                 $affectedPlugins[] = [
                     'name' => $plugin->getDisplayName(),
-                    'issues_count' => count($issues),
+                    'issues_count' => $securityCheckResult->getTotalIssues(),
                 ];
 
-                foreach ($issues as $issue) {
-                    $totalIssues++;
-                    if ($issue['severity'] === 'critical') {
-                        $criticalIssues++;
-                    } elseif ($issue['severity'] === 'high') {
-                        $highIssues++;
-                    }
-                }
+                $totalIssues += $securityCheckResult->getTotalIssues();
+                $criticalIssues += $securityCheckResult->getCriticalCount();
+                $highIssues += $securityCheckResult->getHighCount();
             }
         }
 

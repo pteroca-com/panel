@@ -288,11 +288,11 @@ class PluginCrudController extends AbstractPanelController
         }
 
         // Run security scan if plugin exists on filesystem
+        $securityCheckResult = null;
         try {
-            $securityIssues = $this->securityValidator->validate($plugin);
+            $securityCheckResult = $this->securityValidator->validate($plugin);
         } catch (Exception) {
             // Silently fail if security scan fails
-            $securityIssues = [];
         }
 
         $viewData = [
@@ -303,7 +303,7 @@ class PluginCrudController extends AbstractPanelController
             'hasCircularDependency' => $hasCircular,
             'circularDependencyPath' => $circularPath,
             'healthCheckResult' => $healthCheckResult,
-            'securityIssues' => $securityIssues,
+            'securityCheckResult' => $securityCheckResult,
         ];
 
         return $this->renderWithEvent(
