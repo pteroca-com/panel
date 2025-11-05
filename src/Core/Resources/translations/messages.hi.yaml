@@ -26,6 +26,7 @@ pteroca:
     sign_in: 'साइन इन करें'
     invalid_captcha: 'अमान्य CAPTCHA सत्यापन।'
     user_blocked: 'आपका खाता ब्लॉक कर दिया गया है।'
+    account_deleted: 'आपका खाता हटा दिया गया है।'
     invalid_credentials: 'अमान्य ईमेल या पासवर्ड।'
     dont_have_account_yet: "अभी तक खाता नहीं है? अभी पंजीकरण करें!"
     subtitle: 'अपने खाते में लॉगिन करें'
@@ -176,6 +177,7 @@ pteroca:
     total: 'कुल'
     slot: 'स्लॉट'
     slots: 'स्लॉट्स'
+    processing: 'प्रसंस्करण...'
 
   store:
     title: 'स्टोर'
@@ -826,9 +828,10 @@ pteroca:
       plugin_not_found: 'प्लगइन "%s" नहीं मिला।'
     server:
       pterodactyl_server_id: 'Pterodactyl सर्वर आईडी'
-      pterodactyl_server_identifier: 'Pterodactyl सर्वर पहचानकर्ता'
+      pterodactyl_server_identifier: 'Pterodactyl पहचानकर्ता'
+      name: 'सर्वर नाम'
       product: 'उत्पाद'
-      user: 'उपयोगकर्ता'
+      user: 'मालिक'
       created_at: 'बनाया गया'
       expires_at: 'समाप्ति तिथि'
       is_suspended: 'निलंबित'
@@ -839,7 +842,7 @@ pteroca:
       show_server_dashboard: 'सर्वर डैशबोर्ड दिखाएँ'
       auto_renewal: 'स्वचालित नवीनीकरण'
       server_product_edit: 'बिल्ड कॉन्फ़िगरेशन संपादित करें'
-      product_server_build: 'सर्वर बिल्ड कॉन्फ़िगरेशन'
+      product_server_build: 'बिल्ड कॉन्फ़िगरेशन'
       server_edit: 'सर्वर मालिक बदलें'
       server_product_detail: 'सर्वर विवरण दिखाएँ'
       show_server_logs: 'सर्वर लॉग दिखाएँ'
@@ -1094,6 +1097,8 @@ pteroca:
       only_during_order: 'वाउचर केवल ऑर्डर करते समय ही उपयोग किया जा सकता है।'
 
   email:
+    creation_not_sent_misconfigured: 'सर्वर सफलतापूर्वक बनाया गया, लेकिन ईमेल कॉन्फ़िगरेशन समस्याओं के कारण पुष्टि ईमेल नहीं भेजा जा सका। कृपया अपनी ईमेल सेटिंग जांचें।'
+    renewal_not_sent_misconfigured: 'सर्वर सफलतापूर्वक नवीनीकृत किया गया, लेकिन ईमेल कॉन्फ़िगरेशन समस्याओं के कारण पुष्टि ईमेल नहीं भेजा जा सका। कृपया अपनी ईमेल सेटिंग जांचें।'
     general:
       hello: 'नमस्ते'
       best_regards: 'सादर'
@@ -1276,6 +1281,8 @@ pteroca:
       user_already_exists_in_local_database: 'इस ईमेल पते वाला उपयोगकर्ता पहले से ही स्थानीय डेटाबेस में मौजूद है।'
 
   error:
+    invalid_csrf_token: 'अमान्य CSRF टोकन। कृपया पृष्ठ को ताज़ा करें और पुनः प्रयास करें।'
+    user_not_found: 'उपयोगकर्ता नहीं मिला।'
     404:
       title: 'पेज नहीं मिला'
       message: 'खुशी है, लेकिन आप जो पेज खोज रहे हैं वह मौजूद नहीं है या स्थानांतरित हो गया है। URL की जांच करें या मुख्य पेज पर वापस जाएं।'

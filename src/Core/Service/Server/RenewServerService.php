@@ -57,13 +57,14 @@ class RenewServerService extends AbstractActionServerService
      * @throws ServerDetailsNotAvailableException
      * @throws ExceptionInterface
      * @throws Exception
+     * @return array{emailError: string|null}
      */
     public function renewServer(
         Server $server,
         UserInterface $user,
         ?string $voucherCode = null,
         ?int $slots = null
-    ): void
+    ): array
     {
         if (!empty($voucherCode)) {
             $this->voucherPaymentService->validateVoucherCode(
@@ -72,9 +73,9 @@ class RenewServerService extends AbstractActionServerService
                 VoucherTypeEnum::SERVER_DISCOUNT,
             );
         }
-        
+
         $selectedPrice = $server->getServerProduct()->getSelectedPrice();
-        
+
         $validatedEvent = new ServerRenewalValidatedEvent(
             $user->getId(),
             $server->getId(),
@@ -112,7 +113,7 @@ class RenewServerService extends AbstractActionServerService
 
         $expirationDateModifier = sprintf('+%d %s', $selectedPrice->getValue(), $selectedPrice->getUnit()->value);
         $newExpirationDate = (clone $currentExpirationDate)->modify($expirationDateModifier);
-        
+
         // 2. Emit ServerAboutToBeRenewedEvent (przed przedłużeniem, stoppable)
         $aboutToBeRenewedEvent = new ServerAboutToBeRenewedEvent(
             $user->getId(),
@@ -122,15 +123,15 @@ class RenewServerService extends AbstractActionServerService
             $slots
         );
         $this->eventDispatcher->dispatch($aboutToBeRenewedEvent);
-        
+
         // Sprawdzenie czy event został zatrzymany (np. przez fraud detection)
         if ($aboutToBeRenewedEvent->isPropagationStopped()) {
             throw new Exception($this->translator->trans('pteroca.store.server_renewal_blocked'));
         }
-        
+
         $oldExpiresAt = $server->getExpiresAt();
         $server->setExpiresAt($newExpirationDate);
-        
+
         // 3. Emit ServerExpirationExtendedEvent (po setExpiresAt)
         $expirationExtendedEvent = new ServerExpirationExtendedEvent(
             $server->getId(),
@@ -139,7 +140,7 @@ class RenewServerService extends AbstractActionServerService
             $server->getExpiresAt()
         );
         $this->eventDispatcher->dispatch($expirationExtendedEvent);
-        
+
         // 4. Emit ServerUnsuspendedEvent (jeśli był suspended)
         $wasSuspended = $server->getIsSuspended();
         if ($wasSuspended) {
@@ -148,7 +149,7 @@ class RenewServerService extends AbstractActionServerService
                 ->servers()
                 ->unsuspendServer($server->getPterodactylServerId());
             $server->setIsSuspended(false);
-            
+
             $unsuspendedEvent = new ServerUnsuspendedEvent(
                 $server->getId(),
                 $user->getId(),
@@ -158,14 +159,14 @@ class RenewServerService extends AbstractActionServerService
         }
 
         $this->serverRepository->save($server);
-        
+
         // 5. Emit ServerRenewalBalanceChargedEvent (jeśli chargeBalance)
         if ($chargeBalance) {
             $oldBalance = $user->getBalance();
             $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, $slots);
             $newBalance = $user->getBalance();
             $finalPrice = $oldBalance - $newBalance;
-            
+
             $balanceChargedEvent = new ServerRenewalBalanceChargedEvent(
                 $user->getId(),
                 $oldBalance,
@@ -178,12 +179,23 @@ class RenewServerService extends AbstractActionServerService
         }
 
         $previousExpiresAt = clone $currentExpirationDate;
+        $emailError = null;
         if ($this->boughtConfirmationEmailService->shouldSendRenewalNotification($server, $previousExpiresAt, $server->getExpiresAt())) {
-            $this->boughtConfirmationEmailService->sendRenewConfirmationEmail(
-                $user,
-                $server,
-                $this->getPterodactylAccountLogin($user),
-            );
+            // Try to send renewal confirmation email, but don't fail if email is misconfigured
+            try {
+                $this->boughtConfirmationEmailService->sendRenewConfirmationEmail(
+                    $user,
+                    $server,
+                    $this->getPterodactylAccountLogin($user),
+                );
+            } catch (\Exception $e) {
+                $emailError = 'pteroca.email.renewal_not_sent_misconfigured';
+                $this->logger->error('Failed to send renewal confirmation email', [
+                    'user_id' => $user->getId(),
+                    'server_id' => $server->getId(),
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         $this->logService->logAction(
@@ -191,7 +203,7 @@ class RenewServerService extends AbstractActionServerService
             LogActionEnum::RENEW_SERVER,
             ['server' => $server],
         );
-        
+
         // 6. Emit ServerRenewalCompletedEvent (po całym procesie)
         $renewalCompletedEvent = new ServerRenewalCompletedEvent(
             $server->getId(),
@@ -200,5 +212,9 @@ class RenewServerService extends AbstractActionServerService
             $server->getExpiresAt()
         );
         $this->eventDispatcher->dispatch($renewalCompletedEvent);
+
+        return [
+            'emailError' => $emailError,
+        ];
     }
 }

@@ -26,6 +26,7 @@ pteroca:
     sign_in: 'Zaloguj się'
     invalid_captcha: 'Nieprawidłowa weryfikacja CAPTCHA.'
     user_blocked: 'Twoje konto zostało zablokowane.'
+    account_deleted: 'Twoje konto zostało usunięte.'
     invalid_credentials: 'Nieprawidłowy adres e-mail lub hasło.'
     dont_have_account_yet: 'Nie masz jeszcze konta? Zarejestruj się!'
     subtitle: 'Zaloguj się do swojego konta'
@@ -176,6 +177,7 @@ pteroca:
     total: 'Łącznie'
     slot: 'slot'
     slots: 'Sloty'
+    processing: 'Przetwarzanie...'
 
   store:
     title: 'Sklep'
@@ -826,9 +828,10 @@ pteroca:
       plugin_not_found: 'Plugin "%s" nie znaleziony.'
     server:
       pterodactyl_server_id: 'ID serwera Pterodactyl'
-      pterodactyl_server_identifier: 'Identyfikator serwera Pterodactyl'
+      pterodactyl_server_identifier: 'Identyfikator Pterodactyl'
+      name: 'Nazwa serwera'
       product: 'Produkt'
-      user: 'Użytkownik'
+      user: 'Właściciel'
       created_at: 'Utworzono'
       expires_at: 'Wygasa'
       is_suspended: 'Zawieszony'
@@ -839,7 +842,7 @@ pteroca:
       show_server_dashboard: 'Pokaż pulpit serwera'
       auto_renewal: 'Automatyczne odnawianie'
       server_product_edit: 'Edytuj konfigurację kompilacji'
-      product_server_build: 'Konfiguracja kompilacji serwera'
+      product_server_build: 'Konfiguracja kompilacji'
       server_edit: 'Zmień właściciela serwera'
       server_product_detail: 'Pokaż szczegóły serwera'
       show_server_logs: 'Pokaż logi serwera'
@@ -1094,6 +1097,8 @@ pteroca:
       only_during_order: 'Voucher może być użyty tylko podczas składania zamówienia.'
 
   email:
+    creation_not_sent_misconfigured: 'Serwer został pomyślnie utworzony, ale wiadomość e-mail z potwierdzeniem nie mogła zostać wysłana z powodu problemów z konfiguracją poczty e-mail. Sprawdź ustawienia poczty e-mail.'
+    renewal_not_sent_misconfigured: 'Serwer został pomyślnie odnowiony, ale wiadomość e-mail z potwierdzeniem nie mogła zostać wysłana z powodu problemów z konfiguracją poczty e-mail. Sprawdź ustawienia poczty e-mail.'
     general:
       hello: 'Cześć'
       best_regards: 'Pozdrawiamy'
@@ -1276,6 +1281,8 @@ pteroca:
       user_already_exists_in_local_database: 'Użytkownik o tym adresie e-mail już istnieje w lokalnej bazie danych.'
 
   error:
+    invalid_csrf_token: 'Nieprawidłowy token CSRF. Odśwież stronę i spróbuj ponownie.'
+    user_not_found: 'Użytkownik nie znaleziony.'
     404:
       title: 'Strona nie została znaleziona'
       message: 'Przepraszamy, ale strona której szukasz nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.'

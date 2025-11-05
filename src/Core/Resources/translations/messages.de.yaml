@@ -26,6 +26,7 @@ pteroca:
     sign_in: 'Einloggen'
     invalid_captcha: 'Ungültige CAPTCHA-Verifizierung.'
     user_blocked: 'Ihr Konto wurde gesperrt.'
+    account_deleted: 'Ihr Konto wurde gelöscht.'
     dont_have_account_yet: 'Noch kein Konto? Jetzt registrieren!'
     subtitle: 'Melden Sie sich in Ihrem Konto an'
     invalid_credentials: 'Ungültige E-Mail oder Passwort.'
@@ -176,6 +177,7 @@ pteroca:
     total: 'Gesamt'
     slot: 'Slot'
     slots: 'Slots'
+    processing: 'Verarbeitung...'
 
   store:
     title: 'Shop'
@@ -826,9 +828,10 @@ pteroca:
       plugin_not_found: 'Plugin "%s" nicht gefunden.'
     server:
       pterodactyl_server_id: 'Pterodactyl-Server-ID'
-      pterodactyl_server_identifier: 'Pterodactyl-Server-Identifier'
+      pterodactyl_server_identifier: 'Pterodactyl-Identifier'
+      name: 'Servername'
       product: 'Produkt'
-      user: 'Benutzer'
+      user: 'Besitzer'
       created_at: 'Erstellt am'
       expires_at: 'Läuft ab am'
       is_suspended: 'Gesperrt'
@@ -839,7 +842,7 @@ pteroca:
       show_server_dashboard: 'Server-Dashboard anzeigen'
       auto_renewal: 'Automatische Verlängerung'
       server_product_edit: 'Build-Konfiguration bearbeiten'
-      product_server_build: 'Server-Build-Konfiguration'
+      product_server_build: 'Build-Konfiguration'
       server_edit: 'Besitzer ändern'
       server_product_detail: 'Serverdetails anzeigen'
       show_server_logs: 'Serverprotokolle anzeigen'
@@ -1094,6 +1097,8 @@ pteroca:
       only_during_order: 'Gutschein kann nur während der Bestellung verwendet werden.'
 
   email:
+    creation_not_sent_misconfigured: 'Server wurde erfolgreich erstellt, aber die Bestätigungs-E-Mail konnte aufgrund von E-Mail-Konfigurationsproblemen nicht gesendet werden. Bitte überprüfen Sie Ihre E-Mail-Einstellungen.'
+    renewal_not_sent_misconfigured: 'Server wurde erfolgreich verlängert, aber die Bestätigungs-E-Mail konnte aufgrund von E-Mail-Konfigurationsproblemen nicht gesendet werden. Bitte überprüfen Sie Ihre E-Mail-Einstellungen.'
     general:
       hello: 'Hallo'
       best_regards: 'Mit freundlichen Grüßen'
@@ -1276,6 +1281,8 @@ pteroca:
       user_already_exists_in_local_database: 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits in der lokalen Datenbank.'
 
   error:
+    invalid_csrf_token: 'Ungültiges CSRF-Token. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.'
+    user_not_found: 'Benutzer nicht gefunden.'
     404:
       title: 'Seite nicht gefunden'
       message: 'Entschuldigung, aber die Seite, die Sie suchen, existiert nicht oder wurde verschoben. Überprüfen Sie die URL oder kehren Sie zur Startseite zurück.'

@@ -26,6 +26,7 @@ pteroca:
     sign_in: 'Entrar'
     invalid_captcha: 'Verificação CAPTCHA inválida.'
     user_blocked: 'Sua conta foi bloqueada.'
+    account_deleted: 'Sua conta foi excluída.'
     invalid_credentials: 'E-mail ou senha inválidos.'
     dont_have_account_yet: 'Ainda não tem uma conta? Cadastre-se!'
     subtitle: 'Faça login na sua conta'
@@ -176,6 +177,7 @@ pteroca:
     total: 'Total'
     slot: 'slot'
     slots: 'Slots'
+    processing: 'Processando...'
 
   store:
     title: 'Loja'
@@ -828,9 +830,10 @@ pteroca:
       plugin_not_found: 'Plugin "%s" não encontrado.'
     server:
       pterodactyl_server_id: 'ID do servidor Pterodactyl'
-      pterodactyl_server_identifier: 'Identificador do servidor Pterodactyl'
+      pterodactyl_server_identifier: 'Identificador Pterodactyl'
+      name: 'Nome do servidor'
       product: 'Produto'
-      user: 'Usuário'
+      user: 'Proprietário'
       created_at: 'Criado em'
       expires_at: 'Expira em'
       is_suspended: 'Suspenso'
@@ -841,7 +844,7 @@ pteroca:
       show_server_dashboard: 'Mostrar o painel do servidor'
       auto_renewal: 'Renovação automática'
       server_product_edit: 'Editar configuração de build'
-      product_server_build: 'Configuração de build do servidor'
+      product_server_build: 'Configuração de build'
       server_edit: 'Alterar o proprietário do servidor'
       server_product_detail: 'Mostrar detalhes do servidor'
       show_server_logs: 'Mostrar logs do servidor'
@@ -1096,6 +1099,8 @@ pteroca:
       only_during_order: 'O voucher só pode ser usado durante o pedido.'
 
   email:
+    creation_not_sent_misconfigured: 'O servidor foi criado com sucesso, mas o e-mail de confirmação não pôde ser enviado devido a problemas de configuração de e-mail. Por favor, verifique suas configurações de e-mail.'
+    renewal_not_sent_misconfigured: 'O servidor foi renovado com sucesso, mas o e-mail de confirmação não pôde ser enviado devido a problemas de configuração de e-mail. Por favor, verifique suas configurações de e-mail.'
     general:
       hello: 'Olá'
       best_regards: 'Atenciosamente'
@@ -1278,6 +1283,8 @@ pteroca:
       user_already_exists_in_local_database: 'Um usuário com este endereço de e-mail já existe no banco de dados local.'
 
   error:
+    invalid_csrf_token: 'Token CSRF inválido. Atualize a página e tente novamente.'
+    user_not_found: 'Usuário não encontrado.'
     404:
       title: 'Página não encontrada'
       message: 'Desculpe, mas a página que você está procurando não existe ou foi movida. Verifique a URL ou volte para a página principal.'

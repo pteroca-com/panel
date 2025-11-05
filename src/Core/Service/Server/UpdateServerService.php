@@ -212,7 +212,10 @@ readonly class UpdateServerService
         PterodactylServer $pterodactylServer,
     ): UpdateServerActionResult
     {
-        if ($entityInstance->getUser()->getPterodactylUserId() !== $pterodactylServer->get('user')) {
+        $userChanged = $entityInstance->getUser()->getPterodactylUserId() !== $pterodactylServer->get('user');
+        $nameChanged = $entityInstance->getName() !== null && $entityInstance->getName() !== $pterodactylServer->get('name');
+
+        if ($userChanged || $nameChanged) {
             try {
                 $this->pterodactylApplicationService
                     ->getApplicationApi()
@@ -220,7 +223,7 @@ readonly class UpdateServerService
                     ->updateServerDetails(
                         $entityInstance->getPterodactylServerId(),
                         [
-                            'name' => $pterodactylServer->get('name'),
+                            'name' => $entityInstance->getName() ?: $pterodactylServer->get('name') ?: $entityInstance->getServerProduct()->getName() ?: 'Default name',
                             'description' => $pterodactylServer->get('description'),
                             'user' => $entityInstance->getUser()->getPterodactylUserId(),
                         ],

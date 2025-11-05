@@ -53,7 +53,8 @@ readonly class UserService
                     'first_name' => $user->getName(),
                     'last_name' => $user->getSurname(),
                     'password' => $plainPassword,
-                ]);
+                    'root_admin' => $user->isAdmin(),
+            ]);
             $user->setPterodactylUserId($createdUser->get('id'));
         } catch (Exception $exception) {
             $this->logger->error('Failed to create Pterodactyl account during user creation', [
@@ -139,20 +140,26 @@ readonly class UserService
             $user->setPassword($hashedPassword);
         }
 
+        if ($user->getPterodactylUserId() === null) {
+            $this->createUserWithPterodactylAccount($user, $plainPassword);
+            return;
+        }
+
         try {
             $pterodactylAccount = $this->pterodactylApplicationService
                 ->getApplicationApi()
                 ->users()
                 ->getUser($user->getPterodactylUserId());
-            
+
             if (!empty($pterodactylAccount->username)) {
                 $pterodactylAccountDetails = [
                     'username' => $pterodactylAccount->username,
                     'email' => $user->getEmail(),
                     'first_name' => $user->getName(),
                     'last_name' => $user->getSurname(),
+                    'root_admin' => $user->isAdmin(),
                 ];
-                
+
                 if ($plainPassword) {
                     $pterodactylAccountDetails['password'] = $plainPassword;
                 }
@@ -166,6 +173,19 @@ readonly class UserService
                     );
             }
         } catch (Exception $exception) {
+            if (str_contains($exception->getMessage(), 'The resource you are looking for could not be found')) {
+                $this->logger->warning('Pterodactyl user not found during update, creating new account', [
+                    'old_pterodactyl_user_id' => $user->getPterodactylUserId(),
+                    'user_email' => $user->getEmail(),
+                ]);
+
+                $user->setPterodactylUserId(null);
+                $user->setPterodactylUserApiKey(null);
+
+                $this->createUserWithPterodactylAccount($user, $plainPassword);
+                return;
+            }
+
             $this->logger->error('Failed to update Pterodactyl account', [
                 'exception' => $exception,
                 'user' => $user,

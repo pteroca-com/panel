@@ -8,7 +8,7 @@
         {% endif %}
     </td>
     <td>
-        <strong>{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</strong>
+        <strong>{{ server.name ?: server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</strong>
     </td>
     <td>
         <span class="placeholder col-8 rounded-1" data-ip></span>

@@ -63,5 +63,7 @@ interface UserInterface extends SymfonyUserInterface, PasswordAuthenticatedUserI
     public function softDelete(): self;
     public function restore(): self;
 
+    public function isAdmin(): bool;
+
     public function __toString(): string;
 }

@@ -25,6 +25,7 @@ pteroca:
     sign_in: 'Inloggen'
     invalid_captcha: 'Ongeldige CAPTCHA-verificatie.'
     user_blocked: 'Uw account is geblokkeerd.'
+    account_deleted: 'Uw account is verwijderd.'
     invalid_credentials: 'Ongeldig e-mailadres of wachtwoord.'
     dont_have_account_yet: "Heeft u nog geen account? Registreer nu!"
     subtitle: 'Log in op uw account'
@@ -170,6 +171,8 @@ pteroca:
     total: 'Totaal'
     slot: 'slot'
     slots: 'Slots'
+    processing: 'Verwerken...'
+
   store:
     title: 'Winkel'
     order: 'Bestel'
@@ -813,9 +816,10 @@ pteroca:
       plugin_not_found: 'Plugin "%s" niet gevonden.'
     server:
       pterodactyl_server_id: 'Pterodactyl Server-ID'
-      pterodactyl_server_identifier: 'Pterodactyl Server identificatie'
+      pterodactyl_server_identifier: 'Pterodactyl identificatie'
+      name: 'Servernaam'
       product: 'Artikel'
-      user: 'Gebruiker'
+      user: 'Eigenaar'
       created_at: 'Aangemaakt op'
       expires_at: 'Vervalt op'
       is_suspended: 'Opgeschort'
@@ -826,7 +830,7 @@ pteroca:
       auto_renewal: 'Automatische verlenging'
       show_server_dashboard: 'Toon server dashboard'
       server_product_edit: 'Server build configuratie bewerken'
-      product_server_build: 'Server build configuratie'
+      product_server_build: 'Build configuratie'
       server_edit: 'Server eigenaar wijzigen'
       server_product_detail: 'Toon server details'
       show_server_logs: 'Toon server logboeken'
@@ -1080,6 +1084,8 @@ pteroca:
       error_during_redeeming: 'Er is een fout opgetreden tijdens het inwisselen van de voucher.'
       only_during_order: 'Voucher kan alleen worden gebruikt tijdens de bestelling.'
   email:
+    creation_not_sent_misconfigured: 'Server is succesvol aangemaakt, maar de bevestigingsmail kon niet worden verzonden vanwege e-mailconfiguratieproblemen. Controleer uw e-mailinstellingen.'
+    renewal_not_sent_misconfigured: 'Server is succesvol verlengd, maar de bevestigingsmail kon niet worden verzonden vanwege e-mailconfiguratieproblemen. Controleer uw e-mailinstellingen.'
     general:
       hello: 'Hallo'
       best_regards: 'Met vriendelijke groet'
@@ -1259,6 +1265,8 @@ pteroca:
       user_already_exists_in_local_database: 'Een gebruiker met dit e-mailadres bestaat al in de lokale database.'
 
   error:
+    invalid_csrf_token: 'Ongeldig CSRF-token. Vernieuw de pagina en probeer het opnieuw.'
+    user_not_found: 'Gebruiker niet gevonden.'
     404:
       title: 'Pagina niet gevonden'
       message: 'Sorry, maar de pagina die u zoekt bestaat niet of is verplaatst. Controleer de URL of ga terug naar de hoofdpagina.'

@@ -120,6 +120,7 @@ class UpdateOrchestrator implements HandlerInterface
             $this->executeAtomicStep('Updating database schema', fn() => $this->databaseService->runMigrations());
             $this->executeAtomicStep('Clearing application cache', fn() => $this->systemService->clearCache());
             $this->executeAtomicStep('Adjusting file permissions', fn() => $this->systemService->adjustFilePermissions());
+            $this->executeAtomicStep('Restoring file ownership', fn() => $this->systemService->restoreFileOwnership());
 
             $this->stateManager->clearState();
         } catch (Exception $e) {

@@ -250,6 +250,9 @@ class UserCrudController extends AbstractPanelController
                 return;
             }
 
+            // Clear Pterodactyl mapping before soft delete to prevent issues during re-registration
+            $entityInstance->setPterodactylUserId(null);
+            $entityInstance->setPterodactylUserApiKey(null);
             $entityInstance->softDelete();
             $entityManager->persist($entityInstance);
             $entityManager->flush();

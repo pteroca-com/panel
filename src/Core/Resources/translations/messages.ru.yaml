@@ -24,6 +24,7 @@ pteroca:
     sign_in: 'Войти'
     invalid_captcha: 'Неверная CAPTCHA.'
     user_blocked: 'Ваша учётная запись заблокирована.'
+    account_deleted: 'Ваша учётная запись была удалена.'
     invalid_credentials: 'Неверный адрес электронной почты или пароль.'
     dont_have_account_yet: "Еще нет аккаунта? Зарегистрируйтесь сейчас!"
     subtitle: 'Войдите в свой аккаунт'
@@ -171,6 +172,7 @@ pteroca:
     total: 'Итого'
     slot: 'слот'
     slots: 'Слоты'
+    processing: 'Обработка...'
 
   store:
     title: 'Магазин'
@@ -820,9 +822,10 @@ pteroca:
       plugin_not_found: 'Плагин "%s" не найден.'
     server:
       pterodactyl_server_id: 'ID сервера Pterodactyl'
-      pterodactyl_server_identifier: 'Идентификатор сервера Pterodactyl'
+      pterodactyl_server_identifier: 'Идентификатор Pterodactyl'
+      name: 'Имя сервера'
       product: 'Товар'
-      user: 'Пользователь'
+      user: 'Владелец'
       created_at: 'Дата создания'
       expires_at: 'Истекает в'
       is_suspended: 'Приостановлен'
@@ -833,7 +836,7 @@ pteroca:
       show_server_dashboard: 'Показать панель сервера'
       auto_renewal: 'Автоматическое продление'
       server_product_edit: 'Изменить конфигурацию сборки'
-      product_server_build: 'Конфигурация сборки сервера'
+      product_server_build: 'Конфигурация сборки'
       server_edit: 'Изменить владельца сервера'
       server_product_detail: 'Показать детали сервера'
       show_server_logs: 'Показать логи сервера'
@@ -1087,6 +1090,8 @@ pteroca:
       only_during_order: 'Купон можно использовать только во время оформления заказа.'
 
   email:
+    creation_not_sent_misconfigured: 'Сервер был успешно создан, но письмо с подтверждением не удалось отправить из-за проблем с конфигурацией электронной почты. Пожалуйста, проверьте настройки электронной почты.'
+    renewal_not_sent_misconfigured: 'Сервер был успешно продлен, но письмо с подтверждением не удалось отправить из-за проблем с конфигурацией электронной почты. Пожалуйста, проверьте настройки электронной почты.'
     general:
       hello: 'Привет,'
       best_regards: 'С уважением,'
@@ -1267,6 +1272,8 @@ pteroca:
       user_already_exists_in_local_database: 'Пользователь с таким адресом электронной почты уже существует в локальной базе данных.'
 
   error:
+    invalid_csrf_token: 'Недействительный токен CSRF. Пожалуйста, обновите страницу и попробуйте снова.'
+    user_not_found: 'Пользователь не найден.'
     404:
       title: 'Страница не найдена'
       message: 'Извините, но страница, которую вы ищете, не существует или была перемещена. Проверьте URL или вернитесь на главную страницу.'

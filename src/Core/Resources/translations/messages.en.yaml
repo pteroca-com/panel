@@ -26,6 +26,7 @@ pteroca:
     sign_in: 'Sign in'
     invalid_captcha: 'Invalid CAPTCHA verification.'
     user_blocked: 'Your account has been blocked.'
+    account_deleted: 'Your account has been deleted.'
     invalid_credentials: 'Invalid email or password.'
     dont_have_account_yet: "Don't have an account yet? Register now!"
     subtitle: 'Sign in to your account'
@@ -176,6 +177,7 @@ pteroca:
     total: 'Total'
     slot: 'slot'
     slots: 'Slots'
+    processing: 'Processing...'
 
   store:
     title: 'Store'
@@ -826,9 +828,10 @@ pteroca:
       plugin_not_found: 'Plugin "%s" not found.'
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
-      pterodactyl_server_identifier: 'Pterodactyl Server Identifier'
+      pterodactyl_server_identifier: 'Pterodactyl Identifier'
+      name: 'Server Name'
       product: 'Product'
-      user: 'User'
+      user: 'Owner'
       created_at: 'Created at'
       expires_at: 'Expires at'
       is_suspended: 'Suspended'
@@ -839,7 +842,7 @@ pteroca:
       show_server_dashboard: 'Show server dashboard'
       auto_renewal: 'Auto renewal'
       server_product_edit: 'Edit build configuration'
-      product_server_build: 'Server build configuration'
+      product_server_build: 'Build Configuration'
       server_edit: 'Change server owner'
       server_product_detail: 'Show server details'
       show_server_logs: 'Show server logs'
@@ -1089,6 +1092,8 @@ pteroca:
       only_during_order: 'Voucher can only be used during the order.'
 
   email:
+    creation_not_sent_misconfigured: 'Server was created successfully, but the confirmation email could not be sent due to email configuration issues. Please check your email settings.'
+    renewal_not_sent_misconfigured: 'Server was renewed successfully, but the confirmation email could not be sent due to email configuration issues. Please check your email settings.'
     general:
       hello: 'Hello'
       best_regards: 'Best regards'
@@ -1271,6 +1276,8 @@ pteroca:
       validation_error: 'An error occurred while validating the step. Please try again.'
 
   error:
+    invalid_csrf_token: 'Invalid CSRF token. Please refresh the page and try again.'
+    user_not_found: 'User not found.'
     404:
       title: 'Page not found'
       message: 'Sorry, but the page you are looking for does not exist or has been moved. Check the URL or return to the home page.'

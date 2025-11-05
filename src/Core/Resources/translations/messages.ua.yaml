@@ -24,6 +24,7 @@ pteroca:
     sign_in: 'Увійти'
     invalid_captcha: 'Неправильна перевірка CAPTCHA.'
     user_blocked: 'Ваш обліковий запис заблокований.'
+    account_deleted: 'Ваш обліковий запис було видалено.'
     invalid_credentials: 'Неправильна електронна пошта або пароль.'
     dont_have_account_yet: 'Ще немає облікового запису? Зареєструйтеся!'
     subtitle: 'Увійдіть до свого облікового запису'
@@ -175,6 +176,7 @@ pteroca:
     total: 'Всього'
     slot: 'слот'
     slots: 'слоти'
+    processing: 'Обробка...'
 
   store:
     title: 'Магазин'
@@ -825,9 +827,10 @@ pteroca:
       plugin_not_found: 'Плагін "%s" не знайдено.'
     server:
       pterodactyl_server_id: 'ID сервера Pterodactyl'
-      pterodactyl_server_identifier: 'Ідентифікатор сервера Pterodactyl'
+      pterodactyl_server_identifier: 'Ідентифікатор Pterodactyl'
+      name: 'Ім''я сервера'
       product: 'Продукт'
-      user: 'Користувач'
+      user: 'Власник'
       created_at: 'Створено'
       expires_at: 'Закінчується'
       is_suspended: 'Призупинено'
@@ -838,7 +841,7 @@ pteroca:
       show_server_dashboard: 'Показати панель сервера'
       auto_renewal: 'Автоматичне продовження'
       server_product_edit: 'Змінити конфігурацію збірки'
-      product_server_build: 'Конфігурація збірки сервера'
+      product_server_build: 'Конфігурація збірки'
       server_edit: 'Змінити власника сервера'
       server_product_detail: 'Показати деталі сервера'
       show_server_logs: 'Показати логи сервера'
@@ -1093,6 +1096,8 @@ pteroca:
       only_during_order: 'Ваучер можна використати лише під час оформлення замовлення.'
 
   email:
+    creation_not_sent_misconfigured: 'Сервер було успішно створено, але лист із підтвердженням не вдалося надіслати через проблеми з конфігурацією електронної пошти. Будь ласка, перевірте налаштування електронної пошти.'
+    renewal_not_sent_misconfigured: 'Сервер було успішно продовжено, але лист із підтвердженням не вдалося надіслати через проблеми з конфігурацією електронної пошти. Будь ласка, перевірте налаштування електронної пошти.'
     general:
       hello: 'Привіт'
       best_regards: 'З повагою'
@@ -1275,6 +1280,8 @@ pteroca:
       user_already_exists_in_local_database: 'Користувач із такою адресою електронної пошти вже існує в локальній базі даних.'
 
   error:
+    invalid_csrf_token: 'Недійсний токен CSRF. Будь ласка, оновіть сторінку та спробуйте ще раз.'
+    user_not_found: 'Користувача не знайдено.'
     404:
       title: 'Сторінка не знайдена'
       message: 'Вибачте, але сторінка, яку ви шукаєте, не існує або була переміщена. Перевірте URL або поверніться на головну сторінку.'

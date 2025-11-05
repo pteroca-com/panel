@@ -11,6 +11,9 @@ use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylClientService;
+use App\Core\Service\Pterodactyl\PterodactylService;
 
 class ServerConfigurationDetailsService extends AbstractServerConfiguration
 {
@@ -19,6 +22,7 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
         private readonly EventContextService $eventContextService,
+        private readonly ServerRepository $serverRepository,
     ) {
         parent::__construct($this->pterodactylApplicationService);
     }
@@ -40,13 +44,15 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
         $oldServerDescription = $pterodactylServer->get('description');
 
         $description = $serverDescription ?? $oldServerDescription;
+        $preparedServerName = trim(substr($serverName, 0, 255));
+        $preparedServerDescription = trim(substr($description ?? '', 0, 255));
 
         $requestedEvent = new ServerDetailsUpdateRequestedEvent(
             $user->getId(),
             $server->getId(),
             $server->getPterodactylServerIdentifier(),
-            $serverName,
-            $description,
+            $preparedServerName,
+            $preparedServerDescription,
             $context
         );
         $this->eventDispatcher->dispatch($requestedEvent);
@@ -60,20 +66,27 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
             ->servers()
             ->updateServerName(
                 $server->getPterodactylServerIdentifier(),
-                $serverName,
-                $description
+                $preparedServerName,
+                $preparedServerDescription
             );
 
         $updatedEvent = new ServerDetailsUpdatedEvent(
             $user->getId(),
             $server->getId(),
             $server->getPterodactylServerIdentifier(),
-            $serverName,
-            $description,
+            $preparedServerName,
+            $preparedServerDescription,
             $oldServerName,
             $oldServerDescription,
             $context
         );
         $this->eventDispatcher->dispatch($updatedEvent);
+    }
+
+    public function updateServerEntityName(Server $server, string $serverName): void
+    {
+        $preparedServerName = trim(substr($serverName, 0, 255));
+        $server->setName($preparedServerName);
+        $this->serverRepository->save($server);
     }
 }

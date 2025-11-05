@@ -23,28 +23,36 @@ use App\Core\Form\Cart\ServerOrderType;
 use App\Core\Form\Cart\ServerRenewType;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
+use App\Core\Repository\UserRepository;
 use App\Core\Service\Payment\PaymentService;
 use App\Core\Service\Payment\PaymentGatewayManager;
+use App\Core\Service\PurchaseTokenService;
 use App\Core\Service\Server\CreateServerService;
 use App\Core\Service\Server\RenewServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
 use App\Core\Service\SettingService;
 use App\Core\Service\StoreService;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CartController extends AbstractController
 {
-
     public function __construct(
         private readonly StoreService $storeService,
         private readonly ServerRepository $serverRepository,
         private readonly ServerSubuserRepository $serverSubuserRepository,
         private readonly TranslatorInterface $translator,
         private readonly ServerSlotPricingService $serverSlotPricingService,
+        private readonly PurchaseTokenService $purchaseTokenService,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly UserRepository $userRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     #[Route('/cart/topup', name: 'cart_topup', methods: ['GET', 'POST'])]
@@ -154,6 +162,7 @@ class CartController extends AbstractController
         );
 
         $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
+        $purchaseToken = $this->purchaseTokenService->generateToken($this->getUser(), 'buy');
         $preparedEggs = $this->storeService->getProductEggs($product);
         $requestData = $request->query->all();
 
@@ -204,6 +213,7 @@ class CartController extends AbstractController
             'isProductAvailable' => $this->storeService->productHasNodeWithResources($product),
             'hasSlotPrices' => $hasSlotPrices,
             'initialSlots' => $requestData['slots'] ?? null,
+            'purchase_token' => $purchaseToken,
         ];
 
         return $this->renderWithEvent(ViewNameEnum::CART_CONFIGURE, 'panel/cart/configure.html.twig', $viewData, $request);
@@ -216,73 +226,106 @@ class CartController extends AbstractController
         CreateServerService $createServerService,
     ): Response
     {
-        $product = $this->getProductByRequest($request);
-        $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
-        $preparedEggs = $this->storeService->getProductEggs($product);
-
-        // Prepare egg choices for form
-        $eggChoices = [];
-        foreach ($preparedEggs as $egg) {
-            $eggChoices[$egg['name']] = $egg['id'];
-        }
-
-        // Prepare price choices for form
-        $priceChoices = [];
-        foreach ($product->getPrices() as $price) {
-            $priceChoices[$price->getId()] = $price->getId();
-        }
-
-        // Create and handle form
-        $form = $this->createForm(ServerOrderType::class, null, [
-            'product_id' => $product->getId(),
-            'eggs' => $eggChoices,
-            'prices' => $priceChoices,
-            'has_slot_prices' => $hasSlotPrices,
-            'initial_slots' => null,
-        ]);
-
-        $form->handleRequest($request);
-
-        if (!$form->isSubmitted() || !$form->isValid()) {
-            $this->addFlash('danger', $this->translator->trans('pteroca.store.invalid_form_data'));
-            return $this->redirectToRoute('panel', ['routeName' => 'cart_configure', 'id' => $product->getId()]);
-        }
-
-        $formData = $form->getData();
-        $eggId = $formData['egg'];
-        $priceId = $formData['duration'];
-        $serverName = $formData['server-name'];
-        $autoRenewal = $formData['auto-renewal'] ?? false;
-        $slots = $formData['slots'] ?? null;
-        $voucher = $formData['voucher'] ?? '';
-
-        $this->dispatchDataEvent(
-            CartBuyRequestedEvent::class,
-            $request,
-            [$product->getId(), $eggId, $priceId, $serverName, $autoRenewal, $slots]
-        );
-
         try {
-            $this->storeService->validateBoughtProduct(
-                $product,
-                $eggId,
-                $priceId,
-                null,
-                $slots
-            );
+            $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
+            if (!$disableCsrf) {
+                $csrfToken = $request->request->get('_csrf_token');
+                if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('submit', $csrfToken))) {
+                    throw new \Exception($this->translator->trans('pteroca.error.invalid_csrf_token'));
+                }
+            }
 
-            $createServerService->createServer(
-                $product,
-                $eggId,
-                $priceId,
-                $serverName,
-                $autoRenewal,
-                $this->getUser(),
-                $voucher,
-                $slots
+            $purchaseToken = $request->request->getString('purchase_token');
+            $this->purchaseTokenService->validateAndConsumeToken($purchaseToken, $this->getUser(), 'buy');
+
+            $product = $this->getProductByRequest($request);
+            $hasSlotPrices = $this->serverSlotPricingService->hasSlotPrices($product);
+            $preparedEggs = $this->storeService->getProductEggs($product);
+
+            // Prepare egg choices for form
+            $eggChoices = [];
+            foreach ($preparedEggs as $egg) {
+                $eggChoices[$egg['name']] = $egg['id'];
+            }
+
+            // Prepare price choices for form
+            $priceChoices = [];
+            foreach ($product->getPrices() as $price) {
+                $priceChoices[$price->getId()] = $price->getId();
+            }
+
+            // Create and handle form
+            $form = $this->createForm(ServerOrderType::class, null, [
+                'product_id' => $product->getId(),
+                'eggs' => $eggChoices,
+                'prices' => $priceChoices,
+                'has_slot_prices' => $hasSlotPrices,
+                'initial_slots' => null,
+            ]);
+
+            $form->handleRequest($request);
+
+            if (!$form->isSubmitted() || !$form->isValid()) {
+                $this->addFlash('danger', $this->translator->trans('pteroca.store.invalid_form_data'));
+                return $this->redirectToRoute('panel', ['routeName' => 'cart_configure', 'id' => $product->getId()]);
+            }
+
+            $formData = $form->getData();
+            $eggId = $formData['egg'];
+            $priceId = $formData['duration'];
+            $serverName = $formData['server-name'];
+            $autoRenewal = $formData['auto-renewal'] ?? false;
+            $slots = $formData['slots'] ?? null;
+            $voucher = $formData['voucher'] ?? '';
+
+            $this->dispatchDataEvent(
+                CartBuyRequestedEvent::class,
+                $request,
+                [$product->getId(), $eggId, $priceId, $serverName, $autoRenewal, $slots]
             );
+            $result = null;
+            $this->entityManager->wrapInTransaction(function() use (
+                $product, $eggId, $priceId, $serverName, $autoRenewal, $slots, $voucher, $createServerService, &$result
+            ) {
+                $lockedUser = $this->userRepository->findOneByIdWithLock($this->getUser()->getId());
+
+                if (!$lockedUser) {
+                    throw new \Exception($this->translator->trans('pteroca.error.user_not_found'));
+                }
+
+                $this->storeService->validateBoughtProduct(
+                    $product,
+                    $eggId,
+                    $priceId,
+                    null,
+                    $slots
+                );
+
+                $result = $createServerService->createServer(
+                    $product,
+                    $eggId,
+                    $priceId,
+                    $serverName,
+                    $autoRenewal,
+                    $lockedUser,
+                    $voucher,
+                    $slots
+                );
+            });
+
+            // Check if email was sent successfully
+            if ($result && $result['emailError']) {
+                $this->addFlash('warning', $this->translator->trans($result['emailError']));
+            }
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
+
+            if ($result && $result['server']) {
+                return $this->redirectToRoute('panel', [
+                    'routeName' => 'server',
+                    'id' => $result['server']->getPterodactylServerIdentifier()
+                ]);
+            }
         } catch (Exception $exception) {
             $flashMessage = sprintf(
                 '%s: %s',
@@ -316,6 +359,9 @@ class CartController extends AbstractController
             $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
         }
 
+        // Generate one-time purchase token to prevent double-submit
+        $purchaseToken = $this->purchaseTokenService->generateToken($this->getUser(), 'renew');
+
         // Create form
         $form = $this->createForm(ServerRenewType::class, null, [
             'server_id' => $server->getId(),
@@ -336,7 +382,8 @@ class CartController extends AbstractController
             'form' => $form,
             'isOwner' => $isOwner,
             'hasSlotPrices' => $hasSlotPrices,
-            'serverSlots' => $serverSlots,
+            'serverSlots' => $serverSlots ?? null,
+            'purchase_token' => $purchaseToken,
         ];
 
         return $this->renderWithEvent(ViewNameEnum::CART_RENEW, 'panel/cart/renew.html.twig', $viewData, $request);
@@ -349,35 +396,44 @@ class CartController extends AbstractController
         RenewServerService $renewServerService,
     ): Response
     {
-        $server = $this->getServerByRequest($request);
-        $isOwner = $server->getUser() === $this->getUser();
-        $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
-        $serverSlots = null;
-
-        if ($hasActiveSlotPricing) {
-            $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
-        }
-
-        // Create and handle form
-        $form = $this->createForm(ServerRenewType::class, null, [
-            'server_id' => $server->getId(),
-            'current_auto_renewal' => $server->isAutoRenewal(),
-            'is_owner' => $isOwner,
-            'has_slot_pricing' => $hasActiveSlotPricing,
-            'server_slots' => $serverSlots,
-        ]);
-
-        $form->handleRequest($request);
-
-        if (!$form->isSubmitted() || !$form->isValid()) {
-            $this->addFlash('danger', $this->translator->trans('pteroca.store.invalid_form_data'));
-            return $this->redirectToRoute('panel', ['routeName' => 'cart_renew', 'id' => $server->getId()]);
-        }
-
-        $formData = $form->getData();
-        $voucherCode = $formData['voucher'] ?? '';
-
         try {
+            $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
+            if (!$disableCsrf) {
+                $csrfToken = $request->request->get('_csrf_token');
+                if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('submit', $csrfToken))) {
+                    throw new \Exception($this->translator->trans('pteroca.error.invalid_csrf_token'));
+                }
+            }
+
+            $purchaseToken = $request->request->getString('purchase_token');
+            $this->purchaseTokenService->validateAndConsumeToken($purchaseToken, $this->getUser(), 'renew');
+
+            $server = $this->getServerByRequest($request);
+            $isOwner = $server->getUser() === $this->getUser();
+
+            $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
+            $serverSlots = null;
+            if ($hasActiveSlotPricing) {
+                $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
+            }
+
+            $form = $this->createForm(ServerRenewType::class, null, [
+                'server_id'            => $server->getId(),
+                'current_auto_renewal' => $server->isAutoRenewal(),
+                'is_owner'             => $isOwner,
+                'has_slot_pricing'     => $hasActiveSlotPricing,
+                'server_slots'         => $serverSlots,
+            ]);
+            $form->handleRequest($request);
+
+            if (!$form->isSubmitted() || !$form->isValid()) {
+                $this->addFlash('danger', $this->translator->trans('pteroca.store.invalid_form_data'));
+                return $this->redirectToRoute('panel', ['routeName' => 'cart_renew', 'id' => $server->getId()]);
+            }
+
+            $formData   = $form->getData();
+            $voucherCode = $formData['voucher'] ?? $request->request->getString('voucher', '');
+
             $this->dispatchDataEvent(
                 CartRenewBuyRequestedEvent::class,
                 $request,
@@ -389,24 +445,43 @@ class CartController extends AbstractController
                 null,
                 $server->getServerProduct()->getSelectedPrice()->getId(),
                 $server,
-                $serverSlots
-            );
-
-            $renewServerService->renewServer(
-                $server,
-                $this->getUser(),
-                $voucherCode,
                 $serverSlots,
             );
 
-            // Update auto-renewal if owner changed it
-            if ($isOwner && isset($formData['auto-renewal'])) {
-                $server->setAutoRenewal($formData['auto-renewal'] === '1');
-                $this->serverRepository->save($server);
+            $result = null;
+            $this->entityManager->wrapInTransaction(function () use (
+                $server,
+                $isOwner,
+                $formData,
+                $voucherCode,
+                $serverSlots,
+                $renewServerService,
+                &$result
+            ) {
+                $lockedUser = $this->userRepository->findOneByIdWithLock($this->getUser()->getId());
+                if (!$lockedUser) {
+                    throw new \Exception($this->translator->trans('pteroca.error.user_not_found'));
+                }
+
+                $result = $renewServerService->renewServer(
+                    $server,
+                    $lockedUser,
+                    $voucherCode,
+                    $serverSlots,
+                );
+
+                if ($isOwner && array_key_exists('auto-renewal', $formData)) {
+                    $server->setAutoRenewal(($formData['auto-renewal'] ?? '') === '1');
+                    $this->serverRepository->save($server);
+                }
+            });
+
+            if (is_array($result) && !empty($result['emailError'])) {
+                $this->addFlash('warning', $this->translator->trans($result['emailError']));
             }
 
             $this->addFlash('success', $this->translator->trans('pteroca.store.successful_purchase'));
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             $flashMessage = sprintf(
                 '%s: %s',
                 $this->translator->trans('pteroca.store.error_during_creating_server'),

@@ -2,6 +2,7 @@
 
 namespace App\Core\Command;
 
+use App\Core\Enum\CronIntervalEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Exception\DisabledCommandException;
 use App\Core\Repository\SettingRepository;
@@ -22,16 +23,27 @@ class CronJobScheduleCommand extends Command
     private const SCHEDULED_COMMANDS = [
         'app:suspend-unpaid-servers',
         'plugin:cron:run',
+
+        'app:cleanup-purchase-tokens' => [
+            'interval' => CronIntervalEnum::HOURLY,
+        ],
+
         'app:delete-inactive-servers' => [
-            [
-                'settingName' => SettingEnum::DELETE_SUSPENDED_SERVERS_ENABLED,
-                'settingValue' => '1',
+            'interval' => CronIntervalEnum::DAILY,
+            'conditions' => [
+                [
+                    'settingName' => SettingEnum::DELETE_SUSPENDED_SERVERS_ENABLED,
+                    'settingValue' => '1',
+                ]
             ]
         ],
+
         'app:delete-old-logs' => [
-            [
-                'settingName' => SettingEnum::LOG_CLEANUP_ENABLED,
-                'settingValue' => '1',
+            'conditions' => [
+                [
+                    'settingName' => SettingEnum::LOG_CLEANUP_ENABLED,
+                    'settingValue' => '1',
+                ]
             ]
         ],
     ];
@@ -49,26 +61,37 @@ class CronJobScheduleCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
         $application = $this->getApplication();
-        foreach (self::SCHEDULED_COMMANDS as $key => $scheduledCommand) {
-            $requiredSettings = null;
-            if (is_array($scheduledCommand)) {
-                $requiredSettings = $scheduledCommand;
-                $scheduledCommand = $key;
+        $timestamp = (new \DateTime())->format('Y-m-d H:i:s');
+
+        $io->info(sprintf('[%s] Starting cron job execution', $timestamp));
+
+        foreach (self::SCHEDULED_COMMANDS as $key => $config) {
+            $commandName = is_string($config) ? $config : $key;
+            $conditions = null;
+            $interval = CronIntervalEnum::EVERY_MINUTE;
+
+            if (is_array($config)) {
+                $conditions = $config['conditions'] ?? null;
+                $interval = $config['interval'] ?? CronIntervalEnum::EVERY_MINUTE;
+            }
+
+            if (!$interval->shouldExecuteNow()) {
+                $io->info(sprintf('⏭  Skipping command: %s (interval: %s)', $commandName, $interval->value));
+                continue;
             }
 
             try {
-                if ($requiredSettings) {
-                    $this->checkRequiredSettings($scheduledCommand, $requiredSettings);
+                if ($conditions) {
+                    $this->checkConditions($commandName, $conditions);
                 }
 
-                $io->writeln(sprintf('Executing command: %s', $scheduledCommand));
-                $application->find($scheduledCommand)->run($input, $output);
+                $io->writeln(sprintf('▶  Executing command: %s (interval: %s)', $commandName, $interval->value));
+                $application->find($commandName)->run($input, $output);
             } catch (DisabledCommandException $e) {
                 $io->info($e->getMessage());
             } catch (Exception $e) {
-                $io->error(sprintf('Error executing command: %s', $scheduledCommand));
+                $io->error(sprintf('❌ Error executing command: %s', $commandName));
                 $io->error($e->getMessage());
             }
         }
@@ -80,15 +103,17 @@ class CronJobScheduleCommand extends Command
     /**
      * @throws DisabledCommandException
      */
-    private function checkRequiredSettings(string $scheduledCommand, array $requiredSettings): void
+    private function checkConditions(string $commandName, array $conditions): void
     {
-        foreach ($requiredSettings as $requiredSetting) {
-            $setting = $this->settingRepository->getSetting($requiredSetting['settingName']);
+        foreach ($conditions as $condition) {
+            $setting = $this->settingRepository->getSetting($condition['settingName']);
 
-            if (empty($setting) || $setting !== $requiredSetting['settingValue']) {
+            if (empty($setting) || $setting !== $condition['settingValue']) {
                 $message = sprintf(
                     'Command %s is omitted because required setting %s is not set to %s',
-                    $scheduledCommand, $requiredSetting['settingName']->value, $requiredSetting['settingValue']
+                    $commandName,
+                    $condition['settingName']->value,
+                    $condition['settingValue']
                 );
 
                 throw new DisabledCommandException($message);

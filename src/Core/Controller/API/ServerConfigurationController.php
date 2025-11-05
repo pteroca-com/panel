@@ -132,6 +132,11 @@ class ServerConfigurationController extends APIAbstractController
                 $variableData['value'] ?? null,
             );
 
+            $serverConfigurationDetailsService->updateServerEntityName(
+                $server,
+                $variableData['key'],
+            );
+
             $this->serverLogService->logServerAction(
                 $this->getUser(),
                 $server,
@@ -147,6 +152,7 @@ class ServerConfigurationController extends APIAbstractController
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return new JsonResponse([
                 'error' => $this->translator->trans('pteroca.server.data_update_error')
             ], 500);

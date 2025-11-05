@@ -90,6 +90,8 @@ class ServerProductCrudController extends AbstractPanelController
             TextField::new('server.user', $this->translator->trans('pteroca.crud.server.user'))
                 ->setDisabled()
                 ->setColumns(3),
+            TextField::new('server.name', $this->translator->trans('pteroca.crud.server.name'))
+                ->setDisabled(),
             DateTimeField::new('server.createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
                 ->setDisabled()
                 ->setColumns(3),

@@ -432,6 +432,17 @@
             {% endif %}
 
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
+
+            // Prevent double-submit: disable button on form submission
+            const submitButton = document.getElementById('order-submit');
+            const form = document.getElementById('cart-buy-form');
+
+            form.addEventListener('submit', function(e) {
+                if (!submitButton.disabled) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>{{ "pteroca.product.processing"|trans|default("Processing...") }}';
+                }
+            });
         })
 
         function calculatePrice() {

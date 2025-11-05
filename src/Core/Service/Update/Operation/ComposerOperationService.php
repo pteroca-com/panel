@@ -31,10 +31,10 @@ class ComposerOperationService
             $this->installWithIgnorePlatform($isDev);
             return;
         }
-        
-        $composerCommand = sprintf(
-            'composer install %s --optimize-autoloader --no-interaction',
-            $isDev ? '' : '--no-dev',
+
+        $composerCommand = $this->buildComposerCommand(
+            'install %s --optimize-autoloader --no-interaction 2>&1',
+            $isDev ? '' : '--no-dev'
         );
 
         exec($composerCommand, $output, $returnCode);
@@ -59,9 +59,9 @@ class ComposerOperationService
 
     public function installWithIgnorePlatform(bool $isDev): void
     {
-        $composerCommand = sprintf(
-            'composer install %s --optimize-autoloader --no-interaction --ignore-platform-reqs',
-            $isDev ? '' : '--no-dev',
+        $composerCommand = $this->buildComposerCommand(
+            'install %s --optimize-autoloader --no-interaction --ignore-platform-reqs 2>&1',
+            $isDev ? '' : '--no-dev'
         );
 
         $this->io->note('Running composer install with --ignore-platform-reqs...');
@@ -99,5 +99,47 @@ class ComposerOperationService
     public function shouldUseForcedInstall(): bool
     {
         return $this->options['force-composer'] ?? false;
+    }
+
+    private function buildComposerCommand(string $commandTemplate, string ...$args): string
+    {
+        $this->ensureSuperuserAllowed();
+
+        $composerBin = getenv('COMPOSER_BINARY') ?: 'composer';
+        $envPrefix = $this->buildEnvironmentPrefix();
+        
+        return sprintf(
+            '%s%s ' . $commandTemplate,
+            $envPrefix,
+            escapeshellcmd($composerBin),
+            ...$args
+        );
+    }
+
+    private function ensureSuperuserAllowed(): void
+    {
+        if ($this->isRunningAsRoot()) {
+            putenv('COMPOSER_ALLOW_SUPERUSER=1');
+        }
+    }
+
+    private function buildEnvironmentPrefix(): string
+    {
+        $envVars = [];
+
+        if ($this->isRunningAsRoot()) {
+            $envVars[] = 'COMPOSER_ALLOW_SUPERUSER=1';
+        }
+
+        if (!getenv('HOME') && getenv('COMPOSER_HOME')) {
+            $envVars[] = 'HOME=' . escapeshellarg(getenv('COMPOSER_HOME'));
+        }
+
+        return !empty($envVars) ? implode(' ', $envVars) . ' ' : '';
+    }
+
+    private function isRunningAsRoot(): bool
+    {
+        return function_exists('posix_geteuid') && posix_geteuid() === 0;
     }
 }
