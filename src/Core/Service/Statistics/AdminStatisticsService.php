@@ -5,6 +5,7 @@ namespace App\Core\Service\Statistics;
 use App\Core\Repository\PaymentRepository;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
+use DateTime;
 
 readonly class AdminStatisticsService
 {
@@ -20,8 +21,8 @@ readonly class AdminStatisticsService
     {
         return [
             'activeServers' => $this->serverRepository->getActiveServersCount(),
-            'usersRegisteredLastMonth' => $this->userRepository->getUsersRegisteredAfterCount(new \DateTime('-1 month')),
-            'paymentsCreatedLastMonth' => $this->paymentRepository->getPaymentsCreatedAfterCount(new \DateTime('-1 month')),
+            'usersRegisteredLastMonth' => $this->userRepository->getUsersRegisteredAfterCount(new DateTime('-1 month')),
+            'paymentsCreatedLastMonth' => $this->paymentRepository->getPaymentsCreatedAfterCount(new DateTime('-1 month')),
             'lastRegisteredUsers' => $this->userRepository->getLastRegisteredUsers(5),
             'lastPayments' => $this->paymentRepository->getLastPayments(5),
         ];

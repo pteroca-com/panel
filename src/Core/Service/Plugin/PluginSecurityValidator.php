@@ -3,6 +3,9 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\Entity\Plugin;
+use ArrayIterator;
+use Exception;
+use Iterator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Finder\Finder;
@@ -32,8 +35,6 @@ class PluginSecurityValidator
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        #[Autowire(param: 'kernel.project_dir')]
-        private readonly string $projectDir,
         #[Autowire(param: 'plugin_security.dangerous_functions')]
         private readonly array $dangerousFunctions,
         #[Autowire(param: 'plugin_security.checks')]
@@ -45,6 +46,7 @@ class PluginSecurityValidator
      *
      * @param Plugin $plugin Plugin to validate
      * @return array Array of security issues
+     * @throws Exception
      */
     public function validate(Plugin $plugin): array
     {
@@ -94,6 +96,7 @@ class PluginSecurityValidator
 
     /**
      * Scan for dangerous PHP functions.
+     * @throws Exception
      */
     public function scanForDangerousFunctions(string $pluginPath): array
     {
@@ -132,6 +135,7 @@ class PluginSecurityValidator
 
     /**
      * Scan for path traversal attempts.
+     * @throws Exception
      */
     public function scanForPathTraversal(string $pluginPath): array
     {
@@ -168,6 +172,7 @@ class PluginSecurityValidator
 
     /**
      * Analyze database queries for potential SQL injection.
+     * @throws Exception
      */
     public function analyzeDatabaseQueries(string $pluginPath): array
     {
@@ -210,6 +215,7 @@ class PluginSecurityValidator
 
     /**
      * Scan for XSS vulnerability patterns.
+     * @throws Exception
      */
     public function scanForXSSPatterns(string $pluginPath): array
     {
@@ -252,6 +258,7 @@ class PluginSecurityValidator
 
     /**
      * Check file permissions.
+     * @throws Exception
      */
     public function checkFilePermissions(string $pluginPath): array
     {
@@ -293,11 +300,12 @@ class PluginSecurityValidator
 
     /**
      * Get PHP files from plugin directory.
+     * @throws Exception
      */
-    private function scanPhpFiles(string $directory): \Iterator
+    private function scanPhpFiles(string $directory): Iterator
     {
         if (!is_dir($directory)) {
-            return new \ArrayIterator([]);
+            return new ArrayIterator([]);
         }
 
         $finder = new Finder();
@@ -330,7 +338,6 @@ class PluginSecurityValidator
         return match ($function) {
             'eval', 'exec', 'shell_exec', 'system', 'passthru' => self::SEVERITY_CRITICAL,
             'proc_open', 'popen', 'pcntl_exec' => self::SEVERITY_HIGH,
-            'assert' => self::SEVERITY_MEDIUM,
             default => self::SEVERITY_MEDIUM,
         };
     }

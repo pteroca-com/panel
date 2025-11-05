@@ -5,11 +5,11 @@ namespace App\Core\Service\Server;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ServerEggService
+readonly class ServerEggService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly TranslatorInterface $translator,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private TranslatorInterface           $translator,
     )
     {
     }

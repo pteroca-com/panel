@@ -8,15 +8,16 @@ use App\Core\Entity\Server;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 use JsonException;
 use RuntimeException;
 
-class ServerSlotPricingService
+readonly class ServerSlotPricingService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ProductPriceCalculatorService $productPriceCalculatorService,
-        private readonly ServerSlotConfigurationService $serverSlotConfigurationService,
+        private PterodactylApplicationService  $pterodactylApplicationService,
+        private ProductPriceCalculatorService  $productPriceCalculatorService,
+        private ServerSlotConfigurationService $serverSlotConfigurationService,
     ) {}
 
     public function getServerSlots(Server $server): int
@@ -54,7 +55,7 @@ class ServerSlotPricingService
             }
 
             $this->throwSlotException('Slot variable not found in server variables');
-        } catch (JsonException|\Exception $e) {
+        } catch (JsonException|Exception $e) {
             $this->throwSlotException('Failed to retrieve server slots: ' . $e->getMessage());
         }
     }

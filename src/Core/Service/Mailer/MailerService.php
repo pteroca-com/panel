@@ -12,7 +12,11 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
+use Throwable;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class MailerService implements MailerServiceInterface
 {
@@ -30,6 +34,12 @@ class MailerService implements MailerServiceInterface
         private readonly RequestStack $requestStack,
     ) {}
 
+    /**
+     * @throws SyntaxError
+     * @throws Throwable
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
     public function sendEmail(string $to, string $subject, string $template, array $context): void
     {
         if (empty($this->mailer)) {
@@ -76,7 +86,7 @@ class MailerService implements MailerServiceInterface
 
         try {
             $this->mailer->send($email);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $exception = $e;
             $success = false;
         }

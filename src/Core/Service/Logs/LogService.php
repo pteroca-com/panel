@@ -8,11 +8,11 @@ use App\Core\Enum\LogActionEnum;
 use App\Core\Repository\LogRepository;
 use App\Core\Service\System\IpAddressProviderService;
 
-class LogService
+readonly class LogService
 {
     public function __construct(
-        private readonly LogRepository $logRepository,
-        private readonly IpAddressProviderService $ipAddressProviderService
+        private LogRepository            $logRepository,
+        private IpAddressProviderService $ipAddressProviderService
     ) {}
 
     public function logAction(UserInterface $user, LogActionEnum $action, array $details = []): void

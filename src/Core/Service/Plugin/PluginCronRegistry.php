@@ -5,7 +5,11 @@ namespace App\Core\Service\Plugin;
 use App\Core\Contract\Plugin\PluginCronTaskInterface;
 use App\Core\Entity\Plugin;
 use App\Core\Repository\PluginRepository;
+use Exception;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use ReflectionNamedType;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -43,7 +47,7 @@ class PluginCronRegistry
      * Register all cron tasks for a plugin.
      *
      * @param Plugin $plugin Plugin to register tasks for
-     * @throws \RuntimeException If task instantiation fails
+     * @throws RuntimeException If task instantiation fails
      */
     public function registerTasks(Plugin $plugin): void
     {
@@ -112,13 +116,13 @@ class PluginCronRegistry
                 ]);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to register cron tasks', [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Failed to register cron tasks for plugin "%s": %s', $plugin->getName(), $e->getMessage()),
                 0,
                 $e
@@ -285,7 +289,7 @@ class PluginCronRegistry
                     // Register tasks without throwing exceptions
                     try {
                         $this->registerTasks($plugin);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         // Log but don't fail - allow other plugins to load
                         $this->logger->error('Failed to auto-load cron tasks for plugin', [
                             'plugin' => $plugin->getName(),
@@ -299,7 +303,7 @@ class PluginCronRegistry
             $this->registerCoreSystemTasks();
 
             $this->tasksLoaded = true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to load cron tasks from enabled plugins', [
                 'error' => $e->getMessage(),
             ]);
@@ -326,7 +330,7 @@ class PluginCronRegistry
         try {
             $files = glob($tasksPath . '/*Task.php');
 
-            if ($files === false || empty($files)) {
+            if (empty($files)) {
                 $this->logger->debug('No core system cron tasks found');
                 return;
             }
@@ -389,7 +393,7 @@ class PluginCronRegistry
                     'description' => $task->getDescription(),
                 ]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to register core system cron tasks', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -467,11 +471,19 @@ class PluginCronRegistry
         try {
             // Try to get from service container first (if registered)
             if ($this->container->has($taskClass)) {
-                return $this->container->get($taskClass);
+                $task = $this->container->get($taskClass);
+                if (!$task instanceof PluginCronTaskInterface) {
+                    $this->logger->error('Service is not a PluginCronTaskInterface instance', [
+                        'class' => $taskClass,
+                        'actual_type' => get_debug_type($task),
+                    ]);
+                    return null;
+                }
+                return $task;
             }
 
             // Fall back to manual instantiation with dependency injection
-            $reflection = new \ReflectionClass($taskClass);
+            $reflection = new ReflectionClass($taskClass);
             $constructor = $reflection->getConstructor();
 
             if ($constructor === null) {
@@ -486,7 +498,7 @@ class PluginCronRegistry
             foreach ($parameters as $parameter) {
                 $type = $parameter->getType();
 
-                if ($type instanceof \ReflectionNamedType) {
+                if ($type instanceof ReflectionNamedType) {
                     $typeName = $type->getName();
 
                     // Inject logger if requested
@@ -526,7 +538,7 @@ class PluginCronRegistry
 
             return $reflection->newInstanceArgs($args);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to instantiate cron task', [
                 'class' => $taskClass,
                 'error' => $e->getMessage(),
@@ -547,6 +559,6 @@ class PluginCronRegistry
     {
         // Convert hello-world to HelloWorld
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
-        return "Plugins\\{$className}\\";
+        return "Plugins\\$className\\";
     }
 }

@@ -21,7 +21,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 #[AsEventListener(event: LoginSuccessEvent::class)]
 #[AsEventListener(event: LoginFailureEvent::class)]
 #[AsEventListener(event: LogoutEvent::class)]
-readonly class AuthenticationEventListener
+class AuthenticationEventListener
 {
     public function __construct(
         private EventDispatcherInterface $eventDispatcher,

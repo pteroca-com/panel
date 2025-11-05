@@ -5,11 +5,11 @@ namespace App\Core\Service\Sync;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Psr\Log\LoggerInterface;
 
-class PterodactylSyncService
+readonly class PterodactylSyncService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly LoggerInterface $logger
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private LoggerInterface               $logger
     ) {
     }
 

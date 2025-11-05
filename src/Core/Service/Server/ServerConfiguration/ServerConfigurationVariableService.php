@@ -9,6 +9,7 @@ use App\Core\Event\Server\Configuration\ServerStartupVariableUpdateRequestedEven
 use App\Core\Event\Server\Configuration\ServerStartupVariableUpdatedEvent;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
@@ -26,6 +27,9 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         parent::__construct($this->pterodactylApplicationService);
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateServerVariable(
         Server $server,
         UserInterface $user,
@@ -53,7 +57,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Server startup variable update was blocked';
-            throw new \Exception($reason);
+            throw new Exception($reason);
         }
 
         $this->validateVariable($server, $serverDetails, $serverVariable, $variableValue, $user);
@@ -89,6 +93,9 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         $this->eventDispatcher->dispatch($updatedEvent);
     }
 
+    /**
+     * @throws Exception
+     */
     private function getServerVariable(array $serverDetails, string $variableKey): array
     {
         $serverVariables = $serverDetails['relationships']['variables'];
@@ -97,7 +104,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         }));
 
         if (empty($foundVariable)) {
-            throw new \Exception('Variable not found');
+            throw new Exception('Variable not found');
         }
 
         return $foundVariable;
@@ -129,10 +136,13 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         return $variableProductEggConfiguration->user_editable ?? false;
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateVariable(Server $server, array $serverDetails, array $serverVariable, string $variableValue, UserInterface $user): void
     {
         if (!$this->isVariableEditableForUser($server, $serverDetails, $serverVariable, $user)) {
-            throw new \Exception('Variable is not editable for user');
+            throw new Exception('Variable is not editable for user');
         }
 
         $variableValueRules = $serverVariable['rules'];
@@ -140,7 +150,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
         
         if (in_array('boolean', $rules)) {
             if (!in_array($variableValue, ['0', '1', 'true', 'false', ''])) {
-                throw new \Exception('Variable value is invalid');
+                throw new Exception('Variable value is invalid');
             }
             return;
         }
@@ -179,7 +189,7 @@ class ServerConfigurationVariableService extends AbstractServerConfiguration
             $violations = $validator->validate($variableValue, $constraints);
 
             if (count($violations) > 0) {
-                throw new \Exception('Variable value is invalid');
+                throw new Exception('Variable value is invalid');
             }
         }
     }

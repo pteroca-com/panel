@@ -6,6 +6,8 @@ use App\Core\Entity\Plugin;
 use App\Core\Repository\PluginRepository;
 use Composer\Semver\Semver;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use UnexpectedValueException;
 
 /**
  * Service for resolving and validating plugin dependencies.
@@ -17,11 +19,12 @@ use Psr\Log\LoggerInterface;
  * - Topological sorting for safe loading order
  * - Finding dependents (plugins that depend on a given plugin)
  */
-class PluginDependencyResolver
+readonly class PluginDependencyResolver
 {
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
-        private readonly LoggerInterface $logger,
+        private PluginRepository      $pluginRepository,
+        private LoggerInterface       $logger,
+        private TranslatorInterface   $translator,
     ) {
     }
 
@@ -58,7 +61,7 @@ class PluginDependencyResolver
                 $errors[] = sprintf(
                     "Required plugin '%s' is not enabled (current state: %s)",
                     $requiredPluginName,
-                    $requiredPlugin->getState()->getLabel()
+                    $this->translator->trans($requiredPlugin->getState()->getLabel())
                 );
                 continue;
             }
@@ -74,7 +77,7 @@ class PluginDependencyResolver
                         $requiredPlugin->getVersion()
                     );
                 }
-            } catch (\UnexpectedValueException $e) {
+            } catch (UnexpectedValueException $e) {
                 $errors[] = sprintf(
                     "Invalid version constraint '%s' for plugin '%s'",
                     $versionConstraint,

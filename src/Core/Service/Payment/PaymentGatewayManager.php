@@ -3,6 +3,7 @@
 namespace App\Core\Service\Payment;
 
 use App\Core\Provider\Payment\PaymentProviderInterface;
+use InvalidArgumentException;
 
 class PaymentGatewayManager
 {
@@ -20,7 +21,7 @@ class PaymentGatewayManager
         $identifier = $provider->getIdentifier();
 
         if (isset($this->providers[$identifier])) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('Payment provider "%s" is already registered', $identifier)
             );
         }

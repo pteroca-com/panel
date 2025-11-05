@@ -20,8 +20,12 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\SettingService;
+use DateTime;
+use DateTimeInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\ByteString;
@@ -46,6 +50,10 @@ class PasswordRecoveryService
         private readonly RequestStack $requestStack,
     ) {}
 
+    /**
+     * @throws Exception
+     * @throws ExceptionInterface
+     */
     public function createRecoveryRequest(string $email): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -70,7 +78,7 @@ class PasswordRecoveryService
             }
 
             $token = ByteString::fromRandom(32)->toString();
-            $expiresAt = (new \DateTime())->modify(sprintf('+%d hours', self::PASSWORD_RESET_TOKEN_LIFETIME_HOURS));
+            $expiresAt = (new DateTime())->modify(sprintf('+%d hours', self::PASSWORD_RESET_TOKEN_LIFETIME_HOURS));
 
             // Emit PasswordResetTokenGeneratedEvent (post-event)
             $this->eventDispatcher->dispatch(new PasswordResetTokenGeneratedEvent(
@@ -90,7 +98,7 @@ class PasswordRecoveryService
                 $userAccount->getEmail(),
                 $context
             ));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Emit PasswordResetFailedEvent (error)
             $this->eventDispatcher->dispatch(new PasswordResetFailedEvent(
                 $email,
@@ -115,18 +123,22 @@ class PasswordRecoveryService
             return false;
         }
 
-        if ($passwordResetRequest->getExpiresAt() < new \DateTime()) {
+        if ($passwordResetRequest->getExpiresAt() < new DateTime()) {
             return false;
         }
 
         return true;
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateUserPassword(string $token, string $password): bool
     {
         $request = $this->requestStack->getCurrentRequest();
         $context = $this->eventContextService->buildNullableContext($request);
 
+        $passwordResetRequest = null;
         try {
             $passwordResetRequest = $this->passwordResetRequestRepository->findOneBy(['token' => $token]);
             if (empty($passwordResetRequest)) {
@@ -189,7 +201,7 @@ class PasswordRecoveryService
             ));
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Emit PasswordResetFailedEvent (error)
             $this->eventDispatcher->dispatch(new PasswordResetFailedEvent(
                 $passwordResetRequest->getUser()?->getEmail() ?? null,
@@ -207,7 +219,7 @@ class PasswordRecoveryService
         }
     }
 
-    private function saveRecoveryRequest(UserInterface $user, string $token, \DateTimeInterface $expiresAt): void
+    private function saveRecoveryRequest(UserInterface $user, string $token, DateTimeInterface $expiresAt): void
     {
         $passwordResetRequest = new PasswordResetRequest();
         $passwordResetRequest->setUser($user);
@@ -216,6 +228,9 @@ class PasswordRecoveryService
         $this->passwordResetRequestRepository->save($passwordResetRequest);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     private function sendRecoveryEmail(UserInterface $user, string $token): void
     {
         $emailMessage = new SendEmailMessage(
@@ -233,7 +248,7 @@ class PasswordRecoveryService
                 null,
                 $this->translator->trans('pteroca.email.recovery.subject')
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to send recovery email', ['exception' => $e]);
         }
     }

@@ -10,11 +10,11 @@ use Psr\Log\LoggerInterface;
  * Automated health check cron task.
  * Runs every 6 hours to check all enabled plugins.
  */
-class PluginHealthCheckCronTask implements PluginCronTaskInterface
+readonly class PluginHealthCheckCronTask implements PluginCronTaskInterface
 {
     public function __construct(
-        private readonly PluginHealthCheckService $healthCheckService,
-        private readonly LoggerInterface $logger,
+        private PluginHealthCheckService $healthCheckService,
+        private LoggerInterface          $logger,
     ) {}
 
     public function getName(): string

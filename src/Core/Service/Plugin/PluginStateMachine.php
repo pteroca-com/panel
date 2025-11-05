@@ -90,7 +90,7 @@ class PluginStateMachine
         }
 
         // Log transition
-        $this->logger->info("Plugin state transition: {$plugin->getName()} {$currentState->value} -> {$targetState->value}");
+        $this->logger->info("Plugin state transition: {$plugin->getName()} $currentState->value -> $targetState->value");
 
         // Execute transition
         $plugin->setState($targetState);
@@ -160,7 +160,7 @@ class PluginStateMachine
         $diagram = "Plugin State Machine:\n\n";
 
         foreach (self::ALLOWED_TRANSITIONS as $from => $toStates) {
-            $diagram .= "  {$from} → " . implode(', ', $toStates) . "\n";
+            $diagram .= "  $from → " . implode(', ', $toStates) . "\n";
         }
 
         return $diagram;

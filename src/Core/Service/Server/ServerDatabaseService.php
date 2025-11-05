@@ -15,17 +15,19 @@ use App\Core\Event\Server\Database\ServerDatabaseDeletionRequestedEvent;
 use App\Core\Event\Server\Database\ServerDatabasePasswordRotatedEvent;
 use App\Core\Event\Server\Database\ServerDatabasePasswordRotationRequestedEvent;
 use App\Core\Service\Event\EventContextService;
+use Exception;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class ServerDatabaseService
+readonly class ServerDatabaseService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ServerLogService $serverLogService,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly RequestStack $requestStack,
-        private readonly EventContextService $eventContextService,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private ServerLogService              $serverLogService,
+        private EventDispatcherInterface      $eventDispatcher,
+        private RequestStack                  $requestStack,
+        private EventContextService           $eventContextService,
     ) {}
 
     public function getAllDatabases(
@@ -40,6 +42,9 @@ class ServerDatabaseService
             ->toArray();
     }
 
+    /**
+     * @throws Exception
+     */
     public function createDatabase(
         Server $server,
         UserInterface $user,
@@ -66,7 +71,7 @@ class ServerDatabaseService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Database creation was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $pterodactylClientApi = $this->pterodactylApplicationService
@@ -100,7 +105,7 @@ class ServerDatabaseService
             );
             $this->eventDispatcher->dispatch($createdEvent);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $failedEvent = new ServerDatabaseCreationFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -135,7 +140,7 @@ class ServerDatabaseService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Database deletion was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $this->pterodactylApplicationService
@@ -182,7 +187,7 @@ class ServerDatabaseService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Database password rotation was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $rotatedPassword = $this->pterodactylApplicationService

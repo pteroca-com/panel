@@ -9,14 +9,15 @@ use App\Core\Entity\ServerProduct;
 use App\Core\Enum\CrudFlashMessageTypeEnum;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Exception;
+use InvalidArgumentException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class UpdateServerService
+readonly class UpdateServerService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ServerBuildService $serverBuildService,
-        private readonly TranslatorInterface $translator,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private ServerBuildService            $serverBuildService,
+        private TranslatorInterface           $translator,
     )
     {
     }
@@ -43,7 +44,7 @@ class UpdateServerService
                 $entityInstance,
                 $pterodactylServer
             ),
-            default => throw new \InvalidArgumentException('Invalid entity type'),
+            default => throw new InvalidArgumentException('Invalid entity type'),
         };
     }
 
@@ -174,7 +175,7 @@ class UpdateServerService
                         $this->translator->trans('pteroca.crud.server.suspended_successfully'),
                         CrudFlashMessageTypeEnum::SUCCESS,
                     );
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     $errorMessage = sprintf(
                         '%s %s',
                         $this->translator->trans('pteroca.crud.server.suspended_error'),

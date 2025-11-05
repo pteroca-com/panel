@@ -14,17 +14,21 @@ use App\Core\Event\Server\ServerExpirationExtendedEvent;
 use App\Core\Event\Server\ServerUnsuspendedEvent;
 use App\Core\Event\Server\ServerRenewalBalanceChargedEvent;
 use App\Core\Event\Server\ServerRenewalCompletedEvent;
+use App\Core\Exception\Email\ProductPriceNotFoundException;
+use App\Core\Exception\Email\ServerDetailsNotAvailableException;
 use App\Core\Repository\ServerRepository;
 use App\Core\Repository\UserRepository;
-use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Mailer\BoughtConfirmationEmailService;
 use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\SettingService;
 use App\Core\Service\Voucher\VoucherPaymentService;
+use DateInvalidOperationException;
+use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -34,7 +38,6 @@ class RenewServerService extends AbstractActionServerService
         private readonly PterodactylApplicationService $pterodactylApplicationService,
         private readonly ServerRepository $serverRepository,
         private readonly BoughtConfirmationEmailService $boughtConfirmationEmailService,
-        private readonly EmailNotificationService $emailNotificationService,
         private readonly LogService $logService,
         private readonly VoucherPaymentService $voucherPaymentService,
         private readonly ServerSlotPricingService $serverSlotPricingService,
@@ -48,6 +51,13 @@ class RenewServerService extends AbstractActionServerService
         parent::__construct($userRepository, $pterodactylApplicationService, $voucherPaymentService, $productPriceCalculatorService, $translator, $logger);
     }
 
+    /**
+     * @throws DateInvalidOperationException
+     * @throws ProductPriceNotFoundException
+     * @throws ServerDetailsNotAvailableException
+     * @throws ExceptionInterface
+     * @throws Exception
+     */
     public function renewServer(
         Server $server,
         UserInterface $user,
@@ -74,8 +84,8 @@ class RenewServerService extends AbstractActionServerService
         $this->eventDispatcher->dispatch($validatedEvent);
 
         $currentExpirationDate = $server->getExpiresAt();
-        if ($currentExpirationDate < new \DateTime()) {
-            $currentExpirationDate = new \DateTime();
+        if ($currentExpirationDate < new DateTime()) {
+            $currentExpirationDate = new DateTime();
         } else {
             $currentExpirationDate = clone $currentExpirationDate;
         }
@@ -115,7 +125,7 @@ class RenewServerService extends AbstractActionServerService
         
         // Sprawdzenie czy event został zatrzymany (np. przez fraud detection)
         if ($aboutToBeRenewedEvent->isPropagationStopped()) {
-            throw new \Exception($this->translator->trans('pteroca.store.server_renewal_blocked'));
+            throw new Exception($this->translator->trans('pteroca.store.server_renewal_blocked'));
         }
         
         $oldExpiresAt = $server->getExpiresAt();

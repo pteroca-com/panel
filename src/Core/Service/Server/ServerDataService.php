@@ -10,7 +10,6 @@ use App\Core\Entity\Server;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Enum\ServerStatusEnum;
 use App\Core\Enum\SettingEnum;
-use App\Core\Exception\UserDoesNotHaveClientApiKeyException;
 use App\Core\Factory\ServerVariableFactory;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
@@ -63,12 +62,8 @@ class ServerDataService
         
         $permissions = $this->getServerPermissions($pterodactylServer, $server, $user);
 
-        try {
-            $pterodactylClientApi = $this->pterodactylApplicationService
-                ->getClientApi($user);
-        } catch (UserDoesNotHaveClientApiKeyException $e) {
-            $pterodactylClientApi = null;
-        }
+        $pterodactylClientApi = $this->pterodactylApplicationService
+            ->getClientApi($user);
 
         if ($permissions->hasPermission(ServerPermissionEnum::ALLOCATION_READ)) {
             try {
@@ -86,10 +81,10 @@ class ServerDataService
         }
 
         $pterodactylClientServer = $pterodactylClientApi
-            ?->servers()
+            ->servers()
             ->getServer($server->getPterodactylServerIdentifier());
         $pterodactylClientAccount = $pterodactylClientApi
-            ?->account()
+            ->account()
             ->getAccount();
         $productEggsConfiguration = $server->getServerProduct()->getEggsConfiguration();
 
@@ -182,13 +177,13 @@ class ServerDataService
 
         return new ServerDataDTO(
             pterodactylServer: $pterodactylServer->toArray(),
-            isInstalling: $isInstalling,
+            isInstalling: false,
             server: $server,
             serverPermissions: $permissions,
             serverDetails: $this->serverService->getServerDetails($server),
             dockerImages: $dockerImages ?? [],
-            pterodactylClientServer: $pterodactylClientServer?->toArray(),
-            pterodactylClientAccount: $pterodactylClientAccount?->toArray(),
+            pterodactylClientServer: $pterodactylClientServer->toArray(),
+            pterodactylClientAccount: $pterodactylClientAccount->toArray(),
             productEggConfiguration: $productEggConfiguration,
             availableNestEggs: $availableNestEggs ?? null,
             hasConfigurableOptions: $hasConfigurableOptions ?? false,
@@ -211,7 +206,7 @@ class ServerDataService
 
         try {
             $productEggConfiguration = json_decode($productEggConfiguration, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return [false, false];
         }
 

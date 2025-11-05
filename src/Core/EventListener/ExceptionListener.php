@@ -16,7 +16,7 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
 #[AsEventListener(event: 'kernel.exception')]
-readonly class ExceptionListener
+class ExceptionListener
 {
     public function __construct(
         private Environment     $twig,

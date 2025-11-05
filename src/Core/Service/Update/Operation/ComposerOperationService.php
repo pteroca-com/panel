@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Update\Operation;
 
+use RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ComposerOperationService
@@ -49,10 +50,10 @@ class ComposerOperationService
                     return;
                 }
                 
-                throw new \RuntimeException('Update aborted due to composer dependency issues.');
+                throw new RuntimeException('Update aborted due to composer dependency issues.');
             }
             
-            throw new \RuntimeException('Failed to install composer dependencies. Composer output: ' . $outputString);
+            throw new RuntimeException('Failed to install composer dependencies. Composer output: ' . $outputString);
         }
     }
 
@@ -67,7 +68,7 @@ class ComposerOperationService
         
         exec($composerCommand, $output, $returnCode);
         if ($returnCode !== 0) {
-            throw new \RuntimeException('Failed to install composer dependencies even with --ignore-platform-reqs. Composer output: ' . implode("\n", $output));
+            throw new RuntimeException('Failed to install composer dependencies even with --ignore-platform-reqs. Composer output: ' . implode("\n", $output));
         }
 
         $this->io->success('Composer dependencies installed successfully (with ignored platform requirements).');
@@ -87,7 +88,7 @@ class ComposerOperationService
         $lowerOutput = strtolower($output);
         
         foreach ($platformErrorPatterns as $pattern) {
-            if (strpos($lowerOutput, $pattern) !== false) {
+            if (str_contains($lowerOutput, $pattern)) {
                 return true;
             }
         }

@@ -8,6 +8,7 @@ use App\Core\Event\Server\Configuration\ServerDetailsUpdateRequestedEvent;
 use App\Core\Event\Server\Configuration\ServerDetailsUpdatedEvent;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -22,6 +23,9 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
         parent::__construct($this->pterodactylApplicationService);
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateServerDetails(Server $server, UserInterface $user, string $serverName, ?string $serverDescription): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -49,7 +53,7 @@ class ServerConfigurationDetailsService extends AbstractServerConfiguration
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Server details update was blocked';
-            throw new \Exception($reason);
+            throw new Exception($reason);
         }
 
         $pterodactylClientApi

@@ -7,7 +7,12 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
 use App\Core\Service\SettingService;
 use Exception;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PterodactylClientApiKeyService
@@ -22,6 +27,16 @@ class PterodactylClientApiKeyService
     {
     }
 
+    /**
+     * @param UserInterface $user
+     * @return string
+     * @throws ClientExceptionInterface
+     * @throws CouldNotCreatePterodactylClientApiKeyException
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws TransportExceptionInterface
+     */
     public function createClientApiKey(UserInterface $user): string
     {
         try {

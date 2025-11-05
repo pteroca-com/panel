@@ -9,6 +9,7 @@ use App\Core\Event\Server\Configuration\ServerReinstallRequestedEvent;
 use App\Core\Event\Server\Configuration\ServerReinstalledEvent;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -25,6 +26,9 @@ class ServerReinstallationService extends AbstractServerConfiguration
         parent::__construct($this->pterodactylApplicationService);
     }
 
+    /**
+     * @throws Exception
+     */
     public function reinstallServer(Server $server, UserInterface $user, ?int $selectedEgg): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -46,7 +50,7 @@ class ServerReinstallationService extends AbstractServerConfiguration
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Server reinstall was blocked';
-            throw new \Exception($reason);
+            throw new Exception($reason);
         }
 
         if ($selectedEgg && $selectedEgg !== $currentEgg) {
@@ -86,10 +90,13 @@ class ServerReinstallationService extends AbstractServerConfiguration
         $this->eventDispatcher->dispatch($reinstalledEvent);
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateEgg(Server $server, int $selectedEgg): void
     {
         if (!in_array($selectedEgg, $server->getServerProduct()->getEggs())) {
-            throw new \Exception('Invalid egg');
+            throw new Exception('Invalid egg');
         }
     }
 }

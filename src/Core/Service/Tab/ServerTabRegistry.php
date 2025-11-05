@@ -4,6 +4,7 @@ namespace App\Core\Service\Tab;
 
 use App\Core\Contract\Tab\ServerTabInterface;
 use App\Core\DTO\ServerTabContext;
+use InvalidArgumentException;
 
 class ServerTabRegistry
 {
@@ -25,7 +26,7 @@ class ServerTabRegistry
         $id = $tab->getId();
 
         if (isset($this->tabs[$id])) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('Server tab with ID "%s" is already registered', $id)
             );
         }

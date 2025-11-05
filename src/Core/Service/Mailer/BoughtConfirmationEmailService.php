@@ -7,25 +7,37 @@ use App\Core\Entity\Product;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\EmailTypeEnum;
 use App\Core\Contract\UserInterface;
+use App\Core\Exception\Email\ServerDetailsNotAvailableException;
 use App\Core\Service\SettingService;
 use App\Core\Message\SendEmailMessage;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Service\Email\EmailNotificationService;
+use DateInterval;
+use DateInvalidOperationException;
+use DateTime;
+use DateTimeInterface;
+use Exception;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Core\Service\Email\EmailContextBuilderService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Core\Exception\Email\ProductPriceNotFoundException;
 
-class BoughtConfirmationEmailService
+readonly class BoughtConfirmationEmailService
 {
     public function __construct(
-        private readonly EmailContextBuilderService $emailContextBuilder,
-        private readonly TranslatorInterface $translator,
-        private readonly MessageBusInterface $messageBus,
-        private readonly EmailNotificationService $emailNotificationService,
-        private readonly SettingService $settingService,
+        private EmailContextBuilderService $emailContextBuilder,
+        private TranslatorInterface        $translator,
+        private MessageBusInterface        $messageBus,
+        private EmailNotificationService   $emailNotificationService,
+        private SettingService             $settingService,
     ) {}
 
+    /**
+     * @throws ProductPriceNotFoundException
+     * @throws ExceptionInterface
+     * @throws ServerDetailsNotAvailableException
+     */
     public function sendBoughtConfirmationEmail(
         UserInterface $user,
         Server $server,
@@ -72,6 +84,11 @@ class BoughtConfirmationEmailService
         );
     }
 
+    /**
+     * @throws ProductPriceNotFoundException
+     * @throws ServerDetailsNotAvailableException
+     * @throws ExceptionInterface
+     */
     public function sendRenewConfirmationEmail(
         UserInterface $user,
         Server $server,
@@ -114,10 +131,13 @@ class BoughtConfirmationEmailService
         );
     }
 
+    /**
+     * @throws DateInvalidOperationException
+     */
     public function shouldSendRenewalNotification(
         Server $server,
-        \DateTimeInterface $previousExpiresAt,
-        \DateTimeInterface $newExpiresAt
+        DateTimeInterface $previousExpiresAt,
+        DateTimeInterface $newExpiresAt
     ): bool {
         if (!$this->isRenewalNotificationEnabled()) {
             return false;
@@ -142,6 +162,10 @@ class BoughtConfirmationEmailService
         );
     }
 
+    /**
+     * @throws DateInvalidOperationException
+     * @throws Exception
+     */
     private function hasMinimumTimePassed($lastNotification): bool
     {
         if ($lastNotification === null) {
@@ -152,16 +176,16 @@ class BoughtConfirmationEmailService
             SettingEnum::RENEWAL_NOTIFICATION_MIN_PERIOD_HOURS->value
         );
 
-        $minDateTime = new \DateTime();
-        $minDateTime->sub(new \DateInterval(sprintf('PT%dH', $minPeriodHours)));
+        $minDateTime = new DateTime();
+        $minDateTime->sub(new DateInterval(sprintf('PT%dH', $minPeriodHours)));
 
         return $lastNotification->getSentAt() < $minDateTime;
     }
 
     private function isRenewalSignificant(
         Server $server,
-        \DateTimeInterface $previousExpiresAt,
-        \DateTimeInterface $newExpiresAt
+        DateTimeInterface $previousExpiresAt,
+        DateTimeInterface $newExpiresAt
     ): bool {
         $selectedPrice = $server->getServerProduct()->getSelectedPrice();
         $renewalPeriod = $previousExpiresAt->diff($newExpiresAt);

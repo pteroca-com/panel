@@ -22,26 +22,27 @@ use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
+use DateTime;
 use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class VoucherService
+readonly class VoucherService
 {
     public function __construct(
-        private readonly VoucherRepository $voucherRepository,
-        private readonly VoucherUsageRepository $voucherUsageRepository,
-        private readonly ServerRepository $serverRepository,
-        private readonly PaymentRepository $paymentRepository,
-        private readonly SettingService $settingService,
-        private readonly UserRepository $userRepository,
-        private readonly LogService $logService,
-        private readonly UserVerificationService $userVerificationService,
-        private readonly TranslatorInterface $translator,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly RequestStack $requestStack,
-        private readonly EventContextService $eventContextService,
+        private VoucherRepository        $voucherRepository,
+        private VoucherUsageRepository   $voucherUsageRepository,
+        private ServerRepository         $serverRepository,
+        private PaymentRepository        $paymentRepository,
+        private SettingService           $settingService,
+        private UserRepository           $userRepository,
+        private LogService               $logService,
+        private UserVerificationService  $userVerificationService,
+        private TranslatorInterface      $translator,
+        private EventDispatcherInterface $eventDispatcher,
+        private RequestStack             $requestStack,
+        private EventContextService      $eventContextService,
     ) {}
 
     public function redeemVoucher(string $code, ?float $orderAmount, UserInterface $user): RedeemVoucherActionResult
@@ -131,6 +132,9 @@ class VoucherService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function getValidVoucher(string $code): Voucher
     {
         $voucher = $this->voucherRepository->getVoucherByCode($code);
@@ -139,7 +143,7 @@ class VoucherService
             throw new Exception($this->translator->trans('pteroca.api.voucher.not_found'));
         }
 
-        if (!empty($voucher->getExpirationDate()) && $voucher->getExpirationDate() < new \DateTime()) {
+        if (!empty($voucher->getExpirationDate()) && $voucher->getExpirationDate() < new DateTime()) {
             throw new Exception($this->translator->trans('pteroca.api.voucher.expired'));
         }
 
@@ -150,6 +154,9 @@ class VoucherService
         return $voucher;
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateNewAccountRequirementIfNeeded(Voucher $voucher, UserInterface $user): void
     {
         if (false === $voucher->isNewAccountsOnly()) {
@@ -165,6 +172,9 @@ class VoucherService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateOneUsePerUserRequirementIfNeeded(Voucher $voucher, UserInterface $user): void
     {
         if (false === $voucher->isOneUsePerUser()) {
@@ -176,6 +186,9 @@ class VoucherService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateMinimumTopupAmountRequirementIfNeeded(Voucher $voucher, UserInterface $user): void
     {
         if (empty($voucher->getMinimumTopupAmount())) {
@@ -197,6 +210,9 @@ class VoucherService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateMinimumOrderAmountRequirementIfNeeded(?float $orderAmount, Voucher $voucher): void
     {
         if (

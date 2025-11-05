@@ -2,17 +2,20 @@
 
 namespace App\Core\Service\System\WebConfigurator;
 
+use App\Core\Adapter\Pterodactyl\Application\PterodactylAdapter;
 use App\Core\DTO\Action\Result\ConfiguratorVerificationResult;
+use App\Core\DTO\Pterodactyl\Credentials;
 use App\Core\Repository\UserRepository;
 use Exception;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Timdesm\PterodactylPhpApi\PterodactylApi;
 
 class UserValidationService
 {
     public function __construct(
-        private readonly TranslatorInterface $translator,
-        private readonly UserRepository $userRepository,
+        private readonly TranslatorInterface   $translator,
+        private readonly UserRepository        $userRepository,
+        private readonly HttpClientInterface   $httpClient,
     ) {}
 
     public function validateUserDoesNotExist(
@@ -31,9 +34,12 @@ class UserValidationService
         }
 
         try {
-            $pterodactylApi = new PterodactylApi($pterodactylPanelUrl, $pterodactylPanelApiKey);
-            $users = $pterodactylApi->users->paginate(1, ['filter[email]' => $adminEmail]);
-        
+            $adapter = new PterodactylAdapter($this->httpClient);
+            $credentials = new Credentials($pterodactylPanelUrl, $pterodactylPanelApiKey);
+            $adapter->setCredentials($credentials);
+
+            $users = $adapter->users()->getAllUsersPaginated(1, ['filter[email]' => $adminEmail]);
+
             if (!empty($users->toArray())) {
                 return new ConfiguratorVerificationResult(
                     false,

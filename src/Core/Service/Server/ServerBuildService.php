@@ -9,15 +9,19 @@ use App\Core\DTO\Pterodactyl\Resource;
 use App\Core\Entity\ServerProduct;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 use JsonException;
 
-class ServerBuildService
+readonly class ServerBuildService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly NodeSelectionService $nodeSelectionService,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private NodeSelectionService          $nodeSelectionService,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function prepareServerBuild(
         ProductInterface $product,
         UserInterface $user,
@@ -28,7 +32,7 @@ class ServerBuildService
     {
         $selectedEgg = $this->getSelectedEgg($eggId, $product);
         if (!$selectedEgg->has('id')) {
-            throw new \Exception('Egg not found');
+            throw new Exception('Egg not found');
         }
 
         try {
@@ -38,7 +42,7 @@ class ServerBuildService
                 512,
                 JSON_THROW_ON_ERROR
             );
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             $productEggConfiguration = [];
         }
 
@@ -93,12 +97,15 @@ class ServerBuildService
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function prepareUpdateServerStartup(ServerProduct $product, PterodactylServer $pterodactylServer): array
     {
         $eggId = $pterodactylServer->get('egg');
         $selectedEgg = $this->getSelectedEgg($eggId, $product);
         if (!$selectedEgg->has('id')) {
-            throw new \Exception('Egg not found in nest');
+            throw new Exception('Egg not found in nest');
         }
 
         try {
@@ -108,7 +115,7 @@ class ServerBuildService
                 512,
                 JSON_THROW_ON_ERROR
             );
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             $productEggConfiguration = [];
         }
 

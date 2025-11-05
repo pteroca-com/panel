@@ -2,6 +2,8 @@
 
 namespace App\Core\Service\Update\Operation;
 
+use Exception;
+use RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class DatabaseOperationService
@@ -25,7 +27,7 @@ class DatabaseOperationService
     {
         exec('php bin/console doctrine:migrations:migrate --no-interaction', $output, $returnCode);
         if ($returnCode !== 0) {
-            throw new \RuntimeException('Failed to update database. Migration output: ' . implode("\n", $output));
+            throw new RuntimeException('Failed to update database. Migration output: ' . implode("\n", $output));
         }
 
         if ($this->options['verbose'] ?? false) {
@@ -46,7 +48,7 @@ class DatabaseOperationService
 
         $outputString = implode("\n", $output);
         
-        return strpos($outputString, '[migrate]') !== false;
+        return str_contains($outputString, '[migrate]');
     }
 
     public function rollbackMigrations(string $targetVersion = null): void
@@ -57,7 +59,7 @@ class DatabaseOperationService
         }
 
         if ($targetVersion) {
-            $command = "php bin/console doctrine:migrations:migrate {$targetVersion} --no-interaction";
+            $command = "php bin/console doctrine:migrations:migrate $targetVersion --no-interaction";
         } else {
             $command = 'php bin/console doctrine:migrations:migrate prev --no-interaction';
         }
@@ -65,7 +67,7 @@ class DatabaseOperationService
         exec($command, $output, $returnCode);
         
         if ($returnCode !== 0) {
-            throw new \RuntimeException('Failed to rollback database migrations. Output: ' . implode("\n", $output));
+            throw new RuntimeException('Failed to rollback database migrations. Output: ' . implode("\n", $output));
         }
 
         $this->io->success('Database migrations rolled back successfully.');
@@ -87,11 +89,11 @@ class DatabaseOperationService
                 return trim($matches[1]);
             }
             
-            preg_match_all('/\[migrate\]\s+(\w+)/', $outputString, $allMatches);
+            preg_match_all('/\[migrate]\s+(\w+)/', $outputString, $allMatches);
             if (!empty($allMatches[1])) {
                 return end($allMatches[1]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception) {
             // Fall back to null if command fails
         }
         
@@ -103,7 +105,7 @@ class DatabaseOperationService
         try {
             exec('php bin/console doctrine:query:sql "SELECT 1" --no-interaction 2>/dev/null', $output, $returnCode);
             return $returnCode === 0;
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }

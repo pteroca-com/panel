@@ -7,14 +7,15 @@ use App\Core\Entity\Setting;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Enum\SettingTypeEnum;
 use App\Core\Service\Logs\LogService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class PanelCrudService
+readonly class PanelCrudService
 {
     public function __construct(
-        private readonly CrudTemplateService $crudTemplateService,
-        private readonly LogService $logService,
-        private readonly SerializerInterface $serializer,
+        private CrudTemplateService $crudTemplateService,
+        private LogService          $logService,
+        private SerializerInterface $serializer,
     )
     {
     }
@@ -35,6 +36,9 @@ class PanelCrudService
         );
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getTemplatesToOverride(array $templateContext): array
     {
         return $this->crudTemplateService->getTemplatesToOverride($templateContext);

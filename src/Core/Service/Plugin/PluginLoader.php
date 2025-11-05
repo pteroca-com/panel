@@ -3,26 +3,28 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\Entity\Plugin;
+use Exception;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
-class PluginLoader
+readonly class PluginLoader
 {
     public function __construct(
-        private readonly PluginAutoloader $autoloader,
-        private readonly PluginEventSubscriberRegistry $eventSubscriberRegistry,
-        private readonly PluginCommandRegistry $commandRegistry,
-        private readonly PluginCronRegistry $cronRegistry,
-        private readonly LoggerInterface $logger,
-        private readonly string $projectDir,
+        private PluginAutoloader              $autoloader,
+        private PluginEventSubscriberRegistry $eventSubscriberRegistry,
+        private PluginCommandRegistry         $commandRegistry,
+        private PluginCronRegistry            $cronRegistry,
+        private LoggerInterface               $logger,
+        private string                        $projectDir,
     ) {}
 
     /**
-     * @throws \Exception If loading fails
+     * @throws Exception If loading fails
      */
     public function load(Plugin $plugin): void
     {
         if (!$plugin->isEnabled()) {
-            throw new \RuntimeException("Cannot load plugin that is not enabled: {$plugin->getName()}");
+            throw new RuntimeException("Cannot load plugin that is not enabled: {$plugin->getName()}");
         }
 
         try {
@@ -46,13 +48,13 @@ class PluginLoader
                 'version' => $plugin->getVersion(),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed to load plugin", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
             ]);
 
-            throw new \RuntimeException("Failed to load plugin {$plugin->getName()}: {$e->getMessage()}", 0, $e);
+            throw new RuntimeException("Failed to load plugin {$plugin->getName()}: {$e->getMessage()}", 0, $e);
         }
     }
 
@@ -75,7 +77,7 @@ class PluginLoader
                 'plugin' => $plugin->getName(),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed to unload plugin", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
@@ -114,7 +116,7 @@ class PluginLoader
     private function getPluginNamespace(string $pluginName): string
     {
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
-        return "Plugins\\{$className}\\";
+        return "Plugins\\$className\\";
     }
 
     private function getPluginPath(string $pluginName): string
@@ -154,7 +156,7 @@ class PluginLoader
 
         try {
             $this->eventSubscriberRegistry->registerSubscribers($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning("Failed to register event subscribers", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
@@ -172,7 +174,7 @@ class PluginLoader
     {
         try {
             $this->eventSubscriberRegistry->unregisterSubscribers($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning("Failed to unregister event subscribers", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
@@ -193,7 +195,7 @@ class PluginLoader
 
         try {
             $this->commandRegistry->registerCommands($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning("Failed to register console commands", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
@@ -211,7 +213,7 @@ class PluginLoader
     {
         try {
             $this->commandRegistry->unregisterCommands($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning("Failed to unregister console commands", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
@@ -232,7 +234,7 @@ class PluginLoader
 
         try {
             $this->cronRegistry->registerTasks($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning("Failed to register cron tasks", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
@@ -250,7 +252,7 @@ class PluginLoader
     {
         try {
             $this->cronRegistry->unregisterTasks($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning("Failed to unregister cron tasks", [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),

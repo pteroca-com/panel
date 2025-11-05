@@ -2,7 +2,8 @@
 
 namespace App\Core\Service\Authorization;
 
-use Psr\Log\LoggerInterface;
+use DateTimeInterface;
+use Exception;
 use Lcobucci\JWT\Token\Plain;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
@@ -19,6 +20,7 @@ use App\Core\Event\User\Registration\UserRegisteredEvent;
 use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Event\User\Registration\UserEmailVerifiedEvent;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use App\Core\Event\User\Registration\UserRegistrationFailedEvent;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -39,7 +41,6 @@ class RegistrationService
         private readonly LogService $logService,
         private readonly SettingService $settingService,
         private readonly UserService $userService,
-        private readonly LoggerInterface $logger,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
     ) {
@@ -103,7 +104,7 @@ class RegistrationService
 
         try {
             $this->userService->createUserWithPterodactylAccount($user, $plainPassword);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // Emit UserRegistrationFailedEvent
             $failedEvent = new UserRegistrationFailedEvent(
                 $user->getEmail(),
@@ -172,7 +173,7 @@ class RegistrationService
                 success: true,
                 user: $deletedUser,
             );
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new RegisterUserActionResult(
                 success: false,
                 error: $exception->getMessage(),
@@ -184,8 +185,8 @@ class RegistrationService
     {
         try {
             $token = $this->jwtConfiguration->parser()->parse($token);
-        } catch (\Exception) {
-            throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+        } catch (Exception) {
+            throw new RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
         }
 
         assert($token instanceof Plain);
@@ -194,14 +195,14 @@ class RegistrationService
         ];
 
         if (!$this->jwtConfiguration->validator()->validate($token, ...$constraints)) {
-            throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+            throw new RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
         }
 
         if ($token->claims()->has('exp')) {
             $expiry = $token->claims()->get('exp');
-            $expiryTimestamp = $expiry instanceof \DateTimeInterface ? $expiry->getTimestamp() : (int) $expiry;
+            $expiryTimestamp = $expiry instanceof DateTimeInterface ? $expiry->getTimestamp() : (int) $expiry;
             if ($expiryTimestamp < time()) {
-                throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+                throw new RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
             }
         }
 
@@ -210,13 +211,13 @@ class RegistrationService
             $token->payload(),
             $this->jwtConfiguration->signingKey()
         )) {
-            throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+            throw new RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
         }
 
         $userId = $token->claims()->get('uid');
         $user = $this->userRepository->find($userId);
         if (empty($user) || $user->isVerified()) {
-            throw new \RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
+            throw new RuntimeException($this->translator->trans('pteroca.register.verification_token_invalid'));
         }
 
         $user->setIsVerified(true);

@@ -2,6 +2,8 @@
 
 namespace App\Core\Service\Update;
 
+use Exception;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
@@ -35,12 +37,12 @@ class BackupService
     public function restoreDatabaseBackup(string $backupPath): void
     {
         if (!$this->filesystem->exists($backupPath)) {
-            throw new \RuntimeException("Backup file not found: {$backupPath}");
+            throw new RuntimeException("Backup file not found: $backupPath");
         }
 
         $databaseUrl = $_ENV['DATABASE_URL'] ?? null;
         if (!$databaseUrl) {
-            throw new \RuntimeException('DATABASE_URL environment variable not set');
+            throw new RuntimeException('DATABASE_URL environment variable not set');
         }
 
         $parsedUrl = parse_url($databaseUrl);
@@ -61,7 +63,7 @@ class BackupService
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Database restore failed: %s',
                 $process->getErrorOutput()
             ));
@@ -138,7 +140,7 @@ class BackupService
     private function generateBackupPath(): string
     {
         $timestamp = date('Y-m-d_H-i-s');
-        return $this->getBackupDir() . "/db_{$timestamp}.sql";
+        return $this->getBackupDir() . "/db_$timestamp.sql";
     }
 
     private function getBackupDir(): string
@@ -150,7 +152,7 @@ class BackupService
     {
         $databaseUrl = $_ENV['DATABASE_URL'] ?? null;
         if (!$databaseUrl) {
-            throw new \RuntimeException('DATABASE_URL environment variable not set');
+            throw new RuntimeException('DATABASE_URL environment variable not set');
         }
 
         $parsedUrl = parse_url($databaseUrl);
@@ -170,7 +172,7 @@ class BackupService
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Database backup failed: %s. Command: %s',
                 $process->getErrorOutput() ?: $process->getOutput(),
                 $command
@@ -179,7 +181,7 @@ class BackupService
 
         $backupContent = $process->getOutput();
         if (empty($backupContent)) {
-            throw new \RuntimeException('Database backup produced no output');
+            throw new RuntimeException('Database backup produced no output');
         }
 
         file_put_contents($backupPath, $backupContent);
@@ -188,7 +190,7 @@ class BackupService
             $fileSize = file_exists($backupPath) ? filesize($backupPath) : 0;
             $preview = file_exists($backupPath) ? substr(file_get_contents($backupPath), 0, 200) : 'File not found';
             
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Backup validation failed - backup file is invalid or empty. File size: %d bytes. Preview: %s',
                 $fileSize,
                 $preview
@@ -205,7 +207,7 @@ class BackupService
             if ($backup['created'] < $cutoffTime) {
                 try {
                     $this->filesystem->remove($backup['path']);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     error_log("Failed to remove old backup {$backup['path']}: " . $e->getMessage());
                 }
             }

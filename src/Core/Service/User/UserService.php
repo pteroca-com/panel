@@ -12,21 +12,30 @@ use App\Core\Service\Pterodactyl\PterodactylUsernameService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class UserService
+readonly class UserService
 {
     public function __construct(
-        private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly PterodactylUsernameService $usernameService,
-        private readonly PterodactylClientApiKeyService $pterodactylClientApiKeyService,
-        private readonly UserRepository $userRepository,
-        private readonly TranslatorInterface $translator,
-        private readonly LoggerInterface $logger,
+        private UserPasswordHasherInterface    $passwordHasher,
+        private PterodactylApplicationService  $pterodactylApplicationService,
+        private PterodactylUsernameService     $usernameService,
+        private PterodactylClientApiKeyService $pterodactylClientApiKeyService,
+        private UserRepository                 $userRepository,
+        private TranslatorInterface            $translator,
+        private LoggerInterface                $logger,
     ) {
     }
 
+    /**
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws Exception
+     */
     public function createUserWithPterodactylAccount(UserInterface $user, string $plainPassword): void
     {
         if ($plainPassword) {
@@ -70,6 +79,12 @@ class UserService
         }
     }
 
+    /**
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws Exception
+     */
     public function createOrRestoreUser(UserInterface $user, string $plainPassword): array
     {
         $existingDeletedUser = $this->userRepository->findDeletedByEmail($user->getEmail());
@@ -114,6 +129,9 @@ class UserService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateUserInPterodactyl(UserInterface $user, ?string $plainPassword = null): void
     {
         if ($plainPassword) {
@@ -156,6 +174,10 @@ class UserService
         }
     }
 
+    /**
+     * @throws PterodactylUserNotFoundException
+     * @throws Exception
+     */
     public function deleteUserFromPterodactyl(UserInterface $user): void
     {
         try {

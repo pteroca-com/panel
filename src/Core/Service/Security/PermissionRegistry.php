@@ -54,7 +54,7 @@ class PermissionRegistry
         ?callable $customChecker = null
     ): void {
         if ($this->hasPermission($name)) {
-            $this->logger->warning("Permission '{$name}' already registered, skipping", [
+            $this->logger->warning("Permission '$name' already registered, skipping", [
                 'permission' => $name,
             ]);
             return;
@@ -67,7 +67,7 @@ class PermissionRegistry
             'customChecker' => $customChecker,
         ];
 
-        $this->logger->debug("Registered permission: {$name}", [
+        $this->logger->debug("Registered permission: $name", [
             'permission' => $name,
             'required_roles' => $requiredRoles,
         ]);

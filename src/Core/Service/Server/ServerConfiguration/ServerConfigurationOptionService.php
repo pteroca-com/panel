@@ -8,6 +8,7 @@ use App\Core\Event\Server\Configuration\ServerStartupOptionUpdateRequestedEvent;
 use App\Core\Event\Server\Configuration\ServerStartupOptionUpdatedEvent;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -23,6 +24,9 @@ class ServerConfigurationOptionService extends AbstractServerConfiguration
         parent::__construct($this->pterodactylApplicationService);
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateServerStartupOption(
         Server $server,
         UserInterface $user,
@@ -55,7 +59,7 @@ class ServerConfigurationOptionService extends AbstractServerConfiguration
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Server startup option update was blocked';
-            throw new \Exception($reason);
+            throw new Exception($reason);
         }
 
         $this->validateVariableValue($variableKey, $variableValue, $serverDetails);
@@ -78,26 +82,32 @@ class ServerConfigurationOptionService extends AbstractServerConfiguration
         $this->eventDispatcher->dispatch($updatedEvent);
     }
 
+    /**
+     * @throws Exception
+     */
     private function mapVariableKey(string $variableKey): string
     {
         return match ($variableKey) {
             'startup' => 'startup',
             'docker_image' => 'image',
-            default => throw new \Exception('Invalid variable key'),
+            default => throw new Exception('Invalid variable key'),
         };
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateVariableValue(string $variableKey, string $variableValue, array $serverDetails): void
     {
         if (empty($variableValue)) {
-            throw new \Exception('Invalid variable value');
+            throw new Exception('Invalid variable value');
         }
 
         if ($variableKey === 'image') {
             $availableImages = $serverDetails['relationships']['egg']->get('docker_images');
             $selectedImage = array_filter($availableImages, fn($image) => $image === $variableValue);
             if (empty($selectedImage)) {
-                throw new \Exception('Invalid image');
+                throw new Exception('Invalid image');
             }
         }
     }

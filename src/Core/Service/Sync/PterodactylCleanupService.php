@@ -14,12 +14,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class PterodactylCleanupService
+readonly class PterodactylCleanupService
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ServerRepository $serverRepository,
-        private readonly LoggerInterface $logger
+        private EntityManagerInterface $entityManager,
+        private ServerRepository       $serverRepository,
+        private LoggerInterface        $logger
     ) {
     }
 
@@ -80,31 +80,27 @@ class PterodactylCleanupService
                 }
 
                 if ($io && !$this->isUserWantDeleteServer($server, $io)) {
-                    if ($io) {
-                        $io->info(sprintf(
-                            'Skipping server #%s (ID: %d)...',
-                            $server->getPterodactylServerIdentifier(),
-                            $server->getPterodactylServerId()
-                        ));
-                    }
+                    $io->info(sprintf(
+                        'Skipping server #%s (ID: %d)...',
+                        $server->getPterodactylServerIdentifier(),
+                        $server->getPterodactylServerId()
+                    ));
 
                     if ($stats !== null) {
                         $stats['orphanedServersSkipped']++;
                     }
 
-                    if ($eventDispatcher) {
-                        $eventDispatcher->dispatch(
-                            new OrphanedServerSkippedEvent(
-                                $server->getUser()->getId() ?? 0,
-                                $server->getId(),
-                                $server->getPterodactylServerId(),
-                                $server->getPterodactylServerIdentifier(),
-                                $server->getName(),
-                                'user_declined',
-                                $context
-                            )
-                        );
-                    }
+                    $eventDispatcher?->dispatch(
+                        new OrphanedServerSkippedEvent(
+                            $server->getUser()->getId() ?? 0,
+                            $server->getId(),
+                            $server->getPterodactylServerId(),
+                            $server->getPterodactylServerIdentifier(),
+                            $server->getName(),
+                            'user_declined',
+                            $context
+                        )
+                    );
                     continue;
                 }
 
@@ -113,19 +109,17 @@ class PterodactylCleanupService
                         $stats['orphanedServersSkipped']++;
                     }
 
-                    if ($eventDispatcher) {
-                        $eventDispatcher->dispatch(
-                            new OrphanedServerSkippedEvent(
-                                $server->getUser()->getId() ?? 0,
-                                $server->getId(),
-                                $server->getPterodactylServerId(),
-                                $server->getPterodactylServerIdentifier(),
-                                $server->getName(),
-                                'dry_run',
-                                $context
-                            )
-                        );
-                    }
+                    $eventDispatcher?->dispatch(
+                        new OrphanedServerSkippedEvent(
+                            $server->getUser()->getId() ?? 0,
+                            $server->getId(),
+                            $server->getPterodactylServerId(),
+                            $server->getPterodactylServerIdentifier(),
+                            $server->getName(),
+                            'dry_run',
+                            $context
+                        )
+                    );
 
                     $this->logger->info('Would mark server as deleted', [
                         'server_id' => $server->getId(),
@@ -151,38 +145,34 @@ class PterodactylCleanupService
                     $stats['orphanedServersDeleted']++;
                 }
 
-                if ($eventDispatcher) {
-                    $eventDispatcher->dispatch(
-                        new OrphanedServerDeletedEvent(
-                            $server->getUser()->getId() ?? 0,
-                            $server->getId(),
-                            $server->getPterodactylServerId(),
-                            $server->getPterodactylServerIdentifier(),
-                            $server->getName(),
-                            new DateTimeImmutable(),
-                            $context
-                        )
-                    );
-                }
+                $eventDispatcher?->dispatch(
+                    new OrphanedServerDeletedEvent(
+                        $server->getUser()->getId() ?? 0,
+                        $server->getId(),
+                        $server->getPterodactylServerId(),
+                        $server->getPterodactylServerIdentifier(),
+                        $server->getName(),
+                        new DateTimeImmutable(),
+                        $context
+                    )
+                );
 
             } catch (Exception $e) {
                 if ($stats !== null) {
                     $stats['orphanedServersFailed']++;
                 }
 
-                if ($eventDispatcher) {
-                    $eventDispatcher->dispatch(
-                        new OrphanedServerDeletionFailedEvent(
-                            $server->getUser()->getId() ?? 0,
-                            $server->getId(),
-                            $server->getPterodactylServerId(),
-                            $server->getPterodactylServerIdentifier(),
-                            $server->getName(),
-                            $e->getMessage(),
-                            $context
-                        )
-                    );
-                }
+                $eventDispatcher?->dispatch(
+                    new OrphanedServerDeletionFailedEvent(
+                        $server->getUser()->getId() ?? 0,
+                        $server->getId(),
+                        $server->getPterodactylServerId(),
+                        $server->getPterodactylServerIdentifier(),
+                        $server->getName(),
+                        $e->getMessage(),
+                        $context
+                    )
+                );
 
                 $this->logger->error('Failed to delete server', [
                     'server_id' => $server->getId(),

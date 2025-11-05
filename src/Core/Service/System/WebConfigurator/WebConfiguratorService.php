@@ -10,16 +10,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class WebConfiguratorService
+readonly class WebConfiguratorService
 {
     public function __construct(
-        private readonly LocaleService $localeService,
-        private readonly EmailConnectionVerificationService $emailConnectionVerificationService,
-        private readonly PterodactylConnectionVerificationService $pterodactylConnectionVerificationService,
-        private readonly UserValidationService $userValidationService,
-        private readonly TranslatorInterface $translator,
-        private readonly FinishConfigurationService $finishConfigurationService,
-        private readonly SettingService $settingService,
+        private LocaleService                            $localeService,
+        private EmailConnectionVerificationService       $emailConnectionVerificationService,
+        private PterodactylConnectionVerificationService $pterodactylConnectionVerificationService,
+        private UserValidationService                    $userValidationService,
+        private TranslatorInterface                      $translator,
+        private FinishConfigurationService               $finishConfigurationService,
+        private SettingService                           $settingService,
     ) {}
 
     public function getDataForFirstConfiguration(Request $request): array

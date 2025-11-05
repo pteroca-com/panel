@@ -20,19 +20,25 @@ use App\Core\Event\Server\Backup\ServerBackupRestoredEvent;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
+use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class ServerBackupService
+readonly class ServerBackupService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ServerLogService $serverLogService,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly RequestStack $requestStack,
-        private readonly EventContextService $eventContextService,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private ServerLogService              $serverLogService,
+        private EventDispatcherInterface      $eventDispatcher,
+        private RequestStack                  $requestStack,
+        private EventContextService           $eventContextService,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function createBackup(
         Server $server,
         UserInterface $user,
@@ -45,7 +51,7 @@ class ServerBackupService
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
         if (empty($backupName)) {
-            throw new \InvalidArgumentException('Backup name is required');
+            throw new InvalidArgumentException('Backup name is required');
         }
 
         $requestedEvent = new ServerBackupCreationRequestedEvent(
@@ -60,7 +66,7 @@ class ServerBackupService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Backup creation was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         try {
@@ -91,7 +97,7 @@ class ServerBackupService
             $this->eventDispatcher->dispatch($createdEvent);
 
             return $createdBackup;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $failedEvent = new ServerBackupCreationFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -129,7 +135,7 @@ class ServerBackupService
             ->getBackupDownloadUrl($server, $backupId)['url'] ?? null;
 
         if (empty($downloadUrl)) {
-            throw new \RuntimeException('Failed to get backup download URL');
+            throw new RuntimeException('Failed to get backup download URL');
         }
 
         $this->serverLogService->logServerAction(
@@ -174,7 +180,7 @@ class ServerBackupService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Backup deletion was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $deletedBackup = $this->getPterodactylClientApi($user)
@@ -202,6 +208,9 @@ class ServerBackupService
         return $deletedBackup;
     }
 
+    /**
+     * @throws Exception
+     */
     public function restoreBackup(
         Server $server,
         UserInterface $user,
@@ -224,7 +233,7 @@ class ServerBackupService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Backup restore was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $initiatedEvent = new ServerBackupRestoreInitiatedEvent(
@@ -261,7 +270,7 @@ class ServerBackupService
                 $context
             );
             $this->eventDispatcher->dispatch($restoredEvent);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $failedEvent = new ServerBackupRestoreFailedEvent(
                 $user->getId(),
                 $server->getId(),

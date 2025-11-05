@@ -14,20 +14,22 @@ use App\Core\Repository\ProductRepository;
 use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use App\Core\Service\Server\ServerSlotConfigurationService;
+use Exception;
+use JsonException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class StoreService
+readonly class StoreService
 {
     public function __construct(
-        private readonly CategoryRepository $categoryRepository,
-        private readonly ProductRepository $productRepository,
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly TranslatorInterface $translator,
-        private readonly ProductPriceCalculatorService $productPriceCalculatorService,
-        private readonly ServerSlotConfigurationService $serverSlotConfigurationService,
-        private readonly string $categoriesBasePath,
-        private readonly string $productsBasePath,
+        private CategoryRepository             $categoryRepository,
+        private ProductRepository              $productRepository,
+        private PterodactylApplicationService  $pterodactylApplicationService,
+        private TranslatorInterface            $translator,
+        private ProductPriceCalculatorService  $productPriceCalculatorService,
+        private ServerSlotConfigurationService $serverSlotConfigurationService,
+        private string                         $categoriesBasePath,
+        private string                         $productsBasePath,
     ) {}
 
     public function getCategories(): array
@@ -169,7 +171,7 @@ class StoreService
                     try {
                         $eggsConfiguration = json_decode($eggsConfigurationJson, true, 512, JSON_THROW_ON_ERROR);
                         $maxSlots = $this->serverSlotConfigurationService->getMaxSlotsFromEggConfiguration($eggsConfiguration, $eggId) ?? $maxSlots;
-                    } catch (\JsonException) {
+                    } catch (JsonException) {
                         // If JSON is invalid, use default maxSlots
                     }
                 }
@@ -183,12 +185,15 @@ class StoreService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function validateUserBalanceByPrice(UserInterface $user, ProductPriceInterface $selectedPrice, ?int $slots = null): void
     {
         $finalPrice = $this->productPriceCalculatorService->calculateFinalPrice($selectedPrice, $slots);
         
         if ($finalPrice > $user->getBalance()) {
-            throw new \Exception($this->translator->trans('pteroca.store.not_enough_funds'));
+            throw new Exception($this->translator->trans('pteroca.store.not_enough_funds'));
         }
     }
 }

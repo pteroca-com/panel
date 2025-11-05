@@ -5,14 +5,15 @@ namespace App\Core\Service\Server;
 use App\Core\Entity\Server;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 use Psr\Log\LoggerInterface;
 
-class DeleteServerService
+readonly class DeleteServerService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ServerLogService $serverLogService,
-        private readonly LoggerInterface $logger,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private ServerLogService              $serverLogService,
+        private LoggerInterface               $logger,
     )
     {
     }
@@ -24,7 +25,7 @@ class DeleteServerService
                 ->getApplicationApi()
                 ->servers()
                 ->deleteServer($entityInstance->getPterodactylServerId());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to delete pterodactyl server during deleting entity', [
                 'exception' => $e,
                 'serverId' => $entityInstance->getPterodactylServerId(),

@@ -2,20 +2,27 @@
 
 namespace App\Core\Service\System\WebConfigurator;
 
+use App\Core\Adapter\Pterodactyl\Application\PterodactylAdapter;
 use App\Core\DTO\Action\Result\ConfiguratorVerificationResult;
+use App\Core\DTO\Pterodactyl\Credentials;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 use Exception;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Timdesm\PterodactylPhpApi\PterodactylApi;
 
-class PterodactylConnectionVerificationService
+readonly class PterodactylConnectionVerificationService
 {
     public function __construct(
-        private readonly TranslatorInterface $translator,
-        private readonly SettingService $settingService,
+        private TranslatorInterface   $translator,
+        private SettingService        $settingService,
+        private HttpClientInterface   $httpClient,
     ) {}
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function validateExistingConnection(): ConfiguratorVerificationResult
     {
         $pterodactylPanelUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);
@@ -37,10 +44,14 @@ class PterodactylConnectionVerificationService
     ): ConfiguratorVerificationResult
     {
         try {
-            $pterodactylApi = new PterodactylApi($pterodactylPanelUrl, $pterodactylPanelApiKey);
-            $pterodactylApi->servers->paginate();
-            
-            if (!$this->checkPterocaAddon($pterodactylApi)) {
+            $adapter = new PterodactylAdapter($this->httpClient);
+            $credentials = new Credentials($pterodactylPanelUrl, $pterodactylPanelApiKey);
+            $adapter->setCredentials($credentials);
+
+            // Test connection by listing servers
+            $adapter->servers()->paginate();
+
+            if (!$this->checkPterocaAddon($adapter)) {
                 return new ConfiguratorVerificationResult(
                     false,
                     $this->translator->trans('pteroca.first_configuration.messages.pterodactyl_addon_not_detected'),
@@ -59,10 +70,10 @@ class PterodactylConnectionVerificationService
         }
     }
 
-    private function checkPterocaAddon(PterodactylApi $pterodactylApi): ?string
+    private function checkPterocaAddon(PterodactylAdapter $adapter): ?string
     {
         try {
-            $data = $pterodactylApi->http->get('pteroca/version');
+            $data = $adapter->pteroca()->getVersion();
             return $data['version'] ?? null;
         } catch (Exception) {
             return null;

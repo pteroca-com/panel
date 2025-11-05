@@ -3,8 +3,11 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\Entity\Plugin;
-use App\Core\Repository\PluginRepository;
+use Exception;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use ReflectionNamedType;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,7 +25,6 @@ class PluginEventSubscriberRegistry
     private array $registeredSubscribers = [];
 
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ContainerInterface $container,
         private readonly LoggerInterface $logger,
@@ -32,7 +34,7 @@ class PluginEventSubscriberRegistry
      * Register all event subscribers for a plugin.
      *
      * @param Plugin $plugin Plugin to register subscribers for
-     * @throws \RuntimeException If subscriber instantiation fails
+     * @throws RuntimeException If subscriber instantiation fails
      */
     public function registerSubscribers(Plugin $plugin): void
     {
@@ -87,13 +89,13 @@ class PluginEventSubscriberRegistry
                 ]);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to register event subscribers', [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Failed to register event subscribers for plugin "%s": %s', $plugin->getName(), $e->getMessage()),
                 0,
                 $e
@@ -125,7 +127,7 @@ class PluginEventSubscriberRegistry
                     'plugin' => $pluginName,
                     'class' => get_class($subscriber),
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error('Failed to unregister event subscriber', [
                     'plugin' => $pluginName,
                     'class' => get_class($subscriber),
@@ -227,11 +229,19 @@ class PluginEventSubscriberRegistry
         try {
             // Try to get from service container first (if registered)
             if ($this->container->has($subscriberClass)) {
-                return $this->container->get($subscriberClass);
+                $subscriber = $this->container->get($subscriberClass);
+                if (!$subscriber instanceof EventSubscriberInterface) {
+                    $this->logger->error('Service is not an EventSubscriberInterface instance', [
+                        'class' => $subscriberClass,
+                        'actual_type' => get_debug_type($subscriber),
+                    ]);
+                    return null;
+                }
+                return $subscriber;
             }
 
             // Fall back to manual instantiation with logger injection
-            $reflection = new \ReflectionClass($subscriberClass);
+            $reflection = new ReflectionClass($subscriberClass);
             $constructor = $reflection->getConstructor();
 
             if ($constructor === null) {
@@ -246,7 +256,7 @@ class PluginEventSubscriberRegistry
             foreach ($parameters as $parameter) {
                 $type = $parameter->getType();
 
-                if ($type instanceof \ReflectionNamedType) {
+                if ($type instanceof ReflectionNamedType) {
                     $typeName = $type->getName();
 
                     // Inject logger if requested
@@ -278,7 +288,7 @@ class PluginEventSubscriberRegistry
 
             return $reflection->newInstanceArgs($args);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to instantiate subscriber', [
                 'class' => $subscriberClass,
                 'error' => $e->getMessage(),
@@ -299,6 +309,6 @@ class PluginEventSubscriberRegistry
     {
         // Convert hello-world to HelloWorld
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
-        return "Plugins\\{$className}\\";
+        return "Plugins\\$className\\";
     }
 }

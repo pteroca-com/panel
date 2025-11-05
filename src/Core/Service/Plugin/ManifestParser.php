@@ -3,6 +3,9 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\DTO\PluginManifestDTO;
+use Exception;
+use JsonException;
+use RuntimeException;
 
 class ManifestParser
 {
@@ -11,38 +14,38 @@ class ManifestParser
         $manifestPath = rtrim($pluginPath, '/') . '/plugin.json';
 
         if (!file_exists($manifestPath)) {
-            throw new \RuntimeException("Plugin manifest not found: {$manifestPath}");
+            throw new RuntimeException("Plugin manifest not found: $manifestPath");
         }
 
         $manifestContent = file_get_contents($manifestPath);
 
         if ($manifestContent === false) {
-            throw new \RuntimeException("Failed to read plugin manifest: {$manifestPath}");
+            throw new RuntimeException("Failed to read plugin manifest: $manifestPath");
         }
 
         return $this->parseFromString($manifestContent);
     }
 
     /**
-     * @throws \RuntimeException If JSON is invalid
+     * @throws RuntimeException If JSON is invalid
      */
     public function parseFromString(string $json): PluginManifestDTO
     {
         try {
             $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new \RuntimeException("Invalid JSON in plugin manifest: {$e->getMessage()}", 0, $e);
+        } catch (JsonException $e) {
+            throw new RuntimeException("Invalid JSON in plugin manifest: {$e->getMessage()}", 0, $e);
         }
 
         if (!is_array($data)) {
-            throw new \RuntimeException('Plugin manifest must be a JSON object');
+            throw new RuntimeException('Plugin manifest must be a JSON object');
         }
 
         return $this->parseFromArray($data);
     }
 
     /**
-     * @throws \RuntimeException If required fields are missing
+     * @throws RuntimeException If required fields are missing
      */
     public function parseFromArray(array $data): PluginManifestDTO
     {
@@ -69,19 +72,19 @@ class ManifestParser
 
         // Ensure arrays are arrays
         if (!is_array($pteroca)) {
-            throw new \RuntimeException('Field "pteroca" must be an object');
+            throw new RuntimeException('Field "pteroca" must be an object');
         }
 
         if (!is_array($capabilities)) {
-            throw new \RuntimeException('Field "capabilities" must be an array');
+            throw new RuntimeException('Field "capabilities" must be an array');
         }
 
         if (!is_array($requires)) {
-            throw new \RuntimeException('Field "requires" must be an object');
+            throw new RuntimeException('Field "requires" must be an object');
         }
 
         if (!is_array($configSchema)) {
-            throw new \RuntimeException('Field "config_schema" must be an object');
+            throw new RuntimeException('Field "config_schema" must be an object');
         }
 
         return new PluginManifestDTO(
@@ -107,19 +110,19 @@ class ManifestParser
     }
 
     /**
-     * @throws \RuntimeException If field is missing or empty
+     * @throws RuntimeException If field is missing or empty
      */
     private function getRequiredField(array $data, string $field): mixed
     {
         if (!array_key_exists($field, $data)) {
-            throw new \RuntimeException("Required field '{$field}' is missing in plugin manifest");
+            throw new RuntimeException("Required field '$field' is missing in plugin manifest");
         }
 
         $value = $data[$field];
 
         // Check for empty strings
         if (is_string($value) && trim($value) === '') {
-            throw new \RuntimeException("Required field '{$field}' cannot be empty");
+            throw new RuntimeException("Required field '$field' cannot be empty");
         }
 
         return $value;
@@ -131,7 +134,7 @@ class ManifestParser
             $this->parseFromDirectory($pluginPath);
 
             return true;
-        } catch (\Exception) {
+        } catch (Exception) {
             return false;
         }
     }

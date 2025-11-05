@@ -8,22 +8,24 @@ use App\Core\Event\Product\ProductCopiedEvent;
 use App\Core\Event\Product\ProductCopyRequestedEvent;
 use App\Core\Repository\ProductRepository;
 use App\Core\Repository\ProductPriceRepository;
+use Exception;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ProductCopyService
+readonly class ProductCopyService
 {
     public function __construct(
-        private readonly ProductRepository $productRepository,
-        private readonly ProductPriceRepository $productPriceRepository,
-        private readonly Filesystem $filesystem,
-        private readonly LoggerInterface $logger,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly TranslatorInterface $translator,
-        private readonly string $productsDirectory,
-        private readonly string $projectDir,
+        private ProductRepository        $productRepository,
+        private ProductPriceRepository   $productPriceRepository,
+        private Filesystem               $filesystem,
+        private LoggerInterface          $logger,
+        private EventDispatcherInterface $eventDispatcher,
+        private TranslatorInterface      $translator,
+        private string                   $productsDirectory,
+        private string                   $projectDir,
     ) {
     }
 
@@ -39,7 +41,7 @@ class ProductCopyService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Product copy operation was blocked';
-            throw new \RuntimeException($this->translator->trans('pteroca.crud.product.copy_blocked', ['reason' => $reason]));
+            throw new RuntimeException($this->translator->trans('pteroca.crud.product.copy_blocked', ['reason' => $reason]));
         }
 
         $copiedProduct = new Product();
@@ -123,7 +125,7 @@ class ProductCopyService
         try {
             $this->filesystem->copy($originalFilePath, $newFilePath);
             return $newFileName;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to copy product image file', [
                 'original_path' => $originalImagePath,
                 'new_path' => $newFileName,

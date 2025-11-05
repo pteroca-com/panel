@@ -3,6 +3,7 @@
 namespace App\Core\Service\Update;
 
 use Doctrine\DBAL\Connection;
+use Exception;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
@@ -20,6 +21,9 @@ class ValidationService
         $this->filesystem = $filesystem ?? new Filesystem();
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function validateUpdateEnvironment(): array
     {
         $results = [];
@@ -71,7 +75,7 @@ class ValidationService
         $usedPercent = round((($totalBytes - $freeBytes) / $totalBytes) * 100, 1);
 
         $status = 'ok';
-        $message = "Free space: {$freeMB}MB ({$usedPercent}% used)";
+        $message = "Free space: {$freeMB}MB ($usedPercent% used)";
 
         if ($freeMB < self::MIN_DISK_SPACE_MB) {
             $status = 'error';
@@ -146,18 +150,18 @@ class ValidationService
             if (!$this->filesystem->exists($path) && str_contains($path, 'var/')) {
                 try {
                     $this->filesystem->mkdir($path, 0755);
-                } catch (\Exception $e) {
-                    $issues[] = "Cannot create directory: {$path}";
+                } catch (Exception) {
+                    $issues[] = "Cannot create directory: $path";
                     continue;
                 }
             }
 
             if ($this->filesystem->exists($path)) {
                 if (!is_readable($path)) {
-                    $issues[] = "Not readable: {$path}";
+                    $issues[] = "Not readable: $path";
                 }
                 if (!is_writable($path)) {
-                    $issues[] = "Not writable: {$path}";
+                    $issues[] = "Not writable: $path";
                 }
             }
         }
@@ -166,8 +170,8 @@ class ValidationService
         try {
             file_put_contents($testFile, 'test');
             unlink($testFile);
-        } catch (\Exception $e) {
-            $issues[] = "Cannot write to root directory: {$rootPath}";
+        } catch (Exception) {
+            $issues[] = "Cannot write to root directory: $rootPath";
         }
 
         $status = empty($issues) ? 'ok' : 'error';
@@ -180,6 +184,9 @@ class ValidationService
         ];
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function testDatabaseConnection(): array
     {
         try {
@@ -207,7 +214,7 @@ class ValidationService
                 'details' => $details
             ];
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [
                 'status' => 'error',
                 'message' => 'Database connection failed: ' . $e->getMessage(),

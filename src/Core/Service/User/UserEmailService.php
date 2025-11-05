@@ -11,24 +11,29 @@ use App\Core\Repository\UserRepository;
 use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Mailer\EmailVerificationService;
 use App\Core\Service\SettingService;
+use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class UserEmailService
+readonly class UserEmailService
 {
     public function __construct(
-        private readonly MessageBusInterface $messageBus,
-        private readonly LoggerInterface $logger,
-        private readonly TranslatorInterface $translator,
-        private readonly SettingService $settingService,
-        private readonly EmailVerificationService $emailVerificationService,
-        private readonly EmailNotificationService $emailNotificationService,
-        private readonly UserRepository $userRepository,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private MessageBusInterface      $messageBus,
+        private LoggerInterface          $logger,
+        private TranslatorInterface      $translator,
+        private SettingService           $settingService,
+        private EmailVerificationService $emailVerificationService,
+        private EmailNotificationService $emailNotificationService,
+        private UserRepository           $userRepository,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function sendVerificationEmail(int $userId, string $email): void
     {
         try {
@@ -86,7 +91,7 @@ class UserEmailService
             );
             $this->eventDispatcher->dispatch($verificationRequestedEvent);
             
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error('Failed to send verification email', [
                 'exception' => $exception->getMessage(),
                 'userId' => $userId,

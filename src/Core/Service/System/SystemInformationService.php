@@ -4,6 +4,7 @@ namespace App\Core\Service\System;
 
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 readonly class SystemInformationService
 {
@@ -14,6 +15,9 @@ readonly class SystemInformationService
     {
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function getSystemInformation(): array
     {
         return [
@@ -40,13 +44,16 @@ readonly class SystemInformationService
         ];
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     private function getDatabaseVersion(): string
     {
         try {
             return $this->entityManager
                 ->getConnection()
                 ->getServerVersion();
-        } catch (\Exception $exception) {
+        } catch (Exception) {
             return 'N/A';
         }
     }
@@ -59,7 +66,7 @@ readonly class SystemInformationService
                 ->locations()
                 ->all();
             return true;
-        } catch (\Exception $exception) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -73,7 +80,7 @@ readonly class SystemInformationService
                 ->getVersion();
             
             return $data['version'] ?? null;
-        } catch (\Exception $exception) {
+        } catch (Exception) {
             return null;
         }
     }

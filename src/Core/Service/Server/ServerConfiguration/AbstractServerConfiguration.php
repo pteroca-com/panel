@@ -4,6 +4,7 @@ namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 
 class AbstractServerConfiguration
 {
@@ -13,6 +14,9 @@ class AbstractServerConfiguration
     {
     }
 
+    /**
+     * @throws Exception
+     */
     protected function getServerDetails(Server $server, array $include = []): array
     {
         $serverDetails = $this->pterodactylApplicationService
@@ -22,7 +26,7 @@ class AbstractServerConfiguration
             ?->toArray();
 
         if (empty($serverDetails)) {
-            throw new \Exception('Server not found');
+            throw new Exception('Server not found');
         }
 
         return $serverDetails;

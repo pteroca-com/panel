@@ -5,9 +5,9 @@ namespace App\Core\Service\Plugin;
 use App\Core\DTO\PluginHealthCheckResultDTO;
 use App\Core\Entity\Plugin;
 use App\Core\Repository\PluginRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use RuntimeException;
 
 /**
  * Plugin health check service.
@@ -20,16 +20,12 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  *
  * Returns PluginHealthCheckResultDTO with detailed results.
  */
-class PluginHealthCheckService
+readonly class PluginHealthCheckService
 {
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
-        private readonly ManifestValidator $manifestValidator,
-        private readonly PluginDependencyResolver $dependencyResolver,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger,
-        #[Autowire(param: 'kernel.project_dir')]
-        private readonly string $projectDir,
+        private PluginRepository         $pluginRepository,
+        private PluginDependencyResolver $dependencyResolver,
+        private LoggerInterface          $logger,
     ) {}
 
     /**
@@ -50,7 +46,7 @@ class PluginHealthCheckService
         // Check 1: Files integrity
         try {
             $checks['files_integrity'] = $this->checkFilesIntegrity($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $checks['files_integrity'] = false;
             $errors['files_integrity'] = $e->getMessage();
         }
@@ -62,7 +58,7 @@ class PluginHealthCheckService
             if (!empty($dependencyErrors)) {
                 $errors['dependencies'] = implode('; ', $dependencyErrors);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $checks['dependencies'] = false;
             $errors['dependencies'] = $e->getMessage();
         }
@@ -74,7 +70,7 @@ class PluginHealthCheckService
             if (!empty($configErrors)) {
                 $errors['configuration'] = implode('; ', $configErrors);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $checks['configuration'] = false;
             $errors['configuration'] = $e->getMessage();
         }
@@ -82,7 +78,7 @@ class PluginHealthCheckService
         // Check 4: Service registration
         try {
             $checks['service_registration'] = $this->checkServiceRegistration($plugin);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $checks['service_registration'] = false;
             $errors['service_registration'] = $e->getMessage();
         }
@@ -130,7 +126,7 @@ class PluginHealthCheckService
      * - Required directories exist (if declared)
      *
      * @return bool True if all files are intact
-     * @throws \RuntimeException If critical files missing
+     * @throws RuntimeException If critical files missing
      */
     public function checkFilesIntegrity(Plugin $plugin): bool
     {
@@ -138,7 +134,7 @@ class PluginHealthCheckService
 
         // Check plugin directory exists
         if (!is_dir($pluginPath)) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 "Plugin directory does not exist: %s",
                 $pluginPath
             ));
@@ -147,19 +143,19 @@ class PluginHealthCheckService
         // Check plugin.json exists
         $manifestPath = $pluginPath . '/plugin.json';
         if (!file_exists($manifestPath)) {
-            throw new \RuntimeException("plugin.json not found");
+            throw new RuntimeException("plugin.json not found");
         }
 
         if (!is_readable($manifestPath)) {
-            throw new \RuntimeException("plugin.json is not readable");
+            throw new RuntimeException("plugin.json is not readable");
         }
 
         // Validate JSON is parseable
         $manifestContent = file_get_contents($manifestPath);
-        $manifestData = json_decode($manifestContent, true);
+        json_decode($manifestContent, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 "plugin.json is invalid JSON: %s",
                 json_last_error_msg()
             ));
@@ -173,7 +169,7 @@ class PluginHealthCheckService
         foreach ($requiredDirs as $dir => $description) {
             $dirPath = $pluginPath . '/' . $dir;
             if (!is_dir($dirPath)) {
-                throw new \RuntimeException(sprintf(
+                throw new RuntimeException(sprintf(
                     "%s missing: %s",
                     $description,
                     $dir
@@ -276,7 +272,7 @@ class PluginHealthCheckService
      * - No syntax errors in service definitions
      *
      * @return bool True if services are OK
-     * @throws \RuntimeException If services have issues
+     * @throws RuntimeException If services have issues
      */
     public function checkServiceRegistration(Plugin $plugin): bool
     {
@@ -289,7 +285,7 @@ class PluginHealthCheckService
 
         // Check services.yaml is readable
         if (!is_readable($servicesPath)) {
-            throw new \RuntimeException("config/services.yaml exists but is not readable");
+            throw new RuntimeException("config/services.yaml exists but is not readable");
         }
 
         // Validate YAML syntax
@@ -299,16 +295,16 @@ class PluginHealthCheckService
             // Basic YAML syntax check (we can't fully parse without Symfony YAML component)
             // Just check for common issues
             if (empty(trim($servicesContent))) {
-                throw new \RuntimeException("config/services.yaml is empty");
+                throw new RuntimeException("config/services.yaml is empty");
             }
 
             // Check for tab indentation (YAML doesn't allow tabs)
-            if (strpos($servicesContent, "\t") !== false) {
-                throw new \RuntimeException("config/services.yaml contains tabs (use spaces for indentation)");
+            if (str_contains($servicesContent, "\t")) {
+                throw new RuntimeException("config/services.yaml contains tabs (use spaces for indentation)");
             }
 
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf(
+        } catch (Exception $e) {
+            throw new RuntimeException(sprintf(
                 "config/services.yaml validation failed: %s",
                 $e->getMessage()
             ));

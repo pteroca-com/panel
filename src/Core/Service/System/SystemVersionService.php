@@ -5,6 +5,8 @@ namespace App\Core\Service\System;
 use App\Core\DTO\PterodactylAddonVersionDTO;
 use App\Core\DTO\SystemVersionDTO;
 use DateTime;
+use Exception;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -30,6 +32,10 @@ class SystemVersionService
         return $this->currentVersion;
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
     public function getVersionInformation(): SystemVersionDTO
     {
         $currentVersion = $this->getCurrentReleaseVersion();
@@ -52,6 +58,9 @@ class SystemVersionService
         );
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function getCurrentReleaseVersion(): array
     {
         return $this->cache->get(self::CACHE_KEY, function (ItemInterface $item) {

@@ -42,7 +42,7 @@ class PluginAutoloader
 
         spl_autoload_register(function ($class) use ($namespace, $path) {
             // Check if class belongs to this namespace
-            if (strpos($class, $namespace) !== 0) {
+            if (!str_starts_with($class, $namespace)) {
                 return;
             }
 
@@ -73,7 +73,7 @@ class PluginAutoloader
         // Convert "hello-world" to "HelloWorld"
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
 
-        return "Plugins\\{$className}\\";
+        return "Plugins\\$className\\";
     }
 
     private function getPluginSrcPath(string $pluginName): string

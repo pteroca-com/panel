@@ -8,6 +8,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Service\Authorization\RegistrationService;
 use App\Core\Service\SettingService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FinishConfigurationService
@@ -44,6 +45,9 @@ class FinishConfigurationService
         return self::REQUIRED_SETTINGS_MAP;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function finishConfiguration(array $data): ConfiguratorVerificationResult
     {
         $isEmailConnectionValidated = $this->emailConnectionVerificationService->validateConnection(
@@ -83,6 +87,9 @@ class FinishConfigurationService
         return new ConfiguratorVerificationResult(true);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function saveConfigurationSettings(array $data): void
     {
         $settingsMap = array_merge(self::REQUIRED_SETTINGS_MAP, self::OPTIONAL_SETTINGS_MAP);
@@ -115,6 +122,9 @@ class FinishConfigurationService
         return $registerResult->success;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function disableConfigurator(): void
     {
         $this->settingService->saveSetting(SettingEnum::IS_CONFIGURED->value, '1');

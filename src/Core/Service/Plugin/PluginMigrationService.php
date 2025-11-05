@@ -11,18 +11,20 @@ use Doctrine\Migrations\Metadata\Storage\TableMetadataStorageConfiguration;
 use Doctrine\Migrations\MigratorConfiguration;
 use Doctrine\Migrations\Version\Direction;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
-class PluginMigrationService
+readonly class PluginMigrationService
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger,
-        private readonly string $projectDir,
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface        $logger,
+        private string                 $projectDir,
     ) {}
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function executeMigrations(Plugin $plugin): array
     {
@@ -98,7 +100,7 @@ class PluginMigrationService
             $migratedVersions = $migrator->migrate($plan, $migratorConfiguration);
             $executed = count($migratedVersions);
 
-            $this->logger->info("Executed {$executed} migrations for plugin {$plugin->getName()}");
+            $this->logger->info("Executed $executed migrations for plugin {$plugin->getName()}");
 
             // Extract migration version names from array keys
             $versionStrings = array_keys($migratedVersions);
@@ -109,9 +111,9 @@ class PluginMigrationService
                 'migrations' => $versionStrings,
             ];
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed to execute migrations for plugin {$plugin->getName()}: {$e->getMessage()}");
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 "Failed to execute migrations for plugin {$plugin->getName()}: {$e->getMessage()}",
                 0,
                 $e
@@ -143,7 +145,7 @@ class PluginMigrationService
 
             return $availableMigrations->count() > count($executedMigrations->getItems());
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed to check pending migrations for plugin {$plugin->getName()}: {$e->getMessage()}");
             return false;
         }
@@ -175,7 +177,7 @@ class PluginMigrationService
     private function getPluginMigrationNamespace(string $pluginName): string
     {
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
-        return "Plugins\\{$className}\\Migrations";
+        return "Plugins\\$className\\Migrations";
     }
 
     public function getCurrentVersion(Plugin $plugin): ?string
@@ -202,7 +204,7 @@ class PluginMigrationService
 
             return $lastMigration ? (string) $lastMigration->getVersion() : null;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed to get current version for plugin {$plugin->getName()}: {$e->getMessage()}");
             return null;
         }

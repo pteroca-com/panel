@@ -2,7 +2,9 @@
 
 namespace App\Core\Service\Update\Operation;
 
+use RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function dirname;
 
 class GitOperationService
 {
@@ -26,14 +28,14 @@ class GitOperationService
     {
         $currentDir = getcwd();
         if ($currentDir === false) {
-            $currentDir = \dirname(__DIR__, 5);
+            $currentDir = dirname(__DIR__, 5);
         }
         
         if ($this->options['verbose'] ?? false) {
             $this->io->text('Checking Git safe directory configuration...');
         }
         
-        exec('git config --global --get-all safe.directory 2>/dev/null', $safeDirectories, $returnCode);
+        exec('git config --global --get-all safe.directory 2>/dev/null', $safeDirectories);
         
         $needsConfig = true;
         foreach ($safeDirectories as $safeDir) {
@@ -45,11 +47,11 @@ class GitOperationService
         
         if ($needsConfig) {
             if ($this->options['verbose'] ?? false) {
-                $this->io->note("Adding {$currentDir} to Git safe directories to prevent 'dubious ownership' errors");
+                $this->io->note("Adding $currentDir to Git safe directories to prevent 'dubious ownership' errors");
             }
             
             $escapedDir = escapeshellarg($currentDir);
-            exec("git config --global --add safe.directory {$escapedDir}", $configOutput, $configCode);
+            exec("git config --global --add safe.directory $escapedDir", $configOutput, $configCode);
             
             if ($configCode !== 0) {
                 $this->io->warning('Could not configure Git safe directory. Some git operations may fail due to ownership issues.');
@@ -78,7 +80,7 @@ class GitOperationService
         }
         
         if ($returnCode !== 0) {
-            throw new \RuntimeException('Failed to stash changes.');
+            throw new RuntimeException('Failed to stash changes.');
         }
 
         $this->isStashed = true;
@@ -93,13 +95,13 @@ class GitOperationService
         exec('git branch --show-current 2>/dev/null', $output, $returnCode);
         
         if ($returnCode !== 0 || empty($output)) {
-            throw new \RuntimeException('Cannot determine current Git branch.');
+            throw new RuntimeException('Cannot determine current Git branch.');
         }
         
         $currentBranch = trim($output[0]);
         
         if ($currentBranch !== 'main') {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'System updates can only be performed from the "main" branch. Current branch: "%s". Please switch to main branch using: git checkout main',
                 $currentBranch
             ));
@@ -126,7 +128,7 @@ class GitOperationService
         
         if ($codeFetch !== 0) {
             $this->applyStashedChanges();
-            throw new \RuntimeException('Failed to fetch changes from origin. ' . implode("\n", $outputFetch));
+            throw new RuntimeException('Failed to fetch changes from origin. ' . implode("\n", $outputFetch));
         }
 
         if ($this->options['verbose'] ?? false) {
@@ -151,7 +153,7 @@ class GitOperationService
         exec('git merge --no-ff --no-edit origin/main', $outputMerge, $codeMerge);
         
         if ($codeMerge !== 0) {
-            throw new \RuntimeException('Failed to merge changes. Resolve merge conflicts and try again. ' . implode("\n", $outputMerge));
+            throw new RuntimeException('Failed to merge changes. Resolve merge conflicts and try again. ' . implode("\n", $outputMerge));
         }
 
         if ($this->options['verbose'] ?? false) {

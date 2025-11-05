@@ -7,13 +7,11 @@ use App\Core\Entity\EmailLog;
 use App\Core\Entity\Server;
 use App\Core\Enum\EmailTypeEnum;
 use App\Core\Repository\EmailLogRepository;
-use App\Core\Service\SettingService;
 
-class EmailNotificationService
+readonly class EmailNotificationService
 {
     public function __construct(
-        private readonly EmailLogRepository $emailLogRepository,
-        private readonly SettingService $settingService,
+        private EmailLogRepository $emailLogRepository,
     ) {}
 
 

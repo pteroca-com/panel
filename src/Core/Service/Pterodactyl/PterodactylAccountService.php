@@ -18,6 +18,10 @@ class PterodactylAccountService
     {
     }
 
+    /**
+     * @throws PterodactylAccountEmailAlreadyExists
+     * @throws Exception
+     */
     public function createPterodactylAccount(UserInterface $user, string $plainPassword): PterodactylUser
     {
        try {
@@ -53,6 +57,9 @@ class PterodactylAccountService
        }
     }
 
+    /**
+     * @throws Exception
+     */
     public function updatePterodactylAccountPassword(UserInterface $user, string $plainPassword): PterodactylUser
     {
         try {

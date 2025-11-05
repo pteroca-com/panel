@@ -26,17 +26,19 @@ use App\Core\Event\Server\Schedule\ServerScheduleTaskDeletionFailedEvent;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class ServerScheduleService
+readonly class ServerScheduleService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ServerLogService $serverLogService,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly RequestStack $requestStack,
-        private readonly EventContextService $eventContextService,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private ServerLogService              $serverLogService,
+        private EventDispatcherInterface      $eventDispatcher,
+        private RequestStack                  $requestStack,
+        private EventContextService           $eventContextService,
     ) {}
 
     public function getAllSchedules(Server $server, UserInterface $user): array
@@ -52,6 +54,9 @@ class ServerScheduleService
         }, $schedules);
     }
 
+    /**
+     * @throws Exception
+     */
     public function createSchedule(
         Server $server,
         UserInterface $user,
@@ -63,12 +68,12 @@ class ServerScheduleService
     {
         $schedulesLimit = $server->getServerProduct()->getSchedules();
         if ($schedulesLimit <= 0) {
-            throw new \Exception('Schedules are disabled for this server.');
+            throw new Exception('Schedules are disabled for this server.');
         }
 
         $currentSchedules = $this->getAllSchedules($server, $user);
         if (count($currentSchedules) >= $schedulesLimit) {
-            throw new \Exception(sprintf('Maximum number of schedules (%d) reached. Delete existing schedules to create new ones.', $schedulesLimit));
+            throw new Exception(sprintf('Maximum number of schedules (%d) reached. Delete existing schedules to create new ones.', $schedulesLimit));
         }
 
         $request = $this->requestStack->getCurrentRequest();
@@ -88,7 +93,7 @@ class ServerScheduleService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Schedule creation was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $scheduleData = [
@@ -137,7 +142,7 @@ class ServerScheduleService
             $this->eventDispatcher->dispatch($createdEvent);
 
             return $resultArray;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $failedEvent = new ServerScheduleCreationFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -155,6 +160,9 @@ class ServerScheduleService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateSchedule(
         Server $server,
         UserInterface $user,
@@ -185,7 +193,7 @@ class ServerScheduleService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Schedule update was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $scheduleData = [];
@@ -243,7 +251,7 @@ class ServerScheduleService
             $this->eventDispatcher->dispatch($updatedEvent);
 
             return $result->toArray();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $failedEvent = new ServerScheduleUpdateFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -262,6 +270,9 @@ class ServerScheduleService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function deleteSchedule(
         Server $server,
         UserInterface $user,
@@ -282,7 +293,7 @@ class ServerScheduleService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Schedule deletion was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         try {
@@ -308,7 +319,7 @@ class ServerScheduleService
                 $context
             );
             $this->eventDispatcher->dispatch($deletedEvent);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $failedEvent = new ServerScheduleDeletionFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -336,6 +347,9 @@ class ServerScheduleService
             ->toArray();
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateScheduleTask(
         Server $server,
         UserInterface $user,
@@ -365,7 +379,7 @@ class ServerScheduleService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Schedule task update was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $taskData = [
@@ -409,7 +423,7 @@ class ServerScheduleService
             $this->eventDispatcher->dispatch($updatedEvent);
 
             return $result->toArray();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $failedEvent = new ServerScheduleTaskUpdateFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -428,6 +442,9 @@ class ServerScheduleService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function createScheduleTask(
         Server $server,
         UserInterface $user,
@@ -455,7 +472,7 @@ class ServerScheduleService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Schedule task creation was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         $taskData = [
@@ -501,7 +518,7 @@ class ServerScheduleService
             $this->eventDispatcher->dispatch($createdEvent);
 
             return $resultArray;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $failedEvent = new ServerScheduleTaskCreationFailedEvent(
                 $user->getId(),
                 $server->getId(),
@@ -519,6 +536,9 @@ class ServerScheduleService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function deleteScheduleTask(
         Server $server,
         UserInterface $user,
@@ -541,7 +561,7 @@ class ServerScheduleService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Schedule task deletion was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         try {
@@ -569,7 +589,7 @@ class ServerScheduleService
                 $context
             );
             $this->eventDispatcher->dispatch($deletedEvent);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $failedEvent = new ServerScheduleTaskDeletionFailedEvent(
                 $user->getId(),
                 $server->getId(),

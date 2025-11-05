@@ -4,6 +4,7 @@ namespace App\Core\Service\Plugin;
 
 use App\Core\DTO\PluginManifestDTO;
 use Composer\Semver\VersionParser;
+use Exception;
 
 class ManifestValidator
 {
@@ -126,8 +127,8 @@ class ManifestValidator
 
         try {
             $this->versionParser->normalize($version);
-        } catch (\Exception $e) {
-            $errors[] = "Invalid semantic version '{$version}': {$e->getMessage()}";
+        } catch (Exception $e) {
+            $errors[] = "Invalid semantic version '$version': {$e->getMessage()}";
         }
 
         return $errors;
@@ -191,7 +192,7 @@ class ManifestValidator
         // Validate min version format
         try {
             $this->versionParser->normalize($pteroca['min']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $errors[] = "Invalid PteroCA minimum version '{$pteroca['min']}': {$e->getMessage()}";
         }
 
@@ -199,7 +200,7 @@ class ManifestValidator
         if (isset($pteroca['max'])) {
             try {
                 $this->versionParser->normalize($pteroca['max']);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errors[] = "Invalid PteroCA maximum version '{$pteroca['max']}': {$e->getMessage()}";
             }
         }
@@ -224,7 +225,7 @@ class ManifestValidator
             }
 
             if (!in_array($capability, self::VALID_CAPABILITIES, true)) {
-                $errors[] = "Invalid capability '{$capability}'. Valid capabilities: " . implode(', ', self::VALID_CAPABILITIES);
+                $errors[] = "Invalid capability '$capability'. Valid capabilities: " . implode(', ', self::VALID_CAPABILITIES);
             }
         }
 
@@ -244,20 +245,20 @@ class ManifestValidator
         foreach ($requires as $pluginName => $versionConstraint) {
             // Validate plugin name
             if (!is_string($pluginName) || !preg_match(self::NAME_PATTERN, $pluginName)) {
-                $errors[] = "Invalid dependency plugin name '{$pluginName}'";
+                $errors[] = "Invalid dependency plugin name '$pluginName'";
                 continue;
             }
 
             // Validate version constraint
             if (!is_string($versionConstraint)) {
-                $errors[] = "Version constraint for '{$pluginName}' must be a string";
+                $errors[] = "Version constraint for '$pluginName' must be a string";
                 continue;
             }
 
             try {
                 $this->versionParser->parseConstraints($versionConstraint);
-            } catch (\Exception $e) {
-                $errors[] = "Invalid version constraint for '{$pluginName}': {$e->getMessage()}";
+            } catch (Exception $e) {
+                $errors[] = "Invalid version constraint for '$pluginName': {$e->getMessage()}";
             }
         }
 
@@ -270,22 +271,22 @@ class ManifestValidator
 
         foreach ($configSchema as $key => $schema) {
             if (!is_array($schema)) {
-                $errors[] = "Config schema for '{$key}' must be an object";
+                $errors[] = "Config schema for '$key' must be an object";
                 continue;
             }
 
             // Validate type
             if (!isset($schema['type'])) {
-                $errors[] = "Config schema for '{$key}' must have 'type' field";
+                $errors[] = "Config schema for '$key' must have 'type' field";
             } elseif (!in_array($schema['type'], ['string', 'integer', 'boolean', 'array'], true)) {
-                $errors[] = "Invalid type '{$schema['type']}' for config '{$key}'";
+                $errors[] = "Invalid type '{$schema['type']}' for config '$key'";
             }
 
             // Validate hierarchy
             if (!isset($schema['hierarchy'])) {
-                $errors[] = "Config schema for '{$key}' must have 'hierarchy' field";
+                $errors[] = "Config schema for '$key' must have 'hierarchy' field";
             } elseif (!is_string($schema['hierarchy'])) {
-                $errors[] = "Config schema hierarchy for '{$key}' must be a string";
+                $errors[] = "Config schema hierarchy for '$key' must be a string";
             }
         }
 
@@ -298,7 +299,7 @@ class ManifestValidator
 
         // Check if class name is valid format
         if (!preg_match('/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*(\\\\[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)*$/', $bootstrapClass)) {
-            $errors[] = "Invalid bootstrap class name format: '{$bootstrapClass}'";
+            $errors[] = "Invalid bootstrap class name format: '$bootstrapClass'";
         }
 
         // Check if it starts with Plugins\ namespace
@@ -314,7 +315,7 @@ class ManifestValidator
         $errors = [];
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            $errors[] = "Invalid marketplace URL: '{$url}'";
+            $errors[] = "Invalid marketplace URL: '$url'";
         }
 
         if (strlen($url) > 500) {
@@ -332,40 +333,40 @@ class ManifestValidator
         foreach ($assets as $type => $files) {
             // Validate asset type
             if (!in_array($type, $allowedTypes, true)) {
-                $errors[] = "Invalid asset type '{$type}'. Allowed types: " . implode(', ', $allowedTypes);
+                $errors[] = "Invalid asset type '$type'. Allowed types: " . implode(', ', $allowedTypes);
                 continue;
             }
 
             // Validate that files is an array
             if (!is_array($files)) {
-                $errors[] = "Asset type '{$type}' must be an array of file paths";
+                $errors[] = "Asset type '$type' must be an array of file paths";
                 continue;
             }
 
             // Validate each file path
             foreach ($files as $index => $file) {
                 if (!is_string($file)) {
-                    $errors[] = "Asset path in '{$type}[{$index}]' must be a string";
+                    $errors[] = "Asset path in '{$type}[$index]' must be a string";
                     continue;
                 }
 
                 // Security: prevent directory traversal
                 if (str_contains($file, '..')) {
-                    $errors[] = "Asset path '{$file}' contains directory traversal (..)";
+                    $errors[] = "Asset path '$file' contains directory traversal (..)";
                 }
 
                 // Security: prevent absolute paths
                 if (str_starts_with($file, '/') || str_starts_with($file, '\\')) {
-                    $errors[] = "Asset path '{$file}' must be relative (cannot start with / or \\)";
+                    $errors[] = "Asset path '$file' must be relative (cannot start with / or \\)";
                 }
 
                 // Validate file extension matches type
                 $extension = pathinfo($file, PATHINFO_EXTENSION);
                 if ($type === 'css' && $extension !== 'css') {
-                    $errors[] = "CSS asset '{$file}' must have .css extension";
+                    $errors[] = "CSS asset '$file' must have .css extension";
                 }
                 if ($type === 'js' && $extension !== 'js') {
-                    $errors[] = "JS asset '{$file}' must have .js extension";
+                    $errors[] = "JS asset '$file' must have .js extension";
                 }
             }
         }
@@ -390,7 +391,7 @@ class ManifestValidator
             }
 
             return true;
-        } catch (\Exception) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -405,11 +406,11 @@ class ManifestValidator
         $maxVersion = $manifest->getMaxPterocaVersion();
 
         if (version_compare($this->pterocaVersion, $minVersion, '<')) {
-            return "Plugin requires PteroCA >= {$minVersion}, current version is {$this->pterocaVersion}";
+            return "Plugin requires PteroCA >= $minVersion, current version is $this->pterocaVersion";
         }
 
         if ($maxVersion !== null && version_compare($this->pterocaVersion, $maxVersion, '>')) {
-            return "Plugin requires PteroCA <= {$maxVersion}, current version is {$this->pterocaVersion}";
+            return "Plugin requires PteroCA <= $maxVersion, current version is $this->pterocaVersion";
         }
 
         return "Unknown compatibility error";

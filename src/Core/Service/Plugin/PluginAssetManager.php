@@ -4,7 +4,12 @@ namespace App\Core\Service\Plugin;
 
 use App\Core\Entity\Plugin;
 use App\Core\Repository\PluginRepository;
+use Exception;
+use FilesystemIterator;
 use Psr\Log\LoggerInterface;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 
 /**
  * Manages plugin assets (CSS, JS, images, fonts).
@@ -15,13 +20,13 @@ use Psr\Log\LoggerInterface;
  * - Generating public asset URLs
  * - Managing asset files from plugin manifests
  */
-class PluginAssetManager
+readonly class PluginAssetManager
 {
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
-        private readonly LoggerInterface $logger,
-        private readonly string $projectDir,
-        private readonly string $publicDir,
+        private PluginRepository $pluginRepository,
+        private LoggerInterface  $logger,
+        private string           $projectDir,
+        private string           $publicDir,
     ) {}
 
     /**
@@ -46,7 +51,7 @@ class PluginAssetManager
         $publicPluginsDir = dirname($publicPath);
         if (!is_dir($publicPluginsDir)) {
             mkdir($publicPluginsDir, 0755, true);
-            $this->logger->info("Created public plugins directory: {$publicPluginsDir}");
+            $this->logger->info("Created public plugins directory: $publicPluginsDir");
         }
 
         // Try to create symlink first (faster), fallback to copy
@@ -105,7 +110,7 @@ class PluginAssetManager
     public function getGlobalCssAssets(): array
     {
         $assets = [];
-        $enabledPlugins = $this->pluginRepository->findEnabledPlugins();
+        $enabledPlugins = $this->pluginRepository->findEnabled();
 
         foreach ($enabledPlugins as $plugin) {
             $manifest = $plugin->getManifest();
@@ -128,7 +133,7 @@ class PluginAssetManager
     public function getGlobalJsAssets(): array
     {
         $assets = [];
-        $enabledPlugins = $this->pluginRepository->findEnabledPlugins();
+        $enabledPlugins = $this->pluginRepository->findEnabled();
 
         foreach ($enabledPlugins as $plugin) {
             $manifest = $plugin->getManifest();
@@ -186,11 +191,11 @@ class PluginAssetManager
             $result = symlink($source, $target);
 
             if (!$result) {
-                $this->logger->warning("Failed to create symlink from {$source} to {$target}");
+                $this->logger->warning("Failed to create symlink from $source to $target");
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning("Symlink creation failed: {$e->getMessage()}. Falling back to copy.");
             return false;
         }
@@ -215,13 +220,18 @@ class PluginAssetManager
         }
 
         // Recursively copy files
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
+        $directoryIterator = new RecursiveDirectoryIterator($source, FilesystemIterator::SKIP_DOTS);
+        $iterator = new RecursiveIteratorIterator(
+            $directoryIterator,
+            RecursiveIteratorIterator::SELF_FIRST
         );
 
+        $sourceLen = strlen($source) + 1; // +1 for directory separator
+
+        /** @var SplFileInfo $item */
         foreach ($iterator as $item) {
-            $targetPath = $target . DIRECTORY_SEPARATOR . $iterator->getSubPathname();
+            $relativePath = substr($item->getPathname(), $sourceLen);
+            $targetPath = $target . DIRECTORY_SEPARATOR . $relativePath;
 
             if ($item->isDir()) {
                 if (!is_dir($targetPath)) {
@@ -244,7 +254,7 @@ class PluginAssetManager
             return;
         }
 
-        $items = new \FilesystemIterator($dir, \FilesystemIterator::SKIP_DOTS);
+        $items = new FilesystemIterator($dir, FilesystemIterator::SKIP_DOTS);
 
         foreach ($items as $item) {
             if ($item->isDir() && !$item->isLink()) {

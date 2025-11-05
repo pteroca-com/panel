@@ -7,20 +7,24 @@ use App\Core\Event\Server\Configuration\ServerAutoRenewalToggleRequestedEvent;
 use App\Core\Event\Server\Configuration\ServerAutoRenewalToggledEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Event\EventContextService;
+use Exception;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class ServerAutoRenewalService
+readonly class ServerAutoRenewalService
 {
     public function __construct(
-        private readonly ServerRepository $serverRepository,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly RequestStack $requestStack,
-        private readonly EventContextService $eventContextService,
+        private ServerRepository         $serverRepository,
+        private EventDispatcherInterface $eventDispatcher,
+        private RequestStack             $requestStack,
+        private EventContextService      $eventContextService,
     )
     {
     }
 
+    /**
+     * @throws Exception
+     */
     public function toggleAutoRenewal(Server $server, bool $toggle, int $userId, array $context = []): void
     {
         if (empty($context)) {
@@ -42,7 +46,7 @@ class ServerAutoRenewalService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'Server auto-renewal toggle was blocked';
-            throw new \Exception($reason);
+            throw new Exception($reason);
         }
 
         $server->setAutoRenewal($toggle);

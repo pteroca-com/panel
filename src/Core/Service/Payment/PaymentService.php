@@ -16,35 +16,38 @@ use App\Core\Event\Balance\BalancePaymentValidatedEvent;
 use App\Core\Event\Balance\PaymentFinalizedEvent;
 use App\Core\Exception\PaymentExpiredException;
 use App\Core\Message\SendEmailMessage;
-use App\Core\Provider\Payment\PaymentProviderInterface;
 use App\Core\Repository\PaymentRepository;
-use App\Core\Service\Payment\PaymentGatewayManager;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Authorization\UserVerificationService;
 use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\SettingService;
 use App\Core\Service\Voucher\VoucherPaymentService;
+use Exception;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class PaymentService
+readonly class PaymentService
 {
     public function __construct(
-        private readonly PaymentGatewayManager $gatewayManager,
-        private readonly PaymentRepository $paymentRepository,
-        private readonly UserRepository $userRepository,
-        private readonly TranslatorInterface $translator,
-        private readonly MessageBusInterface $messageBus,
-        private readonly SettingService $settingService,
-        private readonly LogService $logService,
-        private readonly UserVerificationService $userVerificationService,
-        private readonly VoucherPaymentService $voucherPaymentService,
-        private readonly EmailNotificationService $emailNotificationService,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private PaymentGatewayManager    $gatewayManager,
+        private PaymentRepository        $paymentRepository,
+        private UserRepository           $userRepository,
+        private TranslatorInterface      $translator,
+        private MessageBusInterface      $messageBus,
+        private SettingService           $settingService,
+        private LogService               $logService,
+        private UserVerificationService  $userVerificationService,
+        private VoucherPaymentService    $voucherPaymentService,
+        private EmailNotificationService $emailNotificationService,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function createPayment(
         UserInterface $user,
         float $amount,
@@ -60,16 +63,16 @@ class PaymentService
         // Get the payment provider from the manager
         $paymentProvider = $this->gatewayManager->getProvider($gateway);
         if ($paymentProvider === null) {
-            throw new \Exception($this->translator->trans('pteroca.payment.gateway_not_found'));
+            throw new Exception($this->translator->trans('pteroca.payment.gateway_not_found'));
         }
 
         if (!$paymentProvider->isConfigured()) {
-            throw new \Exception($this->translator->trans('pteroca.payment.gateway_not_configured'));
+            throw new Exception($this->translator->trans('pteroca.payment.gateway_not_configured'));
         }
 
         // Validate currency support
         if (!in_array($currency, $paymentProvider->getSupportedCurrencies(), true)) {
-            throw new \Exception($this->translator->trans('pteroca.payment.currency_not_supported'));
+            throw new Exception($this->translator->trans('pteroca.payment.currency_not_supported'));
         }
 
         $balanceAmount = $amount;
@@ -84,7 +87,7 @@ class PaymentService
 
         $session = $paymentProvider->createSession($amount, $currency, $successUrl, $cancelUrl);
         if (empty($session)) {
-            throw new \Exception($this->translator->trans('pteroca.recharge.failed_to_create_payment'));
+            throw new Exception($this->translator->trans('pteroca.recharge.failed_to_create_payment'));
         }
 
         $this->logService->logAction(
@@ -104,6 +107,10 @@ class PaymentService
         return $session->getUrl();
     }
 
+    /**
+     * @throws PaymentExpiredException
+     * @throws Exception
+     */
     public function continuePayment(
         string $sessionId,
     ): string
@@ -111,20 +118,20 @@ class PaymentService
         /** @var Payment|null $payment */
         $payment = $this->paymentRepository->findOneBy(['sessionId' => $sessionId]);
         if (empty($payment)) {
-            throw new \Exception($this->translator->trans('pteroca.recharge.payment_not_found'));
+            throw new Exception($this->translator->trans('pteroca.recharge.payment_not_found'));
         }
 
         $paymentProvider = $this->gatewayManager->getProvider($payment->getGateway());
         if ($paymentProvider === null) {
-            throw new \Exception($this->translator->trans('pteroca.payment.gateway_not_found'));
+            throw new Exception($this->translator->trans('pteroca.payment.gateway_not_found'));
         }
 
         $retrievedSession = $paymentProvider->retrieveSession($sessionId);
         if ($retrievedSession === null) {
-            throw new \Exception($this->translator->trans('pteroca.recharge.payment_not_found'));
+            throw new Exception($this->translator->trans('pteroca.recharge.payment_not_found'));
         }
         if ($retrievedSession->getPaymentStatus() === PaymentStatusEnum::PAID->value) {
-            throw new \Exception($this->translator->trans('pteroca.recharge.payment_already_processed'));
+            throw new Exception($this->translator->trans('pteroca.recharge.payment_already_processed'));
         }
 
         $url = $retrievedSession->getUrl();
@@ -135,6 +142,9 @@ class PaymentService
         return $url;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function finalizePayment(UserInterface $user, string $sessionId): ?string
     {
         /** @var Payment|null $payment */

@@ -3,8 +3,11 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\Entity\Plugin;
-use App\Core\Repository\PluginRepository;
+use Exception;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use ReflectionNamedType;
+use RuntimeException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,7 +28,6 @@ class PluginCommandRegistry
     private ?Application $application = null;
 
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
         private readonly ContainerInterface $container,
         private readonly LoggerInterface $logger,
     ) {}
@@ -43,7 +45,7 @@ class PluginCommandRegistry
      * Register all console commands for a plugin.
      *
      * @param Plugin $plugin Plugin to register commands for
-     * @throws \RuntimeException If command instantiation fails
+     * @throws RuntimeException If command instantiation fails
      */
     public function registerCommands(Plugin $plugin): void
     {
@@ -83,9 +85,7 @@ class PluginCommandRegistry
                 }
 
                 // Register command with console application (if available)
-                if ($this->application !== null) {
-                    $this->application->add($command);
-                }
+                $this->application?->add($command);
 
                 // Track registered command
                 if (!isset($this->registeredCommands[$plugin->getName()])) {
@@ -100,13 +100,13 @@ class PluginCommandRegistry
                 ]);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to register console commands', [
                 'plugin' => $plugin->getName(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Failed to register console commands for plugin "%s": %s', $plugin->getName(), $e->getMessage()),
                 0,
                 $e
@@ -137,14 +137,14 @@ class PluginCommandRegistry
             try {
                 // Symfony doesn't support removing commands at runtime,
                 // but we can hide them
-                $command->setHidden(true);
+                $command->setHidden();
 
                 $this->logger->info('Hidden console command (requires restart to fully unregister)', [
                     'plugin' => $pluginName,
                     'class' => get_class($command),
                     'name' => $command->getName(),
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error('Failed to hide console command', [
                     'plugin' => $pluginName,
                     'class' => get_class($command),
@@ -250,7 +250,7 @@ class PluginCommandRegistry
     private function hasCommandName(string $commandClass): bool
     {
         try {
-            $reflection = new \ReflectionClass($commandClass);
+            $reflection = new ReflectionClass($commandClass);
 
             // Check for AsCommand attribute (PHP 8+)
             $attributes = $reflection->getAttributes(AsCommand::class);
@@ -267,7 +267,7 @@ class PluginCommandRegistry
             }
 
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -286,11 +286,19 @@ class PluginCommandRegistry
         try {
             // Try to get from service container first (if registered)
             if ($this->container->has($commandClass)) {
-                return $this->container->get($commandClass);
+                $command = $this->container->get($commandClass);
+                if (!$command instanceof Command) {
+                    $this->logger->error('Service is not a Command instance', [
+                        'class' => $commandClass,
+                        'actual_type' => get_debug_type($command),
+                    ]);
+                    return null;
+                }
+                return $command;
             }
 
             // Fall back to manual instantiation with logger injection
-            $reflection = new \ReflectionClass($commandClass);
+            $reflection = new ReflectionClass($commandClass);
             $constructor = $reflection->getConstructor();
 
             if ($constructor === null) {
@@ -305,7 +313,7 @@ class PluginCommandRegistry
             foreach ($parameters as $parameter) {
                 $type = $parameter->getType();
 
-                if ($type instanceof \ReflectionNamedType) {
+                if ($type instanceof ReflectionNamedType) {
                     $typeName = $type->getName();
 
                     // Inject logger if requested
@@ -337,7 +345,7 @@ class PluginCommandRegistry
 
             return $reflection->newInstanceArgs($args);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to instantiate command', [
                 'class' => $commandClass,
                 'error' => $e->getMessage(),
@@ -358,6 +366,6 @@ class PluginCommandRegistry
     {
         // Convert hello-world to HelloWorld
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $pluginName)));
-        return "Plugins\\{$className}\\";
+        return "Plugins\\$className\\";
     }
 }

@@ -13,23 +13,28 @@ use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Logs\ServerLogService;
 use App\Core\Service\SettingService;
 use Exception;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ServerEulaService
+readonly class ServerEulaService
 {
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
-        private readonly SettingService $settingService,
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ServerLogService $serverLogService,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly RequestStack $requestStack,
-        private readonly EventContextService $eventContextService,
+        private HttpClientInterface           $httpClient,
+        private SettingService                $settingService,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private ServerLogService              $serverLogService,
+        private EventDispatcherInterface      $eventDispatcher,
+        private RequestStack                  $requestStack,
+        private EventContextService           $eventContextService,
     ) {
     }
 
+    /**
+     * @throws Exception|TransportExceptionInterface
+     */
     public function acceptServerEula(Server $server, UserInterface $user): array
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -45,7 +50,7 @@ class ServerEulaService
 
         if ($requestedEvent->isPropagationStopped()) {
             $reason = $requestedEvent->getRejectionReason() ?? 'EULA acceptance was blocked';
-            throw new \RuntimeException($reason);
+            throw new RuntimeException($reason);
         }
 
         try {
@@ -84,6 +89,10 @@ class ServerEulaService
         }
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws Exception
+     */
     private function updateEulaFileContent(Server $server, UserInterface $user): void
     {
         $pterodactylUrl = $this->settingService->getSetting(SettingEnum::PTERODACTYL_PANEL_URL->value);

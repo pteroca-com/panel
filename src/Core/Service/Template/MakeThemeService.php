@@ -2,6 +2,7 @@
 
 namespace App\Core\Service\Template;
 
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 
 class MakeThemeService
@@ -25,7 +26,7 @@ class MakeThemeService
     private function copyThemeFiles(string $newTemplatePath, array $metadata): void
     {
         if ($this->filesystem->exists($newTemplatePath)) {
-            throw new \RuntimeException(sprintf('Theme "%s" already exists', $metadata['template']['name']));
+            throw new RuntimeException(sprintf('Theme "%s" already exists', $metadata['template']['name']));
         }
 
         $this->filesystem->mirror(

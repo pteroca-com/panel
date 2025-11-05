@@ -7,13 +7,14 @@ use App\Core\Service\Update\Operation\GitOperationService;
 use App\Core\Service\Update\Operation\ComposerOperationService;
 use App\Core\Service\Update\Operation\DatabaseOperationService;
 use App\Core\Service\Update\Operation\SystemOperationService;
+use Exception;
+use RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class UpdateOrchestrator implements HandlerInterface
 {
     private bool $hasError = false;
     private ?string $backupPath = null;
-    private array $initialState = [];
 
     private SymfonyStyle $io;
     private array $options = [
@@ -83,6 +84,9 @@ class UpdateOrchestrator implements HandlerInterface
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(): void
     {
         try {
@@ -118,7 +122,7 @@ class UpdateOrchestrator implements HandlerInterface
             $this->executeAtomicStep('Adjusting file permissions', fn() => $this->systemService->adjustFilePermissions());
 
             $this->stateManager->clearState();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->hasError = true;
             $this->io->error('Update failed: ' . $e->getMessage());
 
@@ -177,11 +181,14 @@ class UpdateOrchestrator implements HandlerInterface
         $this->io->text('To perform the actual update, run the command without --dry-run option.');
     }
 
+    /**
+     * @throws Exception
+     */
     private function executeAtomicStep(string $description, callable $action): void
     {
         try {
             $this->executeStep($description, $action);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->hasError = true;
             $this->io->error("Step failed: $description - " . $e->getMessage());
             throw $e;
@@ -229,13 +236,13 @@ class UpdateOrchestrator implements HandlerInterface
             foreach ($failedChecks as $check => $result) {
                 $this->io->text("  • $check: {$result['message']}");
                 
-                if (isset($result['details']) && !empty($result['details'])) {
-                    if (isset($result['details']['issues']) && !empty($result['details']['issues'])) {
+                if (!empty($result['details'])) {
+                    if (!empty($result['details']['issues'])) {
                         foreach ($result['details']['issues'] as $issue) {
                             $this->io->text("    → $issue");
                         }
                     }
-                    if (isset($result['details']['warnings']) && !empty($result['details']['warnings'])) {
+                    if (!empty($result['details']['warnings'])) {
                         foreach ($result['details']['warnings'] as $warning) {
                             $this->io->text("    ⚠ $warning");
                         }
@@ -255,7 +262,7 @@ class UpdateOrchestrator implements HandlerInterface
                 }
             }
             
-            throw new \RuntimeException('Environment validation failed');
+            throw new RuntimeException('Environment validation failed');
         }
 
         if ($summary['warnings'] > 0) {
@@ -270,11 +277,11 @@ class UpdateOrchestrator implements HandlerInterface
 
     private function captureInitialState(): void
     {
-        $this->initialState = $this->stateManager->captureSystemState();
-        $this->rollbackService->setInitialState($this->initialState);
+        $initialState = $this->stateManager->captureSystemState();
+        $this->rollbackService->setInitialState($initialState);
         
         if ($this->options['verbose']) {
-            $this->io->text('Captured system state: ' . $this->stateManager->getStateSummary($this->initialState));
+            $this->io->text('Captured system state: ' . $this->stateManager->getStateSummary($initialState));
         }
     }
 
@@ -288,7 +295,7 @@ class UpdateOrchestrator implements HandlerInterface
         $backupSizeMB = round($backupSize / 1024 / 1024, 2);
         
         if ($this->options['verbose']) {
-            $this->io->success("Database backup created: {$this->backupPath} ({$backupSizeMB}MB)");
+            $this->io->success("Database backup created: $this->backupPath ({$backupSizeMB}MB)");
         }
 
         $this->rollbackService->addRollbackAction(function() {
@@ -302,7 +309,7 @@ class UpdateOrchestrator implements HandlerInterface
     {
         $this->io->warning('This command will update the PteroCA system. Do not hit CTRL+C during the update process.');
         if (!$this->io->confirm('Do you want to continue?')) {
-            throw new \RuntimeException('Update process aborted.');
+            throw new RuntimeException('Update process aborted.');
         }
     }
 }

@@ -13,10 +13,19 @@ use App\Core\Exception\Plugin\MaliciousZipException;
 use App\Core\Exception\Plugin\ManifestValidationException;
 use App\Core\Exception\Plugin\MissingManifestException;
 use App\Core\Exception\Plugin\PluginAlreadyExistsException;
+use App\Core\Exception\Plugin\PluginUploadException;
 use App\Core\Exception\Plugin\ZipBombException;
+use Exception;
+use FilesystemIterator;
 use Psr\Log\LoggerInterface;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use ZipArchive;
 
 class PluginUploadService
 {
@@ -43,7 +52,7 @@ class PluginUploadService
     /**
      * Main upload method.
      *
-     * @throws \App\Core\Exception\Plugin\PluginUploadException
+     * @throws PluginUploadException|Exception
      */
     public function uploadPlugin(UploadedFile $file): array
     {
@@ -90,7 +99,7 @@ class PluginUploadService
                 'security_issues' => $securityIssues,
             ];
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Plugin upload failed', [
                 'error' => $e->getMessage(),
                 'file' => $file->getClientOriginalName(),
@@ -135,7 +144,7 @@ class PluginUploadService
         }
 
         // Verify it's actually a ZIP (not renamed .exe)
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         if ($zip->open($file->getPathname()) !== true) {
             throw new InvalidZipFileException('The file is not a valid ZIP archive');
         }
@@ -151,7 +160,7 @@ class PluginUploadService
         $tempDir = $this->tempDirectory . '/plugin-upload-' . uniqid();
         $this->filesystem->mkdir($tempDir);
 
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         if ($zip->open($file->getPathname()) !== true) {
             throw new InvalidZipFileException('Failed to open ZIP file');
         }
@@ -187,13 +196,13 @@ class PluginUploadService
 
                 // Check for dangerous paths
                 if ($this->isDangerousPath($filename)) {
-                    throw new MaliciousZipException("Dangerous path detected: {$filename}");
+                    throw new MaliciousZipException("Dangerous path detected: $filename");
                 }
 
                 // Check for symlinks
                 $stat = $zip->statIndex($i);
                 if ($stat !== false && $this->isSymlink($stat)) {
-                    throw new MaliciousZipException("Symbolic link detected: {$filename}");
+                    throw new MaliciousZipException("Symbolic link detected: $filename");
                 }
             }
 
@@ -224,7 +233,7 @@ class PluginUploadService
         // Parse manifest
         try {
             $manifest = $this->manifestParser->parseFromDirectory($pluginRoot);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new InvalidManifestException('Failed to parse plugin.json: ' . $e->getMessage());
         }
 
@@ -257,6 +266,7 @@ class PluginUploadService
 
     /**
      * Run security scan on plugin before moving to final location.
+     * @throws ReflectionException
      */
     private function runSecurityScan(string $pluginPath, string $pluginName): array
     {
@@ -273,7 +283,7 @@ class PluginUploadService
         try {
             // Mock the path by temporarily setting it
             // (PluginSecurityValidator scans files in plugin directory)
-            $reflection = new \ReflectionClass($tempPlugin);
+            $reflection = new ReflectionClass($tempPlugin);
             $property = $reflection->getProperty('name');
             $property->setAccessible(true);
             $property->setValue($tempPlugin, $pluginName);
@@ -292,21 +302,21 @@ class PluginUploadService
             $criticalIssues = array_filter($issues, fn($issue) => $issue['severity'] === 'CRITICAL');
             if (!empty($criticalIssues)) {
                 $criticalMessages = array_map(fn($issue) => $issue['message'], $criticalIssues);
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     'CRITICAL security issues detected: ' . implode('; ', $criticalMessages)
                 );
             }
 
             return $issues;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning('Security scan failed during upload', [
                 'error' => $e->getMessage(),
                 'plugin' => $pluginName,
             ]);
 
             // If it's a critical security exception, re-throw
-            if (strpos($e->getMessage(), 'CRITICAL') !== false) {
+            if (str_contains($e->getMessage(), 'CRITICAL')) {
                 throw $e;
             }
 
@@ -321,7 +331,7 @@ class PluginUploadService
     {
         $pluginRoot = $this->findPluginRoot($tempDir);
         if ($pluginRoot === null) {
-            throw new \RuntimeException('Plugin root not found');
+            throw new RuntimeException('Plugin root not found');
         }
 
         $targetPath = $this->pluginsDirectory . '/' . $pluginName;
@@ -346,9 +356,9 @@ class PluginUploadService
     private function setPermissions(string $path): void
     {
         try {
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::SELF_FIRST
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST
             );
 
             foreach ($iterator as $item) {
@@ -358,7 +368,7 @@ class PluginUploadService
                     chmod($item->getPathname(), 0644);
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->warning('Failed to set permissions', [
                 'path' => $path,
                 'error' => $e->getMessage(),
@@ -375,7 +385,7 @@ class PluginUploadService
             try {
                 $this->filesystem->remove($tempDir);
                 $this->logger->debug('Rolled back temp directory', ['path' => $tempDir]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error('Failed to rollback temp directory', [
                     'path' => $tempDir,
                     'error' => $e->getMessage(),
@@ -387,7 +397,7 @@ class PluginUploadService
             try {
                 $this->filesystem->remove($finalPath);
                 $this->logger->debug('Rolled back final directory', ['path' => $finalPath]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error('Failed to rollback final directory', [
                     'path' => $finalPath,
                     'error' => $e->getMessage(),

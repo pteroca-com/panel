@@ -5,6 +5,9 @@ namespace App\Core\Service;
 use App\Core\Contract\Plugin\PluginCronTaskInterface;
 use App\Core\Service\Plugin\PluginCronRegistry;
 use Cron\CronExpression;
+use DateTime;
+use DateTimeInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -18,8 +21,8 @@ class CronScheduler
     /** @var int Minutes between summary logs when no tasks are due */
     private const SUMMARY_LOG_INTERVAL_MINUTES = 15;
 
-    /** @var \DateTime|null Last time a summary was logged */
-    private ?\DateTime $lastSummaryLogTime = null;
+    /** @var DateTime|null Last time a summary was logged */
+    private ?DateTime $lastSummaryLogTime = null;
 
     public function __construct(
         private readonly PluginCronRegistry $cronRegistry,
@@ -29,13 +32,13 @@ class CronScheduler
     /**
      * Run all due tasks based on current time.
      *
-     * @param \DateTimeInterface|null $currentTime Time to check against (defaults to now)
+     * @param DateTimeInterface|null $currentTime Time to check against (defaults to now)
      * @return array<string, array> Results of task execution indexed by task name
      */
-    public function runDueTasks(?\DateTimeInterface $currentTime = null): array
+    public function runDueTasks(?DateTimeInterface $currentTime = null): array
     {
         if ($currentTime === null) {
-            $currentTime = new \DateTime();
+            $currentTime = new DateTime();
         }
 
         $results = [];
@@ -67,7 +70,7 @@ class CronScheduler
                         'next_run' => $this->getNextRunTime($task, $currentTime)->format('Y-m-d H:i:s'),
                     ];
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $results[$taskName] = [
                     'status' => 'error',
                     'error' => $e->getMessage(),
@@ -91,7 +94,7 @@ class CronScheduler
             ]);
 
             // Update last summary log time
-            $this->lastSummaryLogTime = \DateTime::createFromInterface($currentTime);
+            $this->lastSummaryLogTime = DateTime::createFromInterface($currentTime);
         }
 
         return $results;
@@ -101,13 +104,13 @@ class CronScheduler
      * Execute a specific task by name.
      *
      * @param string $taskName Task name (format: "plugin-name:task-name")
-     * @param \DateTimeInterface|null $currentTime Current time for logging
+     * @param DateTimeInterface|null $currentTime Current time for logging
      * @return array Result of task execution
      */
-    public function runTask(string $taskName, ?\DateTimeInterface $currentTime = null): array
+    public function runTask(string $taskName, ?DateTimeInterface $currentTime = null): array
     {
         if ($currentTime === null) {
-            $currentTime = new \DateTime();
+            $currentTime = new DateTime();
         }
 
         $task = $this->cronRegistry->getTask($taskName);
@@ -139,15 +142,15 @@ class CronScheduler
      * Check if a task should run at the given time.
      *
      * @param PluginCronTaskInterface $task Task to check
-     * @param \DateTimeInterface $time Time to check against
+     * @param DateTimeInterface $time Time to check against
      * @return bool True if task is due, false otherwise
      */
-    public function shouldRun(PluginCronTaskInterface $task, \DateTimeInterface $time): bool
+    public function shouldRun(PluginCronTaskInterface $task, DateTimeInterface $time): bool
     {
         try {
             $cron = new CronExpression($task->getSchedule());
             return $cron->isDue($time);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Invalid cron expression', [
                 'task' => $task->getName(),
                 'schedule' => $task->getSchedule(),
@@ -161,14 +164,14 @@ class CronScheduler
      * Get the next run time for a task.
      *
      * @param PluginCronTaskInterface $task Task to check
-     * @param \DateTimeInterface|null $currentTime Current time (defaults to now)
-     * @return \DateTimeInterface Next run time
-     * @throws \Exception If cron expression is invalid
+     * @param DateTimeInterface|null $currentTime Current time (defaults to now)
+     * @return DateTimeInterface Next run time
+     * @throws Exception If cron expression is invalid
      */
-    public function getNextRunTime(PluginCronTaskInterface $task, ?\DateTimeInterface $currentTime = null): \DateTimeInterface
+    public function getNextRunTime(PluginCronTaskInterface $task, ?DateTimeInterface $currentTime = null): DateTimeInterface
     {
         if ($currentTime === null) {
-            $currentTime = new \DateTime();
+            $currentTime = new DateTime();
         }
 
         $cron = new CronExpression($task->getSchedule());
@@ -179,14 +182,14 @@ class CronScheduler
      * Get the previous run time for a task.
      *
      * @param PluginCronTaskInterface $task Task to check
-     * @param \DateTimeInterface|null $currentTime Current time (defaults to now)
-     * @return \DateTimeInterface Previous run time
-     * @throws \Exception If cron expression is invalid
+     * @param DateTimeInterface|null $currentTime Current time (defaults to now)
+     * @return DateTimeInterface Previous run time
+     * @throws Exception If cron expression is invalid
      */
-    public function getPreviousRunTime(PluginCronTaskInterface $task, ?\DateTimeInterface $currentTime = null): \DateTimeInterface
+    public function getPreviousRunTime(PluginCronTaskInterface $task, ?DateTimeInterface $currentTime = null): DateTimeInterface
     {
         if ($currentTime === null) {
-            $currentTime = new \DateTime();
+            $currentTime = new DateTime();
         }
 
         $cron = new CronExpression($task->getSchedule());
@@ -196,13 +199,13 @@ class CronScheduler
     /**
      * Get all due tasks at the given time.
      *
-     * @param \DateTimeInterface|null $currentTime Time to check against (defaults to now)
+     * @param DateTimeInterface|null $currentTime Time to check against (defaults to now)
      * @return PluginCronTaskInterface[]
      */
-    public function getDueTasks(?\DateTimeInterface $currentTime = null): array
+    public function getDueTasks(?DateTimeInterface $currentTime = null): array
     {
         if ($currentTime === null) {
-            $currentTime = new \DateTime();
+            $currentTime = new DateTime();
         }
 
         $enabledTasks = $this->cronRegistry->getEnabledTasks();
@@ -228,7 +231,7 @@ class CronScheduler
         try {
             new CronExpression($expression);
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }
@@ -245,7 +248,7 @@ class CronScheduler
             $cron = new CronExpression($expression);
 
             // Get next few run times to help describe the pattern
-            $now = new \DateTime();
+            $now = new DateTime();
             $next1 = $cron->getNextRunDate($now);
             $next2 = $cron->getNextRunDate($next1);
             $next3 = $cron->getNextRunDate($next2);
@@ -272,7 +275,7 @@ class CronScheduler
             }
 
             return $description;
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return 'Invalid cron expression';
         }
     }
@@ -280,10 +283,10 @@ class CronScheduler
     /**
      * Check if summary should be logged (every N minutes when no tasks are due).
      *
-     * @param \DateTimeInterface $currentTime Current time
+     * @param DateTimeInterface $currentTime Current time
      * @return bool True if summary should be logged
      */
-    private function shouldLogSummary(\DateTimeInterface $currentTime): bool
+    private function shouldLogSummary(DateTimeInterface $currentTime): bool
     {
         if ($this->lastSummaryLogTime === null) {
             return true; // First run - always log
@@ -297,11 +300,11 @@ class CronScheduler
     /**
      * Get due tasks without logging (internal helper).
      *
-     * @param \DateTimeInterface $currentTime Time to check against
+     * @param DateTimeInterface $currentTime Time to check against
      * @param PluginCronTaskInterface[] $enabledTasks Tasks to check
      * @return PluginCronTaskInterface[] Due tasks
      */
-    private function getDueTasksInternal(\DateTimeInterface $currentTime, array $enabledTasks): array
+    private function getDueTasksInternal(DateTimeInterface $currentTime, array $enabledTasks): array
     {
         $dueTasks = [];
         foreach ($enabledTasks as $task) {
@@ -316,10 +319,10 @@ class CronScheduler
      * Execute a single task.
      *
      * @param PluginCronTaskInterface $task Task to execute
-     * @param \DateTimeInterface $currentTime Current time for logging
+     * @param DateTimeInterface $currentTime Current time for logging
      * @return array Execution result
      */
-    private function executeTask(PluginCronTaskInterface $task, \DateTimeInterface $currentTime): array
+    private function executeTask(PluginCronTaskInterface $task, DateTimeInterface $currentTime): array
     {
         $taskName = $task->getName();
         $startTime = microtime(true);
@@ -348,7 +351,7 @@ class CronScheduler
                 'next_run' => $this->getNextRunTime($task, $currentTime)->format('Y-m-d H:i:s'),
             ];
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $duration = microtime(true) - $startTime;
 
             $this->logger->error('Cron task failed', [

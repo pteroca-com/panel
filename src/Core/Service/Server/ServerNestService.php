@@ -5,10 +5,10 @@ namespace App\Core\Service\Server;
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
-class ServerNestService
+readonly class ServerNestService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
+        private PterodactylApplicationService $pterodactylApplicationService,
     )
     {
     }

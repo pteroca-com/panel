@@ -7,10 +7,10 @@ use Exception;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class EmailConnectionVerificationService
+readonly class EmailConnectionVerificationService
 {
     public function __construct(
-        private readonly TranslatorInterface $translator,
+        private TranslatorInterface $translator,
     ) {}
 
     public function validateConnection(

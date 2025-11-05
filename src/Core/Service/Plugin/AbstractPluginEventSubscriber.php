@@ -36,10 +36,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * }
  * ```
  */
-abstract class AbstractPluginEventSubscriber implements EventSubscriberInterface
+abstract readonly class AbstractPluginEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        protected readonly LoggerInterface $logger,
+        protected LoggerInterface $logger,
     ) {}
 
     /**

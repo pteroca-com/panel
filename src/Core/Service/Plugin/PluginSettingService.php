@@ -6,7 +6,9 @@ use App\Core\Entity\Plugin;
 use App\Core\Entity\Setting;
 use App\Core\Repository\SettingRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 /**
  * Service for managing plugin-specific settings.
@@ -16,12 +18,12 @@ use Psr\Log\LoggerInterface;
  *
  * Settings are namespaced by plugin and stored with context = "plugin:{plugin-name}"
  */
-class PluginSettingService
+readonly class PluginSettingService
 {
     public function __construct(
-        private readonly SettingRepository $settingRepository,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger,
+        private SettingRepository      $settingRepository,
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface        $logger,
     ) {}
 
     /**
@@ -58,7 +60,7 @@ class PluginSettingService
      * @param mixed $value Setting value
      * @param string|null $type Setting type (string, integer, boolean, json), auto-detected if null
      * @param int|null $hierarchy Hierarchy level for grouping settings
-     * @throws \RuntimeException If setting cannot be saved
+     * @throws RuntimeException If setting cannot be saved
      */
     public function set(string $pluginName, string $key, mixed $value, ?string $type = null, ?int $hierarchy = null): void
     {
@@ -108,13 +110,13 @@ class PluginSettingService
                 'key' => $key,
                 'type' => $type,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to save plugin setting', [
                 'plugin' => $pluginName,
                 'key' => $key,
                 'error' => $e->getMessage(),
             ]);
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('Failed to save plugin setting "%s" for plugin "%s"', $key, $pluginName),
                 0,
                 $e
@@ -194,7 +196,7 @@ class PluginSettingService
             ]);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to delete plugin setting', [
                 'plugin' => $pluginName,
                 'key' => $key,
@@ -230,7 +232,7 @@ class PluginSettingService
             ]);
 
             return $deleted;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to delete all plugin settings', [
                 'plugin' => $pluginName,
                 'error' => $e->getMessage(),
@@ -279,7 +281,6 @@ class PluginSettingService
             if (is_string($hierarchy)) {
                 // Convert hierarchy names to numbers
                 $hierarchy = match ($hierarchy) {
-                    'general' => 100,
                     'advanced' => 200,
                     'api' => 300,
                     default => 100,
@@ -303,7 +304,7 @@ class PluginSettingService
                     'type' => $type,
                     'hierarchy' => $hierarchy,
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error('Failed to initialize plugin setting', [
                     'plugin' => $plugin->getName(),
                     'key' => $key,
@@ -364,7 +365,7 @@ class PluginSettingService
      */
     private function buildContext(string $pluginName): string
     {
-        return "plugin:{$pluginName}";
+        return "plugin:$pluginName";
     }
 
     /**
@@ -379,8 +380,7 @@ class PluginSettingService
             is_bool($value) => 'boolean',
             is_int($value) => 'integer',
             is_float($value) => 'float',
-            is_array($value) => 'json',
-            is_object($value) => 'json',
+            is_array($value), is_object($value) => 'json',
             default => 'string',
         };
     }
@@ -400,7 +400,6 @@ class PluginSettingService
 
         return match ($type) {
             'boolean' => $value ? '1' : '0',
-            'integer', 'float' => (string) $value,
             'json' => json_encode($value),
             default => (string) $value,
         };

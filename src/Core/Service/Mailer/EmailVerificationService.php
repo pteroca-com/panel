@@ -14,11 +14,14 @@ use App\Core\Service\Email\EmailNotificationService;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\SettingService;
 use DateTimeImmutable;
+use Exception;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -47,6 +50,10 @@ class EmailVerificationService
         );
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws Exception
+     */
     public function sendVerificationEmail(UserInterface $user): void
     {
         $verificationMode = $this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
@@ -77,7 +84,7 @@ class EmailVerificationService
                 null,
                 $this->translator->trans('pteroca.email.verification.subject', ['%siteName%' => $context->siteName])
             );
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error('Failed to send verification email', [
                 'exception' => $exception,
                 'user' => $user,
@@ -101,6 +108,10 @@ class EmailVerificationService
         return $timeDiff >= (self::RESEND_LIMIT_MINUTES * self::MINUTES_TO_SECONDS_MULTIPLIER);
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws Exception
+     */
     public function resendVerificationEmail(UserInterface $user): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -119,7 +130,7 @@ class EmailVerificationService
         ));
 
         if (!$canResend) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 $this->translator->trans('pteroca.email.verification.resend_too_soon', [
                     '%minutes%' => self::RESEND_LIMIT_MINUTES
                 ])
@@ -160,7 +171,7 @@ class EmailVerificationService
                 $resendCount,
                 $eventContext
             ));
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error('Failed to resend verification email', [
                 'exception' => $exception,
                 'user' => $user,

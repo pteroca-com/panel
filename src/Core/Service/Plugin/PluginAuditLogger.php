@@ -7,8 +7,11 @@ use App\Core\DTO\PluginManifestDTO;
 use App\Core\Entity\Plugin;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Logs\LogService;
+use DateTimeImmutable;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Throwable;
 
 /**
  * Plugin audit logging service.
@@ -18,12 +21,12 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * - File logging via Monolog plugin channel
  * - Optional user context (some actions are system-initiated)
  */
-class PluginAuditLogger
+readonly class PluginAuditLogger
 {
     public function __construct(
-        private readonly LogService $logService,
+        private LogService      $logService,
         #[Autowire(service: 'monolog.logger.plugin')]
-        private readonly LoggerInterface $pluginLogger,
+        private LoggerInterface $pluginLogger,
     ) {}
 
     /**
@@ -117,7 +120,7 @@ class PluginAuditLogger
         } else {
             // Path + manifest provided (during discovery, before registration)
             if ($manifest === null) {
-                throw new \InvalidArgumentException('Manifest is required when providing plugin path');
+                throw new InvalidArgumentException('Manifest is required when providing plugin path');
             }
 
             $details = [
@@ -125,8 +128,8 @@ class PluginAuditLogger
                 'plugin_display_name' => $manifest->displayName,
                 'plugin_version' => $manifest->version,
                 'path' => $pluginOrPath,
-                'pteroca_min_version' => $manifest->pterocaMinVersion,
-                'pteroca_max_version' => $manifest->pterocaMaxVersion,
+                'pteroca_min_version' => $manifest->getMinPterocaVersion(),
+                'pteroca_max_version' => $manifest->getMaxPterocaVersion(),
             ];
 
             // Log to plugin.log file only (no database log as plugin isn't registered yet)
@@ -185,7 +188,7 @@ class PluginAuditLogger
             $user,
             [
                 'fault_reason' => $reason,
-                'faulted_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+                'faulted_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
             ]
         );
 
@@ -272,7 +275,7 @@ class PluginAuditLogger
     /**
      * Log plugin error (exception/throwable).
      */
-    public function logPluginError(Plugin $plugin, \Throwable $error, ?UserInterface $user = null): void
+    public function logPluginError(Plugin $plugin, Throwable $error, ?UserInterface $user = null): void
     {
         $this->pluginLogger->error(
             sprintf('Plugin error: %s - %s', $plugin->getName(), $error->getMessage()),

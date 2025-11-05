@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsCommand(
     name: 'plugin:deps',
@@ -22,6 +23,7 @@ class PluginDepsCommand extends Command
     public function __construct(
         private readonly PluginManager $pluginManager,
         private readonly PluginDependencyResolver $dependencyResolver,
+        private readonly TranslatorInterface $translator,
     ) {
         parent::__construct();
     }
@@ -89,7 +91,7 @@ class PluginDepsCommand extends Command
             foreach ($requires as $depName => $constraint) {
                 $depPlugin = $this->pluginManager->getPluginByName($depName);
                 $installed = $depPlugin ? $depPlugin->getVersion() : 'NOT INSTALLED';
-                $state = $depPlugin ? $depPlugin->getState()->getLabel() : '-';
+                $state = $depPlugin ? $this->translator->trans($depPlugin->getState()->getLabel()) : '-';
                 $compatible = $depPlugin && Semver::satisfies($depPlugin->getVersion(), $constraint) ? '✓' : '✗';
 
                 $rows[] = [
@@ -133,7 +135,7 @@ class PluginDepsCommand extends Command
                         $dep->getDisplayName(),
                         $dep->getName(),
                         $constraint,
-                        $dep->getState()->getLabel(),
+                        $this->translator->trans($dep->getState()->getLabel()),
                     ];
                 }
 
@@ -163,7 +165,7 @@ class PluginDepsCommand extends Command
 
             $rows[] = [
                 $plugin->getName(),
-                $plugin->getState()->getLabel(),
+                $this->translator->trans($plugin->getState()->getLabel()),
                 count($requires),
                 count($dependents),
                 $hasCircular ? '⚠ YES' : '-',
@@ -220,7 +222,7 @@ class PluginDepsCommand extends Command
                     $pluginName,
                     $plugin->getVersion(),
                     $constraint,
-                    $plugin->getState()->getLabel()
+                    $this->translator->trans($plugin->getState()->getLabel())
                 ));
 
                 if (!empty($item['children'])) {

@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsCommand(
     name: 'plugin:enable',
@@ -24,6 +25,7 @@ class PluginEnableCommand extends Command
     public function __construct(
         private readonly PluginManager $pluginManager,
         private readonly PluginDependencyResolver $dependencyResolver,
+        private readonly TranslatorInterface $translator,
     ) {
         parent::__construct();
     }
@@ -80,7 +82,7 @@ class PluginEnableCommand extends Command
                 ['Display Name', $plugin->getDisplayName()],
                 ['Version', $plugin->getVersion()],
                 ['Author', $plugin->getAuthor()],
-                ['Current State', $plugin->getState()->getLabel()],
+                ['Current State', $this->translator->trans($plugin->getState()->getLabel())],
                 ['Capabilities', implode(', ', $plugin->getCapabilities())],
             ]
         );
@@ -144,7 +146,7 @@ class PluginEnableCommand extends Command
             return Command::SUCCESS;
         } catch (InvalidStateTransitionException $e) {
             $io->error($e->getMessage());
-            $io->note("Current state: {$plugin->getState()->getLabel()}");
+            $io->note("Current state: " . $this->translator->trans($plugin->getState()->getLabel()));
 
             return Command::FAILURE;
         } catch (PluginDependencyException $e) {

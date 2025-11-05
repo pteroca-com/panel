@@ -19,17 +19,20 @@ use App\Core\Service\SettingService;
 use App\Core\Exception\Email\ServerDetailsNotAvailableException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class EmailContextBuilderService
+readonly class EmailContextBuilderService
 {
     public function __construct(
-        private readonly ServerService $serverService,
-        private readonly SettingService $settingService,
-        private readonly ClientPanelUrlResolverService $panelUrlResolver,
-        private readonly ServerSlotPricingService $slotPricingService,
-        private readonly ProductPriceCalculatorService $priceCalculatorService,
-        private readonly TranslatorInterface $translator,
+        private ServerService                 $serverService,
+        private SettingService                $settingService,
+        private ClientPanelUrlResolverService $panelUrlResolver,
+        private ServerSlotPricingService      $slotPricingService,
+        private ProductPriceCalculatorService $priceCalculatorService,
+        private TranslatorInterface           $translator,
     ) {}
 
+    /**
+     * @throws ServerDetailsNotAvailableException
+     */
     public function buildPurchaseContext(
         UserInterface $user,
         Server $server,
@@ -51,6 +54,9 @@ class EmailContextBuilderService
         );
     }
 
+    /**
+     * @throws ServerDetailsNotAvailableException
+     */
     public function buildRenewalContext(
         UserInterface $user,
         Server $server,
@@ -71,6 +77,9 @@ class EmailContextBuilderService
         );
     }
 
+    /**
+     * @throws ServerDetailsNotAvailableException
+     */
     private function buildBaseContext(
         UserInterface $user,
         Server $server,

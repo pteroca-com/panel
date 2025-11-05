@@ -3,10 +3,11 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\Entity\Plugin;
+use Exception;
+use FilesystemIterator;
 use Psr\Log\LoggerInterface;
 use App\Core\Enum\PluginStateEnum;
 use App\Core\DTO\PluginManifestDTO;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Core\Repository\PluginRepository;
 use App\Core\Event\Plugin\PluginEnabledEvent;
 use App\Core\Event\Plugin\PluginFaultedEvent;
@@ -14,34 +15,40 @@ use App\Core\Event\Plugin\PluginUpdatedEvent;
 use App\Core\Event\Plugin\PluginDisabledEvent;
 use App\Core\Event\Plugin\PluginDiscoveredEvent;
 use App\Core\Event\Plugin\PluginRegisteredEvent;
+use RuntimeException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use App\Core\Exception\Plugin\InvalidStateTransitionException;
 use App\Core\Exception\Plugin\PluginDependencyException;
 use App\Core\Event\Plugin\PluginEnablementFailedEvent;
 use App\Core\Event\Plugin\PluginDisablementFailedEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Throwable;
 
-class PluginManager
+readonly class PluginManager
 {
     public function __construct(
-        private readonly PluginRepository $pluginRepository,
-        private readonly PluginScanner $pluginScanner,
-        private readonly ManifestParser $manifestParser,
-        private readonly ManifestValidator $manifestValidator,
-        private readonly PluginStateMachine $stateMachine,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly LoggerInterface $logger,
-        private readonly PluginLoader $pluginLoader,
-        private readonly PluginMigrationService $migrationService,
-        private readonly KernelInterface $kernel,
-        private readonly PluginDependencyResolver $dependencyResolver,
-        private readonly PluginAssetManager $assetManager,
-        private readonly PluginSettingService $settingService,
-        private readonly PluginSecurityValidator $securityValidator,
+        private PluginRepository         $pluginRepository,
+        private PluginScanner            $pluginScanner,
+        private ManifestValidator        $manifestValidator,
+        private PluginStateMachine       $stateMachine,
+        private EventDispatcherInterface $eventDispatcher,
+        private LoggerInterface          $logger,
+        private PluginLoader             $pluginLoader,
+        private PluginMigrationService   $migrationService,
+        private KernelInterface          $kernel,
+        private PluginDependencyResolver $dependencyResolver,
+        private PluginAssetManager       $assetManager,
+        private PluginSettingService     $settingService,
+        private PluginSecurityValidator  $securityValidator,
     ) {}
 
     /**
+     * Discover and register all plugins from filesystem.
+     *
+     * This method is part of the public API and may be used by CLI commands,
+     * scheduled tasks, or plugin management interfaces.
+     *
+     * @api
      * @return array{discovered: int, registered: int, failed: int, errors: array}
      */
     public function discoverAndRegisterPlugins(): array
@@ -73,19 +80,19 @@ class PluginManager
                 if (count($data['errors']) > 0) {
                     $errors[$pluginName] = $data['errors'];
                     ++$failed;
-                    $this->logger->warning("Plugin {$pluginName} has validation errors", $data['errors']);
+                    $this->logger->warning("Plugin $pluginName has validation errors", $data['errors']);
                     continue;
                 }
 
                 // Register new plugin
-                $plugin = $this->registerPlugin($data['path'], $data['manifest']);
+                $this->registerPlugin($data['path'], $data['manifest']);
                 ++$registered;
 
-                $this->logger->info("Registered new plugin: {$pluginName}");
-            } catch (\Exception $e) {
+                $this->logger->info("Registered new plugin: $pluginName");
+            } catch (Exception $e) {
                 ++$failed;
                 $errors[$pluginName] = [$e->getMessage()];
-                $this->logger->error("Failed to register plugin {$pluginName}: {$e->getMessage()}");
+                $this->logger->error("Failed to register plugin $pluginName: {$e->getMessage()}");
             }
         }
 
@@ -97,20 +104,10 @@ class PluginManager
         ];
     }
 
-    public function registerPlugin(string $pluginPath, \App\Core\DTO\PluginManifestDTO $manifest): Plugin
+    public function registerPlugin(string $pluginPath, PluginManifestDTO $manifest): Plugin
     {
         // Create plugin entity
-        $plugin = new Plugin();
-        $plugin->setName($manifest->name);
-        $plugin->setDisplayName($manifest->displayName);
-        $plugin->setVersion($manifest->version);
-        $plugin->setAuthor($manifest->author);
-        $plugin->setDescription($manifest->description);
-        $plugin->setLicense($manifest->license);
-        $plugin->setPterocaMinVersion($manifest->getMinPterocaVersion());
-        $plugin->setPterocaMaxVersion($manifest->getMaxPterocaVersion());
-        $plugin->setPath($pluginPath);
-        $plugin->setManifest($manifest->raw);
+        $plugin = $this->createPluginEntityFromManifest($pluginPath, $manifest);
 
         // Validate PteroCA compatibility
         if (!$this->manifestValidator->isCompatibleWithPteroCA($manifest)) {
@@ -129,7 +126,7 @@ class PluginManager
         }
 
         // Persist to database
-        $this->pluginRepository->save($plugin, true);
+        $this->pluginRepository->save($plugin);
 
         return $plugin;
     }
@@ -150,7 +147,7 @@ class PluginManager
             );
 
             $this->eventDispatcher->dispatch(
-                new PluginEnablementFailedEvent($plugin, $errorMessage)
+                new PluginEnablementFailedEvent(null, $plugin->getName(), $errorMessage, [])
             );
 
             $this->logger->warning("Plugin enablement failed: {$plugin->getName()}", [
@@ -170,7 +167,7 @@ class PluginManager
             );
 
             $this->eventDispatcher->dispatch(
-                new PluginEnablementFailedEvent($plugin, $errorMessage)
+                new PluginEnablementFailedEvent(null, $plugin->getName(), $errorMessage, [])
             );
 
             $this->logger->warning("Circular dependency detected: {$plugin->getName()}", [
@@ -193,10 +190,10 @@ class PluginManager
 
             // Mark plugin as faulted due to security issues
             $this->stateMachine->transitionToFaulted($plugin, $errorMessage);
-            $this->pluginRepository->save($plugin, true);
+            $this->pluginRepository->save($plugin);
 
             $this->eventDispatcher->dispatch(
-                new PluginEnablementFailedEvent($plugin, $errorMessage)
+                new PluginEnablementFailedEvent(null, $plugin->getName(), $errorMessage, [])
             );
             $this->eventDispatcher->dispatch(new PluginFaultedEvent($plugin, $errorMessage));
 
@@ -204,7 +201,7 @@ class PluginManager
                 'critical_issues' => $criticalIssues,
             ]);
 
-            throw new \RuntimeException($errorMessage);
+            throw new RuntimeException($errorMessage);
         }
 
         // Log high severity issues as warnings (but allow plugin to be enabled)
@@ -219,7 +216,7 @@ class PluginManager
         $this->stateMachine->transitionToEnabled($plugin);
 
         // Persist changes
-        $this->pluginRepository->save($plugin, true);
+        $this->pluginRepository->save($plugin);
 
         // Load plugin (register autoloading, services, etc.)
         try {
@@ -228,7 +225,7 @@ class PluginManager
             // Initialize default settings from config_schema
             $initializedSettings = $this->settingService->initializeDefaults($plugin);
             if ($initializedSettings > 0) {
-                $this->logger->info("Initialized {$initializedSettings} default settings for plugin {$plugin->getName()}");
+                $this->logger->info("Initialized $initializedSettings default settings for plugin {$plugin->getName()}");
             }
 
             // Execute database migrations
@@ -241,14 +238,14 @@ class PluginManager
             // Publish plugin assets
             $this->assetManager->publishAssets($plugin);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // If loading or migrations fail, mark as faulted
             $this->stateMachine->transitionToFaulted($plugin, $e->getMessage());
-            $this->pluginRepository->save($plugin, true);
+            $this->pluginRepository->save($plugin);
 
             $this->eventDispatcher->dispatch(new PluginFaultedEvent($plugin, $e->getMessage()));
 
-            throw new \RuntimeException("Failed to load plugin {$plugin->getName()}: {$e->getMessage()}", 0, $e);
+            throw new RuntimeException("Failed to load plugin {$plugin->getName()}: {$e->getMessage()}", 0, $e);
         }
 
         // Dispatch event
@@ -293,7 +290,7 @@ class PluginManager
             );
 
             $this->eventDispatcher->dispatch(
-                new PluginDisablementFailedEvent($plugin, $errorMessage)
+                new PluginDisablementFailedEvent(null, $plugin->getName(), $errorMessage, [])
             );
 
             $this->logger->warning("Plugin disablement failed: {$plugin->getName()}", [
@@ -326,7 +323,7 @@ class PluginManager
         $this->stateMachine->transitionToDisabled($plugin);
 
         // Persist changes
-        $this->pluginRepository->save($plugin, true);
+        $this->pluginRepository->save($plugin);
 
         // Dispatch event
         $this->eventDispatcher->dispatch(new PluginDisabledEvent($plugin));
@@ -352,12 +349,12 @@ class PluginManager
         }
 
         // Persist changes
-        $this->pluginRepository->save($plugin, true);
+        $this->pluginRepository->save($plugin);
 
         // Dispatch event
         $this->eventDispatcher->dispatch(new PluginUpdatedEvent($plugin, $oldVersion, $newVersion));
 
-        $this->logger->info("Plugin updated: {$plugin->getName()} {$oldVersion} → {$newVersion}");
+        $this->logger->info("Plugin updated: {$plugin->getName()} $oldVersion → $newVersion");
     }
 
     public function getPluginByName(string $name): ?Plugin
@@ -397,6 +394,16 @@ class PluginManager
         return $this->pluginRepository->findFaulted();
     }
 
+    /**
+     * Check if a plugin with the given name exists in the database.
+     *
+     * This method is part of the public API and may be used by plugins
+     * to check for dependencies or by other parts of the system.
+     *
+     * @api
+     * @param string $name Plugin name
+     * @return bool True if plugin exists, false otherwise
+     */
     public function hasPlugin(string $name): bool
     {
         return $this->pluginRepository->existsByName($name);
@@ -408,7 +415,7 @@ class PluginManager
     public function getStatistics(): array
     {
         return [
-            'total' => $this->pluginRepository->count([]),
+            'total' => $this->pluginRepository->count(),
             'enabled' => $this->pluginRepository->countByState(PluginStateEnum::ENABLED),
             'disabled' => $this->pluginRepository->countByState(PluginStateEnum::DISABLED),
             'faulted' => $this->pluginRepository->countByState(PluginStateEnum::FAULTED),
@@ -451,7 +458,7 @@ class PluginManager
     }
 
     /**
-     * @throws \RuntimeException If plugin not found in filesystem
+     * @throws RuntimeException If plugin not found in filesystem
      */
     public function getOrCreatePlugin(string $pluginName): Plugin
     {
@@ -467,12 +474,12 @@ class PluginManager
         );
 
         if ($pluginData === null) {
-            throw new \RuntimeException("Plugin '{$pluginName}' not found in filesystem");
+            throw new RuntimeException("Plugin '$pluginName' not found in filesystem");
         }
 
         if (count($pluginData['errors']) > 0) {
-            throw new \RuntimeException(
-                "Plugin '{$pluginName}' has validation errors: " . implode(', ', $pluginData['errors'])
+            throw new RuntimeException(
+                "Plugin '$pluginName' has validation errors: " . implode(', ', $pluginData['errors'])
             );
         }
 
@@ -480,18 +487,37 @@ class PluginManager
         $plugin = $this->createPluginFromManifest($pluginData['path'], $pluginData['manifest']);
 
         // Persist to database
-        $this->pluginRepository->save($plugin, true);
+        $this->pluginRepository->save($plugin);
 
         // Dispatch events
         $this->eventDispatcher->dispatch(new PluginDiscoveredEvent($pluginData['path'], $pluginData['manifest']));
         $this->eventDispatcher->dispatch(new PluginRegisteredEvent($plugin));
 
-        $this->logger->info("Created plugin entity: {$pluginName}");
+        $this->logger->info("Created plugin entity: $pluginName");
 
         return $plugin;
     }
 
-    private function createPluginFromManifest(string $pluginPath, \App\Core\DTO\PluginManifestDTO $manifest): Plugin
+    private function createPluginFromManifest(string $pluginPath, PluginManifestDTO $manifest): Plugin
+    {
+        $plugin = $this->createPluginEntityFromManifest($pluginPath, $manifest);
+        $plugin->setState(PluginStateEnum::DISCOVERED);
+
+        // Validate PteroCA compatibility
+        if (!$this->manifestValidator->isCompatibleWithPteroCA($manifest)) {
+            $errorMessage = $this->manifestValidator->getCompatibilityError($manifest);
+            $plugin->setState(PluginStateEnum::FAULTED);
+            $plugin->setFaultReason($errorMessage);
+        }
+
+        return $plugin;
+    }
+
+    /**
+     * Create a basic Plugin entity from manifest data.
+     * Does not set state or perform validation.
+     */
+    private function createPluginEntityFromManifest(string $pluginPath, PluginManifestDTO $manifest): Plugin
     {
         $plugin = new Plugin();
         $plugin->setName($manifest->name);
@@ -504,14 +530,6 @@ class PluginManager
         $plugin->setPterocaMaxVersion($manifest->getMaxPterocaVersion());
         $plugin->setPath($pluginPath);
         $plugin->setManifest($manifest->raw);
-        $plugin->setState(PluginStateEnum::DISCOVERED);
-
-        // Validate PteroCA compatibility
-        if (!$this->manifestValidator->isCompatibleWithPteroCA($manifest)) {
-            $errorMessage = $this->manifestValidator->getCompatibilityError($manifest);
-            $plugin->setState(PluginStateEnum::FAULTED);
-            $plugin->setFaultReason($errorMessage);
-        }
 
         return $plugin;
     }
@@ -529,7 +547,7 @@ class PluginManager
                     return;
                 }
 
-                $items = new \FilesystemIterator($dir, \FilesystemIterator::SKIP_DOTS);
+                $items = new FilesystemIterator($dir, FilesystemIterator::SKIP_DOTS);
 
                 foreach ($items as $item) {
                     if ($item->isDir()) {
@@ -546,7 +564,7 @@ class PluginManager
 
             try {
                 $removeDir($cacheDir);
-            } catch (\Throwable $e) {
+            } catch (Throwable) {
                 // Silently fail - cache will be rebuilt on next request
             }
         });

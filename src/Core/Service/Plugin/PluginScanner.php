@@ -4,6 +4,7 @@ namespace App\Core\Service\Plugin;
 
 use App\Core\DTO\PluginManifestDTO;
 use App\Core\Trait\PluginDirectoryScannerTrait;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 class PluginScanner
@@ -35,7 +36,7 @@ class PluginScanner
     public function scan(): array
     {
         if (!is_dir($this->pluginsDirectory)) {
-            $this->logger->warning("Plugins directory does not exist: {$this->pluginsDirectory}");
+            $this->logger->warning("Plugins directory does not exist: $this->pluginsDirectory");
 
             return [];
         }
@@ -55,7 +56,7 @@ class PluginScanner
                 $pluginName = $pluginData['manifest']->name;
                 $discovered[$pluginName] = $pluginData;
 
-                $this->logger->info("Discovered plugin: {$pluginName} at {$pluginPath}");
+                $this->logger->info("Discovered plugin: $pluginName at $pluginPath");
             }
         }
 
@@ -71,7 +72,7 @@ class PluginScanner
 
         // Check if plugin.json exists
         if (!file_exists($manifestPath)) {
-            $this->logger->debug("No manifest found in: {$pluginPath}");
+            $this->logger->debug("No manifest found in: $pluginPath");
 
             return null;
         }
@@ -88,8 +89,8 @@ class PluginScanner
                 'manifest' => $manifest,
                 'errors' => $errors,
             ];
-        } catch (\Exception $e) {
-            $this->logger->error("Failed to parse plugin manifest in {$pluginPath}: {$e->getMessage()}");
+        } catch (Exception $e) {
+            $this->logger->error("Failed to parse plugin manifest in $pluginPath: {$e->getMessage()}");
 
             return null;
         }
@@ -111,7 +112,7 @@ class PluginScanner
                 ];
             } else {
                 $errorMessages = implode(', ', $data['errors']);
-                $this->logger->warning("Plugin '{$name}' has validation errors: {$errorMessages}");
+                $this->logger->warning("Plugin '$name' has validation errors: $errorMessages");
             }
         }
 
@@ -124,15 +125,10 @@ class PluginScanner
     public function scanInvalid(): array
     {
         $allPlugins = $this->scan();
-        $invalidPlugins = [];
 
-        foreach ($allPlugins as $name => $data) {
-            if (count($data['errors']) > 0) {
-                $invalidPlugins[$name] = $data;
-            }
-        }
-
-        return $invalidPlugins;
+        return array_filter($allPlugins, function ($data) {
+            return count($data['errors']) > 0;
+        });
     }
 
     public function exists(string $pluginName): bool

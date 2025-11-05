@@ -5,10 +5,10 @@ namespace App\Core\Service\Email;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
 
-class ClientPanelUrlResolverService
+readonly class ClientPanelUrlResolverService
 {
     public function __construct(
-        private readonly SettingService $settingService,
+        private SettingService $settingService,
     ) {}
 
     public function resolve(): string

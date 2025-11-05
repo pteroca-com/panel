@@ -4,6 +4,7 @@ namespace App\Core\Service\Update;
 
 use App\Core\Service\Update\Operation\GitOperationService;
 use App\Core\Service\Update\Operation\DatabaseOperationService;
+use Exception;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
@@ -69,7 +70,7 @@ class UpdateRollbackService
             foreach (array_reverse($this->rollbackActions) as $rollbackAction) {
                 try {
                     $rollbackAction();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->io->warning('Rollback action failed: ' . $e->getMessage());
                 }
             }
@@ -88,16 +89,19 @@ class UpdateRollbackService
 
             $this->clearCacheForRollback();
             $this->io->warning('System rollback completed. Please verify system state manually.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->io->error('Rollback failed: ' . $e->getMessage());
             $this->io->text('Manual intervention may be required.');
             
             if ($this->backupPath) {
-                $this->io->note("Database backup available at: {$this->backupPath}");
+                $this->io->note("Database backup available at: $this->backupPath");
             }
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function performSimpleRollback(): void
     {
         $this->io->note('Attempting to rollback changes...');
@@ -105,7 +109,7 @@ class UpdateRollbackService
         try {
             $this->gitService->rollbackGitChanges();
             $this->rollbackActions = [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->io->error('Simple rollback failed: ' . $e->getMessage());
             throw $e;
         }
@@ -120,7 +124,7 @@ class UpdateRollbackService
     {
         try {
             $this->databaseService->rollbackMigrations($targetVersion);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->io->warning('Database rollback failed: ' . $e->getMessage());
         }
     }
@@ -139,7 +143,7 @@ class UpdateRollbackService
                     $this->io->warning('Could not restore composer dependencies.');
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->io->warning('Composer rollback failed: ' . $e->getMessage());
         }
     }
@@ -153,15 +157,13 @@ class UpdateRollbackService
 
     public function getRollbackSummary(): array
     {
-        $summary = [
+        return [
             'git_available' => $this->gitService->canRollbackGit(),
             'database_available' => $this->databaseService->canRollbackMigrations(),
             'backup_available' => $this->backupPath && $this->backupService->validateBackup($this->backupPath),
             'rollback_actions_count' => count($this->rollbackActions),
             'has_initial_state' => !empty($this->initialState)
         ];
-
-        return $summary;
     }
 
     private function restoreDatabaseFromBackup(): void
@@ -170,7 +172,7 @@ class UpdateRollbackService
             $this->io->text('Restoring database from backup...');
             $this->backupService->restoreDatabaseBackup($this->backupPath);
             $this->io->success('Database restored from backup.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->io->error('Failed to restore database from backup: ' . $e->getMessage());
         }
     }
@@ -202,7 +204,7 @@ class UpdateRollbackService
             if ($process->isSuccessful()) {
                 $this->io->text('Cache cleared after rollback.');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->io->warning('Could not clear cache after rollback: ' . $e->getMessage());
         }
     }

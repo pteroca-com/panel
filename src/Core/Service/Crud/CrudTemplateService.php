@@ -5,6 +5,7 @@ namespace App\Core\Service\Crud;
 use App\Core\Enum\OverwriteableCrudTemplatesEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Cache\CacheInterface;
 
@@ -23,6 +24,9 @@ class CrudTemplateService
     {
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getTemplatesToOverride(array $templateContext): array
     {
         $templateContext = $this->prepareTemplateContext($templateContext);

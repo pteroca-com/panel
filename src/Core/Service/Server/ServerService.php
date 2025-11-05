@@ -10,12 +10,12 @@ use App\Core\Repository\ServerRepository;
 use App\Core\Repository\ServerSubuserRepository;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
-class ServerService
+readonly class ServerService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
-        private readonly ServerRepository $serverRepository,
-        private readonly ServerSubuserRepository $serverSubuserRepository,
+        private PterodactylApplicationService $pterodactylApplicationService,
+        private ServerRepository              $serverRepository,
+        private ServerSubuserRepository       $serverSubuserRepository,
     ) {}
 
     public function getServerStateByClient(
@@ -120,7 +120,7 @@ class ServerService
         $subusers = $this->serverSubuserRepository->getSubusersByUser($user);
         foreach ($subusers as $serverSubuser) {
             $server = $serverSubuser->getServer();
-            if ($server instanceof Server && $server->getDeletedAt() === null) {
+            if ($server->getDeletedAt() === null) {
                 if (!in_array($server->getId(), $ownedServerIds)) {
                     $subuserServers[] = $server;
                 }

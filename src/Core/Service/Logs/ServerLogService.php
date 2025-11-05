@@ -10,11 +10,13 @@ use App\Core\Entity\ServerLog;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Enum\ServerLogSourceTypeEnum;
 use App\Core\Repository\ServerLogRepository;
+use DateTime;
+use Exception;
 
-class ServerLogService
+readonly class ServerLogService
 {
     public function __construct(
-        private readonly ServerLogRepository $serverLogRepository,
+        private ServerLogRepository $serverLogRepository,
     ) {}
 
     public function logServerAction(UserInterface $user, Server $server, ServerLogActionEnum $action, array $details = []): void
@@ -40,13 +42,15 @@ class ServerLogService
         $pteroDtos = [];
 
         if (!empty($pterodactylActivityLogs)) {
-            $pteroDtos = array_map(fn ($log) => new ServerLogDTO(
+            $pteroDtos = array_map(/**
+             * @throws Exception
+             */ fn ($log) => new ServerLogDTO(
                 null,
                 ServerLogSourceTypeEnum::PTERODACTYL,
                 strtolower($log['attributes']['event']),
                 null,
                 $server,
-                new \DateTime($log['attributes']['timestamp']),
+                new DateTime($log['attributes']['timestamp']),
                 json_encode($log['attributes'])
             ), $pterodactylActivityLogs);
         }

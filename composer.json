@@ -42,7 +42,9 @@
         "symfony/serializer": "^7.0",
         "symfony/ux-twig-component": "^2.22",
         "symfony/yaml": "^7.0",
-        "vich/uploader-bundle": "^2.4"
+        "vich/uploader-bundle": "^2.4",
+        "ext-zip": "*",
+        "ext-pdo": "*"
     },
     "config": {
         "allow-plugins": {

@@ -2,6 +2,10 @@
 
 namespace App\Core\Service\Update;
 
+use Exception;
+use PDO;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
@@ -85,7 +89,7 @@ class SystemStateManager
         $requiredKeys = ['git_commit', 'db_schema_version'];
         
         foreach ($requiredKeys as $key) {
-            if (!isset($targetState[$key]) || empty($targetState[$key])) {
+            if (empty($targetState[$key])) {
                 return false;
             }
         }
@@ -169,12 +173,12 @@ class SystemStateManager
                     return trim($matches[1]);
                 }
                 
-                preg_match_all('/\[migrate\]\s+(\w+)/', $output, $allMatches);
+                preg_match_all('/\[migrate]\s+(\w+)/', $output, $allMatches);
                 if (!empty($allMatches[1])) {
                     return end($allMatches[1]);
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return $this->getCurrentSchemaVersionFromDatabase();
         }
         
@@ -236,8 +240,8 @@ class SystemStateManager
     private function getDirectorySize(string $directory): int
     {
         $size = 0;
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS)
         );
 
         foreach ($iterator as $file) {
@@ -277,12 +281,12 @@ class SystemStateManager
     private function getCurrentSchemaVersionFromDatabase(): ?string
     {
         try {
-            $pdo = new \PDO('sqlite:' . dirname(__DIR__, 4) . '/var/data.db');
+            $pdo = new PDO('sqlite:' . dirname(__DIR__, 4) . '/var/data.db');
             $stmt = $pdo->query('SELECT version FROM doctrine_migration_versions ORDER BY version DESC LIMIT 1');
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result ? $result['version'] : null;
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return null;
         }
     }

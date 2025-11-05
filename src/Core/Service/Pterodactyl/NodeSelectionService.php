@@ -5,12 +5,15 @@ namespace App\Core\Service\Pterodactyl;
 use App\Core\Contract\ProductInterface;
 use Exception;
 
-class NodeSelectionService
+readonly class NodeSelectionService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
+        private PterodactylApplicationService $pterodactylApplicationService,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function getBestAllocationId(ProductInterface $product): int
     {
         $bestNode = null;

@@ -4,11 +4,12 @@ namespace App\Core\Service\Server\ServerConfiguration;
 
 use App\Core\Entity\Server;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use Exception;
 
-class ServerConfigurationStartupService
+readonly class ServerConfigurationStartupService
 {
     public function __construct(
-        private readonly PterodactylApplicationService $pterodactylApplicationService,
+        private PterodactylApplicationService $pterodactylApplicationService,
     )
     {
     }
@@ -27,6 +28,9 @@ class ServerConfigurationStartupService
             );
     }
 
+    /**
+     * @throws Exception
+     */
     public function getStartupPayload(string $variableKey, string $variableValue, array $serverDetails): array
     {
         $preparedPayload = [
@@ -38,7 +42,7 @@ class ServerConfigurationStartupService
         ];
 
         if (!isset($preparedPayload[$variableKey])) {
-            throw new \Exception('Invalid variable key');
+            throw new Exception('Invalid variable key');
         }
 
         $preparedPayload[$variableKey] = $variableValue;

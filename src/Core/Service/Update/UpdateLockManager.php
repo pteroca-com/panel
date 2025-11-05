@@ -2,6 +2,8 @@
 
 namespace App\Core\Service\Update;
 
+use Exception;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 
 class UpdateLockManager
@@ -25,7 +27,7 @@ class UpdateLockManager
             $lockData = $this->readLockFile($lockPath);
             
             if ($lockData && $this->isLockValid($lockData)) {
-                throw new \RuntimeException(sprintf(
+                throw new RuntimeException(sprintf(
                     'Update already in progress (PID: %d, started: %s)',
                     $lockData['pid'],
                     date('Y-m-d H:i:s', $lockData['timestamp'])
@@ -91,7 +93,7 @@ class UpdateLockManager
         try {
             $content = file_get_contents($path);
             return json_decode($content, true);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -113,7 +115,7 @@ class UpdateLockManager
     {
         if (PHP_OS_FAMILY === 'Windows') {
             $output = shell_exec("tasklist /FI \"PID eq $pid\" 2>NUL");
-            return $output && strpos($output, (string)$pid) !== false;
+            return $output && str_contains($output, (string)$pid);
         }
 
         return file_exists("/proc/$pid");
