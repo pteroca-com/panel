@@ -394,6 +394,20 @@
 
                         <div id="content-resizer-handler" class="resizer-handler resizer-handler-right"></div>
                     </div>
+
+                    {% block global_footer %}
+                        <footer class="global-footer">
+                            <div class="global-footer-content">
+                                <p class="text-muted small mb-0">
+                                    Powered by
+                                    <a href="https://pteroca.com" target="_blank" class="text-muted text-decoration-none">
+                                        PteroCA v{{ get_app_version() }}
+                                    </a>
+                                    &copy; {{ 'now'|date('Y') }}
+                                </p>
+                            </div>
+                        </footer>
+                    {% endblock global_footer %}
                 </section>
             {% endblock wrapper %}
         </div>

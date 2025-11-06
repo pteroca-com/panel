@@ -1976,3 +1976,42 @@ hr {
 .flash-messages-container > :last-child {
     margin-bottom: 0 !important;
 }
+
+/* Content Top Header - white background like footer */
+.content-top {
+    background: var(--body-bg) !important;
+}
+
+.ea-dark-scheme .content-top {
+    background: var(--body-bg) !important;
+}
+
+/* Global Footer */
+.global-footer {
+    padding: 1rem 0;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--bs-border-color);
+    background: var(--body-bg);
+}
+
+.global-footer-content {
+    text-align: right;
+    padding: 0 1.5rem;
+}
+
+.global-footer p {
+    margin: 0;
+    font-size: 0.7125rem;
+    color: var(--text-muted);
+}
+
+.global-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.global-footer a:hover {
+    color: var(--text-color);
+    text-decoration: none;
+}
