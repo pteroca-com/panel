@@ -341,17 +341,14 @@
                         {% endblock content_top_header %}
                     </aside>
 
-                    <div class="content-wrapper d-block mt-4 pb-0">
-                        {% block flash_messages %}
-                            {{ include(ea.templatePath('flash_messages')) }}
-                        {% endblock %}
-
-                        {% if show_email_verification_alert() and not app.user.verified %}
-                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                <strong>{{ 'pteroca.system.email_not_verified'|trans }} <a href="{{ path('verify_notice') }}">{{ 'pteroca.system.or_resend_verification_email'|trans }}</a></strong>
-                            </div>
-                        {% endif %}
-                    </div>
+                    {% set flash_messages_peek = app.session.flashbag.peekAll() %}
+                    {% if flash_messages_peek|length > 0 %}
+                        <div class="content-wrapper d-block pb-0">
+                            {% block flash_messages %}
+                                {{ include(ea.templatePath('flash_messages')) }}
+                            {% endblock %}
+                        </div>
+                    {% endif %}
 
                     <div class="content-wrapper">
                         {% block content %}

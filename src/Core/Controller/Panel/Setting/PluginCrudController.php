@@ -209,7 +209,7 @@ class PluginCrudController extends AbstractPanelController
 
         return $this->renderWithEvent(
             ViewNameEnum::PLUGIN_INDEX,
-            'admin/plugin/index.html.twig',
+            'panel/crud/plugin/index.html.twig',
             $viewData,
             $request
         );
@@ -308,7 +308,7 @@ class PluginCrudController extends AbstractPanelController
 
         return $this->renderWithEvent(
             ViewNameEnum::PLUGIN_DETAILS,
-            'admin/plugin/detail.html.twig',
+            'panel/crud/plugin/detail.html.twig',
             $viewData,
             $request
         );
@@ -441,7 +441,7 @@ class PluginCrudController extends AbstractPanelController
     {
         $form = $this->createForm(PluginUploadFormType::class);
 
-        return $this->render('admin/plugin/upload.html.twig', [
+        return $this->render('panel/crud/plugin/upload.html.twig', [
             'form' => $form->createView(),
             'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
         ]);
@@ -454,7 +454,7 @@ class PluginCrudController extends AbstractPanelController
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->render('admin/plugin/upload.html.twig', [
+            return $this->render('panel/crud/plugin/upload.html.twig', [
                 'form' => $form->createView(),
                 'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
             ]);
@@ -520,7 +520,7 @@ class PluginCrudController extends AbstractPanelController
                 $e->getMessage()
             ));
 
-            return $this->render('admin/plugin/upload.html.twig', [
+            return $this->render('panel/crud/plugin/upload.html.twig', [
                 'form' => $form->createView(),
                 'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
             ]);

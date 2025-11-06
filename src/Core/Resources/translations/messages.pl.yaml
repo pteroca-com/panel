@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: 'Hasła muszą być takie same.'
     invalid_token: 'Token przypominania hasła jest już nieaktywny bądź jest nieprawidłowy.'
     change_password: 'Zmień hasło'
+    change_password_subtitle: 'Wprowadź nowe hasło, aby je zresetować'
     success_password_changed: 'Hasło zostało pomyślnie zmienione.'
+    back_to_login: 'Powrót do logowania'
 
   dashboard:
     account_balance: 'Balans konta'
@@ -1420,6 +1422,12 @@ pteroca:
       file_permissions: 'Uprawnienia Pliku'
       security_status: 'Status Bezpieczeństwa'
       total_issues_found: 'Łącznie Znalezionych Problemów'
+      check:
+        dangerous_functions: 'Niebezpieczne Funkcje'
+        path_traversal: 'Przechodzenie Ścieżki'
+        sql_injection: 'Wstrzykiwanie SQL'
+        xss_patterns: 'Wzorce XSS'
+        file_permissions: 'Uprawnienia Plików'
     health:
       title: 'Zdrowie Wtyczki'
       check: 'Sprawdzenie Zdrowia'

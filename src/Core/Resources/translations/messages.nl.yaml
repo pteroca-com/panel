@@ -68,7 +68,9 @@ pteroca:
     passwords_must_match: 'Wachtwoorden moeten overeenkomen.'
     invalid_token: 'Het wachtwoord reset token is ongeldig of is verlopen.'
     change_password: 'Wachtwoord wijzigen'
+    change_password_subtitle: 'Voer uw nieuwe wachtwoord in om het te resetten'
     success_password_changed: 'Uw wachtwoord is succesvol gewijzigd.'
+    back_to_login: 'Terug naar inloggen'
   dashboard:
     account_balance: 'Account saldo'
     account_balance_description: 'Huidige saldo van account.'
@@ -1404,6 +1406,12 @@ pteroca:
       file_permissions: 'Bestandsrechten'
       security_status: 'Beveiligingsstatus'
       total_issues_found: 'Totaal Gevonden Problemen'
+      check:
+        dangerous_functions: 'Gevaarlijke Functies'
+        path_traversal: 'Pad Traversie'
+        sql_injection: 'SQL Injectie'
+        xss_patterns: 'XSS Patronen'
+        file_permissions: 'Bestandsrechten'
     health:
       title: 'Plugin Gezondheid'
       check: 'Gezondheidscontrole'

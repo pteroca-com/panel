@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: 'पासवर्ड समान होने चाहिए।'
     invalid_token: 'पासवर्ड रीसेट टोकन अमान्य है या इसकी अवधि समाप्त हो चुकी है।'
     change_password: 'पासवर्ड बदलें'
+    change_password_subtitle: 'रीसेट करने के लिए अपना नया पासवर्ड दर्ज करें'
     success_password_changed: 'आपका पासवर्ड सफलतापूर्वक बदल दिया गया है।'
+    back_to_login: 'लॉगिन पर वापस जाएं'
 
   dashboard:
     account_balance: 'खाता शेष राशि'
@@ -1420,6 +1422,12 @@ pteroca:
       file_permissions: 'फ़ाइल अनुमतियाँ'
       security_status: 'सुरक्षा स्थिति'
       total_issues_found: 'कुल मिली समस्याएँ'
+      check:
+        dangerous_functions: 'खतरनाक कार्य'
+        path_traversal: 'पथ ट्रावर्सल'
+        sql_injection: 'SQL इंजेक्शन'
+        xss_patterns: 'XSS पैटर्न'
+        file_permissions: 'फ़ाइल अनुमतियाँ'
     health:
       title: 'प्लगइन स्वास्थ्य'
       check: 'स्वास्थ्य जांच'

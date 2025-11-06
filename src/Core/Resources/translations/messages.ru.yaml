@@ -69,7 +69,9 @@ pteroca:
     passwords_must_match: 'Пароли должны совпадать.'
     invalid_token: 'Токен сброса пароля недействителен или истёк.'
     change_password: 'Изменить пароль'
+    change_password_subtitle: 'Введите новый пароль для сброса'
     success_password_changed: 'Ваш пароль успешно изменен.'
+    back_to_login: 'Вернуться к входу'
   dashboard:
     account_balance: 'Баланс аккаунта'
     account_balance_description: 'Ваш текущий баланс.'
@@ -1411,6 +1413,12 @@ pteroca:
       file_permissions: 'Разрешения Файла'
       security_status: 'Статус Безопасности'
       total_issues_found: 'Всего Найденных Проблем'
+      check:
+        dangerous_functions: 'Опасные Функции'
+        path_traversal: 'Обход Пути'
+        sql_injection: 'SQL Инъекция'
+        xss_patterns: 'Шаблоны XSS'
+        file_permissions: 'Разрешения Файлов'
     health:
       title: 'Здоровье Плагина'
       check: 'Проверка Здоровья'

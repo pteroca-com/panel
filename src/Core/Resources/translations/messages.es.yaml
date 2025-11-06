@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: 'Las contraseñas deben coincidir.'
     invalid_token: 'El token para restablecer la contraseña es inválido o ha expirado.'
     change_password: 'Cambiar contraseña'
+    change_password_subtitle: 'Ingrese su nueva contraseña para restablecerla'
     success_password_changed: 'La contraseña se ha cambiado exitosamente.'
+    back_to_login: 'Volver al inicio de sesión'
 
   dashboard:
     account_balance: 'Saldo de la cuenta'
@@ -1420,6 +1422,12 @@ pteroca:
       file_permissions: 'Permisos de Archivo'
       security_status: 'Estado de Seguridad'
       total_issues_found: 'Problemas Totales Encontrados'
+      check:
+        dangerous_functions: 'Funciones Peligrosas'
+        path_traversal: 'Traversal de Ruta'
+        sql_injection: 'Inyección SQL'
+        xss_patterns: 'Patrones XSS'
+        file_permissions: 'Permisos de Archivo'
     health:
       title: 'Salud del Plugin'
       check: 'Verificación de Salud'

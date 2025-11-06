@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: 'Les mots de passe doivent correspondre.'
     invalid_token: 'Le jeton de réinitialisation du mot de passe est invalide ou expiré.'
     change_password: 'Changer le mot de passe'
+    change_password_subtitle: 'Entrez votre nouveau mot de passe pour le réinitialiser'
     success_password_changed: 'Le mot de passe a été changé avec succès.'
+    back_to_login: 'Retour à la connexion'
 
   dashboard:
     account_balance: 'Solde du compte'
@@ -1420,6 +1422,12 @@ pteroca:
       file_permissions: 'Permissions de Fichier'
       security_status: 'Statut de Sécurité'
       total_issues_found: 'Problèmes Totaux Trouvés'
+      check:
+        dangerous_functions: 'Fonctions Dangereuses'
+        path_traversal: 'Traversal de Chemin'
+        sql_injection: 'Injection SQL'
+        xss_patterns: 'Motifs XSS'
+        file_permissions: 'Permissions de Fichier'
     health:
       title: 'Santé du Plugin'
       check: 'Vérification de Santé'

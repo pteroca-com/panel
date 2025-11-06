@@ -3,11 +3,17 @@
 {% set flash_messages = app.flashes %}
 
 {% if flash_messages|length > 0 %}
-    {% for label, messages in flash_messages %}
-        {% for message in messages %}
-            <twig:ea:Alert variant="{{ label }}" withDismissButton class="mb-4">
-                {{ message|trans|raw }}
-            </twig:ea:Alert>
+    <div class="flash-messages-container">
+        {% for label, messages in flash_messages %}
+            {% set displayed_messages = [] %}
+            {% for message in messages %}
+                {% if message not in displayed_messages %}
+                    <twig:ea:Alert variant="{{ label }}" :withDismissButton="true" class="mb-4">
+                        {{ message|trans|raw }}
+                    </twig:ea:Alert>
+                    {% set displayed_messages = displayed_messages|merge([message]) %}
+                {% endif %}
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
+    </div>
 {% endif %}

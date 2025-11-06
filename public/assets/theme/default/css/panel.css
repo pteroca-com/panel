@@ -1964,3 +1964,15 @@ hr {
 .ea-dark-scheme i.text-secondary {
     color: #9ca3af !important;
 }
+
+.flash-messages-container {
+    margin-right: 0.5rem;
+}
+
+.flash-messages-container > :first-child {
+    margin-top: 1.5rem !important;
+}
+
+.flash-messages-container > :last-child {
+    margin-bottom: 0 !important;
+}

@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: 'Le password devono corrispondere.'
     invalid_token: 'Il token di reimpostazione della password è non valido o è scaduto.'
     change_password: 'Cambia password'
+    change_password_subtitle: 'Inserisci la tua nuova password per reimpostarla'
     success_password_changed: 'La password è stata cambiata con successo.'
+    back_to_login: 'Torna al login'
 
   dashboard:
     account_balance: 'Saldo account'
@@ -1420,6 +1422,12 @@ pteroca:
       file_permissions: 'Permessi File'
       security_status: 'Stato Sicurezza'
       total_issues_found: 'Problemi Totali Trovati'
+      check:
+        dangerous_functions: 'Funzioni Pericolose'
+        path_traversal: 'Attraversamento del Percorso'
+        sql_injection: 'Iniezione SQL'
+        xss_patterns: 'Pattern XSS'
+        file_permissions: 'Permessi File'
     health:
       title: 'Salute Plugin'
       check: 'Verifica Salute'

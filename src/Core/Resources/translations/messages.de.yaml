@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: 'Die Passwörter müssen übereinstimmen.'
     invalid_token: 'Der Token zum Zurücksetzen des Passworts ist ungültig oder abgelaufen.'
     change_password: 'Passwort ändern'
+    change_password_subtitle: 'Geben Sie Ihr neues Passwort ein, um es zurückzusetzen'
     success_password_changed: 'Das Passwort wurde erfolgreich geändert.'
+    back_to_login: 'Zurück zur Anmeldung'
 
   dashboard:
     account_balance: 'Kontostand'
@@ -1420,6 +1422,12 @@ pteroca:
       file_permissions: 'Dateiberechtigungen'
       security_status: 'Sicherheitsstatus'
       total_issues_found: 'Insgesamt gefundene Probleme'
+      check:
+        dangerous_functions: 'Gefährliche Funktionen'
+        path_traversal: 'Pfad-Traversal'
+        sql_injection: 'SQL-Injection'
+        xss_patterns: 'XSS-Muster'
+        file_permissions: 'Dateiberechtigungen'
     health:
       title: 'Plugin-Gesundheit'
       check: 'Gesundheitsprüfung'

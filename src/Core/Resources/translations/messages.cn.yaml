@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: '两次输入的密码必须一致。'
     invalid_token: '密码重置令牌无效或已过期。'
     change_password: '更改密码'
+    change_password_subtitle: '输入新密码以重置'
     success_password_changed: '密码已成功更改。'
+    back_to_login: '返回登录'
 
   dashboard:
     account_balance: '账户余额'
@@ -1420,6 +1422,12 @@ pteroca:
       file_permissions: '文件权限'
       security_status: '安全状态'
       total_issues_found: '发现的总问题数'
+      check:
+        dangerous_functions: '危险函数'
+        path_traversal: '路径遍历'
+        sql_injection: 'SQL 注入'
+        xss_patterns: 'XSS 模式'
+        file_permissions: '文件权限'
     health:
       title: '插件健康'
       check: '健康检查'

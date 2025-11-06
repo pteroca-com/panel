@@ -71,7 +71,9 @@ pteroca:
     passwords_must_match: 'Passwords must match.'
     invalid_token: 'The password reset token is either invalid or has expired.'
     change_password: 'Change password'
+    change_password_subtitle: 'Enter your new password to reset it'
     success_password_changed: 'Your password has been successfully changed.'
+    back_to_login: 'Back to login'
 
   dashboard:
     account_balance: 'Account balance'
