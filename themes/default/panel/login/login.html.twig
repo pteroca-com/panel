@@ -1,164 +1,66 @@
-{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
+{% extends 'panel/layout/split_screen.html.twig' %}
 
-{% block body_class 'page-login' %}
 {% block page_title %}{{ get_title() }} | {{ 'pteroca.login.title'|trans }}{% endblock %}
 
-{% block head_stylesheets %}
-    {% if get_captcha_site_key() %}
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    {% endif %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version() ~ '-fix3') }}">
-{% endblock %}
-
-{% block head_javascript %}
-    {{ parent() }}
-{% endblock %}
-
-{% block head_favicon %}
-    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
-{% endblock %}
-
-{% block wrapper_wrapper %}
-    {% set page_title = block('page_title') %}
-
-    <!-- Apply color scheme immediately to prevent flash -->
-    <script>
-        (function() {
-            const savedScheme = localStorage.getItem('ea/colorScheme') || 'light';
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const scheme = savedScheme === 'auto' ? (prefersDark ? 'dark' : 'light') : savedScheme;
-            document.body.classList.remove('ea-light-scheme', 'ea-dark-scheme');
-            document.body.classList.add(scheme === 'dark' ? 'ea-dark-scheme' : 'ea-light-scheme');
-            document.body.setAttribute('data-bs-theme', scheme);
-            document.body.style.colorScheme = scheme;
-        })();
-    </script>
-
-    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
-        <div class="col-11 col-sm-8 col-md-6 col-lg-4 col-xl-3">
-            <!-- Logo Section - poza kartą -->
-            <div class="text-center mb-4">
-                {% block header_logo %}
-                    <div class="rounded-3 p-3 d-inline-block shadow-sm" style="background-color: rgb(93, 137, 186);">
-                        <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid" style="max-height: 80px;" />
-                    </div>
-                {% endblock header_logo %}
-            </div>
-            
-            <div class="card shadow-lg border rounded-3">
-                <div class="card-body p-5">
-                    <!-- Title Section -->
-                    <div class="text-center mb-4">
-                        <h1 class="h4 fw-bold text-dark mb-1">{{ 'pteroca.login.title'|trans }}</h1>
-                        <p class="text-muted small mb-0">{{ 'pteroca.login.subtitle'|trans }}</p>
-                    </div>
-
-                    <!-- Flash Messages -->
-                    {% include '@EasyAdmin/flash_messages.html.twig' %}
-
-                    <!-- Error Message -->
-                    {% if error|default(false) %}
-                        <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <div>
-                                {{ error.messageKey|trans(error.messageData, 'security') }}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <!-- Login Form -->
-                    {{ form_start(loginForm, {'action': action|default(path('app_login')), 'method': 'POST', 'attr': {'novalidate': 'novalidate'}}) }}
-                        
-                        {# Renderuj pola email i password #}
-                        {{ form_row(loginForm.email) }}
-                        {{ form_row(loginForm.password) }}
-
-                        <!-- Remember Me & Forgot Password -->
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            {% if loginForm.remember_me is defined %}
-                                <div class="form-check">
-                                    {{ form_widget(loginForm.remember_me, {'attr': {'class': 'form-check-input'}}) }}
-                                    {{ form_label(loginForm.remember_me, null, {'label_attr': {'class': 'form-check-label text-muted small'}}) }}
-                                </div>
-                            {% else %}
-                                <div></div>
-                            {% endif %}
-
-                            {% if forgot_password_enabled|default(false) %}
-                                <a href="{{ forgot_password_path|default('#') }}" class="text-decoration-none small">
-                                    {{ 'pteroca.login.forgot_password'|trans }}
-                                </a>
-                            {% endif %}
-                        </div>
-
-                        <!-- reCAPTCHA -->
-                        {% if get_captcha_site_key() %}
-                            <div class="d-flex justify-content-center mb-3">
-                                <div class="g-recaptcha" data-sitekey="{{ get_captcha_site_key() }}"></div>
-                            </div>
-                        {% endif %}
-
-                        {# Renderuj wszystkie dodatkowe pola z pluginów #}
-                        {% for field in loginForm %}
-                            {% if field.vars.name not in ['email', 'password', 'remember_me', '_token'] %}
-                                {{ form_row(field) }}
-                            {% endif %}
-                        {% endfor %}
-
-                        {# Hardkodowany CSRF token - obsługiwany przez UserAuthenticator #}
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                        <!-- Submit Button -->
-                        <div class="d-grid mb-3">
-                            <button type="submit" class="btn btn-primary btn-lg fw-semibold">
-                                <i class="fas fa-sign-in-alt me-2"></i>
-                                {{ 'pteroca.login.sign_in'|trans }}
-                            </button>
-                        </div>
-                    {{ form_end(loginForm) }}
-
-                    <!-- Register Link -->
-                    <div class="text-center">
-                        <p class="text-muted small mb-0">
-                            <a href="{{ path('app_register') }}" class="text-decoration-none">
-                                {{ 'pteroca.login.dont_have_account_yet'|trans }}
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="text-center mt-3">
-                <p class="text-muted small mb-0">
-                    Powered by
-                    <a href="https://pteroca.com" target="_blank" class="text-muted text-decoration-none">
-                        PteroCA v{{ get_app_version() }}
-                    </a>
-                    &copy; {{ 'now'|date('Y') }}
-                </p>
+{% block form_content %}
+    <!-- Error Message -->
+    {% if error|default(false) %}
+        <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <div>
+                {{ error.messageKey|trans(error.messageData, 'security') }}
             </div>
         </div>
-    </div>
+    {% endif %}
 
-    <!-- JavaScript for password toggle -->
-    <script>
-        function togglePasswordField(element) {
-            const passwordField = element.previousElementSibling;
-            const icon = element.querySelector('i');
-            
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-    </script>
+    <!-- Login Form -->
+    {{ form_start(loginForm, {'action': action|default(path('app_login')), 'method': 'POST', 'attr': {'novalidate': 'novalidate'}}) }}
 
-    <script src="{{ asset('login.js', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}"></script>
+        {# Renderuj pola email i password #}
+        {{ form_row(loginForm.email) }}
+        {{ form_row(loginForm.password) }}
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            {% if loginForm.remember_me is defined %}
+                <div class="form-check">
+                    {{ form_widget(loginForm.remember_me, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(loginForm.remember_me, null, {'label_attr': {'class': 'form-check-label text-muted small'}}) }}
+                </div>
+            {% else %}
+                <div></div>
+            {% endif %}
+
+            {% if forgot_password_enabled|default(false) %}
+                <a href="{{ forgot_password_path|default('#') }}" class="text-decoration-none small">
+                    {{ 'pteroca.login.forgot_password'|trans }}
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- reCAPTCHA -->
+        {% if get_captcha_site_key() %}
+            <div class="d-flex justify-content-center mb-3">
+                <div class="g-recaptcha" data-sitekey="{{ get_captcha_site_key() }}"></div>
+            </div>
+        {% endif %}
+
+        {# Renderuj wszystkie dodatkowe pola z pluginów #}
+        {% for field in loginForm %}
+            {% if field.vars.name not in ['email', 'password', 'remember_me', '_token'] %}
+                {{ form_row(field) }}
+            {% endif %}
+        {% endfor %}
+
+        {# Hardkodowany CSRF token - obsługiwany przez UserAuthenticator #}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <!-- Submit Button -->
+        <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary btn-lg fw-semibold">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                {{ 'pteroca.login.sign_in'|trans }}
+            </button>
+        </div>
+    {{ form_end(loginForm) }}
 {% endblock %}

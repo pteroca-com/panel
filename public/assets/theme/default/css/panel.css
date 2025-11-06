@@ -103,45 +103,218 @@
     margin-bottom: 1rem;
 }
 
-.page-login {
-    background: #f6f9fc !important;
+/* Split Screen Login Layout */
+/* Override EasyAdmin default login styles */
+.page-login-split .wrapper {
+    min-height: 100vh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
 }
 
-body.page-login #flash-messages {
+.page-login-split .content-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.page-login-split {
+    background: #ffffff !important;
+    overflow: hidden;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.login-split-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Left Side - Brand */
+.login-split-left {
+    flex: 0 0 45%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    position: relative;
+}
+
+.login-brand-content {
+    max-width: 500px;
+    color: #ffffff;
+}
+
+.login-logo {
+    margin-bottom: 2.5rem;
+}
+
+.login-logo img {
+    max-height: 100px;
+    filter: brightness(0) invert(1);
+}
+
+.login-brand-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.login-brand-subtitle {
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.login-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.login-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.login-feature-item i {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+}
+
+/* Right Side - Form */
+.login-split-right {
+    flex: 0 0 55%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: #ffffff;
+}
+
+.login-form-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.login-form-wrapper {
+    background: #ffffff;
+}
+
+.login-form-wrapper h1,
+.login-form-wrapper h2,
+.login-form-wrapper h3,
+.login-form-wrapper h4 {
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .login-split-container {
+        flex-direction: column;
+    }
+
+    .login-split-left {
+        flex: 0 0 auto;
+        min-height: 40vh;
+        padding: 2rem;
+    }
+
+    .login-split-right {
+        flex: 1;
+        padding: 2rem;
+    }
+
+    .login-brand-title {
+        font-size: 2rem;
+    }
+
+    .login-brand-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .login-features {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .login-feature-item {
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-split-left {
+        padding: 1.5rem;
+    }
+
+    .login-split-right {
+        padding: 1.5rem;
+    }
+
+    .login-brand-title {
+        font-size: 1.75rem;
+    }
+
+    .login-logo img {
+        max-height: 70px;
+    }
+}
+
+body.page-login-split #flash-messages {
     position: relative !important;
     margin-bottom: 1rem;
 }
 
-.ea-dark-scheme.page-login {
+/* Dark Mode */
+.ea-dark-scheme.page-login-split .login-split-right {
     background: #0E1E2F !important;
 }
 
-.ea-dark-scheme.page-login .card {
-    background-color: #1A2B3D !important;
-    border-color: #2D3F52 !important;
+.ea-dark-scheme.page-login-split .login-form-wrapper {
+    background: #0E1E2F !important;
 }
 
-.ea-dark-scheme.page-login .text-dark {
+.ea-dark-scheme.page-login-split .text-dark {
     color: #F8FAFC !important;
 }
 
-.ea-dark-scheme.page-login .text-muted {
+.ea-dark-scheme.page-login-split .text-muted {
     color: #9AA5B1 !important;
 }
 
-.ea-dark-scheme.page-login .form-control {
+.ea-dark-scheme.page-login-split .form-control {
     background-color: #243B53 !important;
     border-color: #2D3F52 !important;
     color: #E6EDF3 !important;
 }
 
-.ea-dark-scheme.page-login .form-control:focus {
+.ea-dark-scheme.page-login-split .form-control:focus {
     background-color: #243B53 !important;
     border-color: rgb(93, 137, 186) !important;
     color: #E6EDF3 !important;
 }
 
-.ea-dark-scheme.page-login .form-control::placeholder {
+.ea-dark-scheme.page-login-split .form-control::placeholder {
     color: #9AA5B1;
 }
 
@@ -1478,19 +1651,21 @@ hr {
     font-size: 0.95rem !important;
 }
 
-.page-login .input-group-lg .input-group-text {
+.page-login-split .input-group-lg .input-group-text {
     min-height: calc(1.5em + 1rem + 2px);
     display: flex;
     align-items: center;
 }
-.page-login .btn-primary {
-    background-color: rgb(93, 137, 186) !important;
-    border-color: rgb(93, 137, 186) !important;
+.page-login-split .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
     color: white !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
-.page-login .btn-primary:hover {
-    background-color: rgb(82, 121, 167) !important;
-    border-color: rgb(82, 121, 167) !important;
+.page-login-split .btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #66408b 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
 }
 
 /* Cart and Product Pages - Icon containers */

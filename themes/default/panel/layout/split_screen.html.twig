@@ -1,0 +1,137 @@
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
+
+{% block body_class 'page-login-split' %}
+
+{% block head_stylesheets %}
+    {% if get_captcha_site_key() %}
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% endif %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ template_asset('fonts/fonts.css') }}">
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version() ~ '-split-screen') }}">
+{% endblock %}
+
+{% block head_javascript %}
+    {{ parent() }}
+{% endblock %}
+
+{% block head_favicon %}
+    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
+{% endblock %}
+
+{% block wrapper_wrapper %}
+    {% set page_title = block('page_title') %}
+
+    <!-- Apply color scheme immediately to prevent flash -->
+    <script>
+        (function() {
+            const savedScheme = localStorage.getItem('ea/colorScheme') || 'light';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const scheme = savedScheme === 'auto' ? (prefersDark ? 'dark' : 'light') : savedScheme;
+            document.body.classList.remove('ea-light-scheme', 'ea-dark-scheme');
+            document.body.classList.add(scheme === 'dark' ? 'ea-dark-scheme' : 'ea-light-scheme');
+            document.body.setAttribute('data-bs-theme', scheme);
+            document.body.style.colorScheme = scheme;
+        })();
+    </script>
+
+    <div class="login-split-container">
+        <!-- Left Side - Brand -->
+        <div class="login-split-left">
+            <div class="login-brand-content">
+                {% block left_logo %}
+                    <div class="login-logo">
+                        <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid" />
+                    </div>
+                {% endblock %}
+
+                {% block left_content %}
+                    <h2 class="login-brand-title">{{ 'pteroca.login.welcome_back'|trans }}</h2>
+                    <p class="login-brand-subtitle">{{ 'pteroca.login.brand_description'|trans }}</p>
+
+                    <div class="login-features">
+                        <div class="login-feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>{{ 'pteroca.login.feature_secure'|trans }}</span>
+                        </div>
+                        <div class="login-feature-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>{{ 'pteroca.login.feature_fast'|trans }}</span>
+                        </div>
+                        <div class="login-feature-item">
+                            <i class="fas fa-heart"></i>
+                            <span>{{ 'pteroca.login.feature_reliable'|trans }}</span>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+
+        <!-- Right Side - Form -->
+        <div class="login-split-right">
+            <div class="login-form-container">
+                <div class="login-form-wrapper">
+                    <!-- Title Section -->
+                    <div class="text-center mb-4">
+                        {% block form_title %}
+                            <h1 class="h4 fw-bold text-dark mb-1">{{ 'pteroca.login.title'|trans }}</h1>
+                        {% endblock %}
+                        {% block form_subtitle %}
+                            <p class="text-muted small mb-0">{{ 'pteroca.login.subtitle'|trans }}</p>
+                        {% endblock %}
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% include '@EasyAdmin/flash_messages.html.twig' %}
+
+                    <!-- Form Content -->
+                    {% block form_content %}
+                        {# This block should be overridden in child templates #}
+                    {% endblock %}
+
+                    <!-- Footer Links -->
+                    {% block footer_links %}
+                        <div class="text-center">
+                            <p class="text-muted small mb-0">
+                                <a href="{{ path('app_register') }}" class="text-decoration-none">
+                                    {{ 'pteroca.login.dont_have_account_yet'|trans }}
+                                </a>
+                            </p>
+                        </div>
+                    {% endblock %}
+
+                    <!-- Footer -->
+                    <div class="text-center mt-4">
+                        <p class="text-muted small mb-0">
+                            Powered by
+                            <a href="https://pteroca.com" target="_blank" class="text-muted text-decoration-none">
+                                PteroCA v{{ get_app_version() }}
+                            </a>
+                            &copy; {{ 'now'|date('Y') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for password toggle -->
+    <script>
+        function togglePasswordField(element) {
+            const passwordField = element.previousElementSibling;
+            const icon = element.querySelector('i');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+
+    <script src="{{ asset('login.js', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}"></script>
+{% endblock %}

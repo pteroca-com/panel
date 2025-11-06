@@ -30,10 +30,20 @@ pteroca:
     invalid_credentials: 'Invalid email or password.'
     dont_have_account_yet: "Don't have an account yet? Register now!"
     subtitle: 'Sign in to your account'
+    welcome_back: 'Welcome Back'
+    brand_description: 'Manage your game servers with ease. Powerful, secure, and reliable hosting platform.'
+    feature_secure: 'Secure & Protected'
+    feature_fast: 'Lightning Fast'
+    feature_reliable: 'Always Reliable'
 
   register:
     title: 'Register'
     subtitle: 'Create your new account'
+    welcome_title: 'Join Us Today'
+    welcome_description: 'Start your journey with our powerful hosting platform. Get started in minutes and deploy your first server.'
+    feature_quick_setup: 'Quick Setup'
+    feature_join_community: 'Join Our Community'
+    feature_free_trial: 'Free Trial Available'
     name: 'First name'
     name_placeholder: 'Enter your first name'
     surname: 'Last name'
@@ -60,6 +70,17 @@ pteroca:
 
   recovery:
     title: 'Password Recovery'
+    request_title: 'Forgot Your Password?'
+    request_description: "No worries! Enter your email address and we'll send you a link to reset your password."
+    request_subtitle: 'Enter your email address to receive a password reset link'
+    feature_email_link: 'Email Reset Link'
+    feature_quick_process: 'Quick & Easy'
+    feature_secure: 'Secure & Safe'
+    reset_title: 'Reset Your Password'
+    reset_description: 'Choose a strong password to secure your account. Make sure it includes letters, numbers, and special characters.'
+    feature_secure_reset: 'Secure Process'
+    feature_new_password: 'Strong Password'
+    feature_instant_access: 'Instant Access'
     email_address: 'Email address'
     submit: 'Send password reset link'
     sent_if_exists: 'If an account with that email exists, you will receive a password reset email.'
