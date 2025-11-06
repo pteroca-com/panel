@@ -1,34 +1,39 @@
-{% include 'bundles/TwigBundle/Exception/components/error_header.html.twig' with {'title': 'pteroca.error.general.title'|trans} %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ get_title() }} | {{ 'pteroca.error.general.title'|trans }}</title>
 
-    <div class="error-container fade-in">
-        <!-- Logo Section -->
-        <div class="logo-section">
-            <img src="{{ get_logo() }}" alt="{{ get_title() }}" class="img-fluid">
-        </div>
-        
-        <!-- Error Code -->
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ asset(get_favicon()) }}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Error Page CSS -->
+    <link rel="stylesheet" href="{{ template_asset('css/error-page.css?v=' ~ get_app_version()) }}">
+</head>
+<body class="error-general">
+    <div class="error-container">
         <div class="error-code">{{ status_code|default('Error') }}</div>
-        
-        <!-- Error Title -->
-        <h1 class="error-title">
-            {{ 'pteroca.error.general.title'|trans }}
-        </h1>
-        
-        <!-- Error Description -->
-        <p class="error-description">
-            {{ 'pteroca.error.general.message'|trans }}
-        </p>
-        
-        <!-- Action Buttons -->
-        <div class="d-flex flex-column justify-content-center align-items-center gap-3">
-            <a href="{{ path('panel') }}" class="btn-custom btn-primary-custom">
+        <h1 class="error-title">{{ 'pteroca.error.general.title'|trans }}</h1>
+        <p class="error-description">{{ 'pteroca.error.general.message'|trans }}</p>
+
+        <div class="error-actions">
+            <a href="{{ path('panel') }}" class="btn-error btn-primary-error">
                 <i class="fas fa-home"></i>
                 {{ 'pteroca.error.general.go_home'|trans }}
             </a>
-            <button onclick="history.back()" class="btn-custom btn-secondary-custom">
+            <button onclick="history.back()" class="btn-error btn-secondary-error">
                 <i class="fas fa-arrow-left"></i>
                 {{ 'pteroca.error.general.go_back'|trans }}
             </button>
         </div>
 
-{% include 'bundles/TwigBundle/Exception/components/error_footer.html.twig' %}
+        <p class="footer-text">
+            Powered by <a href="https://pteroca.com" target="_blank">PteroCA v{{ get_app_version() }}</a> &copy; {{ 'now'|date('Y') }}
+        </p>
+    </div>
+</body>
+</html>
