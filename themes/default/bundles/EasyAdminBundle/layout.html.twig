@@ -20,6 +20,7 @@
     </title>
 
     {% block head_stylesheets %}
+        <link rel="stylesheet" href="{{ template_asset('fonts/fonts.css') }}">
         <link rel="stylesheet" href="{{ asset('app.css', ea.assets.defaultAssetPackageName) }}">
         {% if get_current_template_options().isSupportCustomColors() %}
             {% include 'components/theme_styles.html.twig' %}
