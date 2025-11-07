@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventListener;
+namespace App\Core\EventSubscriber\User;
 
 use App\Core\Attribute\RequiresVerifiedEmail;
 use App\Core\Enum\EmailVerificationValueEnum;
@@ -39,7 +39,7 @@ readonly class EmailVerificationSubscriber implements EventSubscriberInterface
     public function onKernelController(ControllerEvent $event): void
     {
         $controller = $event->getController();
-        
+
         if (!is_array($controller)) {
             return;
         }
@@ -54,7 +54,7 @@ readonly class EmailVerificationSubscriber implements EventSubscriberInterface
 
         $methodReflection = new ReflectionMethod($controllerObj, $method);
         $methodAttributes = $methodReflection->getAttributes(RequiresVerifiedEmail::class);
-        
+
         $classAttributes = [];
         if (empty($methodAttributes)) {
             $classReflection = new ReflectionClass($controllerObj);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventSubscriber;
+namespace App\Core\EventSubscriber\User;
 
 use App\Core\Entity\User;
 use App\Core\Enum\EmailVerificationValueEnum;

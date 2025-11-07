@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventListener;
+namespace App\Core\EventSubscriber\Security;
 
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
@@ -21,7 +21,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 #[AsEventListener(event: LoginSuccessEvent::class)]
 #[AsEventListener(event: LoginFailureEvent::class)]
 #[AsEventListener(event: LogoutEvent::class)]
-class AuthenticationEventListener
+class AuthenticationSubscriber
 {
     public function __construct(
         private EventDispatcherInterface $eventDispatcher,
@@ -66,7 +66,7 @@ class AuthenticationEventListener
         // Emit UserLoggedInEvent
         $sessionId = $request?->getSession()->getId();
         $rememberMe = $event->getPassport()->hasBadge(RememberMeBadge::class);
-        
+
         $loggedInEvent = new UserLoggedInEvent(
             $user->getId(),
             $user->getEmail(),
@@ -81,7 +81,7 @@ class AuthenticationEventListener
     {
         $request = $this->requestStack->getCurrentRequest();
         $email = $request?->request->get('email', 'unknown');
-        
+
         $exception = $event->getException();
         $reason = $exception->getMessage();
 

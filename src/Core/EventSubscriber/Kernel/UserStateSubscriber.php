@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventListener;
+namespace App\Core\EventSubscriber\Kernel;
 
 use App\Core\Contract\UserInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-readonly class UserStateListener implements EventSubscriberInterface
+readonly class UserStateSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private Security $security,
@@ -23,7 +23,7 @@ readonly class UserStateListener implements EventSubscriberInterface
         if (!$event->isMainRequest()) {
             return;
         }
-        
+
 
         $user = $this->security->getUser();
 

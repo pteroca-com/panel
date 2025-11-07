@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventSubscriber;
+namespace App\Core\EventSubscriber\Security;
 
 use App\Core\Event\Security\PermissionsRegisteredEvent;
 use App\Core\Service\Security\PermissionRegistry;

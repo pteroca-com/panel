@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventListener;
+namespace App\Core\EventSubscriber\Kernel;
 
 use App\Core\Enum\SettingEnum;
 use App\Core\Service\SettingService;
@@ -16,7 +16,7 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
 #[AsEventListener(event: 'kernel.exception')]
-class ExceptionListener
+class ExceptionSubscriber
 {
     public function __construct(
         private Environment     $twig,
@@ -37,11 +37,11 @@ class ExceptionListener
 
         $exception = $event->getThrowable();
         $statusCode = $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 500;
-        
+
         $currentTheme = $this->settingService->getSetting(SettingEnum::CURRENT_THEME->value) ?? 'default';
-        
+
         $template = $this->findTemplate($statusCode, $currentTheme);
-        
+
         if (!$template) {
             return;
         }
@@ -69,38 +69,38 @@ class ExceptionListener
         if ($currentTheme === 'default') {
             $specificTemplate = sprintf('@default_theme/bundles/TwigBundle/Exception/error%d.html.twig', $statusCode);
             $generalTemplate = '@default_theme/bundles/TwigBundle/Exception/error.html.twig';
-            
+
             if ($this->templateExists($specificTemplate)) {
                 return $specificTemplate;
             }
-            
+
             if ($this->templateExists($generalTemplate)) {
                 return $generalTemplate;
             }
         } else {
             $specificTemplate = sprintf('themes/%s/bundles/TwigBundle/Exception/error%d.html.twig', $currentTheme, $statusCode);
             $generalTemplate = sprintf('themes/%s/bundles/TwigBundle/Exception/error.html.twig', $currentTheme);
-            
+
             if ($this->templateExists($specificTemplate)) {
                 return $specificTemplate;
             }
-            
+
             if ($this->templateExists($generalTemplate)) {
                 return $generalTemplate;
             }
-            
+
             $defaultSpecificTemplate = sprintf('@default_theme/bundles/TwigBundle/Exception/error%d.html.twig', $statusCode);
             $defaultGeneralTemplate = '@default_theme/bundles/TwigBundle/Exception/error.html.twig';
-            
+
             if ($this->templateExists($defaultSpecificTemplate)) {
                 return $defaultSpecificTemplate;
             }
-            
+
             if ($this->templateExists($defaultGeneralTemplate)) {
                 return $defaultGeneralTemplate;
             }
         }
-        
+
         return null;
     }
 

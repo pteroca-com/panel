@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\EventListener;
+namespace App\Core\EventSubscriber\Plugin;
 
 use App\Core\Repository\PluginRepository;
 use App\Core\Service\Plugin\PluginAutoloader;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Twig\Loader\FilesystemLoader;
 
 /**
- * Event listener that bootstraps all ENABLED plugins on kernel boot.
+ * Event subscriber that bootstraps all ENABLED plugins on kernel boot.
  *
  * Performs runtime registration of plugin components:
  * - PSR-4 autoloaders for plugin classes
@@ -23,7 +23,7 @@ use Twig\Loader\FilesystemLoader;
  * This runs once per request with high priority (before routing) to ensure
  * plugin resources are available when needed.
  */
-class PluginBootListener implements EventSubscriberInterface
+class PluginBootSubscriber implements EventSubscriberInterface
 {
     private static bool $booted = false;
 

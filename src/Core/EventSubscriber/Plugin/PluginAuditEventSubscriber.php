@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventSubscriber;
+namespace App\Core\EventSubscriber\Plugin;
 
 use App\Core\Event\Plugin\PluginDiscoveredEvent;
 use App\Core\Event\Plugin\PluginDisabledEvent;

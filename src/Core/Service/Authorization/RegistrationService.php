@@ -57,7 +57,6 @@ class RegistrationService
         bool $isVerified = false
     ): RegisterUserActionResult
     {
-        // 1. Emit UserRegistrationRequestedEvent
         $request = $this->requestStack->getCurrentRequest();
         $context = [
             'ip' => $request?->getClientIp(),
@@ -82,7 +81,6 @@ class RegistrationService
             return $this->reactivateUser($existingDeletedUser, $plainPassword, $roles, $isVerified);
         }
 
-        // 2. Emit UserRegistrationValidatedEvent
         $validatedEvent = new UserRegistrationValidatedEvent(
             $user->getEmail(),
             strtolower($user->getEmail()),
@@ -98,14 +96,13 @@ class RegistrationService
             );
         }
 
-        // Pluginy mogły zmienić role
+        // Plugins may have modified roles
         $user->setIsVerified($isVerified);
         $user->setRoles($validatedEvent->getRoles());
 
         try {
             $this->userService->createUserWithPterodactylAccount($user, $plainPassword);
         } catch (Exception $exception) {
-            // Emit UserRegistrationFailedEvent
             $failedEvent = new UserRegistrationFailedEvent(
                 $user->getEmail(),
                 $exception->getMessage(),
@@ -120,9 +117,9 @@ class RegistrationService
             );
         }
 
-        // UserAboutToBeCreatedEvent, UserCreatedEvent i UserRegisteredEvent
-        // są emitowane automatycznie przez UserEventListener
-        // Wysyłka emaila jest obsługiwana przez UserRegistrationSubscriber
+        // UserAboutToBeCreatedEvent, UserCreatedEvent and UserRegisteredEvent
+        // are emitted automatically by UserEventSubscriber
+        // Email sending is handled by UserRegistrationSubscriber
         $this->userRepository->save($user);
         $this->logService->logAction($user, LogActionEnum::USER_REGISTERED);
 
@@ -149,12 +146,12 @@ class RegistrationService
                 $this->userService->createOrRestoreUser($deletedUser, $plainPassword);
             }
 
-            // UWAGA: Dla reaktywacji UserEventListener NIE emituje eventów automatycznie,
-            // bo to jest UPDATE, a nie INSERT (prePersist/postPersist nie są wywoływane)
+            // NOTE: For reactivation, UserEventSubscriber does NOT emit events automatically,
+            // because this is an UPDATE, not INSERT (prePersist/postPersist are not triggered)
             $this->userRepository->save($deletedUser);
             $this->logService->logAction($deletedUser, LogActionEnum::USER_REGISTERED);
 
-            // Ręcznie emitujemy UserRegisteredEvent dla reaktywowanego użytkownika
+            // Manually emit UserRegisteredEvent for reactivated user
             $request = $this->requestStack->getCurrentRequest();
             $registeredEvent = new UserRegisteredEvent(
                 $deletedUser->getId(),
@@ -224,7 +221,6 @@ class RegistrationService
         $this->userRepository->save($user);
         $this->logService->logAction($user, LogActionEnum::USER_VERIFY_EMAIL);
 
-        // Emit UserEmailVerifiedEvent
         $request = $this->requestStack->getCurrentRequest();
         $verifiedEvent = new UserEmailVerifiedEvent(
             $user->getId(),

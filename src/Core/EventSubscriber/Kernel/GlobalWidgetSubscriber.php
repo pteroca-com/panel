@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventSubscriber;
+namespace App\Core\EventSubscriber\Kernel;
 
 use App\Core\Enum\WidgetPosition;
 use App\Core\Service\Widget\WidgetRegistry;

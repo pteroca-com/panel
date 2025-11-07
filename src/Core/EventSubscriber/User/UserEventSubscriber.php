@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\EventListener;
+namespace App\Core\EventSubscriber\User;
 
 use App\Core\Entity\User;
 use App\Core\Event\User\Registration\UserAboutToBeCreatedEvent;
@@ -19,7 +19,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postFlush)]
 #[AsEventListener(event: KernelEvents::TERMINATE)]
-class UserEventListener
+class UserEventSubscriber
 {
     private array $persistedUsers = [];
     private bool $eventsFiredInCurrentTransaction = false;
