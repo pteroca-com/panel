@@ -30,10 +30,20 @@ pteroca:
     invalid_credentials: 'अमान्य ईमेल या पासवर्ड।'
     dont_have_account_yet: "अभी तक खाता नहीं है? अभी पंजीकरण करें!"
     subtitle: 'अपने खाते में लॉगिन करें'
+    welcome_back: 'वापसी पर स्वागत है'
+    brand_description: 'अपने गेम सर्वर को आसानी से प्रबंधित करें। शक्तिशाली, सुरक्षित और विश्वसनीय होस्टिंग प्लेटफॉर्म।'
+    feature_secure: 'सुरक्षित और संरक्षित'
+    feature_fast: 'बिजली की तरह तेज'
+    feature_reliable: 'हमेशा विश्वसनीय'
 
   register:
     title: 'रजिस्टर करें'
     subtitle: 'अपना नया खाता बनाएं'
+    welcome_title: 'आज हमारे साथ जुड़ें'
+    welcome_description: 'हमारी शक्तिशाली होस्टिंग प्लेटफॉर्म के साथ अपनी यात्रा शुरू करें। मिनटों में शुरू करें और अपना पहला सर्वर तैनात करें।'
+    feature_quick_setup: 'तेज सेटअप'
+    feature_join_community: 'हमारी समुदाय में शामिल हों'
+    feature_easy_start: 'शुरू करना आसान'
     name: 'पहला नाम'
     name_placeholder: 'अपना पहला नाम दर्ज करें'
     surname: 'अंतिम नाम'
@@ -60,6 +70,17 @@ pteroca:
 
   recovery:
     title: 'पासवर्ड पुनर्प्राप्ति'
+    request_title: 'अपना पासवर्ड भूल गए?'
+    request_description: 'कोई चिंता नहीं! अपना ईमेल पता दर्ज करें और हम आपको पासवर्ड रीसेट करने के लिए एक लिंक भेजेंगे।'
+    request_subtitle: 'पासवर्ड रीसेट लिंक प्राप्त करने के लिए अपना ईमेल पता दर्ज करें'
+    feature_email_link: 'ईमेल रीसेट लिंक'
+    feature_quick_process: 'तेज और आसान'
+    feature_secure: 'सुरक्षित और सुरक्षित'
+    reset_title: 'अपना पासवर्ड रीसेट करें'
+    reset_description: 'अपने खाते को सुरक्षित करने के लिए एक मजबूत पासवर्ड चुनें। सुनिश्चित करें कि इसमें अक्षर, संख्या और विशेष वर्ण शामिल हों।'
+    feature_secure_reset: 'सुरक्षित प्रक्रिया'
+    feature_new_password: 'मजबूत पासवर्ड'
+    feature_instant_access: 'तत्काल पहुंच'
     email_address: 'ईमेल पता'
     submit: 'पासवर्ड रीसेट लिंक भेजें'
     sent_if_exists: 'यदि इस ईमेल से खाता मौजूद है, तो आपको पासवर्ड रीसेट करने का ईमेल मिलेगा।'

@@ -8,7 +8,7 @@
     {% endif %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ template_asset('fonts/fonts.css') }}">
-    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version() ~ '-split-screen') }}">
+    <link rel="stylesheet" href="{{ template_asset('css/panel.css?v=' ~ get_app_version()) }}">
 {% endblock %}
 
 {% block head_javascript %}

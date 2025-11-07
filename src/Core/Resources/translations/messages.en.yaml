@@ -43,7 +43,7 @@ pteroca:
     welcome_description: 'Start your journey with our powerful hosting platform. Get started in minutes and deploy your first server.'
     feature_quick_setup: 'Quick Setup'
     feature_join_community: 'Join Our Community'
-    feature_free_trial: 'Free Trial Available'
+    feature_easy_start: 'Easy to Get Started'
     name: 'First name'
     name_placeholder: 'Enter your first name'
     surname: 'Last name'

@@ -224,7 +224,7 @@
 /* Left Side - Brand */
 .login-split-left {
     flex: 0 0 45%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #5470D3 0%, #4A63C8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1748,15 +1748,15 @@ hr {
     align-items: center;
 }
 .page-login-split .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #5470D3 0%, #4A63C8 100%) !important;
     border: none !important;
     color: white !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 .page-login-split .btn-primary:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #66408b 100%) !important;
+    background: linear-gradient(135deg, #4260C0 0%, #3952B5 100%) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(84, 112, 211, 0.4) !important;
 }
 
 /* Cart and Product Pages - Icon containers */
@@ -1920,8 +1920,8 @@ hr {
 }
 
 .ea-dark-scheme #main-menu .menu .menu-item.active {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%) !important;
-    border-left-color: #667eea;
+    background: linear-gradient(135deg, rgba(84, 112, 211, 0.15) 0%, rgba(74, 99, 200, 0.15) 100%) !important;
+    border-left-color: #5470D3;
 }
 
 .ea-dark-scheme #main-menu .menu .menu-item.active .menu-item-label,

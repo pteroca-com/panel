@@ -28,6 +28,11 @@ pteroca:
     invalid_credentials: 'Adresse e-mail ou mot de passe invalide.'
     dont_have_account_yet: 'Vous n’avez pas encore de compte ? Inscrivez-vous !'
     subtitle: 'Connectez-vous à votre compte'
+    welcome_back: 'Bienvenue de retour'
+    brand_description: "Gérez vos serveurs de jeux en toute simplicité. Plateforme d'hébergement puissante, sécurisée et fiable."
+    feature_secure: 'Sécurisé et Protégé'
+    feature_fast: "Rapide comme l'éclair"
+    feature_reliable: 'Toujours Fiable'
     email_placeholder: 'votre@email.com'
     password_placeholder: 'Entrez votre mot de passe'
 
@@ -53,6 +58,11 @@ pteroca:
     email_already_exists: 'Un compte avec cette adresse e-mail existe déjà.'
     already_have_account: 'Vous avez déjà un compte ? Connectez-vous !'
     subtitle: 'Créez votre nouveau compte'
+    welcome_title: "Rejoignez-nous aujourd'hui"
+    welcome_description: "Commencez votre voyage avec notre plateforme d'hébergement puissante. Démarrez en quelques minutes et déployez votre premier serveur."
+    feature_quick_setup: 'Configuration rapide'
+    feature_join_community: 'Rejoignez notre communauté'
+    feature_easy_start: 'Facile à démarrer'
     name_placeholder: 'Entrez votre prénom'
     surname_placeholder: 'Entrez votre nom de famille'
     email_placeholder: 'votre@email.com'
@@ -60,6 +70,17 @@ pteroca:
 
   recovery:
     title: 'Réinitialisation du mot de passe'
+    request_title: 'Mot de passe oublié ?'
+    request_description: 'Pas de souci ! Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.'
+    request_subtitle: 'Entrez votre adresse e-mail pour recevoir un lien de réinitialisation de mot de passe'
+    feature_email_link: 'Lien de réinitialisation par e-mail'
+    feature_quick_process: 'Rapide et facile'
+    feature_secure: 'Sécurisé et sûr'
+    reset_title: 'Réinitialisez votre mot de passe'
+    reset_description: "Choisissez un mot de passe fort pour sécuriser votre compte. Assurez-vous qu'il inclut des lettres, des chiffres et des caractères spéciaux."
+    feature_secure_reset: 'Processus sécurisé'
+    feature_new_password: 'Mot de passe fort'
+    feature_instant_access: 'Accès instantané'
     email_address: 'Adresse e-mail'
     submit: 'Envoyer le lien de réinitialisation du mot de passe'
     sent_if_exists: 'Si un compte avec cette adresse e-mail existe dans notre système, vous recevrez un e-mail avec un lien de réinitialisation.'
