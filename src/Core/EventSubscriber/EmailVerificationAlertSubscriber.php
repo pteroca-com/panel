@@ -59,7 +59,7 @@ readonly class EmailVerificationAlertSubscriber implements EventSubscriberInterf
 
         $message = sprintf('%s <a href="%s">%s</a>',
             $translatedMessage,
-            $this->urlGenerator->generate('verify_notice'),
+            $this->urlGenerator->generate('panel', ['routeName' => 'verify_notice']),
             $translatedLinkText
         );
 

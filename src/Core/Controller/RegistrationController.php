@@ -113,6 +113,8 @@ class RegistrationController extends AbstractController
     #[Route('/verify-notice', name: 'verify_notice')]
     public function verifyNotice(Request $request): Response
     {
+        $this->checkPermission();
+
         $user = $this->getUser();
         if ($user instanceof UserInterface && $user->isVerified()) {
             return $this->redirectToRoute('panel');
@@ -158,6 +160,6 @@ class RegistrationController extends AbstractController
             $this->addFlash('danger', $e->getMessage());
         }
 
-        return $this->redirectToRoute('verify_notice');
+        return $this->redirectToRoute('panel', ['routeName' => 'verify_notice']);
     }
 }
