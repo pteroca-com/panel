@@ -1196,9 +1196,14 @@ pteroca:
     required: 'Vérification d''e-mail requise'
     description: 'Vous devez vérifier votre adresse e-mail avant de pouvoir accéder à cette fonctionnalité.'
     sent_to: 'E-mail de vérification envoyé à'
+    check_inbox: 'Vérifiez votre boîte de réception pour le lien de vérification'
     resend: 'Renvoyer l''e-mail de vérification'
+    resend_title: 'Renvoyer la vérification'
+    resend_description: 'Vous n''avez pas reçu l''e-mail ? Nous pouvons le renvoyer.'
     resend_success: 'L''e-mail de vérification a été envoyé !'
+    may_take_minutes: 'Cela peut prendre quelques minutes pour arriver'
     back_to_panel: 'Retour au panneau'
+    help_title: 'Besoin d''aide ?'
     help_text: 'Vérifiez votre boîte de réception et votre dossier spam pour le lien de vérification.'
 
   admin:

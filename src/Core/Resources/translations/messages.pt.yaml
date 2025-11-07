@@ -1199,9 +1199,14 @@ pteroca:
     required: 'Verificação de e-mail obrigatória'
     description: 'Você deve verificar seu endereço de e-mail antes de acessar esta função.'
     sent_to: 'E-mail de verificação enviado para'
+    check_inbox: 'Verifique sua caixa de entrada para o link de verificação'
     resend: 'Reenviar e-mail de verificação'
+    resend_title: 'Reenviar Verificação'
+    resend_description: 'Não recebeu o e-mail? Podemos enviá-lo novamente.'
     resend_success: 'O e-mail de verificação foi enviado!'
+    may_take_minutes: 'Pode levar alguns minutos para chegar'
     back_to_panel: 'Voltar ao painel'
+    help_title: 'Precisa de ajuda?'
     help_text: 'Verifique sua caixa de entrada e pasta de spam para o link de verificação.'
 
   admin:

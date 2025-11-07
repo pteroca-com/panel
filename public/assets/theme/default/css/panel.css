@@ -2302,3 +2302,18 @@ hr {
     color: var(--text-color);
     text-decoration: none;
 }
+
+/* Verification Page Styling */
+.verification-icon-container {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 193, 7, 0.15);
+}
+
+.verification-icon {
+    font-size: 2rem;
+    color: #ff9800;
+}

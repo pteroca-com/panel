@@ -1197,9 +1197,14 @@ pteroca:
     required: 'Verificación de correo electrónico requerida'
     description: 'Debes verificar tu dirección de correo electrónico antes de poder acceder a esta función.'
     sent_to: 'Correo de verificación enviado a'
+    check_inbox: 'Revisa tu bandeja de entrada para el enlace de verificación'
     resend: 'Reenviar correo de verificación'
+    resend_title: 'Reenviar Verificación'
+    resend_description: '¿No recibiste el correo? Podemos enviarlo de nuevo.'
     resend_success: '¡El correo de verificación ha sido enviado!'
+    may_take_minutes: 'Puede tardar unos minutos en llegar'
     back_to_panel: 'Volver al panel'
+    help_title: '¿Necesitas ayuda?'
     help_text: 'Revisa tu bandeja de entrada y carpeta de spam para el enlace de verificación.'
 
   admin:

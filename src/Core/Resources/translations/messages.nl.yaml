@@ -1183,9 +1183,14 @@ pteroca:
     required: 'E-mail verificatie vereist'
     description: 'U moet uw e-mailadres verifiëren voordat u toegang heeft tot deze functie.'
     sent_to: 'Verificatie-e-mail verzonden naar'
+    check_inbox: 'Controleer je inbox voor de verificatielink'
     resend: 'Verificatie-e-mail opnieuw verzenden'
+    resend_title: 'Verificatie opnieuw verzenden'
+    resend_description: 'Heb je de e-mail niet ontvangen? We kunnen hem opnieuw verzenden.'
     resend_success: 'Verificatie-e-mail is verzonden!'
+    may_take_minutes: 'Het kan enkele minuten duren om aan te komen'
     back_to_panel: 'Terug naar paneel'
+    help_title: 'Hulp nodig?'
     help_text: 'Controleer uw inbox en spam-map voor de verificatielink.'
   admin:
     overview:

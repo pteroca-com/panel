@@ -1197,9 +1197,14 @@ pteroca:
     required: 'Verifica e-mail richiesta'
     description: 'Devi verificare il tuo indirizzo e-mail prima di poter accedere a questa funzione.'
     sent_to: 'E-mail di verifica inviata a'
+    check_inbox: 'Controlla la tua casella di posta per il link di verifica'
     resend: 'Invia nuovamente e-mail di verifica'
+    resend_title: 'Invia nuovamente la verifica'
+    resend_description: 'Non hai ricevuto l''email? Possiamo inviarla di nuovo.'
     resend_success: 'L''e-mail di verifica è stata inviata!'
+    may_take_minutes: 'Potrebbe richiedere alcuni minuti per arrivare'
     back_to_panel: 'Torna al pannello'
+    help_title: 'Hai bisogno di aiuto?'
     help_text: 'Controlla la tua casella di posta e la cartella spam per il link di verifica.'
 
   admin:

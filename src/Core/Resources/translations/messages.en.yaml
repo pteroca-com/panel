@@ -1192,9 +1192,14 @@ pteroca:
     required: 'Email verification required'
     description: 'You must verify your email address before you can access this feature.'
     sent_to: 'Verification email sent to'
+    check_inbox: 'Check your inbox for the verification link'
     resend: 'Resend Verification Email'
+    resend_title: 'Resend Verification'
+    resend_description: 'Didn''t receive the email? We can send it again.'
     resend_success: 'Verification email has been sent!'
+    may_take_minutes: 'It may take a few minutes to arrive'
     back_to_panel: 'Back to Panel'
+    help_title: 'Need help?'
     help_text: 'Check your email inbox and spam folder for the verification link.'
 
   admin:

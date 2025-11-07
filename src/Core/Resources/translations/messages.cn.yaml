@@ -1197,9 +1197,14 @@ pteroca:
     required: '需要电子邮件验证'
     description: '您必须先验证您的电子邮件地址才能访问此功能。'
     sent_to: '验证邮件发送至'
+    check_inbox: '检查您的收件箱以获取验证链接'
     resend: '重新发送验证邮件'
+    resend_title: '重新发送验证'
+    resend_description: '没有收到邮件？我们可以再次发送。'
     resend_success: '验证邮件已发送！'
+    may_take_minutes: '可能需要几分钟才能到达'
     back_to_panel: '返回面板'
+    help_title: '需要帮助？'
     help_text: '请检查您的收件箱和垃圾邮件文件夹以获取验证链接。'
 
   admin:

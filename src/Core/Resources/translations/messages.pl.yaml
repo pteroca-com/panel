@@ -1197,9 +1197,14 @@ pteroca:
     required: 'Weryfikacja e-mail wymagana'
     description: 'Musisz zweryfikować swój adres e-mail, zanim uzyskasz dostęp do tej funkcji.'
     sent_to: 'E-mail weryfikacyjny wysłany do'
+    check_inbox: 'Sprawdź swoją skrzynkę odbiorczą pod kątem linku weryfikacyjnego'
     resend: 'Wyślij ponownie e-mail weryfikacyjny'
+    resend_title: 'Wyślij ponownie weryfikację'
+    resend_description: 'Nie otrzymałeś wiadomości e-mail? Możemy ją wysłać ponownie.'
     resend_success: 'E-mail weryfikacyjny został wysłany!'
+    may_take_minutes: 'Może to potrwać kilka minut, aby dotrzeć'
     back_to_panel: 'Powrót do panelu'
+    help_title: 'Potrzebujesz pomocy?'
     help_text: 'Sprawdź swoją skrzynkę odbiorczą i folder spamu pod kątem linku weryfikacyjnego.'
 
   admin:

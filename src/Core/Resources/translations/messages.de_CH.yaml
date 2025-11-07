@@ -1190,9 +1190,14 @@ pteroca:
     required: 'E-Mail-Verifizierung erforderlich'
     description: 'Sie müssen Ihre E-Mail-Adresse verifizieren, bevor Sie auf diese Funktion zugreifen können.'
     sent_to: 'Verifizierungs-E-Mail gesendet an'
+    check_inbox: 'Überprüfen Sie Ihren Posteingang auf den Bestätigungslink'
     resend: 'Verifizierungs-E-Mail erneut senden'
+    resend_title: 'Bestätigung erneut senden'
+    resend_description: 'Haben Sie die E-Mail nicht erhalten? Wir können sie erneut senden.'
     resend_success: 'Verifizierungs-E-Mail wurde gesendet!'
+    may_take_minutes: 'Es kann einige Minuten dauern, bis sie ankommt'
     back_to_panel: 'Zurück zum Panel'
+    help_title: 'Brauchen Sie Hilfe?'
     help_text: 'Überprüfen Sie Ihren E-Mail-Posteingang und Spam-Ordner auf den Verifizierungslink.'
   admin:
     overview:
