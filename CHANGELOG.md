@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.6.0] - Unreleased
+
+### Added
+- **Introduced a comprehensive Plugin System** with full lifecycle management (scan, enable, disable, update, uninstall).
+- Added capability-based plugin access control for routes, entities, migrations, UI components, events, console commands, and cron tasks.
+- Added plugin security validator that scans for dangerous code patterns, SQL injection risks, and path traversal vulnerabilities.
+- Added plugin health check system with automated monitoring and audit logging.
+- Added plugin dependency management with semantic versioning support and circular dependency detection.
+- Added universal widget system supporting dashboard and navbar widgets with priority-based positioning.
+- Added 40+ new event classes for event-driven architecture across multiple domains (forms, views, menus, emails, permissions, CRUD operations).
+- Added 10+ new console commands for plugin management (scan, enable, disable, update, list, info, health, security-scan, dependencies, cron management, asset publishing).
+- Added navbar widget extension points for plugins to extend the navigation bar.
+- Added comprehensive plugin development documentation including API reference, security best practices, testing guide, and troubleshooting guide.
+
+### Changed
+- **Completely redesigned and refreshed the entire frontend** with modern design.
+- **Rewrote Pterodactyl API communication implementation** with custom API layer for improved reliability and maintainability.
+- Migrated event subscriber, console command, and cron task registration from compile-time to runtime for better plugin support.
+- Redesigned first-time configuration wizard with visual progress stepper, improved layout, and enhanced user experience.
+- Improved cache:clear command performance by removing database queries from compiler passes.
+- Enhanced form system with generic events for plugin extensibility.
+- Updated email system with before/after send events for plugin hooks.
+
+### Fixed
+- Various performance optimizations and bug fixes across the system.
+
+---
+
 ## [0.5.11] - 2025-10-26
 
 ### Added
