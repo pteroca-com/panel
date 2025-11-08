@@ -14,10 +14,10 @@ class Resource implements ArrayAccess, MetaAccessInterface
         protected array $data = [],
         protected array $meta = [],
     ) {
-        // Kompatybilność z Timdesm - jeśli ma 'attributes', używaj ich
+        // Timdesm compatibility - if it has 'attributes', use them
         $this->attributes = isset($data['attributes']) ? $data['attributes'] : $data;
 
-        // Przetwarzanie relationships - bezpośrednio jako właściwości główne
+        // Process relationships - directly as main properties
         if (isset($this->attributes['relationships'])) {
             foreach ($this->attributes['relationships'] as $key => &$relationship) {
                 if (!isset($relationship['data'])) {
@@ -25,7 +25,7 @@ class Resource implements ArrayAccess, MetaAccessInterface
                 }
 
                 if (is_array($relationship['data']) && array_keys($relationship['data']) === range(0, count($relationship['data']) - 1)) {
-                    // It's an array of items - tworzymy Collection
+                    // It's an array of items - create Collection
                     $resources = array_map(function($item) {
                         return new Resource($item);
                     }, $relationship['data']);
@@ -78,7 +78,7 @@ class Resource implements ArrayAccess, MetaAccessInterface
     }
 
     /**
-     * Rekurencyjnie konwertuje zagnieżdżone obiekty na tablice
+     * Recursively converts nested objects to arrays
      */
     private function convertToArray($data): array
     {
@@ -94,7 +94,7 @@ class Resource implements ArrayAccess, MetaAccessInterface
     }
 
     /**
-     * Konwertuje pojedynczą wartość, obsługując zagnieżdżone obiekty
+     * Converts a single value, handling nested objects
      */
     private function convertValue($value)
     {
@@ -117,7 +117,7 @@ class Resource implements ArrayAccess, MetaAccessInterface
         return $value;
     }
 
-    // ArrayAccess implementation - kompatybilność z oryginalną biblioteką
+    // ArrayAccess implementation - compatibility with original library
     public function offsetExists($offset): bool
     {
         return $this->has($offset);

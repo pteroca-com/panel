@@ -99,8 +99,7 @@ class UpdateSystemCommand extends Command
             $this->lockManager,
             $this->backupService,
             $this->stateManager,
-            $this->validationService,
-            $this->filesystem
+            $this->validationService
         );
 
         try {

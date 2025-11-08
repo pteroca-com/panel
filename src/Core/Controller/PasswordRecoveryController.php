@@ -26,6 +26,7 @@ class PasswordRecoveryController extends AbstractController
     #[Route('/reset-password', name: 'app_forgot_password_request')]
     public function request(Request $request): Response
     {
+        $errors = [];
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
 
@@ -59,7 +60,7 @@ class PasswordRecoveryController extends AbstractController
 
         $viewData = [
             'requestForm' => $form->createView(),
-            'errors' => $errors ?? [],
+            'errors' => $errors,
         ];
 
         return $this->renderWithEvent(
@@ -76,6 +77,7 @@ class PasswordRecoveryController extends AbstractController
     #[Route('/reset-password/{token}', name: 'app_reset_password')]
     public function reset(Request $request, string $token): Response
     {
+        $errors = [];
         if (!$this->passwordRecoveryService->validateRecoveryToken($token)) {
             $this->addFlash('danger', $this->translator->trans('pteroca.recovery.invalid_token'));
             return $this->redirectToRoute('app_forgot_password_request');
@@ -119,7 +121,7 @@ class PasswordRecoveryController extends AbstractController
         $viewData = [
             'token' => $token,
             'resetForm' => $form->createView(),
-            'errors' => $errors ?? [],
+            'errors' => $errors,
         ];
 
         return $this->renderWithEvent(

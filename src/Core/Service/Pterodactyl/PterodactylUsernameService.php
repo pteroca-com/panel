@@ -15,13 +15,12 @@ readonly class PterodactylUsernameService
             $username = explode('+', $username)[0];
         }
 
-        $user = $this->pterodactylApplicationService
+        $users = $this->pterodactylApplicationService
             ->getApplicationApi()
             ->users()
             ->getAllUsers(['filter' => ['username' => $username]]);
-        $user = current($user);
 
-        if (!empty($user)) {
+        if (!$users->isEmpty()) {
             $username = sprintf('%s%d', $username, rand(1, 999));
             return $this->generateUsername($username);
         }
