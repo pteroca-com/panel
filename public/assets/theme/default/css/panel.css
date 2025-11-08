@@ -847,13 +847,14 @@ body.page-configurator::before {
 /* Configurator Footer */
 .configurator-footer {
     text-align: center;
-    padding: 1.5rem 0;
+    padding-bottom: 1.5rem;
 }
 
 .configurator-footer-links {
     display: flex;
-    justify-content: center;
-    gap: 2rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1rem;
 }
 
