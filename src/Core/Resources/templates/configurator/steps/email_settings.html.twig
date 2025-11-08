@@ -1,7 +1,10 @@
-<div class="col-6 offset-3 d-none" data-step="3">
-    <div class="configuration-subtitle mt-2">
+<div class="col-6 offset-3 configuration-step d-none" data-step="3">
+    <div class="configuration-subtitle">
         {{ 'pteroca.first_configuration.email_settings'|trans }}
     </div>
+    <p class="text-muted text-center mb-4">
+        {{ 'pteroca.first_configuration.email_settings_description'|trans }}
+    </p>
     <form data-step="3">
         <div class="form-group">
             <label class="form-control-label required" for="email_smtp_server">{{ 'pteroca.first_configuration.email_smtp_server'|trans }}</label>

@@ -1,7 +1,10 @@
-<div class="col-6 offset-3 d-none" data-step="4">
-    <div class="configuration-subtitle mt-2">
+<div class="col-6 offset-3 configuration-step d-none" data-step="4">
+    <div class="configuration-subtitle">
         {{ 'pteroca.first_configuration.payment_settings'|trans }}
     </div>
+    <p class="text-muted text-center mb-4">
+        {{ 'pteroca.first_configuration.payment_settings_description'|trans }}
+    </p>
     <form data-step="4">
         <div class="form-group">
             <label class="form-control-label" for="stripe_secret_key">{{ 'pteroca.first_configuration.stripe_secret_key'|trans }}</label>

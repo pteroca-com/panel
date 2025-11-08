@@ -1,5 +1,5 @@
-<div class="col-6 offset-3 d-none" data-step="2">
-    <div class="configuration-subtitle mt-2">
+<div class="col-6 offset-3 configuration-step d-none" data-step="2">
+    <div class="configuration-subtitle">
         {{ 'pteroca.first_configuration.pterodactyl_settings'|trans }}
     </div>
     <div class="alert alert-info text-center mb-4" role="alert">
@@ -46,12 +46,12 @@
             <span class="step-message" data-step="2">{{ 'pteroca.first_configuration.messages.pterodactyl_checking_api_connection'|trans }}</span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3 mb-3">
             <button type="button" class="btn btn-lg btn-block configuration-previous-step float-start me-2">{{ 'pteroca.first_configuration.back'|trans }}</button>
             <button type="button" class="btn btn-secondary btn-override-settings float-start me-2 d-none" data-step="2">
                 {{ 'pteroca.first_configuration.messages.override_settings'|trans }}
             </button>
-            <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block float-end">{{ 'pteroca.first_configuration.next'|trans }}</button>
         </div>
     </form>
 </div>

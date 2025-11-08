@@ -1,7 +1,10 @@
-<div class="col-6 offset-3 d-none" data-step="1">
-    <div class="configuration-subtitle mt-2">
+<div class="col-6 offset-3 configuration-step d-none" data-step="1">
+    <div class="configuration-subtitle">
         {{ 'pteroca.first_configuration.site_settings'|trans }}
     </div>
+    <p class="text-muted text-center mb-4">
+        {{ 'pteroca.first_configuration.site_settings_description'|trans }}
+    </p>
     <form data-step="1">
         <div class="form-group">
             <label class="form-control-label required" for="site_url">{{ 'pteroca.first_configuration.site_url'|trans }}</label>
@@ -38,7 +41,7 @@
         </div>
 
         <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-lg btn-block float-end me-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block float-end mb-2">{{ 'pteroca.first_configuration.next'|trans }}</button>
         </div>
     </form>
 </div>

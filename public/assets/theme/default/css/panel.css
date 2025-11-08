@@ -574,12 +574,398 @@ input#command {
     font-size: 1rem;
 }
 
+body.page-configurator {
+    background: #5470D3 !important;
+    min-height: 100vh;
+}
+
+body.page-configurator::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #5470D3 0%, #4A63C8 100%);
+    z-index: -1;
+}
+
 .page-configurator {
-    background: rgb(89, 134, 165) !important;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 3rem 1rem 2rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Configurator Container */
+.configurator-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Configurator Header */
+.configurator-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.configurator-logo {
+    margin-bottom: 1.5rem;
+}
+
+.configurator-logo img {
+    max-height: 80px;
+    filter: brightness(0) invert(1);
+}
+
+.configurator-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.configurator-subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 0;
+}
+
+/* Progress Stepper */
+.configurator-stepper {
+    position: relative;
+    margin-bottom: 2.5rem;
+    padding: 0 2rem;
+}
+
+.stepper-line {
+    position: absolute;
+    top: 25px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 0;
+}
+
+.stepper-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #ffffff;
+    transition: width 0.5s ease;
+}
+
+.stepper-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stepper-step {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
+    flex: 1;
+    position: relative;
+}
+
+.stepper-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    margin-bottom: 0.75rem;
+}
+
+.stepper-step.active .stepper-circle {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #5470D3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stepper-step.completed .stepper-circle {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.9);
+    color: #22c55e;
+}
+
+.stepper-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    max-width: 100px;
+    line-height: 1.3;
+}
+
+.stepper-step.active .stepper-label {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.stepper-step.completed .stepper-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Configuration Card */
+.configuration-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.configuration-card-body {
+    padding: 2.5rem;
+}
+
+.configuration-card-body .row {
+    margin: 0;
+}
+
+/* Configuration Step Visibility */
+.configuration-step {
+    display: none;
+    margin-top: 0;
+}
+
+.configuration-step[data-step="0"] {
+    display: block !important;
+}
+
+.configuration-step.d-none {
+    display: none !important;
+}
+
+.configuration-card h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--stripe-gray-900);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.configuration-card .text-muted {
+    color: var(--stripe-gray-600) !important;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.configuration-card .configuration-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--stripe-gray-900);
+    margin-bottom: 1rem;
+    margin-top: 0;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+.configuration-card .configuration-subtitle + .text-muted {
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+}
+
+.configuration-card .form-label {
+    font-weight: 500;
+    color: var(--stripe-gray-700);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.configuration-card .form-control,
+.configuration-card .form-select {
+    border: 1px solid var(--stripe-gray-300);
+    border-radius: var(--stripe-radius);
+    padding: 0.625rem 1rem;
+    font-size: 0.9375rem;
+    transition: all 0.15s ease;
+}
+
+.configuration-card .form-control:focus,
+.configuration-card .form-select:focus {
+    border-color: #5470D3;
+    box-shadow: 0 0 0 3px rgba(84, 112, 211, 0.1);
+}
+
+.configuration-card .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: var(--stripe-radius);
+    font-size: 0.9375rem;
+}
+
+.configuration-card .btn-primary {
+    background: linear-gradient(135deg, #5470D3 0%, #4A63C8 100%);
+    border: none;
+    color: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.configuration-card .btn-primary:hover {
+    background: linear-gradient(135deg, #4260C0 0%, #3952B5 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(84, 112, 211, 0.3);
+}
+
+.configuration-card .btn-secondary {
+    background: #ffffff;
+    border: 1px solid var(--stripe-gray-300);
+    color: var(--stripe-gray-700);
+}
+
+.configuration-card .btn-secondary:hover {
+    background: var(--stripe-gray-50);
+    border-color: var(--stripe-gray-400);
+}
+
+/* Configurator Footer */
+.configurator-footer {
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.configurator-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.configurator-footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.configurator-footer-links a:hover {
+    color: #ffffff;
+}
+
+.configurator-footer-links i {
+    margin-right: 0.375rem;
+}
+
+.powered-by-configurator {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.powered-by-configurator a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.powered-by-configurator a:hover {
+    color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .configurator-header {
+        margin-bottom: 2rem;
+    }
+
+    .configurator-title {
+        font-size: 1.5rem;
+    }
+
+    .configurator-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .configurator-stepper {
+        padding: 0 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stepper-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .stepper-label {
+        font-size: 0.75rem;
+        max-width: 80px;
+    }
+
+    .configuration-card-body {
+        padding: 1.5rem;
+    }
+
+    .configuration-card h2 {
+        font-size: 1.25rem;
+    }
+
+    .configurator-footer-links {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-configurator {
+        padding: 1rem 0.5rem;
+    }
+
+    .stepper-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.875rem;
+    }
+
+    .stepper-label {
+        font-size: 0.6875rem;
+        max-width: 60px;
+    }
+
+    .stepper-line {
+        top: 18px;
+    }
+
+    .configuration-card-body {
+        padding: 1.25rem;
+    }
+
+    .configurator-logo img {
+        max-height: 60px;
+    }
+}
+
+/* Hide default configuration wrapper styles for new design */
+.page-configurator .configuration-wrapper {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
 }
 
 #cart-ip-address {
