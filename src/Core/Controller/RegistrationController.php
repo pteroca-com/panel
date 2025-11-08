@@ -39,6 +39,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('panel');
         }
 
+        $registrationErrors = [];
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -85,7 +86,7 @@ class RegistrationController extends AbstractController
 
         $viewData = [
             'registrationForm' => $form->createView(),
-            'errors' => $registrationErrors ?? [],
+            'errors' => $registrationErrors,
         ];
 
         return $this->renderWithEvent(ViewNameEnum::REGISTRATION, 'panel/registration/register.html.twig', $viewData, $request);

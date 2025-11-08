@@ -6,6 +6,10 @@ namespace App\Core\DTO\Pterodactyl\Client;
 
 use App\Core\DTO\Pterodactyl\Resource;
 
+/**
+ * @property bool $isFile
+ * @property int $size
+ */
 final class PterodactylFile extends Resource
 {
     public function isDirectory(): bool

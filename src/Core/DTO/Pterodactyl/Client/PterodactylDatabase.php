@@ -6,6 +6,10 @@ namespace App\Core\DTO\Pterodactyl\Client;
 
 use App\Core\DTO\Pterodactyl\Resource;
 
+/**
+ * @property array{address: string, port: int} $host
+ * @property array{password: array{attributes: array{password: string|null}}} $relationships
+ */
 final class PterodactylDatabase extends Resource
 {
     public function getHost(): string
