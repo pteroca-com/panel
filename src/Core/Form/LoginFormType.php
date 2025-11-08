@@ -71,7 +71,7 @@ class LoginFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'csrf_protection' => false, // CSRF token jest obsługiwany przez UserAuthenticator
+            'csrf_protection' => false, // CSRF token is handled by UserAuthenticator
         ]);
     }
 }

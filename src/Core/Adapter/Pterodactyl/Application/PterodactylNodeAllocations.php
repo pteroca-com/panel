@@ -68,7 +68,7 @@ class PterodactylNodeAllocations extends AbstractPterodactylApplicationAdapter i
      */
     public function all(int $nodeId, array $query = []): Collection
     {
-        // Dla metody all, pobieramy pierwszą stronę bez limitów
+        // For the all method, fetch the first page without limits
         $query = array_merge($query, ['per_page' => 100]);
         return $this->paginate($nodeId, $query);
     }
@@ -109,7 +109,7 @@ class PterodactylNodeAllocations extends AbstractPterodactylApplicationAdapter i
                 $allocations[] = new PterodactylNodeAllocation($allocation);
             }
         } elseif (isset($responseData['attributes'])) {
-            // Jeśli zwrócona jest pojedyncza alokacja
+            // If a single allocation is returned
             $allocations[] = new PterodactylNodeAllocation($responseData);
         }
 

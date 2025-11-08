@@ -114,7 +114,7 @@ class RenewServerService extends AbstractActionServerService
         $expirationDateModifier = sprintf('+%d %s', $selectedPrice->getValue(), $selectedPrice->getUnit()->value);
         $newExpirationDate = (clone $currentExpirationDate)->modify($expirationDateModifier);
 
-        // 2. Emit ServerAboutToBeRenewedEvent (przed przedłużeniem, stoppable)
+        // 2. Emit ServerAboutToBeRenewedEvent (before renewal, stoppable)
         $aboutToBeRenewedEvent = new ServerAboutToBeRenewedEvent(
             $user->getId(),
             $server->getId(),
@@ -124,7 +124,7 @@ class RenewServerService extends AbstractActionServerService
         );
         $this->eventDispatcher->dispatch($aboutToBeRenewedEvent);
 
-        // Sprawdzenie czy event został zatrzymany (np. przez fraud detection)
+        // Check if event was stopped (e.g. by fraud detection)
         if ($aboutToBeRenewedEvent->isPropagationStopped()) {
             throw new Exception($this->translator->trans('pteroca.store.server_renewal_blocked'));
         }
@@ -132,7 +132,7 @@ class RenewServerService extends AbstractActionServerService
         $oldExpiresAt = $server->getExpiresAt();
         $server->setExpiresAt($newExpirationDate);
 
-        // 3. Emit ServerExpirationExtendedEvent (po setExpiresAt)
+        // 3. Emit ServerExpirationExtendedEvent (after setExpiresAt)
         $expirationExtendedEvent = new ServerExpirationExtendedEvent(
             $server->getId(),
             $user->getId(),
@@ -141,7 +141,7 @@ class RenewServerService extends AbstractActionServerService
         );
         $this->eventDispatcher->dispatch($expirationExtendedEvent);
 
-        // 4. Emit ServerUnsuspendedEvent (jeśli był suspended)
+        // 4. Emit ServerUnsuspendedEvent (if was suspended)
         $wasSuspended = $server->getIsSuspended();
         if ($wasSuspended) {
             $this->pterodactylApplicationService
@@ -160,7 +160,7 @@ class RenewServerService extends AbstractActionServerService
 
         $this->serverRepository->save($server);
 
-        // 5. Emit ServerRenewalBalanceChargedEvent (jeśli chargeBalance)
+        // 5. Emit ServerRenewalBalanceChargedEvent (if chargeBalance)
         if ($chargeBalance) {
             $oldBalance = $user->getBalance();
             $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, $slots);
@@ -204,7 +204,7 @@ class RenewServerService extends AbstractActionServerService
             ['server' => $server],
         );
 
-        // 6. Emit ServerRenewalCompletedEvent (po całym procesie)
+        // 6. Emit ServerRenewalCompletedEvent (after the entire process)
         $renewalCompletedEvent = new ServerRenewalCompletedEvent(
             $server->getId(),
             $user->getId(),

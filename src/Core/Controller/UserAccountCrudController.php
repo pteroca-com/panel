@@ -161,11 +161,11 @@ class UserAccountCrudController extends AbstractPanelController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof UserAccount) {
-            // Pobierz request i zbuduj context
+            // Get request and build context
             $request = $this->container->get('request_stack')->getCurrentRequest();
             $eventContext = $request ? $this->buildMinimalEventContext($request) : [];
 
-            // Sprawdź, czy hasła się zgadzają
+            // Check if passwords match
             if ($entityInstance->getPlainPassword() && $entityInstance->getRepeatPassword()) {
                 if ($entityInstance->getPlainPassword() !== $entityInstance->getRepeatPassword()) {
                     throw new InvalidArgumentException($this->translator->trans('pteroca.crud.user.passwords_must_match'));

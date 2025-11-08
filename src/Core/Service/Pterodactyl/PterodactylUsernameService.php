@@ -20,7 +20,7 @@ readonly class PterodactylUsernameService
             ->users()
             ->getAllUsers(['filter' => ['username' => $username]]);
 
-        if (!empty($users)) {
+        if (!$users->isEmpty()) {
             $username = sprintf('%s%d', $username, rand(1, 999));
             return $this->generateUsername($username);
         }

@@ -198,7 +198,7 @@ class CreateServerService extends AbstractActionServerService
             ],
         );
 
-        // 7. Emit ServerPurchaseCompletedEvent (po całym procesie)
+        // 7. Emit ServerPurchaseCompletedEvent (after the entire process)
         $purchaseCompletedEvent = new ServerPurchaseCompletedEvent(
             $createdEntityServer->getId(),
             $user->getId(),
