@@ -35,7 +35,7 @@ class SettingService
     /**
      * @throws InvalidArgumentException
      */
-    public function saveSetting(string $name, string $value): void
+    public function saveSetting(string $name, ?string $value): void
     {
         $setting = $this->settingRepository->findOneBy(['name' => $name]);
 
@@ -52,7 +52,7 @@ class SettingService
     /**
      * @throws InvalidArgumentException
      */
-    public function saveSettingInCache(string $name, string $value): void
+    public function saveSettingInCache(string $name, ?string $value): void
     {
         $settingKey = $this->createSettingCacheKey($name);
         $this->deleteSettingFromCache($name);

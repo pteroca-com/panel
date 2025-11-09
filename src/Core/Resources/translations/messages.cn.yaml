@@ -893,6 +893,8 @@ pteroca:
       yes: '是'
       no: '否'
       hint: '说明'
+      set_as_empty: '设为空'
+      set_as_empty_help: '选中此项以将值设为空（null）。'
       hints:
         site_logo: '网站标志图片'
         site_url: '网站 URL'

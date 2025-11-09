@@ -893,6 +893,8 @@ pteroca:
       yes: 'हाँ'
       no: 'नहीं'
       hint: 'विवरण'
+      set_as_empty: 'खाली के रूप में सेट करें'
+      set_as_empty_help: 'मान को खाली (null) के रूप में सेट करने के लिए इसे चेक करें।'
       hints:
         site_logo: 'साइट लोगो'
         site_url: 'साइट URL'

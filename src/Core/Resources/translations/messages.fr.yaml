@@ -892,6 +892,8 @@ pteroca:
       yes: 'Oui'
       no: 'Non'
       hint: 'Description'
+      set_as_empty: 'Définir comme vide'
+      set_as_empty_help: 'Cochez ceci pour définir la valeur comme vide (null).'
       hints:
         site_logo: 'Image du logo'
         site_url: 'URL du site'

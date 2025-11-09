@@ -881,6 +881,8 @@ pteroca:
       yes: 'Ja'
       no: 'Nee'
       hint: 'Omschrijving'
+      set_as_empty: 'Instellen als leeg'
+      set_as_empty_help: 'Vink dit aan om de waarde als leeg (null) in te stellen.'
       hints:
         site_logo: 'Site Logo'
         site_url: 'Webpagina URL'

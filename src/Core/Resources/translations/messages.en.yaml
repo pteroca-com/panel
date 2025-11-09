@@ -893,6 +893,8 @@ pteroca:
       yes: 'Yes'
       no: 'No'
       hint: 'Description'
+      set_as_empty: 'Set as empty'
+      set_as_empty_help: 'Check this to set the value as empty (null).'
       hints:
         site_logo: 'Site logo'
         site_url: 'Site URL'

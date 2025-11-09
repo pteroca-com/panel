@@ -887,6 +887,8 @@ pteroca:
       yes: 'Да'
       no: 'Нет'
       hint: 'Описание'
+      set_as_empty: 'Установить как пустое'
+      set_as_empty_help: 'Отметьте это, чтобы установить значение как пустое (null).'
       hints:
         site_logo: 'Логотип сайта'
         site_url: 'URL-адрес сайта'

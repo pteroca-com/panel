@@ -893,6 +893,8 @@ pteroca:
       yes: 'Ja'
       no: 'Nein'
       hint: 'Beschreibung'
+      set_as_empty: 'Als leer setzen'
+      set_as_empty_help: 'Aktivieren Sie dies, um den Wert als leer (null) zu setzen.'
       hints:
         site_logo: 'Logo-Bild'
         site_url: 'Website-URL'

@@ -23,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
@@ -118,22 +119,34 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 }),
         };
 
+        $isNullable = $this->currentEntity?->isNullable() ?? false;
+
         $valueField
-            ->setRequired(true)
+            ->setRequired(!$isNullable)
             ->setColumns(6);
         $fields[] = $valueField;
+
+        if ($isNullable) {
+            $isCurrentlyEmpty = $this->currentEntity?->getValue() === null;
+            $fields[] = BooleanField::new('setAsEmpty', $this->translator->trans('pteroca.crud.setting.set_as_empty'))
+                ->setHelp($this->translator->trans('pteroca.crud.setting.set_as_empty_help'))
+                ->setColumns(6)
+                ->setFormTypeOption('mapped', false)
+                ->setFormTypeOption('data', $isCurrentlyEmpty)
+                ->hideOnIndex();
+        }
 
         $fields[] = ChoiceField::new('context', $this->translator->trans('pteroca.crud.setting.context'))
                 ->setChoices(SettingContextEnum::getValues())
                 ->setRequired(true)
-                ->setDisabled()
                 ->setColumns(6)
-                ->hideOnIndex();
+                ->hideOnIndex()
+                ->hideOnForm();
         $fields[] = NumberField::new('hierarchy', $this->translator->trans('pteroca.crud.setting.hierarchy'))
                 ->setRequired(true)
-                ->setDisabled()
                 ->setColumns(6)
-                ->hideOnIndex();
+                ->hideOnIndex()
+                ->hideOnForm();
 
         return $fields;
     }
@@ -181,12 +194,14 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->handleSetAsEmpty($entityInstance);
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
         parent::persistEntity($entityManager, $entityInstance);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $this->handleSetAsEmpty($entityInstance);
         $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
         parent::updateEntity($entityManager, $entityInstance);
     }
@@ -205,6 +220,24 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
             ->setParameter('context', $this->context->value);
 
         return $qb;
+    }
+
+    private function handleSetAsEmpty(Setting $setting): void
+    {
+        if (!$setting->isNullable()) {
+            return;
+        }
+
+        $request = $this->requestStack->getCurrentRequest();
+        $formData = $request->request->all();
+
+        // Check if setAsEmpty checkbox is checked in the submitted form data
+        // The form data structure is: ['Setting' => ['setAsEmpty' => true/false, ...]]
+        $setAsEmpty = $formData['Setting']['setAsEmpty'] ?? false;
+
+        if ($setAsEmpty) {
+            $setting->setValue(null);
+        }
     }
 
     private function getSettingEntity(): ?Setting

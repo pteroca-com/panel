@@ -892,6 +892,8 @@ pteroca:
       yes: 'Так'
       no: 'Ні'
       hint: 'Опис'
+      set_as_empty: 'Встановити як порожнє'
+      set_as_empty_help: 'Позначте це, щоб встановити значення як порожнє (null).'
       hints:
         site_logo: 'Логотип'
         site_url: 'URL сайту'

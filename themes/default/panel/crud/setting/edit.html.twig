@@ -1,0 +1,57 @@
+{% extends '@EasyAdmin/crud/edit.html.twig' %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find the setAsEmpty checkbox
+            const setAsEmptyCheckbox = document.querySelector('input[name="Setting[setAsEmpty]"]');
+
+            if (!setAsEmptyCheckbox) {
+                // No nullable setting, exit
+                return;
+            }
+
+            // Find the value field - it can be various types (input, textarea, select)
+            const valueInput = document.querySelector('input[name="Setting[value]"]') ||
+                             document.querySelector('textarea[name="Setting[value]"]') ||
+                             document.querySelector('select[name="Setting[value]"]');
+
+            if (!valueInput) {
+                console.warn('Could not find value input field');
+                return;
+            }
+
+            // Function to handle checkbox state
+            function handleCheckboxChange() {
+                if (setAsEmptyCheckbox.checked) {
+                    // Disable value input and clear it
+                    valueInput.disabled = true;
+
+                    // Store original value in data attribute if not already stored
+                    if (!valueInput.hasAttribute('data-original-value')) {
+                        valueInput.setAttribute('data-original-value', valueInput.value || '');
+                    }
+
+                    // Clear the value
+                    valueInput.value = '';
+                } else {
+                    // Enable value input
+                    valueInput.disabled = false;
+
+                    // Restore original value if it exists
+                    if (valueInput.hasAttribute('data-original-value')) {
+                        valueInput.value = valueInput.getAttribute('data-original-value');
+                        valueInput.removeAttribute('data-original-value');
+                    }
+                }
+            }
+
+            // Initialize state on page load
+            handleCheckboxChange();
+
+            // Listen to checkbox changes
+            setAsEmptyCheckbox.addEventListener('change', handleCheckboxChange);
+        });
+    </script>
+{% endblock %}

@@ -35,3 +35,8 @@ phpstan.neon
 /plugins/*/
 !plugins/.gitkeep
 ###< pteroca/plugin-system ###
+
+###> custom ###
+CLAUDE.md
+docs/
+###< custom ###

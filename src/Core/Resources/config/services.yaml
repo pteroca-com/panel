@@ -59,6 +59,7 @@ services:
   App\Core\Service\Crud\CrudTemplateService:
     arguments:
       $projectDirectory: '%kernel.project_dir%'
+      $environment: '%kernel.environment%'
 
   App\Core\Twig\DynamicTwigLoader:
     arguments:
