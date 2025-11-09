@@ -1,27 +1,102 @@
 {% set defaultThemeColors = get_default_theme_colors() %}
 <style>
     html:root {
-        {% if defaultThemeColors.theme_default_primary_color %}
-        --primary-color: {{ defaultThemeColors.theme_default_primary_color }} !important;
+        {% if defaultThemeColors.theme_default_light_mode_color %}
+        --primary-color: {{ defaultThemeColors.theme_default_light_mode_color }} !important;
         --secondary-color: color-mix(in srgb, var(--primary-color) 92%, black 8%) !important;
         --link-color: var(--primary-color) !important;
         --link-hover-color: color-mix(in srgb, var(--primary-color) 85%, black 15%) !important;
         --pagination-active-bg: var(--primary-color) !important;
         {% endif %}
-        {% if defaultThemeColors.theme_default_background_color %}
-        --body-bg: {{ defaultThemeColors.theme_default_background_color }} !important;
+    }
+    html.ea-dark-scheme:root,
+    .ea-dark-scheme {
+        {% if defaultThemeColors.theme_default_dark_mode_color %}
+        --primary-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 55%, white 45%) !important;
+        --color-primary: var(--primary-color) !important;
+        --body-bg: {{ defaultThemeColors.theme_default_dark_mode_color }} !important;
+        --content-bg: {{ defaultThemeColors.theme_default_dark_mode_color }} !important;
+        --bs-table-bg: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 2%) !important;
+        --bs-table-striped-bg: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 2%) !important;
+        --bs-table-active-bg: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 2%) !important;
+        --bs-table-hover-bg: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 85%, white 5%) !important;
+        --bs-border-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 70%, white 30%) !important;
+        --dropdown-toggle-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 50%, white 50%) !important;
+        --bs-dropdown-link-active-bg: var(--primary-color) !important;
         {% endif %}
     }
-    html.ea-dark-scheme:root {
-        {% if defaultThemeColors.theme_default_dark_primary_color %}
-        --primary-color: {{ defaultThemeColors.theme_default_dark_primary_color }} !important;
-        --secondary-color: color-mix(in srgb, var(--primary-color) 92%, black 8%) !important;
-        --link-color: var(--primary-color) !important;
-        --link-hover-color: color-mix(in srgb, var(--primary-color) 85%, white 15%) !important;
-        --pagination-active-bg: var(--primary-color) !important;
-        {% endif %}
-        {% if defaultThemeColors.theme_default_dark_background_color %}
-        --body-bg: {{ defaultThemeColors.theme_default_dark_background_color }} !important;
-        {% endif %}
+
+    {% if defaultThemeColors.theme_default_dark_mode_color %}
+    /* Sidebar and content styles for dark mode */
+    .ea-dark-scheme .sidebar,
+    .ea-dark-scheme .main-header {
+        background: {{ defaultThemeColors.theme_default_dark_mode_color }} !important;
     }
+    .ea-dark-scheme .content-top,
+    .ea-dark-scheme .card,
+    .ea-dark-scheme .global-footer,
+    .ea-dark-scheme .table thead th {
+        background: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 98%, white 2%) !important;
+    }
+    .ea-dark-scheme table tbody tr,
+    .ea-dark-scheme .table tbody tr,
+    .ea-dark-scheme table.table tbody tr,
+    .ea-dark-scheme table tbody tr td,
+    .ea-dark-scheme .table tbody tr td {
+        background-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 2%) !important;
+    }
+    .ea-dark-scheme table,
+    .ea-dark-scheme .table {
+        --bs-table-bg: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 2%) !important;
+        --bs-table-color: inherit !important;
+    }
+    .ea-dark-scheme .main-content {
+        background-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, black 10%) !important;
+    }
+    .ea-dark-scheme #main-menu .menu .menu-item:hover {
+        background: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 85%, white 5%) !important;
+    }
+    .ea-dark-scheme .bg-light {
+        background-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 5%) !important;
+    }
+    .ea-dark-scheme .store-product-placeholder,
+    .ea-dark-scheme .store-category-placeholder {
+        background: linear-gradient(135deg,
+            color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 85%, white 5%) 0%,
+            color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 3%) 100%) !important;
+    }
+    .ea-dark-scheme .store-product-icon,
+    .ea-dark-scheme .store-category-icon {
+        color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 50%, white 50%) !important;
+    }
+    {% endif %}
+
+    {% if defaultThemeColors.theme_default_light_mode_color %}
+    /* Button styles for light mode */
+    .btn-primary,
+    .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):active,
+    .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):active:focus,
+    .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):focus {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+        border-color: var(--primary-color) !important;
+    }
+    .btn-primary:hover,
+    .btn-primary:not(:disabled):not(.disabled):not(.btn-link):not(.btn-danger):hover {
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 85%, black) 0%, color-mix(in srgb, var(--secondary-color) 85%, black) 100%) !important;
+        border-color: color-mix(in srgb, var(--primary-color) 85%, black) !important;
+    }
+
+    /* Link styles for light mode */
+    a:not(.btn):not(.badge):not(.dropdown-item):not(.page-link) {
+        color: var(--link-color) !important;
+    }
+    a:not(.btn):not(.badge):not(.dropdown-item):not(.page-link):hover {
+        color: var(--link-hover-color) !important;
+    }
+
+    /* Background primary styles for light mode */
+    .bg-primary {
+        background-color: var(--primary-color) !important;
+    }
+    {% endif %}
 </style>

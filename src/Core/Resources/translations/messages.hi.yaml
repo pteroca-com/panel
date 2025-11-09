@@ -907,6 +907,8 @@ pteroca:
         stripe_payment_methods: 'Stripe भुगतान विधियाँ (अल्पविराम से अलग की गईं)'
         internal_currency_name: 'आंतरिक मुद्रा का नाम'
         currency_name: 'मुद्रा का नाम'
+        theme_default_light_mode_color: 'लाइट मोड के लिए डिफ़ॉल्ट रंग (बटन, लिंक और प्राथमिक UI तत्वों को नियंत्रित करता है)'
+        theme_default_dark_mode_color: 'डार्क मोड के लिए डिफ़ॉल्ट बैकग्राउंड रंग (साइडबार, कंटेंट एरियाज और सभी बैकग्राउंड को नियंत्रित करता है)'
         theme_default_primary_color: 'डिफ़ॉल्ट प्रमुख थीम रंग'
         theme_default_dark_primary_color: 'डिफ़ॉल्ट प्रमुख थीम रंग (डार्क मोड)'
         theme_disable_dark_mode: 'डार्क मोड निष्क्रिय करें'

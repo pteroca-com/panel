@@ -907,6 +907,8 @@ pteroca:
         stripe_payment_methods: 'Stripe支付方式（用逗号分隔）'
         internal_currency_name: '内部货币名称'
         currency_name: '货币名称'
+        theme_default_light_mode_color: '浅色模式的默认颜色（控制按钮、链接和主要 UI 元素）'
+        theme_default_dark_mode_color: '深色模式的默认背景颜色（控制侧边栏、内容区域和所有背景）'
         theme_default_primary_color: '默认主主题颜色'
         theme_default_dark_primary_color: '默认深色主主题颜色'
         theme_disable_dark_mode: '禁用深色模式'

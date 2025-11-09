@@ -907,6 +907,8 @@ pteroca:
         stripe_payment_methods: 'Stripe-Zahlungsmethoden (durch Kommas getrennt)'
         internal_currency_name: 'Interner Währungsname'
         currency_name: 'Währungsname'
+        theme_default_light_mode_color: 'Standardfarbe für den hellen Modus (steuert Schaltflächen, Links und primäre UI-Elemente)'
+        theme_default_dark_mode_color: 'Standard-Hintergrundfarbe für den dunklen Modus (steuert Seitenleiste, Inhaltsbereiche und alle Hintergründe)'
         theme_default_primary_color: 'Standard-Farbton der Hauptfarbe'
         theme_default_dark_primary_color: 'Standard-Farbton der Hauptfarbe im Dunkelmodus'
         theme_disable_dark_mode: 'Dunkelmodus deaktivieren'

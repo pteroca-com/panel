@@ -895,6 +895,8 @@ pteroca:
         stripe_payment_methods: 'Stripe betalingsmethoden (gescheiden door komma''s)'
         internal_currency_name: 'Naam interne valuta'
         currency_name: 'Valuta naam'
+        theme_default_light_mode_color: 'Standaardkleur voor lichte modus (bedient knoppen, links en primaire UI-elementen)'
+        theme_default_dark_mode_color: 'Standaard achtergrondkleur voor donkere modus (bedient zijbalk, inhoudsgebieden en alle achtergronden)'
         theme_default_primary_color: 'Standaard primaire thema kleur'
         theme_default_dark_primary_color: 'Standaard donkere primaire themakleur'
         theme_disable_dark_mode: 'Donker modus uitschakelen'

@@ -907,6 +907,8 @@ pteroca:
         stripe_payment_methods: 'Metody płatności Stripe (oddzielone przecinkami)'
         internal_currency_name: 'Nazwa wewnętrznej waluty'
         currency_name: 'Nazwa waluty'
+        theme_default_light_mode_color: 'Domyślny kolor dla trybu jasnego (steruje przyciskami, linkami i głównymi elementami interfejsu użytkownika)'
+        theme_default_dark_mode_color: 'Domyślny kolor tła dla trybu ciemnego (steruje paskiem bocznym, obszarami treści i wszystkimi tłami)'
         theme_default_primary_color: 'Domyślny kolor główny motywu'
         theme_default_dark_primary_color: 'Domyślny kolor główny motywu w trybie ciemnym'
         theme_disable_dark_mode: 'Wyłącz tryb ciemny'

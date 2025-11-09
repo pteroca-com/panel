@@ -4,8 +4,8 @@
             <img src="{{ product.imagePath }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
         </div>
     {% else %}
-        <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, var(--stripe-gray-100) 0%, var(--stripe-gray-50) 100%); display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-box" style="font-size: 3rem; color: var(--stripe-gray-400);"></i>
+        <div class="card-img-top store-product-placeholder">
+            <i class="fas fa-box store-product-icon"></i>
         </div>
     {% endif %}
     <div class="card-body d-flex flex-column p-4">

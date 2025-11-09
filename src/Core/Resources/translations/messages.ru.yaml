@@ -901,6 +901,8 @@ pteroca:
         stripe_payment_methods: 'Способы оплаты Stripe (разделенные запятыми)'
         internal_currency_name: 'Внутреннее название валюты'
         currency_name: 'Название валюты'
+        theme_default_light_mode_color: 'Цвет по умолчанию для светлого режима (управляет кнопками, ссылками и основными элементами пользовательского интерфейса)'
+        theme_default_dark_mode_color: 'Цвет фона по умолчанию для темного режима (управляет боковой панелью, областями содержимого и всеми фонами)'
         theme_default_primary_color: 'Цвет основной темы по умолчанию'
         theme_default_dark_primary_color: 'Цвет основной темы по умолчанию в тёмном режиме'
         theme_disable_dark_mode: 'Отключить тёмный режим'

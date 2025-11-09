@@ -906,6 +906,8 @@ pteroca:
         stripe_payment_methods: 'Методи оплати Stripe (розділені комами)'
         internal_currency_name: 'Назва внутрішньої валюти'
         currency_name: 'Назва валюти'
+        theme_default_light_mode_color: 'Колір за замовчуванням для світлого режиму (керує кнопками, посиланнями та основними елементами інтерфейсу користувача)'
+        theme_default_dark_mode_color: 'Колір фону за замовчуванням для темного режиму (керує бічною панеллю, областями вмісту та всіма фонами)'
         theme_default_primary_color: 'Колір основної теми за замовчуванням'
         theme_default_dark_primary_color: 'Колір основної теми за замовчуванням у темному режимі'
         theme_disable_dark_mode: 'Вимкнути темний режим'

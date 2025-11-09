@@ -907,6 +907,8 @@ pteroca:
         stripe_payment_methods: 'Metodi di pagamento Stripe (separati da virgole)'
         internal_currency_name: 'Nome della valuta interna'
         currency_name: 'Nome della valuta'
+        theme_default_light_mode_color: 'Colore predefinito per la modalità chiara (controlla pulsanti, collegamenti ed elementi UI primari)'
+        theme_default_dark_mode_color: 'Colore di sfondo predefinito per la modalità scura (controlla la barra laterale, le aree di contenuto e tutti gli sfondi)'
         theme_default_primary_color: 'Colore primario predefinito'
         theme_default_dark_primary_color: 'Colore primario in modalità scura predefinito'
         theme_disable_dark_mode: 'Disabilita modalità scura'
