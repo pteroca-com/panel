@@ -163,8 +163,12 @@ class PterodactylServers extends AbstractPterodactylClientAdapter implements Pte
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateServerName(string $serverId, string $name, ?string $description = null): bool
+    public function updateServerName(string $serverId, string $name, ?string $description = null): PterodactylClientServer
     {
         $payload = ['name' => $name];
         if ($description !== null) {
@@ -174,29 +178,55 @@ class PterodactylServers extends AbstractPterodactylClientAdapter implements Pte
         $response = $this->makeRequest('POST', "servers/$serverId/settings/rename", [
             'json' => $payload
         ]);
-        return $response->getStatusCode() === 204;
+
+        if ($response->getStatusCode() === 204) {
+            // API returns 204 No Content, fetch updated server data
+            return $this->getServer($serverId);
+        }
+
+        throw new \RuntimeException('Unexpected status code: ' . $response->getStatusCode());
     }
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateServerDockerImage(string $serverId, string $dockerImage): bool
+    public function updateServerDockerImage(string $serverId, string $dockerImage): PterodactylClientServer
     {
         $response = $this->makeRequest('PUT', "servers/$serverId/docker-image", [
             'json' => ['docker_image' => $dockerImage]
         ]);
-        return $response->getStatusCode() === 204;
+
+        if ($response->getStatusCode() === 204) {
+            // API returns 204 No Content, fetch updated server data
+            return $this->getServer($serverId);
+        }
+
+        throw new \RuntimeException('Unexpected status code: ' . $response->getStatusCode());
     }
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateServerStartup(string $serverId, array $startupData): bool
+    public function updateServerStartup(string $serverId, array $startupData): PterodactylClientServer
     {
         $response = $this->makeRequest('PUT', "servers/$serverId/startup", [
             'json' => $startupData
         ]);
-        return $response->getStatusCode() === 204;
+
+        if ($response->getStatusCode() === 204) {
+            // API returns 204 No Content, fetch updated server data
+            return $this->getServer($serverId);
+        }
+
+        throw new \RuntimeException('Unexpected status code: ' . $response->getStatusCode());
     }
 
     /**

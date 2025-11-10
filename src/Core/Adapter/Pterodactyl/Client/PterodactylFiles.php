@@ -7,7 +7,7 @@ namespace App\Core\Adapter\Pterodactyl\Client;
 use App\Core\Contract\Pterodactyl\Client\PterodactylFilesInterface;
 use App\Core\DTO\Pterodactyl\Client\PterodactylFile;
 use App\Core\DTO\Pterodactyl\Collection;
-use Exception;
+use App\Core\Exception\Pterodactyl\PterodactylClientApiException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -43,7 +43,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ClientExceptionInterface
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function readFileContents(string $serverId, string $filePath): string
     {
@@ -52,12 +52,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 200) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
 
         return $response->getContent();
@@ -68,7 +63,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function writeFile(string $serverId, string $filePath, string $content): void
     {
@@ -79,12 +74,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 
@@ -93,7 +83,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function deleteFiles(string $serverId, string $root, array $files): void
     {
@@ -105,12 +95,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 
@@ -119,7 +104,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function createDirectory(string $serverId, string $root, string $name): void
     {
@@ -131,12 +116,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 
@@ -145,7 +125,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function renameFiles(string $serverId, string $root, array $files): void
     {
@@ -157,12 +137,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 
@@ -171,7 +146,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function copyFile(string $serverId, string $location): void
     {
@@ -182,12 +157,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 
@@ -196,7 +166,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function compressFiles(string $serverId, string $root, array $files): void
     {
@@ -208,12 +178,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 
@@ -222,7 +187,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function decompressFile(string $serverId, string $root, string $file): void
     {
@@ -234,12 +199,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 
@@ -248,7 +208,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     public function changePermissions(string $serverId, string $root, array $files): void
     {
@@ -260,12 +220,7 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
         ]);
 
         if ($response->getStatusCode() !== 204) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+            $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
 }

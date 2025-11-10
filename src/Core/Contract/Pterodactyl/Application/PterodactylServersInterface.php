@@ -19,11 +19,11 @@ interface PterodactylServersInterface
 
     public function unsuspendServer(string $serverId): bool;
 
-    public function updateServerDetails(string $serverId, array $details): bool;
+    public function updateServerDetails(string $serverId, array $details): PterodactylServer;
 
-    public function updateServerBuild(string $serverId, array $buildDetails): bool;
+    public function updateServerBuild(string $serverId, array $buildDetails): PterodactylServer;
 
-    public function updateServerStartup(string $serverId, array $startupDetails): bool;
+    public function updateServerStartup(string $serverId, array $startupDetails): PterodactylServer;
 
     public function reinstallServer(string $serverId): bool;
 

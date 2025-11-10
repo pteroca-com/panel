@@ -10,11 +10,11 @@ interface PterodactylAccountInterface
 {
     public function getAccount(): PterodactylAccount;
 
-    public function updateAccount(array $details): bool;
+    public function updateAccount(array $details): PterodactylAccount;
 
-    public function updateEmail(string $email, string $currentPassword): bool;
+    public function updateEmail(string $email, string $currentPassword): PterodactylAccount;
 
-    public function updatePassword(string $currentPassword, string $newPassword, string $passwordConfirmation): bool;
+    public function updatePassword(string $currentPassword, string $newPassword, string $passwordConfirmation): PterodactylAccount;
 
     public function enableTwoFactor(string $code): bool;
 

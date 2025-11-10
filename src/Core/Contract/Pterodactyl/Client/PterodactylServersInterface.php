@@ -23,11 +23,11 @@ interface PterodactylServersInterface
 
     public function reinstallServer(string $serverId): bool;
 
-    public function updateServerName(string $serverId, string $name, ?string $description = null): bool;
+    public function updateServerName(string $serverId, string $name, ?string $description = null): PterodactylClientServer;
 
-    public function updateServerDockerImage(string $serverId, string $dockerImage): bool;
+    public function updateServerDockerImage(string $serverId, string $dockerImage): PterodactylClientServer;
 
-    public function updateServerStartup(string $serverId, array $startupData): bool;
+    public function updateServerStartup(string $serverId, array $startupData): PterodactylClientServer;
 
     public function updateServerStartupVariable(string $serverId, string $key, string $value): array;
 
