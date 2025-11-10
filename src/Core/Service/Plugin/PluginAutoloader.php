@@ -3,13 +3,23 @@
 namespace App\Core\Service\Plugin;
 
 use App\Core\Entity\Plugin;
+use Psr\Log\LoggerInterface;
 
 class PluginAutoloader
 {
     private array $registeredNamespaces = [];
 
+    /**
+     * Stores Composer ClassLoaders for plugins.
+     * Used to unregister them when plugin is disabled.
+     *
+     * @var array<string, \Composer\Autoload\ClassLoader>
+     */
+    private array $composerLoaders = [];
+
     public function __construct(
         private readonly string $projectDir,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function registerPlugin(Plugin $plugin): bool
@@ -25,13 +35,34 @@ class PluginAutoloader
             return false;
         }
 
-        return $this->registerNamespace($namespace, $path);
+        // Register plugin's PSR-4 autoloading
+        $registered = $this->registerNamespace($namespace, $path);
+
+        if (!$registered) {
+            return false;
+        }
+
+        // Load Composer dependencies if vendor/autoload.php exists
+        $this->loadComposerDependencies($plugin);
+
+        return true;
     }
 
     public function unregisterPlugin(Plugin $plugin): void
     {
         $namespace = $this->getPluginNamespace($plugin->getName());
         $this->unregisterNamespace($namespace);
+
+        // Unregister Composer autoloader if exists
+        $pluginName = $plugin->getName();
+        if (isset($this->composerLoaders[$pluginName])) {
+            $this->composerLoaders[$pluginName]->unregister();
+            unset($this->composerLoaders[$pluginName]);
+
+            $this->logger->info('Unregistered Composer autoloader for plugin', [
+                'plugin' => $pluginName,
+            ]);
+        }
     }
 
     private function registerNamespace(string $namespace, string $path): bool
@@ -66,6 +97,57 @@ class PluginAutoloader
     private function unregisterNamespace(string $namespace): void
     {
         unset($this->registeredNamespaces[$namespace]);
+    }
+
+    /**
+     * Load Composer dependencies from plugin's vendor/autoload.php.
+     *
+     * This method loads the Composer autoloader for a plugin if it exists.
+     * The autoloader is registered without prepend to avoid overriding core classes.
+     */
+    private function loadComposerDependencies(Plugin $plugin): void
+    {
+        $pluginName = $plugin->getName();
+        $vendorAutoloadPath = $this->projectDir . '/plugins/' . $pluginName . '/vendor/autoload.php';
+
+        // Check if vendor/autoload.php exists
+        if (!file_exists($vendorAutoloadPath)) {
+            return;
+        }
+
+        try {
+            // Require vendor/autoload.php - returns ClassLoader instance
+            /** @var \Composer\Autoload\ClassLoader|null $loader */
+            $loader = require $vendorAutoloadPath;
+
+            if ($loader === null) {
+                $this->logger->warning('Plugin vendor/autoload.php did not return ClassLoader', [
+                    'plugin' => $pluginName,
+                    'path' => $vendorAutoloadPath,
+                ]);
+                return;
+            }
+
+            // IMPORTANT: Unregister first, then re-register without prepend
+            // This ensures plugin dependencies don't override core classes
+            $loader->unregister();
+            $loader->register(false); // prepend = false
+
+            // Store loader reference for unregistering later
+            $this->composerLoaders[$pluginName] = $loader;
+
+            $this->logger->info('Loaded Composer dependencies for plugin', [
+                'plugin' => $pluginName,
+                'prepend' => false,
+                'vendor_path' => $vendorAutoloadPath,
+            ]);
+        } catch (\Throwable $e) {
+            $this->logger->error('Failed to load Composer dependencies for plugin', [
+                'plugin' => $pluginName,
+                'error' => $e->getMessage(),
+                'path' => $vendorAutoloadPath,
+            ]);
+        }
     }
 
     private function getPluginNamespace(string $pluginName): string
