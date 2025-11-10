@@ -32,17 +32,38 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateAccount(array $details): bool
+    public function updateAccount(array $details): PterodactylAccountDto
     {
         $response = $this->makeRequest('PUT', 'account', ['json' => $details]);
-        return in_array($response->getStatusCode(), [200, 201, 204]);
+        $statusCode = $response->getStatusCode();
+
+        if (in_array($statusCode, [200, 201])) {
+            // API returns data
+            $data = $this->validateClientResponse($response, $statusCode);
+            return new PterodactylAccountDto($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
+        }
+
+        if ($statusCode === 204) {
+            // No content returned, fetch updated account
+            return $this->getAccount();
+        }
+
+        throw new \RuntimeException('Unexpected status code: ' . $statusCode);
     }
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateEmail(string $email, string $currentPassword): bool
+    public function updateEmail(string $email, string $currentPassword): PterodactylAccountDto
     {
         $response = $this->makeRequest('PUT', 'account/email', [
             'json' => [
@@ -50,13 +71,30 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
                 'password' => $currentPassword
             ]
         ]);
-        return in_array($response->getStatusCode(), [200, 201, 204]);
+        $statusCode = $response->getStatusCode();
+
+        if (in_array($statusCode, [200, 201])) {
+            // API returns data
+            $data = $this->validateClientResponse($response, $statusCode);
+            return new PterodactylAccountDto($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
+        }
+
+        if ($statusCode === 204) {
+            // No content returned, fetch updated account
+            return $this->getAccount();
+        }
+
+        throw new \RuntimeException('Unexpected status code: ' . $statusCode);
     }
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updatePassword(string $currentPassword, string $newPassword, string $passwordConfirmation): bool
+    public function updatePassword(string $currentPassword, string $newPassword, string $passwordConfirmation): PterodactylAccountDto
     {
         $response = $this->makeRequest('PUT', 'account/password', [
             'json' => [
@@ -65,7 +103,20 @@ class PterodactylAccount extends AbstractPterodactylClientAdapter implements Pte
                 'password_confirmation' => $passwordConfirmation
             ]
         ]);
-        return in_array($response->getStatusCode(), [200, 201, 204]);
+        $statusCode = $response->getStatusCode();
+
+        if (in_array($statusCode, [200, 201])) {
+            // API returns data
+            $data = $this->validateClientResponse($response, $statusCode);
+            return new PterodactylAccountDto($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
+        }
+
+        if ($statusCode === 204) {
+            // No content returned, fetch updated account
+            return $this->getAccount();
+        }
+
+        throw new \RuntimeException('Unexpected status code: ' . $statusCode);
     }
 
     /**

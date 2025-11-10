@@ -28,6 +28,9 @@ class Setting
     #[ORM\Column(type: "smallint", options: ["default" => 100])]
     private int $hierarchy = 100;
 
+    #[ORM\Column(type: "boolean", options: ["default" => false])]
+    private bool $nullable = false;
+
     public function getId(): int
     {
         return $this->id;
@@ -85,6 +88,17 @@ class Setting
     public function setHierarchy(int $hierarchy): self
     {
         $this->hierarchy = $hierarchy;
+        return $this;
+    }
+
+    public function isNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    public function setNullable(bool $nullable): self
+    {
+        $this->nullable = $nullable;
         return $this;
     }
 

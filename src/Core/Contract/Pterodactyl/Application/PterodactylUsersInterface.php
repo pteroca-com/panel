@@ -2,6 +2,7 @@
 
 namespace App\Core\Contract\Pterodactyl\Application;
 
+use App\Core\DTO\Pterodactyl\Application\PterodactylApiKey;
 use App\Core\DTO\Pterodactyl\Application\PterodactylUser;
 use App\Core\DTO\Pterodactyl\Collection;
 
@@ -20,4 +21,6 @@ interface PterodactylUsersInterface
     public function createUser(array $details): PterodactylUser;
 
     public function deleteUser(int|string $userId): bool;
+
+    public function createApiKeyForUser(int|string $userId, string $description): PterodactylApiKey;
 }

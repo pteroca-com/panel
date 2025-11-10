@@ -40,6 +40,7 @@ readonly class PluginManager
         private PluginAssetManager       $assetManager,
         private PluginSettingService     $settingService,
         private PluginSecurityValidator  $securityValidator,
+        private ComposerDependencyManager $composerManager,
     ) {}
 
     /**
@@ -175,6 +176,54 @@ readonly class PluginManager
             ]);
 
             throw new PluginDependencyException($errorMessage);
+        }
+
+        // Composer dependencies validation - check before security validation
+        if ($this->composerManager->hasComposerJson($plugin)) {
+            // Require composer.lock for reproducible builds
+            if (!$this->composerManager->hasComposerLock($plugin)) {
+                $errorMessage = sprintf(
+                    "Cannot enable plugin '%s': composer.lock file is missing.\n" .
+                    "Run 'composer install' in plugin directory and commit the lock file.",
+                    $plugin->getName()
+                );
+
+                $this->eventDispatcher->dispatch(
+                    new PluginEnablementFailedEvent(null, $plugin->getName(), $errorMessage, [])
+                );
+
+                $this->logger->error("Plugin enablement blocked: composer.lock missing", [
+                    'plugin' => $plugin->getName(),
+                ]);
+
+                throw new RuntimeException($errorMessage);
+            }
+
+            // Require installed vendor directory
+            if (!$this->composerManager->hasVendorDirectory($plugin)) {
+                $errorMessage = sprintf(
+                    "Cannot enable plugin '%s': Composer dependencies not installed.\n" .
+                    "Run: php bin/console plugin:install-deps %s",
+                    $plugin->getName(),
+                    $plugin->getName()
+                );
+
+                $this->eventDispatcher->dispatch(
+                    new PluginEnablementFailedEvent(null, $plugin->getName(), $errorMessage, [])
+                );
+
+                $this->logger->error("Plugin enablement blocked: vendor/ directory missing", [
+                    'plugin' => $plugin->getName(),
+                ]);
+
+                throw new RuntimeException($errorMessage);
+            }
+
+            $this->logger->info("Composer dependencies validated for plugin", [
+                'plugin' => $plugin->getName(),
+                'has_lock' => true,
+                'has_vendor' => true,
+            ]);
         }
 
         // Security validation - check for critical security issues

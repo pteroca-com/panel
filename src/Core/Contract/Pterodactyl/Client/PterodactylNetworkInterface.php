@@ -11,9 +11,9 @@ interface PterodactylNetworkInterface
 
     public function assignAllocation(string $serverId, ?string $ip = null, ?int $port = null): PterodactylAllocation;
 
-    public function setPrimaryAllocation(string $serverId, int $allocationId): bool;
+    public function setPrimaryAllocation(string $serverId, int $allocationId): PterodactylAllocation;
 
-    public function updateAllocationNotes(string $serverId, int $allocationId, string $notes): bool;
+    public function updateAllocationNotes(string $serverId, int $allocationId, string $notes): PterodactylAllocation;
 
     public function removeAllocation(string $serverId, int $allocationId): bool;
 }

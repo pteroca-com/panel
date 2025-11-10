@@ -59,6 +59,7 @@ services:
   App\Core\Service\Crud\CrudTemplateService:
     arguments:
       $projectDirectory: '%kernel.project_dir%'
+      $environment: '%kernel.environment%'
 
   App\Core\Twig\DynamicTwigLoader:
     arguments:
@@ -206,6 +207,11 @@ services:
       $annotationLoader: '@routing.loader.attribute'
     tags:
       - { name: routing.loader }
+
+  # Composer Dependency Manager
+  App\Core\Service\Plugin\ComposerDependencyManager:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
 
   # Plugin Boot Subscriber (registers autoloaders and Twig namespaces for enabled plugins)
   App\Core\EventSubscriber\Plugin\PluginBootSubscriber:

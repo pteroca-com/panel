@@ -82,13 +82,13 @@ readonly class EmailVerificationSubscriber implements EventSubscriberInterface
             $event->setController(fn() => new JsonResponse([
                 'error' => 'email_verification_required',
                 'message' => 'Email verification is required to access this resource',
-                'redirect_url' => $this->urlGenerator->generate($redirectRoute)
+                'redirect_url' => $this->urlGenerator->generate('panel', ['routeName' => $redirectRoute])
             ], 401));
             return;
         }
 
         $event->setController(fn() => new RedirectResponse(
-            $this->urlGenerator->generate($redirectRoute)
+            $this->urlGenerator->generate('panel', ['routeName' => $redirectRoute])
         ));
     }
 }

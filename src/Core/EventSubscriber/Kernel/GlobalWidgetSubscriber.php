@@ -3,21 +3,25 @@
 namespace App\Core\EventSubscriber\Kernel;
 
 use App\Core\Enum\WidgetPosition;
+use App\Core\Event\Menu\SettingsMenuCollectedEvent;
 use App\Core\Service\Widget\WidgetRegistry;
 use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Twig\Environment;
 
 /**
- * Injects global widgets (navbar) into Twig for all requests.
+ * Injects global widgets (navbar) and settings menu items into Twig for all requests.
  *
- * This subscriber runs on every request and makes navbar widgets available
- * globally in all Twig templates via the 'navbar_widgets' global variable.
+ * This subscriber runs on every request and:
+ * - Makes navbar widgets available globally via the 'navbar_widgets' global variable
+ * - Dispatches SettingsMenuCollectedEvent to collect custom settings menu items from plugins
+ * - Makes settings menu items available globally via the 'settings_menu_items' global variable
  *
- * Navbar widgets are context-independent and appear across all pages.
+ * Navbar widgets and settings menu items are context-independent and appear across all pages.
  */
 readonly class GlobalWidgetSubscriber implements EventSubscriberInterface
 {
@@ -25,6 +29,7 @@ readonly class GlobalWidgetSubscriber implements EventSubscriberInterface
         private WidgetRegistry $widgetRegistry,
         private Environment    $twig,
         private Security       $security,
+        private EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -72,5 +77,12 @@ readonly class GlobalWidgetSubscriber implements EventSubscriberInterface
 
         // Inject into Twig globals
         $this->twig->addGlobal('navbar_widgets', array_values($visibleWidgets));
+
+        // Dispatch settings menu collection event for plugins
+        $settingsMenuEvent = new SettingsMenuCollectedEvent($user);
+        $this->eventDispatcher->dispatch($settingsMenuEvent);
+
+        // Inject settings menu items into Twig globals
+        $this->twig->addGlobal('settings_menu_items', $settingsMenuEvent->getMenuItems());
     }
 }

@@ -4,6 +4,14 @@ namespace App\Core\Adapter\Pterodactyl\Client;
 
 use App\Core\Adapter\Pterodactyl\AbstractPterodactylAdapter;
 use App\Core\DTO\Pterodactyl\Credentials;
+use App\Core\Exception\Pterodactyl\PterodactylAccessDeniedException;
+use App\Core\Exception\Pterodactyl\PterodactylAuthenticationException;
+use App\Core\Exception\Pterodactyl\PterodactylClientApiException;
+use App\Core\Exception\Pterodactyl\PterodactylConnectionException;
+use App\Core\Exception\Pterodactyl\PterodactylNotFoundException;
+use App\Core\Exception\Pterodactyl\PterodactylRateLimitException;
+use App\Core\Exception\Pterodactyl\PterodactylServerException;
+use App\Core\Exception\Pterodactyl\PterodactylValidationException;
 use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -22,7 +30,7 @@ abstract class AbstractPterodactylClientAdapter extends AbstractPterodactylAdapt
 
     /**
      * @throws TransportExceptionInterface
-     * @throws Exception
+     * @throws PterodactylConnectionException
      */
     protected function makeRequest(string $method, string $endpoint, array $additionalOptions = []): ResponseInterface
     {
@@ -38,11 +46,23 @@ abstract class AbstractPterodactylClientAdapter extends AbstractPterodactylAdapt
 
         try {
             return $this->httpClient->request($method, $url, $options);
+        } catch (TransportExceptionInterface $e) {
+            throw new PterodactylConnectionException(
+                sprintf('Failed to connect to Pterodactyl Client API: %s', $e->getMessage()),
+                0,
+                $e,
+                null,
+                $endpoint,
+                $method
+            );
         } catch (Exception $e) {
-            throw new Exception(
+            throw new PterodactylConnectionException(
                 sprintf('Failed to make %s request to %s: %s', $method, $endpoint, $e->getMessage()),
                 0,
-                $e
+                $e,
+                null,
+                $endpoint,
+                $method
             );
         }
     }
@@ -53,23 +73,27 @@ abstract class AbstractPterodactylClientAdapter extends AbstractPterodactylAdapt
      * @throws ClientExceptionInterface
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     protected function validateClientResponse(ResponseInterface $response, int $expectedStatusCode): array
     {
-        if ($response->getStatusCode() !== $expectedStatusCode) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode !== $expectedStatusCode) {
+            $this->throwClientApiException($response, $statusCode);
         }
 
         $data = $response->toArray();
 
         if (!isset($data['attributes'])) {
-            throw new Exception('Invalid response format from Pterodactyl Client API');
+            throw new PterodactylClientApiException(
+                'Invalid response format from Pterodactyl Client API - missing attributes',
+                0,
+                null,
+                $statusCode,
+                $response->getInfo('url') ?? 'unknown',
+                $response->getInfo('http_method') ?? 'unknown'
+            );
         }
 
         return $data;
@@ -81,25 +105,54 @@ abstract class AbstractPterodactylClientAdapter extends AbstractPterodactylAdapt
      * @throws ClientExceptionInterface
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
-     * @throws Exception
+     * @throws PterodactylClientApiException
      */
     protected function validateListResponse(ResponseInterface $response, int $expectedStatusCode): array
     {
-        if ($response->getStatusCode() !== $expectedStatusCode) {
-            throw new Exception(
-                sprintf('Pterodactyl Client API error: %d %s',
-                    $response->getStatusCode(),
-                    $response->getContent(false)
-                )
-            );
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode !== $expectedStatusCode) {
+            $this->throwClientApiException($response, $statusCode);
         }
 
         $data = $response->toArray();
 
         if (!isset($data['data'])) {
-            throw new Exception('Invalid list response format from Pterodactyl Client API');
+            throw new PterodactylClientApiException(
+                'Invalid list response format from Pterodactyl Client API - missing data',
+                0,
+                null,
+                $statusCode,
+                $response->getInfo('url') ?? 'unknown',
+                $response->getInfo('http_method') ?? 'unknown'
+            );
         }
 
         return $data;
+    }
+
+    /**
+     * @throws PterodactylClientApiException
+     */
+    protected function throwClientApiException(ResponseInterface $response, int $statusCode): never
+    {
+        $responseBody = $response->getContent(false);
+        $endpoint = $response->getInfo('url') ?? 'unknown';
+        $method = $response->getInfo('http_method') ?? 'unknown';
+
+        $message = sprintf('Pterodactyl Client API error: %d %s', $statusCode, $responseBody);
+
+        // Create appropriate exception based on status code
+        $exception = match (true) {
+            $statusCode === 401 => new PterodactylAuthenticationException($message, 0, null, $statusCode, $endpoint, $method, $responseBody),
+            $statusCode === 403 => new PterodactylAccessDeniedException($message, 0, null, $statusCode, $endpoint, $method, $responseBody),
+            $statusCode === 404 => new PterodactylNotFoundException($message, 0, null, $statusCode, $endpoint, $method, $responseBody),
+            $statusCode === 422 => new PterodactylValidationException($message, 0, null, $statusCode, $endpoint, $method, $responseBody),
+            $statusCode === 429 => new PterodactylRateLimitException($message, 0, null, $statusCode, $endpoint, $method, $responseBody),
+            $statusCode >= 500 => new PterodactylServerException($message, 0, null, $statusCode, $endpoint, $method, $responseBody),
+            default => new PterodactylClientApiException($message, 0, null, $statusCode, $endpoint, $method, $responseBody)
+        };
+
+        throw $exception;
     }
 }

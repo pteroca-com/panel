@@ -3,6 +3,7 @@
 namespace App\Core\Adapter\Pterodactyl\Application;
 
 use App\Core\Contract\Pterodactyl\Application\PterodactylUsersInterface;
+use App\Core\DTO\Pterodactyl\Application\PterodactylApiKey;
 use App\Core\DTO\Pterodactyl\Application\PterodactylUser;
 use App\Core\DTO\Pterodactyl\Collection;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -105,6 +106,23 @@ class PterodactylUsers extends AbstractPterodactylApplicationAdapter implements 
     {
         $response = $this->makeRequest('DELETE', "users/$userId");
         return in_array($response->getStatusCode(), [200, 204]);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function createApiKeyForUser(int|string $userId, string $description): PterodactylApiKey
+    {
+        $response = $this->makeRequest('POST', "users/$userId/api-keys", [
+            'json' => ['description' => $description]
+        ]);
+        $data = $this->validateServerResponse($response, 201);
+
+        return new PterodactylApiKey($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
     /**

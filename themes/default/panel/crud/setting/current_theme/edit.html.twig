@@ -1,4 +1,8 @@
-{% extends '@EasyAdmin/crud/edit.html.twig' %}
+{#
+  Hierarchical template for: setting/current_theme/edit
+  Parent: setting/edit.html.twig (which includes nullable field JavaScript)
+#}
+{% extends 'panel/crud/setting/edit.html.twig' %}
 
 {% block body_javascript %}
     {{ parent() }}

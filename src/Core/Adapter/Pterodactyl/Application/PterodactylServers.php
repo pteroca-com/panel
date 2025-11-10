@@ -79,29 +79,47 @@ class PterodactylServers extends AbstractPterodactylApplicationAdapter implement
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateServerDetails(string $serverId, array $details): bool
+    public function updateServerDetails(string $serverId, array $details): PterodactylServer
     {
         $response = $this->makeRequest('PATCH', "servers/$serverId/details", ['json' => $details]);
-        return in_array($response->getStatusCode(), [200, 204]);
+        $data = $this->validateServerResponse($response, 200);
+
+        return new PterodactylServer($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateServerBuild(string $serverId, array $buildDetails): bool
+    public function updateServerBuild(string $serverId, array $buildDetails): PterodactylServer
     {
         $response = $this->makeRequest('PATCH', "servers/$serverId/build", ['json' => $buildDetails]);
-        return in_array($response->getStatusCode(), [200, 204]);
+        $data = $this->validateServerResponse($response, 200);
+
+        return new PterodactylServer($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
     /**
      * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
      */
-    public function updateServerStartup(string $serverId, array $startupDetails): bool
+    public function updateServerStartup(string $serverId, array $startupDetails): PterodactylServer
     {
         $response = $this->makeRequest('PATCH', "servers/$serverId/startup", ['json' => $startupDetails]);
-        return in_array($response->getStatusCode(), [200, 204]);
+        $data = $this->validateServerResponse($response, 200);
+
+        return new PterodactylServer($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
 
     /**

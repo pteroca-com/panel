@@ -10,6 +10,7 @@ use Iterator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Process;
 
 /**
  * Security validator for plugin code.
@@ -36,10 +37,13 @@ class PluginSecurityValidator
 
     public function __construct(
         private readonly LoggerInterface $logger,
+        private readonly ComposerDependencyManager $composerManager,
         #[Autowire(param: 'plugin_security.dangerous_functions')]
         private readonly array $dangerousFunctions,
         #[Autowire(param: 'plugin_security.checks')]
         private readonly array $securityChecks,
+        #[Autowire(param: 'kernel.project_dir')]
+        private readonly string $projectDir,
     ) {}
 
     /**
@@ -91,6 +95,13 @@ class PluginSecurityValidator
             $permissionIssues = $this->checkFilePermissions($plugin->getPath());
             $allIssues = array_merge($allIssues, $permissionIssues);
             $checks['file_permissions'] = empty($permissionIssues);
+        }
+
+        // Check 6: Composer dependencies security
+        if ($this->securityChecks['composer_dependencies'] ?? true) {
+            $composerIssues = $this->validateComposerDependencies($plugin);
+            $allIssues = array_merge($allIssues, $composerIssues);
+            $checks['composer_dependencies'] = empty($composerIssues);
         }
 
         $criticalCount = count(array_filter($allIssues, fn($i) => $i['severity'] === self::SEVERITY_CRITICAL));
@@ -371,5 +382,201 @@ class PluginSecurityValidator
             'assert' => 'Do not use assert() with string arguments in production',
             default => 'Consider using safer alternatives',
         };
+    }
+
+    /**
+     * Validate Composer dependencies for security issues.
+     *
+     * Performs comprehensive validation:
+     * 1. Check for forbidden sections (scripts, allow-plugins)
+     * 2. Verify composer.lock exists
+     * 3. Run composer validate
+     * 4. Check manifest declaration matches composer.json
+     * 5. Verify PHP version compatibility
+     * 6. Run security audit (composer audit)
+     * 7. Check licenses (optional warning)
+     *
+     * @param Plugin $plugin Plugin to validate
+     * @return array List of security issues
+     */
+    private function validateComposerDependencies(Plugin $plugin): array
+    {
+        $issues = [];
+        $pluginPath = $this->projectDir . '/plugins/' . $plugin->getName();
+        $composerJsonPath = $pluginPath . '/composer.json';
+
+        // Skip if plugin doesn't have composer.json
+        if (!$this->composerManager->hasComposerJson($plugin)) {
+            return [];
+        }
+
+        // Load composer.json
+        $composerData = json_decode(file_get_contents($composerJsonPath), true);
+
+        if ($composerData === null) {
+            return [[
+                'type' => 'composer_invalid_json',
+                'severity' => self::SEVERITY_CRITICAL,
+                'message' => 'composer.json is not valid JSON',
+                'file' => 'composer.json',
+            ]];
+        }
+
+        // Validation 1: Check for forbidden sections
+        if (isset($composerData['scripts']) && !empty($composerData['scripts'])) {
+            $issues[] = [
+                'type' => 'composer_scripts_forbidden',
+                'severity' => self::SEVERITY_CRITICAL,
+                'message' => 'Plugin composer.json contains forbidden "scripts" section (security risk)',
+                'file' => 'composer.json',
+                'suggestion' => 'Remove "scripts" section from composer.json',
+            ];
+        }
+
+        if (isset($composerData['config']['allow-plugins'])) {
+            $issues[] = [
+                'type' => 'composer_plugins_forbidden',
+                'severity' => self::SEVERITY_CRITICAL,
+                'message' => 'Plugin composer.json contains forbidden "allow-plugins" config (security risk)',
+                'file' => 'composer.json',
+                'suggestion' => 'Remove "config.allow-plugins" from composer.json',
+            ];
+        }
+
+        // Validation 2: Check composer.lock existence
+        if (!$this->composerManager->hasComposerLock($plugin)) {
+            $issues[] = [
+                'type' => 'composer_lock_missing',
+                'severity' => self::SEVERITY_HIGH,
+                'message' => 'Plugin is missing composer.lock file (required for reproducible builds)',
+                'file' => 'composer.lock',
+                'suggestion' => 'Run "composer install" in plugin directory and commit composer.lock',
+            ];
+        }
+
+        // Validation 3: Run composer validate
+        $process = new Process(['composer', 'validate', '--no-check-publish', '--strict'], $pluginPath);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $issues[] = [
+                'type' => 'composer_validate_failed',
+                'severity' => self::SEVERITY_HIGH,
+                'message' => 'composer.json validation failed',
+                'file' => 'composer.json',
+                'details' => trim($process->getErrorOutput()),
+                'suggestion' => 'Fix composer.json structure errors',
+            ];
+        }
+
+        // Validation 4: Check manifest declaration matches composer.json
+        $manifest = $plugin->getManifest();
+        $declaredDeps = $manifest['composer_dependencies'] ?? null;
+        $actualDeps = $composerData['require'] ?? [];
+
+        // Remove php constraint from comparison
+        $actualDepsForComparison = $actualDeps;
+        unset($actualDepsForComparison['php']);
+
+        if ($declaredDeps !== null && $declaredDeps !== $actualDepsForComparison) {
+            $issues[] = [
+                'type' => 'composer_declaration_mismatch',
+                'severity' => self::SEVERITY_HIGH,
+                'message' => 'composer_dependencies in plugin.json does not match require section in composer.json',
+                'file' => 'plugin.json / composer.json',
+                'suggestion' => 'Ensure both files declare the same dependencies',
+            ];
+        }
+
+        // Validation 5: Check PHP version compatibility
+        $phpConstraint = $actualDeps['php'] ?? null;
+        if ($phpConstraint !== null) {
+            // Simple version check - full semver validation would require composer/semver library
+            $currentPhp = PHP_VERSION;
+            $constraintSimple = str_replace(['>=', '^', '~', ' '], '', $phpConstraint);
+
+            if (version_compare($currentPhp, $constraintSimple, '<')) {
+                $issues[] = [
+                    'type' => 'php_version_incompatible',
+                    'severity' => self::SEVERITY_CRITICAL,
+                    'message' => sprintf('Plugin requires PHP %s, current: %s', $phpConstraint, $currentPhp),
+                    'file' => 'composer.json',
+                    'suggestion' => 'Update PHP version or adjust composer.json requirement',
+                ];
+            }
+        }
+
+        // Validation 6: Run security audit (if vendor/ exists)
+        if ($this->composerManager->hasVendorDirectory($plugin)) {
+            $auditProcess = new Process(['composer', 'audit', '--format=json', '--no-dev'], $pluginPath, timeout: 60);
+            $auditProcess->run();
+
+            if (!$auditProcess->isSuccessful()) {
+                try {
+                    $auditData = json_decode($auditProcess->getOutput(), true);
+                    $advisories = $auditData['advisories'] ?? [];
+
+                    if (!empty($advisories)) {
+                        // Count by severity
+                        $criticalVulns = [];
+                        $highVulns = [];
+
+                        foreach ($advisories as $packageAdvisories) {
+                            foreach ($packageAdvisories as $advisory) {
+                                $severity = strtolower($advisory['severity'] ?? 'unknown');
+
+                                if ($severity === 'critical') {
+                                    $criticalVulns[] = $advisory;
+                                } elseif ($severity === 'high') {
+                                    $highVulns[] = $advisory;
+                                }
+                            }
+                        }
+
+                        // Add issues for vulnerabilities
+                        if (!empty($criticalVulns)) {
+                            $issues[] = [
+                                'type' => 'composer_critical_vulnerabilities',
+                                'severity' => self::SEVERITY_CRITICAL,
+                                'message' => sprintf('%d critical security vulnerabilities found in dependencies', count($criticalVulns)),
+                                'file' => 'composer.lock',
+                                'suggestion' => 'Run "composer update" to fix vulnerabilities, then run "plugin:install-deps --clean"',
+                            ];
+                        }
+
+                        if (!empty($highVulns)) {
+                            $issues[] = [
+                                'type' => 'composer_high_vulnerabilities',
+                                'severity' => self::SEVERITY_HIGH,
+                                'message' => sprintf('%d high severity vulnerabilities found in dependencies', count($highVulns)),
+                                'file' => 'composer.lock',
+                                'suggestion' => 'Run "composer update" to fix vulnerabilities',
+                            ];
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $this->logger->warning('Failed to parse composer audit output', [
+                        'plugin' => $plugin->getName(),
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
+
+        // Validation 7: Check licenses (optional - low severity warning)
+        $allowedLicenses = ['MIT', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', 'MPL-2.0', 'ISC', 'LGPL-3.0-or-later'];
+        $pluginLicense = $composerData['license'] ?? null;
+
+        if ($pluginLicense && !in_array($pluginLicense, $allowedLicenses, true)) {
+            $issues[] = [
+                'type' => 'unknown_license',
+                'severity' => self::SEVERITY_LOW,
+                'message' => sprintf('Plugin license "%s" is not in the standard allowlist', $pluginLicense),
+                'file' => 'composer.json',
+                'suggestion' => 'Verify license compatibility with your project',
+            ];
+        }
+
+        return $issues;
     }
 }
