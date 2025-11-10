@@ -5,12 +5,11 @@ namespace App\Core\EventSubscriber\User;
 use App\Core\Entity\User;
 use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Enum\SettingEnum;
+use App\Core\Service\Plugin\PluginNotificationService;
 use App\Core\Service\SettingService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -22,7 +21,7 @@ readonly class EmailVerificationAlertSubscriber implements EventSubscriberInterf
         private Security $security,
         private SettingService $settingService,
         private UrlGeneratorInterface $urlGenerator,
-        private RequestStack $requestStack,
+        private PluginNotificationService $notificationService,
         private LoggerInterface $logger,
         private TranslatorInterface $translator,
     ) {}
@@ -63,10 +62,7 @@ readonly class EmailVerificationAlertSubscriber implements EventSubscriberInterf
             $translatedLinkText
         );
 
-        $session = $this->requestStack->getSession();
-        if ($session instanceof FlashBagAwareSessionInterface) {
-            $session->getFlashBag()->add('warning', $message);
-        }
+        $this->notificationService->warning($message);
     }
 
     private function shouldShowEmailVerificationAlert(): bool

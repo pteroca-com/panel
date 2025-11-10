@@ -179,6 +179,26 @@
                                 </a>
                             </li>
                         {% endif %}
+
+                        {# Plugin settings menu items #}
+                        {% if settings_menu_items is defined and settings_menu_items|length > 0 %}
+                            <div class="dropdown-divider"></div>
+
+                            {% for item in settings_menu_items %}
+                                {% if item.type == 'divider' %}
+                                    <div class="dropdown-divider"></div>
+                                {% elseif item.type == 'header' %}
+                                    <li class="dropdown-header">{{ item.label|trans }}</li>
+                                {% else %}
+                                    <li>
+                                        <a href="{{ item.url }}" class="dropdown-item {{ item.css_class }}" {% for attr, value in item.data_attributes %}{{ attr }}="{{ value }}" {% endfor %}>
+                                            {% if item.icon %}<i class="{{ item.icon }} fa-fw"></i>{% endif %}
+                                            {{ item.label|trans }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </ul>
                 </div>
             {% endif %}
