@@ -1468,6 +1468,16 @@ pteroca:
         sql_injection: 'SQL इंजेक्शन'
         xss_patterns: 'XSS पैटर्न'
         file_permissions: 'फ़ाइल अनुमतियाँ'
+        composer_dependencies: 'Composer निर्भरताएँ'
+      issue_type:
+        composer_scripts_forbidden: 'निषिद्ध स्क्रिप्ट अनुभाग'
+        composer_allow_plugins_forbidden: 'निषिद्ध Allow-Plugins कॉन्फ़िगरेशन'
+        composer_lock_missing: 'composer.lock गुम'
+        composer_validate_failed: 'Composer सत्यापन विफल'
+        composer_manifest_mismatch: 'मेनिफेस्ट बेमेल'
+        composer_php_version_incompatible: 'PHP संस्करण असंगत'
+        composer_audit_failed: 'सुरक्षा कमजोरियाँ'
+        composer_forbidden_licenses: 'निषिद्ध लाइसेंस'
     health:
       title: 'प्लगइन स्वास्थ्य'
       check: 'स्वास्थ्य जांच'

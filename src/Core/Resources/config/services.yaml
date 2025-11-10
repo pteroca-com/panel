@@ -208,6 +208,11 @@ services:
     tags:
       - { name: routing.loader }
 
+  # Composer Dependency Manager
+  App\Core\Service\Plugin\ComposerDependencyManager:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+
   # Plugin Boot Subscriber (registers autoloaders and Twig namespaces for enabled plugins)
   App\Core\EventSubscriber\Plugin\PluginBootSubscriber:
     arguments:

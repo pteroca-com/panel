@@ -1459,6 +1459,16 @@ pteroca:
         sql_injection: 'SQL-Injection'
         xss_patterns: 'XSS-Muster'
         file_permissions: 'Dateiberechtigungen'
+        composer_dependencies: 'Composer-Abhängigkeiten'
+      issue_type:
+        composer_scripts_forbidden: 'Verbotener Scripts-Bereich'
+        composer_allow_plugins_forbidden: 'Verbotene Allow-Plugins-Konfiguration'
+        composer_lock_missing: 'Fehlende composer.lock'
+        composer_validate_failed: 'Composer-Validierung fehlgeschlagen'
+        composer_manifest_mismatch: 'Manifest-Mismatch'
+        composer_php_version_incompatible: 'PHP-Version inkompatibel'
+        composer_audit_failed: 'Sicherheitslücken'
+        composer_forbidden_licenses: 'Verbotene Lizenzen'
     health:
       title: 'Plugin-Gesundheit'
       check: 'Gesundheitsprüfung'

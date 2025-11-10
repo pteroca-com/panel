@@ -1459,6 +1459,16 @@ pteroca:
         sql_injection: 'SQL Инъекция'
         xss_patterns: 'Шаблоны XSS'
         file_permissions: 'Разрешения Файлов'
+        composer_dependencies: 'Зависимости Composer'
+      issue_type:
+        composer_scripts_forbidden: 'Запрещенный Раздел Скриптов'
+        composer_allow_plugins_forbidden: 'Запрещенная Конфигурация Allow-Plugins'
+        composer_lock_missing: 'Отсутствует composer.lock'
+        composer_validate_failed: 'Валидация Composer Не Удалась'
+        composer_manifest_mismatch: 'Несоответствие Манифеста'
+        composer_php_version_incompatible: 'Несовместимая Версия PHP'
+        composer_audit_failed: 'Уязвимости Безопасности'
+        composer_forbidden_licenses: 'Запрещенные Лицензии'
     health:
       title: 'Здоровье Плагина'
       check: 'Проверка Здоровья'
