@@ -37,8 +37,6 @@ use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Csrf\CsrfToken;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CartController extends AbstractController
@@ -50,7 +48,6 @@ class CartController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly ServerSlotPricingService $serverSlotPricingService,
         private readonly PurchaseTokenService $purchaseTokenService,
-        private readonly CsrfTokenManagerInterface $csrfTokenManager,
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {}
@@ -227,14 +224,6 @@ class CartController extends AbstractController
     ): Response
     {
         try {
-            $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
-            if (!$disableCsrf) {
-                $csrfToken = $request->request->get('_csrf_token');
-                if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('submit', $csrfToken))) {
-                    throw new \Exception($this->translator->trans('pteroca.error.invalid_csrf_token'));
-                }
-            }
-
             $purchaseToken = $request->request->getString('purchase_token');
             $this->purchaseTokenService->validateAndConsumeToken($purchaseToken, $this->getUser(), 'buy');
 
@@ -271,8 +260,8 @@ class CartController extends AbstractController
             }
 
             $formData = $form->getData();
-            $eggId = $formData['egg'];
-            $priceId = $formData['duration'];
+            $eggId = $form->get('egg')->getData();
+            $priceId = $form->get('duration')->getData();
             $serverName = $formData['server-name'];
             $autoRenewal = $formData['auto-renewal'] ?? false;
             $slots = $formData['slots'] ?? null;
@@ -397,14 +386,6 @@ class CartController extends AbstractController
     ): Response
     {
         try {
-            $disableCsrf = isset($_ENV['DISABLE_CSRF']) && $_ENV['DISABLE_CSRF'] === 'true';
-            if (!$disableCsrf) {
-                $csrfToken = $request->request->get('_csrf_token');
-                if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('submit', $csrfToken))) {
-                    throw new \Exception($this->translator->trans('pteroca.error.invalid_csrf_token'));
-                }
-            }
-
             $purchaseToken = $request->request->getString('purchase_token');
             $this->purchaseTokenService->validateAndConsumeToken($purchaseToken, $this->getUser(), 'renew');
 

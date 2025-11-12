@@ -103,20 +103,21 @@ class ServerController extends AbstractController
         if (!empty($serverData->dockerImages)) $loadedDataSections[] = 'docker_images';
         if (!empty($serverData->availableNestEggs)) $loadedDataSections[] = 'available_nest_eggs';
 
+        $isServerInstalling = $serverData->isInstalling ?? false;
         $this->dispatchDataEvent(
             ServerManagementDataLoadedEvent::class,
             $request,
             [
                 $server->getId(),
                 $server->getPterodactylServerIdentifier(),
-                $serverData->isInstalling ?? false,
+                $isServerInstalling,
                 $serverData->isSuspended ?? false,
                 !empty($serverData->serverPermissions?->toArray()),
                 $loadedDataSections,
             ]
         );
 
-        if (empty($serverData->serverPermissions?->toArray()) && !$isAdminView) {
+        if (!$isServerInstalling && empty($serverData->serverPermissions?->toArray()) && !$isAdminView) {
             throw $this->createAccessDeniedException();
         }
 

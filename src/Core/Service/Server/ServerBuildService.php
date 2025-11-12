@@ -2,15 +2,16 @@
 
 namespace App\Core\Service\Server;
 
-use App\Core\Contract\ProductInterface;
-use App\Core\Contract\UserInterface;
-use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
-use App\Core\DTO\Pterodactyl\Resource;
-use App\Core\Entity\ServerProduct;
-use App\Core\Service\Pterodactyl\NodeSelectionService;
-use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Exception;
 use JsonException;
+use App\Core\Entity\ServerProduct;
+use App\Core\Contract\UserInterface;
+use App\Core\DTO\Pterodactyl\Resource;
+use App\Core\Contract\ProductInterface;
+use App\Core\DTO\Pterodactyl\Collection;
+use App\Core\Service\Pterodactyl\NodeSelectionService;
+use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
 readonly class ServerBuildService
 {
@@ -141,15 +142,21 @@ readonly class ServerBuildService
             return $environmentVariables;
         }
 
-        foreach ($egg->get('relationships')['variables']->data as $variable) {
-            $variableFromProduct = $productEggConfiguration[$egg->get('id')]['variables'][$variable->get('id')] ?? null;
-            $valueToSet = $variableFromProduct['value'] ?? $variable->default_value;
+        $variables = $egg->get('relationships')['variables'] ?? null;
+        if (!$variables instanceof Collection) {
+            return $environmentVariables;
+        }
+        
+        foreach ($variables->toArray() as $variable) {
+            $variableFromProduct = $productEggConfiguration[$egg->get('id')]['variables'][$variable['id']] ?? null;
+            $valueToSet = $variableFromProduct['value'] ?? $variable['default_value'] ?? null;;
+
 
             if ($slots !== null && !empty($variableFromProduct['slot_variable']) && $variableFromProduct['slot_variable'] === 'on') {
                 $valueToSet = $slots;
             }
 
-            $environmentVariables[$variable->env_variable] = $valueToSet;
+            $environmentVariables[$variable['env_variable']] = $valueToSet;
         }
 
         return $environmentVariables;

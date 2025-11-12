@@ -35,6 +35,7 @@
         }) }}
             {{ form_widget(form.id) }}
             {{ form_widget(form.voucher, {'attr': {'id': 'voucher-code', 'data-voucher-type': 'server_discount'}}) }}
+            <input type="hidden" name="purchase_token" value="{{ purchase_token }}" />
             
             <div class="row g-4">
                 <!-- Server Information -->

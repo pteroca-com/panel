@@ -118,9 +118,9 @@ class PterodactylUsers extends AbstractPterodactylApplicationAdapter implements 
     public function createApiKeyForUser(int|string $userId, string $description): PterodactylApiKey
     {
         $response = $this->makeRequest('POST', "users/$userId/api-keys", [
-            'json' => ['description' => $description]
+            'json' => ['description' => $description, 'allowed_ips' => []]
         ]);
-        $data = $this->validateServerResponse($response, 201);
+        $data = $this->validateServerResponse($response, 200);
 
         return new PterodactylApiKey($this->getDataFromResponse($data), $this->getMetaFromResponse($data));
     }
