@@ -63,28 +63,29 @@ readonly class ServerService
             return null;
         }
 
-        $allocations = $pterodactylServer->get('relationships')['allocations'] ?? [];
+        $allocations = $pterodactylServer->get('relationships')['allocations'] ?? null;
         $primaryId = $pterodactylServer->get('allocation') ?? null;
         $primary = null;
 
-        foreach ($allocations as $a) {
-            if ($a->get('id') === $primaryId) {
-                $primary = $a;
-                break;
+        if ($allocations instanceof \App\Core\DTO\Pterodactyl\Collection) {
+            foreach ($allocations as $a) {
+                if ($a->get('id') === $primaryId) {
+                    $primary = $a;
+                    break;
+                }
             }
-        }
 
-        if ($primary === null && !empty($allocations->toArray())) {
-            $firstAllocation = $allocations->toArray();
-            $primary = reset($firstAllocation);
+            if ($primary === null && !$allocations->isEmpty()) {
+                $primary = $allocations->first();
+            }
         }
 
         if ($primary === null) {
             return null;
         }
 
-        $host = $primary['alias'] ?? $primary['ip'] ?? null;
-        $port = $primary['port'] ?? null;
+        $host = $primary->get('alias') ?? $primary->get('ip') ?? null;
+        $port = $primary->get('port') ?? null;
 
         $serverAddress = null;
         if ($host && $port) {
@@ -94,6 +95,11 @@ readonly class ServerService
             $serverAddress = $host.':'.$port;
         }
 
+        $eggRelationship = $pterodactylServer->get('relationships')['egg'] ?? null;
+        $eggData = $eggRelationship instanceof \App\Core\DTO\Pterodactyl\Resource
+            ? $eggRelationship->toArray()
+            : [];
+
         return new ServerDetailsDTO(
             identifier: $server->getPterodactylServerIdentifier(),
             name: $pterodactylServer->get('name'),
@@ -101,7 +107,7 @@ readonly class ServerService
             ip: $serverAddress,
             limits: $pterodactylServer->get('limits'),
             featureLimits: $pterodactylServer->get('feature_limits'),
-            egg: $pterodactylServer->get('relationships')['egg']->toArray(),
+            egg: $eggData,
         );
     }
 

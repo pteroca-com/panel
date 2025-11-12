@@ -109,14 +109,14 @@ class ServerController extends AbstractController
             [
                 $server->getId(),
                 $server->getPterodactylServerIdentifier(),
-                $serverData->isInstalling ?? false,
+                $serverData->isInstalling,
                 $serverData->isSuspended ?? false,
                 !empty($serverData->serverPermissions?->toArray()),
                 $loadedDataSections,
             ]
         );
 
-        if (empty($serverData->serverPermissions?->toArray()) && !$isAdminView) {
+        if (!$serverData->isInstalling && empty($serverData->serverPermissions?->toArray()) && !$isAdminView) {
             throw $this->createAccessDeniedException();
         }
 
