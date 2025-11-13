@@ -5,6 +5,7 @@ namespace App\Core\Controller;
 use App\Core\Entity\Server;
 use App\Core\Enum\UserRoleEnum;
 use App\Core\Repository\ServerRepository;
+use App\Core\Service\Pterodactyl\PterodactylRedirectService;
 use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,15 +39,21 @@ class ServerController extends AbstractController
         Request $request,
         ServerRepository $serverRepository,
         ServerDataService $serverDataService,
+        PterodactylRedirectService $pterodactylRedirectService,
     ): Response
     {
         $this->checkPermission();
 
         $serverId = $request->get('id');
-        $currentPage = $request->get('page', 1);
         if (empty($serverId)) {
             throw $this->createNotFoundException();
         }
+
+        if ($pterodactylRedirectService->shouldUsePterodactylPanel()) {
+            return $pterodactylRedirectService->createServerRedirect($serverId);
+        }
+
+        $currentPage = $request->get('page', 1);
 
         /** @var ?Server $server */
         $server = current($serverRepository->findBy(['pterodactylServerIdentifier' => $serverId]));

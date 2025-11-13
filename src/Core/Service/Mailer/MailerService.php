@@ -16,12 +16,11 @@ class MailerService implements MailerServiceInterface
 
     private string $from = '';
 
-    private string $logo = '';
-
     public function __construct(
         private readonly Environment $twig,
         private readonly SettingService $settingsService,
         private readonly string $defaultLogoPath,
+        private readonly string $projectDir,
     ) {}
 
     public function sendEmail(string $to, string $subject, string $template, array $context): void
@@ -34,12 +33,14 @@ class MailerService implements MailerServiceInterface
             $context['title'] = $subject;
         }
 
+        $logoPath = $this->resolveLogoPath();
+
         $email = (new Email())
             ->from($this->from)
             ->to($to)
             ->subject($subject)
             ->html($this->twig->render($template, $context))
-            ->attachFromPath($this->logo, 'logo.png');
+            ->attachFromPath($logoPath, 'logo.png');
 
         $this->mailer->send($email);
     }
@@ -52,19 +53,27 @@ class MailerService implements MailerServiceInterface
         $smtpPassword = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD->value);
         $this->from = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_FROM->value);
 
-        $customLogoPath = sprintf(
-            '%s/uploads/settings/%s',
-            $_SERVER['DOCUMENT_ROOT'],
-            $this->settingsService->getSetting(SettingEnum::LOGO->value),
-        );
-        if (is_file($customLogoPath)) {
-            $this->logo = $customLogoPath;
-        } else {
-            $this->logo = $this->defaultLogoPath;
-        }
-
         $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUsername, $smtpPassword, $smtpServer, $smtpPort);
         $transport = Transport::fromDsn($dsn);
         $this->mailer = new Mailer($transport);
+    }
+
+    private function resolveLogoPath(): string
+    {
+        $logoFilename = $this->settingsService->getSetting(SettingEnum::LOGO->value);
+
+        if (!empty($logoFilename)) {
+            $customLogoPath = sprintf(
+                '%s/public/uploads/settings/%s',
+                $this->projectDir,
+                $logoFilename
+            );
+
+            if (is_file($customLogoPath)) {
+                return $customLogoPath;
+            }
+        }
+
+        return $this->defaultLogoPath;
     }
 }
