@@ -12,6 +12,7 @@ use App\Core\Form\ServerProductPriceSlotFormType;
 use App\Core\Repository\ServerProductRepository;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylClientService;
+use App\Core\Service\Pterodactyl\PterodactylRedirectService;
 use App\Core\Service\Pterodactyl\PterodactylService;
 use App\Core\Service\Server\DeleteServerService;
 use App\Core\Service\Server\UpdateServerService;
@@ -59,6 +60,7 @@ class ServerProductCrudController extends AbstractPanelController
         private readonly DeleteServerService $deleteServerService,
         private readonly TranslatorInterface $translator,
         private readonly RequestStack $requestStack,
+        private readonly PterodactylRedirectService $pterodactylRedirectService,
     ) {
         parent::__construct($panelCrudService);
     }
