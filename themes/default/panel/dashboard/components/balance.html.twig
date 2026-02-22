@@ -11,7 +11,7 @@
             <div class="mb-2">
                 <small class="text-muted text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">{{ 'pteroca.dashboard.account_balance_description'|trans }}</small>
             </div>
-            <h2 class="fw-bold mb-0" style="color: var(--stripe-gray-900); font-size: 2rem;">{{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}</h2>
+            <h2 class="fw-bold mb-0" style="color: var(--stripe-gray-900); font-size: 2rem;">{{ app.user.balance|format_price }} {{ get_currency() }}</h2>
         </div>
 
         <!-- Action Button -->

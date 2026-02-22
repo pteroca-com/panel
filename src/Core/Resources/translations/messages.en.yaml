@@ -1130,6 +1130,7 @@ pteroca:
         date_format: 'Choose how dates and times are displayed throughout the panel. Affects all date displays for all users.'
         date_timezone: 'Select the timezone for displaying dates. All dates will be converted from UTC to the selected timezone.'
         date_show_timezone: 'When enabled, timezone abbreviation (e.g., "UTC", "EST") will be shown next to all displayed dates.'
+        price_format: 'Choose how prices are displayed throughout the panel. Affects all price displays in landing pages, user panel, and email templates.'
         site_favicon: 'Icon in browser tabs and bookmarks. Upload ICO, PNG, or SVG (16x16 or 32x32px recommended).'
         pterodactyl_url: 'URL of your Pterodactyl panel (e.g., https://ptero.example.com). Required for all server operations.'
         pterodactyl_api_key: 'Application API key from Pterodactyl panel. Required for user & server creation, suspension, and deletion.'

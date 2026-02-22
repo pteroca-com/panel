@@ -27,7 +27,7 @@
                     <tr>
                         <th scope="row" class="fw-semibold">{{ user.id }}</th>
                         <td>{{ user.email }}</td>
-                        <td class="fw-semibold">{{ user.balance|number_format(2, ',', ' ') }} {{ get_currency() }}</td>
+                        <td class="fw-semibold">{{ user.balance|format_price }} {{ get_currency() }}</td>
                         <td>
                             {% if user.isVerified %}
                                 <span class="badge badge-success">

@@ -13,11 +13,11 @@
                     {% set lowestPriceObj = product.lowestPriceObject %}
                     {% if lowestPriceObj %}
                         {% if lowestPriceObj.type.value == 'static' %}
-                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|number_format(2, ',', ' ') }}<small>/{{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</small>
+                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|format_price }}<small>/{{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</small>
                         {% elseif lowestPriceObj.type.value == 'on_demand' %}
-                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|number_format(2, ',', ' ') }}<small>/{{ 'pteroca.product.minute_short'|trans }}</small>
+                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|format_price }}<small>/{{ 'pteroca.product.minute_short'|trans }}</small>
                         {% elseif lowestPriceObj.type.value == 'slot' %}
-                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|number_format(2, ',', ' ') }}<small>/{{ 'pteroca.product.slot'|trans }}</small>
+                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|format_price }}<small>/{{ 'pteroca.product.slot'|trans }}</small>
                         {% endif %}
                     {% else %}
                         <small>{{ 'pteroca.landing.products.contact_us'|trans }}</small>

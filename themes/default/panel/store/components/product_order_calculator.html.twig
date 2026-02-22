@@ -1,5 +1,9 @@
 {% block body_javascripts %}
+    {% set priceSeps = get_price_separators() %}
     <script>
+        const priceDecimalSep = '{{ priceSeps.decimal|e('js') }}';
+        const priceThousandsSep = '{{ priceSeps.thousands|e('js') }}';
+
         const unitTranslations = {
             per_minute: '{{ 'pteroca.product.per_minute'|trans }}',
             minutes: '{{ 'pteroca.product.minutes'|trans }}',
@@ -104,19 +108,18 @@
         }
 
         function formatPrice(price) {
-            let str = price.toFixed(4);
-            str = str.replace(/\.?0+$/, '');
+            // Keep up to 4 decimal places, trimming trailing zeros but always showing at least 2
+            let str = price.toFixed(4).replace(/(\.\d{2})0+$/, '$1');
 
-            if (!str.includes('.')) {
-                return str + '.00';
+            const dotIdx = str.indexOf('.');
+            let intPart = dotIdx >= 0 ? str.substring(0, dotIdx) : str;
+            let decPart = dotIdx >= 0 ? str.substring(dotIdx + 1) : '00';
+
+            if (priceThousandsSep !== '') {
+                intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, priceThousandsSep);
             }
 
-            const [intPart, decPart] = str.split('.');
-            if (decPart.length === 1) {
-                return intPart + '.' + decPart + '0';
-            }
-
-            return str;
+            return intPart + priceDecimalSep + decPart;
         }
     </script>
 {% endblock %}

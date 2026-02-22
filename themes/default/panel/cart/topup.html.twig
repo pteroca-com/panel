@@ -56,7 +56,7 @@
                                 <div>
                                     <small class="text-muted">{{ 'pteroca.cart_topup.order_description'|trans }}</small>
                                     <div class="fw-bold fs-4 text-success">
-                                        {{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}
+                                        {{ request.amount|format_price }} {{ get_currency() }}
                                     </div>
                                 </div>
                             </div>
@@ -130,10 +130,10 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>{{ 'pteroca.cart_topup.order_description'|trans }}</strong>
-                                        <div class="small text-muted">{{ request.amount|number_format(2, '.', '') }} {{ get_currency() }}</div>
+                                        <div class="small text-muted">{{ request.amount|format_price }} {{ get_currency() }}</div>
                                     </div>
                                     <div class="text-end">
-                                        <span class="fw-semibold">{{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}</span>
+                                        <span class="fw-semibold">{{ request.amount|format_price }} {{ request.currency|upper }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -181,7 +181,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="fw-bold">{{ 'pteroca.product.total'|trans }}:</span>
                                     <span id="selected-summary" class="fw-bold text-primary fs-4">
-                                        {{ request.amount|number_format(2, '.', '') }} {{ request.currency|upper }}
+                                        {{ request.amount|format_price }} {{ request.currency|upper }}
                                     </span>
                                 </div>
                             </div>
@@ -206,8 +206,21 @@
 {% endblock %}
 
 {% block body_javascript %}
+    {% set priceSeps = get_price_separators() %}
     <script>
         const currentUserBalance = parseFloat('{{ app.user.balance }}');
+
+        function formatPrice(price) {
+            const decSep = '{{ priceSeps.decimal|e('js') }}';
+            const thSep = '{{ priceSeps.thousands|e('js') }}';
+            const parts = price.toFixed(2).split('.');
+            let intPart = parts[0];
+            const decPart = parts[1] || '00';
+            if (thSep !== '') {
+                intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thSep);
+            }
+            return intPart + decSep + decPart;
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('applied-discount-remove').addEventListener('click', removeDiscountCode);
@@ -264,7 +277,7 @@
                     let discountPrice = summaryPrice * (discountValue / 100);
                     const discountAmountElement = document.querySelector('#applied-discount-amount');
                     if (discountAmountElement) {
-                        discountAmountElement.textContent = discountPrice.toFixed(2);
+                        discountAmountElement.textContent = formatPrice(discountPrice);
                     }
                     summaryPrice -= discountPrice
                 }
@@ -272,7 +285,7 @@
 
             const summaryElement = document.querySelector('#selected-summary');
             if (summaryElement) {
-                summaryElement.textContent = `${summaryPrice.toFixed(2)} {{ request.currency|upper }}`
+                summaryElement.textContent = `${formatPrice(summaryPrice)} {{ request.currency|upper }}`
             }
         }
 

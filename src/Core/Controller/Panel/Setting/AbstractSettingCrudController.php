@@ -104,6 +104,11 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                         SettingTypeEnum::BOOLEAN->value => $value
                             ? $this->translator->trans('pteroca.crud.setting.yes')
                             : $this->translator->trans('pteroca.crud.setting.no'),
+                        SettingTypeEnum::SELECT->value => array_search(
+                            $value,
+                            $this->settingOptionRepository->getOptionsForSetting($entity->getName()),
+                            true
+                        ) ?: $value,
                         default => $value,
                     };
                 });

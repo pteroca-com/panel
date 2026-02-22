@@ -9,6 +9,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\DTO\TemplateOptionsDTO;
 use App\Core\Service\SettingService;
 use App\Core\Service\DateFormatterService;
+use App\Core\Service\PriceFormatterService;
 use App\Core\Trait\FormatBytesTrait;
 use Symfony\Component\Asset\Packages;
 use Twig\Extension\AbstractExtension;
@@ -34,6 +35,7 @@ class AppExtension extends AbstractExtension
         private readonly PterodactylRedirectService $pterodactylRedirectService,
         private readonly PluginAssetManager $pluginAssetManager,
         private readonly DateFormatterService $dateFormatterService,
+        private readonly PriceFormatterService $priceFormatterService,
     ) {}
 
     public function getFunctions(): array
@@ -55,6 +57,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
             new TwigFunction('plugin_asset', [$this, 'pluginAsset']),
             new TwigFunction('get_custom_head_scripts', [$this, 'getCustomHeadScripts']),
+            new TwigFunction('get_price_separators', [$this, 'getPriceSeparators']),
         ];
     }
 
@@ -63,6 +66,7 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFilter('format_bytes', [$this, 'formatBytes']),
             new TwigFilter('app_date', [$this, 'formatDate']),
+            new TwigFilter('format_price', [$this, 'formatPrice']),
         ];
     }
 
@@ -182,6 +186,18 @@ class AppExtension extends AbstractExtension
     public function formatDate(\DateTimeInterface $date): string
     {
         return $this->dateFormatterService->formatDateTime($date);
+    }
+
+    public function formatPrice(float $price): string
+    {
+        return $this->priceFormatterService->formatPrice($price);
+    }
+
+    public function getPriceSeparators(): array
+    {
+        [$decimal, $thousands] = $this->priceFormatterService->getSeparators();
+
+        return ['decimal' => $decimal, 'thousands' => $thousands];
     }
 
     public function getCustomHeadScripts(string $context = 'panel'): ?string
