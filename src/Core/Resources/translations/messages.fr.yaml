@@ -1079,6 +1079,14 @@ pteroca:
       create_server: 'Créer un Serveur'
       pterodactyl_creation_failed: 'Échec de la création du serveur sur Pterodactyl'
       base_product: 'Produit de Base'
+      health_status: 'État de Santé'
+      health_status.healthy: 'OK'
+      health_status.suspended: 'Suspendu'
+      health_status.expired: 'Expiré'
+      health_status.expired_not_suspended: 'Expiré (non suspendu)'
+      health_status.expiring_critical: 'Expire bientôt'
+      health_status.expiring_soon: 'À renouveler bientôt'
+      health_status.deleted: 'Supprimé'
       deleted_successfully: 'Serveur supprimé avec succès.'
       delete_error: "Une erreur s'est produite lors de la suppression du serveur : %error%"
     setting:

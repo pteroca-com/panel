@@ -1082,6 +1082,14 @@ pteroca:
       create_server: 创建服务器
       pterodactyl_creation_failed: '在 Pterodactyl 上创建服务器失败'
       base_product: 基础产品
+      health_status: 健康状态
+      health_status.healthy: 正常
+      health_status.suspended: 暂停
+      health_status.expired: 已过期
+      health_status.expired_not_suspended: 已过期（未暂停）
+      health_status.expiring_critical: 即将过期
+      health_status.expiring_soon: 即将续订
+      health_status.deleted: 已删除
       deleted_successfully: 服务器删除成功。
       delete_error: 删除服务器时发生错误：%error%
     setting:

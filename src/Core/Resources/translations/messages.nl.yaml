@@ -1079,6 +1079,14 @@ pteroca:
       create_server: 'Server Aanmaken'
       pterodactyl_creation_failed: 'Server aanmaken op Pterodactyl mislukt'
       base_product: Basisproduct
+      health_status: 'Gezondheidsstatus'
+      health_status.healthy: 'OK'
+      health_status.suspended: 'Uitgesteld'
+      health_status.expired: 'Verlopen'
+      health_status.expired_not_suspended: 'Verlopen (niet uitgesteld)'
+      health_status.expiring_critical: 'Vervalt binnenkort'
+      health_status.expiring_soon: 'Binnenkort vernieuwen'
+      health_status.deleted: 'Verwijderd'
       deleted_successfully: 'Server succesvol verwijderd.'
       delete_error: 'Er is een fout opgetreden bij het verwijderen van de server: %error%'
     setting:
