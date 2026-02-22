@@ -1116,6 +1116,7 @@ pteroca:
         stripe_payment_methods: 'Méthodes de paiement séparées par virgules (ex. card,bank_transfer,klarna). Options affichées au paiement.'
         internal_currency_name: 'Nom de monnaie virtuelle (ex. pièces, crédits, jetons). Affiché dans soldes, prix et emails.'
         currency_name: 'Code devise réelle (USD, EUR, GBP, PLN). Affiché au paiement et sur reçus. Correspond à Stripe.'
+        minimum_topup_amount: 'Montant minimum autorisé pour la recharge de solde. Les utilisateurs ne peuvent pas ajouter moins que cette valeur. Doit être supérieur à 0.'
         theme_default_light_mode_color: "Couleur d'accentuation mode clair en hex (ex. #635bff). Contrôle boutons, liens, éléments actifs."
         theme_default_dark_mode_color: 'Couleur de base mode sombre en hex (ex. #1a1a2e). Le système génère auto. nuances pour éléments UI.'
         theme_default_primary_color: 'Couleur principale par défaut'
@@ -1165,6 +1166,7 @@ pteroca:
         date_format: "Choisissez comment les dates et heures sont affichées dans tout le panneau. Affecte tous les affichages de dates pour tous les utilisateurs."
         date_timezone: "Sélectionnez le fuseau horaire pour afficher les dates. Toutes les dates seront converties de UTC vers le fuseau horaire sélectionné."
         date_show_timezone: "Lorsqu'activé, l'abréviation du fuseau horaire (par exemple, \"UTC\", \"EST\") sera affichée à côté de toutes les dates affichées."
+        price_format: 'Choisissez comment les prix sont affichés dans tout le panneau. Affecte tous les affichages de prix dans les pages d''accueil, le panneau utilisateur et les modèles d''email.'
       template:
         name: 'Nom du modèle'
         description: 'Description du modèle'

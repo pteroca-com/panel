@@ -1166,6 +1166,7 @@ pteroca:
         date_format: 'Wybierz, jak daty i godziny są wyświetlane w całym panelu. Wpływa na wszystkie wyświetlacze dat dla wszystkich użytkowników.'
         date_timezone: 'Wybierz strefę czasową do wyświetlania dat. Wszystkie daty zostaną skonwertowane z UTC na wybraną strefę czasową.'
         date_show_timezone: 'Gdy włączone, skrót strefy czasowej (np. "UTC", "EST") będzie wyświetlany obok wszystkich wyświetlanych dat.'
+        price_format: 'Wybierz, jak ceny są wyświetlane w całym panelu. Wpływa na wyświetlanie wszystkich cen na stronach docelowych, panelu użytkownika i szablonach e-maili.'
       template:
         name: 'Nazwa szablonu'
         description: 'Opis szablonu'

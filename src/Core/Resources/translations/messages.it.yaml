@@ -1166,6 +1166,7 @@ pteroca:
         date_format: "Scegli come vengono visualizzate le date e gli orari in tutto il pannello. Influenza tutte le visualizzazioni delle date per tutti gli utenti."
         date_timezone: "Seleziona il fuso orario per visualizzare le date. Tutte le date verranno convertite da UTC al fuso orario selezionato."
         date_show_timezone: "Quando abilitato, l'abbreviazione del fuso orario (ad esempio, \"UTC\", \"EST\") verrà mostrata accanto a tutte le date visualizzate."
+        price_format: 'Scegli come vengono visualizzati i prezzi in tutto il pannello. Influisce su tutti i display dei prezzi nelle pagine di destinazione, nel pannello utente e nei modelli di posta elettronica.'
       template:
         name: 'Nome del modello'
         description: 'Descrizione del modello'

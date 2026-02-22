@@ -1116,6 +1116,7 @@ pteroca:
         stripe_payment_methods: 'Métodos pago separados por comas (ej. card,bank_transfer,klarna). Opciones mostradas en checkout.'
         internal_currency_name: 'Nombre moneda virtual (ej. monedas, créditos, fichas). Mostrado en saldos, precios y emails.'
         currency_name: 'Código moneda real (USD, EUR, GBP, PLN). Mostrado en checkout y recibos. Coincidir con Stripe.'
+        minimum_topup_amount: 'Cantidad mínima permitida para recarga de saldo. Los usuarios no pueden agregar menos de este valor. Debe ser mayor que 0.'
         theme_default_light_mode_color: 'Color acento modo claro en hex (ej. #635bff). Controla botones, enlaces, elementos activos.'
         theme_default_dark_mode_color: 'Color base modo oscuro en hex (ej. #1a1a2e). Sistema genera automáticamente tonos para elementos UI.'
         theme_default_primary_color: 'Color principal predeterminado'
@@ -1165,6 +1166,7 @@ pteroca:
         date_format: 'Elija cómo se muestran las fechas y horas en todo el panel. Afecta a todas las visualizaciones de fechas para todos los usuarios.'
         date_timezone: 'Seleccione la zona horaria para mostrar las fechas. Todas las fechas se convertirán de UTC a la zona horaria seleccionada.'
         date_show_timezone: 'Cuando esté habilitado, la abreviatura de zona horaria (por ejemplo, "UTC", "EST") se mostrará junto a todas las fechas mostradas.'
+        price_format: 'Elige cómo se deben mostrar los precios en todo el panel. Afecta a todas las pantallas de precios en páginas de destino, panel de usuario y plantillas de correo electrónico.'
       template:
         name: 'Nombre de la plantilla'
         description: 'Descripción de la plantilla'

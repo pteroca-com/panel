@@ -1180,6 +1180,7 @@ pteroca:
         stripe_payment_methods: 'Metode pembayaran dipisahkan koma (mis. card,bank_transfer,klarna). Opsi ditampilkan saat checkout.'
         internal_currency_name: 'Nama mata uang virtual (mis. koin, kredit, token). Ditampilkan dalam saldo, harga, dan email.'
         currency_name: 'Kode mata uang nyata (USD, EUR, GBP, PLN). Ditampilkan di checkout dan tanda terima. Sesuaikan dukungan Stripe.'
+        minimum_topup_amount: 'Jumlah minimum yang diizinkan untuk pengisian saldo. Pengguna tidak dapat menambahkan kurang dari nilai ini. Harus lebih besar dari 0.'
         theme_default_light_mode_color: 'Warna aksen mode terang dalam hex (mis. #635bff). Mengontrol tombol, tautan, item aktif.'
         theme_default_dark_mode_color: 'Warna dasar mode gelap dalam hex (mis. #1a1a2e). Sistem otomatis menghasilkan nuansa untuk elemen UI.'
         theme_disable_dark_mode: 'Hapus tombol mode gelap. Panel hanya menampilkan mode terang. Berguna jika tema tidak mendukung mode gelap.'
@@ -1219,6 +1220,7 @@ pteroca:
         date_format: 'Pilih bagaimana tanggal dan waktu ditampilkan di seluruh panel. Mempengaruhi semua tampilan tanggal untuk semua pengguna.'
         date_timezone: 'Pilih zona waktu untuk menampilkan tanggal. Semua tanggal akan dikonversi dari UTC ke zona waktu yang dipilih.'
         date_show_timezone: 'Ketika diaktifkan, singkatan zona waktu (misalnya, "UTC", "EST") akan ditampilkan di samping semua tanggal yang ditampilkan.'
+        price_format: 'Pilih cara harga ditampilkan di seluruh panel. Mempengaruhi semua tampilan harga di halaman landing, panel pengguna, dan template email.'
       template:
         name: 'Nama template'
         description: 'Deskripsi template'

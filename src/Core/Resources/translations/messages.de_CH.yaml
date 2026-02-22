@@ -1166,6 +1166,7 @@ pteroca:
         date_format: 'Wählen Sie, wie Daten und Zeiten im gesamten Panel angezeigt werden. Beeinflusst alle Datumsanzeigen für alle Benutzer.'
         date_timezone: 'Wählen Sie die Zeitzone für die Anzeige von Daten. Alle Daten werden von UTC in die ausgewählte Zeitzone konvertiert.'
         date_show_timezone: 'Wenn aktiviert, wird die Zeitzonenabkürzung (z. B. "UTC", "EST") neben allen angezeigten Daten angezeigt.'
+        price_format: 'Wählen Sie, wie Preise im gesamten Panel angezeigt werden. Betrifft alle Preisanzeigen auf Zielseiten, im Benutzerpanel und in E-Mail-Vorlagen.'
       template:
         name: Vorlagenname
         description: Vorlagenbeschreibung

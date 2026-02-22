@@ -1119,6 +1119,7 @@ pteroca:
         stripe_payment_methods: '逗号分隔的支付方式（如card,bank_transfer,klarna）。结账时显示的选项。'
         internal_currency_name: 虚拟货币名称（如硬币、积分、代币）。显示在余额、定价和邮件中。
         currency_name: 真实货币代码（USD、EUR、GBP、PLN）。显示在结账和收据中。需匹配Stripe支持。
+        minimum_topup_amount: '允许用于余额充值的最低金额。用户不能添加少于此值的金额。必须大于0。'
         theme_default_light_mode_color: '浅色模式强调色（十六进制，如#635bff）。控制按钮、链接、活动项。'
         theme_default_dark_mode_color: '深色模式基础色（十六进制，如#1a1a2e）。系统自动为UI元素生成色调。'
         theme_default_primary_color: 默认主主题颜色
@@ -1168,6 +1169,7 @@ pteroca:
         date_format: '选择整个面板中日期和时间的显示方式。影响所有用户的全部日期显示。'
         date_timezone: '选择显示日期的时区。所有日期将从 UTC 转换为所选时区。'
         date_show_timezone: '启用后，时区缩写（例如"UTC"、"EST"）将显示在所有显示的日期旁边。'
+        price_format: '选择整个面板中价格的显示方式。影响登录页、用户面板和电子邮件模板中的所有价格显示。'
       template:
         name: 模板名称
         description: 模板描述
