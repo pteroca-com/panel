@@ -1047,6 +1047,7 @@ pteroca:
     server:
       pterodactyl_server_id: 'Pterodactyl सर्वर आईडी'
       pterodactyl_server_identifier: 'Pterodactyl पहचानकर्ता'
+      pterodactyl_server_identifier_short: 'Ptero ID'
       name: 'सर्वर नाम'
       product: उत्पाद
       user: मालिक

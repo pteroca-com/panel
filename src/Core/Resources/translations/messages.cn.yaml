@@ -1050,6 +1050,7 @@ pteroca:
     server:
       pterodactyl_server_id: 'Pterodactyl 服务器 ID'
       pterodactyl_server_identifier: 'Pterodactyl 标识符'
+      pterodactyl_server_identifier_short: 'Ptero ID'
       name: 服务器名称
       product: 产品
       user: 所有者

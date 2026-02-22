@@ -1071,6 +1071,7 @@ pteroca:
     server:
       pterodactyl_server_id: 'ID сервера Pterodactyl'
       pterodactyl_server_identifier: 'Идентификатор Pterodactyl'
+      pterodactyl_server_identifier_short: 'ID Ptero'
       name: 'Имя сервера'
       product: Товар
       user: Владелец

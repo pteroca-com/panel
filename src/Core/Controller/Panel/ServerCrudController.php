@@ -64,7 +64,11 @@ class ServerCrudController extends AbstractPanelController
                 ->setDisabled()
                 ->onlyOnForms()
                 ->setColumns(4),
-            TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
+            TextField::new('pterodactylServerIdentifier', $this->translator->trans(
+                $pageName === Crud::PAGE_INDEX
+                    ? 'pteroca.crud.server.pterodactyl_server_identifier_short'
+                    : 'pteroca.crud.server.pterodactyl_server_identifier'
+            ))
                 ->setDisabled()
                 ->setColumns(4),
             TextField::new('name', $this->translator->trans('pteroca.crud.server.name'))
@@ -90,22 +94,7 @@ class ServerCrudController extends AbstractPanelController
             NumberField::new('serverProduct.memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
                 ->onlyOnIndex()
                 ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.io', $this->translator->trans('pteroca.crud.product.io'))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
             NumberField::new('serverProduct.cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu')))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.backups', $this->translator->trans('pteroca.crud.product.backups'))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.ports', $this->translator->trans('pteroca.crud.product.ports'))
                 ->onlyOnIndex()
                 ->formatValue(fn($value) => $value ?? 'N/A'),
             BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended'))
