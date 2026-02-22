@@ -7,6 +7,7 @@ use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylRedirectService;
 use App\Core\Service\Server\DeleteServerService;
+use App\Core\Service\Server\ServerHealthStatusFormatter;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\CrudFlashMessagesTrait;
@@ -22,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -41,6 +43,7 @@ class ServerCrudController extends AbstractPanelController
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
         private readonly PterodactylRedirectService $pterodactylRedirectService,
+        private readonly ServerHealthStatusFormatter $serverHealthStatusFormatter,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -52,6 +55,8 @@ class ServerCrudController extends AbstractPanelController
 
     public function configureFields(string $pageName): iterable
     {
+        Server::registerVirtualField('healthStatus');
+
         $this->fields = [
             IdField::new('id')
                 ->hideOnForm(),
@@ -105,6 +110,13 @@ class ServerCrudController extends AbstractPanelController
                 ->formatValue(fn($value) => $value ?? 'N/A'),
             BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended'))
                 ->setColumns(4),
+            Field::new('healthStatus', $this->translator->trans('pteroca.crud.server.health_status'))
+                ->onlyOnIndex()
+                ->setColumns(2)
+                ->setSortable(false)
+                ->formatValue(fn($value, Server $entity) =>
+                    $this->serverHealthStatusFormatter->getHealthBadgeHtml($entity, $this->translator)
+                ),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
                 ->onlyOnDetail(),
             DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))
