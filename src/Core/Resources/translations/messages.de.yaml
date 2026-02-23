@@ -350,6 +350,7 @@ pteroca:
       starting: Startet
       stopping: Stoppt
       offline: Offline
+      unknown: Unbekannt
   server:
     title: Serververwaltung
     console: Konsole
@@ -417,6 +418,7 @@ pteroca:
     console_token_expired: 'Das Konsolen-Token ist abgelaufen. Bitte aktualisieren Sie die Seite.'
     console_connection_closed: 'Die Konsolenverbindung wurde geschlossen.'
     console_connection_error: 'Beim Verbinden mit der Konsole ist ein Fehler aufgetreten.'
+    console_stats_unknown: Unbekannt
     server_installing: 'Server wird installiert'
     server_installing_message: 'Ihr Server wird derzeit installiert und steht in wenigen Minuten zur Verfügung. Bitte warten Sie, bis der Installationsvorgang abgeschlossen ist.'
     server_installing_description: 'Der Installationsvorgang kann je nach ausgewählter Software und Serverspezifikation mehrere Minuten dauern.'

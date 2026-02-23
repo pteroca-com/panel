@@ -350,6 +350,7 @@ pteroca:
       starting: Démarrage
       stopping: 'Arrêt en cours'
       offline: 'Hors ligne'
+      unknown: Inconnu
   server:
     title: 'Gestion du serveur'
     console: Console
@@ -417,6 +418,7 @@ pteroca:
     console_token_expired: 'Le jeton de la console a expiré. Veuillez rafraîchir la page.'
     console_connection_closed: 'La connexion à la console a été fermée.'
     console_connection_error: "Une erreur s'est produite lors de la connexion à la console."
+    console_stats_unknown: Inconnu
     server_installing: "Le serveur est en cours d'installation"
     server_installing_message: "Votre serveur est en cours d'installation et sera disponible dans quelques minutes. Veuillez patienter pendant la finalisation du processus."
     server_installing_description: "Le processus d'installation peut prendre plusieurs minutes en fonction du logiciel sélectionné et des spécifications du serveur."

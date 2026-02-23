@@ -350,6 +350,7 @@ pteroca:
       starting: Uruchamianie
       stopping: Zatrzymywanie
       offline: Offline
+      unknown: Nieznany
   server:
     title: 'Zarządzanie serwerem'
     console: Konsola
@@ -417,6 +418,7 @@ pteroca:
     console_token_expired: 'Token konsoli wygasł. Proszę odświeżyć stronę.'
     console_connection_closed: 'Połączenie z konsolą zostało zamknięte.'
     console_connection_error: 'Wystąpił błąd podczas łączenia z konsolą.'
+    console_stats_unknown: Nieznany
     server_installing: 'Serwer jest instalowany'
     server_installing_message: 'Twój serwer jest obecnie instalowany i będzie dostępny za kilka minut. Proszę poczekać na zakończenie procesu instalacji.'
     server_installing_description: 'Proces instalacji może potrwać kilka minut w zależności od wybranego oprogramowania i specyfikacji serwera.'
@@ -822,8 +824,6 @@ pteroca:
       nodes_hint: 'Wybierz jedną lub więcej fizycznych lub wirtualnych maszyn (węzłów) z konfiguracji Pterodactyl.'
       nest_hint: 'Nest to kategoria grupująca powiązane Eggs. Wybierz Nest, aby załadować jego Eggs.'
       eggs_hint: 'Eggs definiują specyficzne konfiguracje serwera (gry lub aplikacje). Wybierz Eggs, które chcesz, aby ten produkt obsługiwał.'
-      egg_variable_rules: Zasady
-      egg_variable_validation_error: 'Błąd walidacji w "%name%": wartość nie spełnia wymaganych reguł.'
       pricing: Cennik
       price_static_plan: 'Cena stała'
       price_static_plan_hint: 'Cena produktu na określony czas, który użytkownicy mogą wybrać jako cykl rozliczeniowy.'
@@ -859,6 +859,8 @@ pteroca:
       egg_variable_slot_variable_hint: 'Wybierz zmienną, która ustawia maksymalne sloty (graczy) dla cen opartych na slotach'
       slot_variable_not_configured_egg: 'Zmienna slotu nie skonfigurowana dla tego egg'
       slot_variables_unconfigured_eggs: 'Niektóre egg nie mają skonfigurowanych zmiennych slotu'
+      egg_variable_rules: Reguły
+      egg_variable_validation_error: 'Błąd weryfikacji w "%name%": wartość nie spełnia wymaganych reguł.'
       see_product_configuration_guide: 'Kliknij tutaj, aby otworzyć szczegółowy przewodnik, jak skonfigurować produkty.'
       slot_variable_required_for_slot_prices: 'Wszystkie egg muszą mieć skonfigurowaną zmienną slotu, gdy zdefiniowano ceny za slot.'
       show_archived: 'Pokaż zarchiwizowane'

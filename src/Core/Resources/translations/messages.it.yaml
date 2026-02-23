@@ -350,6 +350,7 @@ pteroca:
       starting: 'Avvio in corso'
       stopping: 'Arresto in corso'
       offline: Offline
+      unknown: Sconosciuto
   server:
     title: 'Gestione del server'
     console: Console
@@ -417,6 +418,7 @@ pteroca:
     console_token_expired: 'Il token della console è scaduto. Si prega di aggiornare la pagina.'
     console_connection_closed: 'La connessione alla console è stata chiusa.'
     console_connection_error: 'Si è verificato un errore durante la connessione alla console.'
+    console_stats_unknown: Sconosciuto
     server_installing: 'Il server è in fase di installazione'
     server_installing_message: 'Il tuo server è attualmente in fase di installazione e sarà disponibile tra pochi minuti. Attendi il completamento del processo di installazione.'
     server_installing_description: 'Il processo di installazione può richiedere diversi minuti a seconda del software selezionato e delle specifiche del server.'

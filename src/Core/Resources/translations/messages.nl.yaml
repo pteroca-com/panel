@@ -325,6 +325,7 @@ pteroca:
       starting: Opstarten
       stopping: Stoppen
       offline: Offline
+      unknown: Onbekend
   server:
     title: 'Server beheer'
     console: Console
@@ -390,6 +391,7 @@ pteroca:
     console_token_expired: 'De console-token is verlopen. Gelieve de pagina te vernieuwen.'
     console_connection_closed: 'De console verbinding is verbroken.'
     console_connection_error: 'Er is een fout opgetreden tijdens het verbinden met de console.'
+    console_stats_unknown: Onbekend
     server_installing: 'Server wordt geïnstalleerd'
     server_installing_message: 'Uw server wordt momenteel geïnstalleerd en is over enkele minuten beschikbaar. Wacht alstublieft tot het installatieproces is voltooid.'
     server_installing_description: 'Het installatieproces kan enkele minuten duren, afhankelijk van de geselecteerde software en serverspecificaties.'

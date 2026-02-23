@@ -350,6 +350,7 @@ pteroca:
       starting: 启动中
       stopping: 停止中
       offline: 离线
+      unknown: 未知
   server:
     title: 服务器管理
     console: 控制台
@@ -417,6 +418,7 @@ pteroca:
     console_token_expired: 控制台令牌已过期。请刷新页面。
     console_connection_closed: 控制台连接已关闭。
     console_connection_error: 连接控制台时发生错误。
+    console_stats_unknown: 未知
     server_installing: 服务器正在安装
     server_installing_message: 您的服务器正在安装，几分钟后即可使用。请耐心等待安装过程完成。
     server_installing_description: 安装过程可能需要几分钟，具体取决于所选软件和服务器规格。

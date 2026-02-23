@@ -374,6 +374,7 @@ pteroca:
       starting: Memulai
       stopping: Menghentikan
       offline: Offline
+      unknown: 'Tidak Diketahui'
   server:
     title: 'Manajemen server'
     console: Konsol
@@ -445,6 +446,7 @@ pteroca:
     console_token_expired: 'Token konsol telah kedaluwarsa. Silakan refresh halaman.'
     console_connection_closed: 'Koneksi konsol telah ditutup.'
     console_connection_error: 'Terjadi kesalahan saat menghubungkan ke konsol.'
+    console_stats_unknown: 'Tidak Diketahui'
     server_installing: 'Server sedang diinstal'
     server_installing_message: 'Server Anda sedang diinstal dan akan tersedia dalam beberapa menit. Harap tunggu sementara proses instalasi selesai.'
     server_installing_description: 'Proses instalasi mungkin memakan waktu beberapa menit tergantung pada perangkat lunak yang dipilih dan spesifikasi server.'
