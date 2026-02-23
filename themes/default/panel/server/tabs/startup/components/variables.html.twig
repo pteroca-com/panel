@@ -30,17 +30,17 @@
                                     {% set serverVariable = serverData.serverVariables.getByEnvVariable(variable.env_variable) %}
                                     {% if serverVariable.rules|length > 0 %}
                                         <div class="col-12 d-none server-variables" data-option-name="{{ variable.env_variable }}">
-                                            <code>
-                                                <span class="badge badge-dark bg-dark bg-opacity-25 text-dark p-1">{{ 'pteroca.server.rules'|trans }}:</span>
+                                            <div class="d-flex flex-wrap gap-1 align-items-center mt-1 mb-2">
+                                                <small class="text-muted me-1">{{ 'pteroca.server.rules'|trans }}:</small>
                                                 {% for rule in serverVariable.rules %}
-                                                    <span class="badge badge-danger bg-danger bg-opacity-25 p-1 server-variable">{{ rule }}</span>
+                                                    <span class="px-1 rounded-1 font-monospace text-secondary border border-secondary-subtle server-variable" data-rule="{{ rule }}" style="font-size:0.7rem;background:rgba(108,117,125,0.08)">{{ rule }}</span>
                                                 {% endfor %}
-                                            </code>
+                                            </div>
                                         </div>
                                     {% endif %}
                                     <div class="col-12">
                                         <div class="form-widget">
-                                            <input type="text" class="form-control" data-option-name="{{ variable.env_variable }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
+                                            <input type="text" class="form-control" data-option-name="{{ variable.env_variable }}" data-rules="{{ serverVariable.rules|join('|') }}" value="{{ serverVariable.serverValue }}" {% if serverData.productEggConfiguration.variables[variable.id].user_editable is not defined and not isAdminView %}disabled{% endif %} readonly>
                                         </div>
                                     </div>
                                 </div>

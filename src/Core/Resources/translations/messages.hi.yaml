@@ -855,6 +855,8 @@ pteroca:
       egg_variable_slot_variable_hint: 'स्लॉट-आधारित प्राइसिंग के लिए अधिकतम स्लॉट (खिलाड़ी) सेट करने वाला वेरिएबल चुनें'
       slot_variable_not_configured_egg: 'इस egg के लिए स्लॉट वेरिएबल कॉन्फ़िगर नहीं किया गया'
       slot_variables_unconfigured_eggs: 'कुछ eggs के स्लॉट वेरिएबल कॉन्फ़िगर नहीं हैं'
+      egg_variable_rules: 'नियम'
+      egg_variable_validation_error: '"%name%" में सत्यापन त्रुटि: मान आवश्यक नियमों को पूरा नहीं करता है।'
       see_product_configuration_guide: 'उत्पादों को कैसे सेटअप करें इस पर विस्तृत मार्गदर्शिका खोलने के लिए यहाँ क्लिक करें।'
       slot_variable_required_for_slot_prices: 'जब स्लॉट कीमतें परिभाषित की जाती हैं तो सभी eggs में स्लॉट वेरिएबल कॉन्फ़िगर होना आवश्यक है।'
       show_archived: 'आर्काइव किए गए दिखाएँ'

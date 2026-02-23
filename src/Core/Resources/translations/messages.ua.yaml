@@ -883,6 +883,8 @@ pteroca:
       egg_variable_slot_variable_hint: 'Виберіть змінну, яка встановлює максимальні слоти (гравці) для ціноутворення на основі слотів'
       slot_variable_not_configured_egg: 'Змінна слота не налаштована для цього egg'
       slot_variables_unconfigured_eggs: 'Деякі egg не мають налаштованих змінних слота'
+      egg_variable_rules: Правила
+      egg_variable_validation_error: 'Помилка валідації в "%name%": значення не відповідає необхідним правилам.'
       see_product_configuration_guide: 'Натисніть тут, щоб відкрити детальний посібник з налаштування продуктів.'
       slot_variable_required_for_slot_prices: 'Усі egg повинні мати налаштовану змінну слота, коли визначені ціни за слот.'
       show_archived: 'Показати заархівовані'

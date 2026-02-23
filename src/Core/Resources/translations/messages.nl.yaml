@@ -820,6 +820,8 @@ pteroca:
       nodes_hint: 'Selecteer een of meer fysieke of virtuele machines (nodes) uit uw Pterodactyl installatie.'
       nest_hint: 'Een Nest is een categorie die Eggs gerelateerd is. Kies een Nest om de Eggs te laden.'
       eggs_hint: 'Egg(s) definiëren specifieke serverconfiguraties (games of applicaties). Selecteer de egg(s) waarvan u wilt dat dit product deze ondersteunt.'
+      egg_variable_rules: Regels
+      egg_variable_validation_error: 'Validatiefout in "%name%": waarde voldoet niet aan de vereiste regels.'
       pricing: Prijsstelling
       price_static_plan: 'Prijsstelling voor vast plan'
       price_static_plan_hint: 'De prijs van het product voor een vaste periode die gebruikers kunnen selecteren als factureringsperiode.'

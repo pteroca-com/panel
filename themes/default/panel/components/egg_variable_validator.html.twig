@@ -1,0 +1,83 @@
+<script>
+    function getFailingRules(value, rulesString) {
+        if (!rulesString) return [];
+        const rules = rulesString.split('|').filter(r => r.length > 0);
+        const nullable = rules.includes('nullable');
+        if (nullable && value.trim() === '') return [];
+
+        const isNumericField = rules.includes('numeric') || rules.includes('integer');
+        const failing = [];
+
+        for (const rule of rules) {
+            let fails = false;
+            if (rule === 'required' && value.trim() === '') fails = true;
+            if (rule === 'numeric' && value.trim() !== '' && isNaN(value)) fails = true;
+            if (rule === 'integer' && value.trim() !== '' && !Number.isInteger(Number(value))) fails = true;
+            if (rule.startsWith('min:')) {
+                const mn = parseInt(rule.split(':')[1]);
+                if (isNumericField) { if (value.trim() !== '' && Number(value) < mn) fails = true; }
+                else { if (value.length < mn) fails = true; }
+            }
+            if (rule.startsWith('max:')) {
+                const mx = parseInt(rule.split(':')[1]);
+                if (isNumericField) { if (value.trim() !== '' && Number(value) > mx) fails = true; }
+                else { if (value.length > mx) fails = true; }
+            }
+            if (rule.startsWith('between:')) {
+                const [mn, mx] = rule.split(':')[1].split(',').map(Number);
+                if (isNumericField) {
+                    if (value.trim() !== '' && (isNaN(Number(value)) || Number(value) < mn || Number(value) > mx)) fails = true;
+                } else {
+                    if (value.length < mn || value.length > mx) fails = true;
+                }
+            }
+            if (rule.startsWith('digits_between:')) {
+                const [mn, mx] = rule.split(':')[1].split(',').map(Number);
+                const digits = value.replace(/^-?/, '');
+                if (value.trim() !== '' && (isNaN(value) || digits.length < mn || digits.length > mx)) fails = true;
+            }
+            if (rule.startsWith('regex:')) {
+                const m = rule.substring(6).match(/^\/(.+)\/([gimsuy]*)$/);
+                if (m) { try { if (!new RegExp(m[1], m[2]).test(value)) fails = true; } catch(e) {} }
+            }
+            if (fails) failing.push(rule);
+        }
+        return failing;
+    }
+
+    function validateRulesValue(value, rulesString) {
+        return getFailingRules(value, rulesString).length === 0;
+    }
+
+    function updateRuleSpanHighlights(input, failingRules) {
+        let el = input.parentElement;
+        while (el && el !== document.body) {
+            const spans = el.querySelectorAll('[data-rule]');
+            if (spans.length > 0) {
+                spans.forEach(span => {
+                    const isFailing = failingRules.includes(span.dataset.rule);
+                    span.classList.toggle('text-danger', isFailing);
+                    span.classList.toggle('border-danger', isFailing);
+                    span.classList.toggle('text-secondary', !isFailing);
+                    span.classList.toggle('border-secondary-subtle', !isFailing);
+                    span.style.background = isFailing ? 'rgba(220,53,69,0.08)' : 'rgba(108,117,125,0.08)';
+                });
+                return;
+            }
+            el = el.parentElement;
+        }
+    }
+
+    function attachEggVariableValidation(container) {
+        const scope = container || document;
+        scope.querySelectorAll('input[data-rules]:not([data-rules=""])').forEach(input => {
+            if (input.dataset.validatorAttached) return;
+            input.dataset.validatorAttached = 'true';
+            input.addEventListener('input', () => {
+                const failingRules = getFailingRules(input.value, input.dataset.rules);
+                input.classList.toggle('is-invalid', failingRules.length > 0);
+                updateRuleSpanHighlights(input, failingRules);
+            });
+        });
+    }
+</script>

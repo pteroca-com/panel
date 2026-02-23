@@ -32,10 +32,17 @@
 
             if (!toggleDisabledElement(element)) {
                 element.focus();
-            } else if (!saveSetting(settingName, isStartupOption)) {
-                toggleDisabledElement(element);
-                element.focus();
-                return;
+            } else {
+                if (element.classList.contains('is-invalid')) {
+                    toggleDisabledElement(element);
+                    element.focus();
+                    return;
+                }
+                if (!saveSetting(settingName, isStartupOption)) {
+                    toggleDisabledElement(element);
+                    element.focus();
+                    return;
+                }
             }
 
             icon.classList.toggle('fa-edit');
@@ -155,6 +162,22 @@
             alert(message);
             throw new Error(message);
         }
+    </script>
+    {% include 'components/egg_variable_validator.html.twig' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            attachEggVariableValidation();
+        });
+
+        document.addEventListener('input', function(e) {
+            const input = e.target;
+            if (!input.dataset.optionName || !input.dataset.rules) return;
+            const icon = document.querySelector(`i[data-option-name="${input.dataset.optionName}"]`);
+            if (!icon || !icon.classList.contains('fa-save')) return;
+            const isInvalid = !validateRulesValue(input.value, input.dataset.rules);
+            icon.classList.toggle('opacity-50', isInvalid);
+            icon.style.cursor = isInvalid ? 'not-allowed' : '';
+        });
     </script>
     {% endif %}
 {% endblock %}

@@ -855,6 +855,8 @@ pteroca:
       egg_variable_slot_variable_hint: 选择用于基于插槽定价的最大插槽（玩家）变量
       slot_variable_not_configured_egg: '此 Egg 未配置插槽变量'
       slot_variables_unconfigured_eggs: '某些 Egg 未配置插槽变量'
+      egg_variable_rules: '规则'
+      egg_variable_validation_error: '变量"%name%"中的验证错误：值不符合所需的规则。'
       see_product_configuration_guide: 点击此处打开有关如何设置产品的详细指南。
       slot_variable_required_for_slot_prices: '在定义插槽价格时，所有 Egg 必须配置插槽变量。'
       show_archived: 显示已归档

@@ -825,6 +825,8 @@ pteroca:
       egg_variable_slot_variable_hint: 'Pilih variabel yang menetapkan slot maks (pemain) untuk harga berdasarkan slot'
       slot_variable_not_configured_egg: 'Variabel slot tidak dikonfigurasi untuk egg ini'
       slot_variables_unconfigured_eggs: 'Beberapa egg memiliki variabel slot yang tidak dikonfigurasi'
+      egg_variable_rules: Aturan
+      egg_variable_validation_error: 'Kesalahan validasi dalam "%name%": nilai tidak memenuhi aturan yang diperlukan.'
       see_product_configuration_guide: 'Klik di sini untuk membuka panduan terperinci tentang cara mengatur produk.'
       egg_allow_change: 'Izinkan perubahan egg dengan penginstalan ulang'
       egg_allow_change_hint: 'Ketika diaktifkan, pelanggan dapat mengubah perangkat lunak server (egg) dengan memasang ulang server mereka. Server akan dihentikan dan dipasang ulang dengan konfigurasi perangkat lunak baru.'
