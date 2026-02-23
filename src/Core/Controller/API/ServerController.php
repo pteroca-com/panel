@@ -53,14 +53,31 @@ class ServerController extends APIAbstractController
         );
         $this->eventDispatcher->dispatch($requestedEvent);
 
-        $serverDetailsDTO = $this->serverService->getServerStateByClient($user, $server);
-        $serverDetails = $serverDetailsDTO?->toArray();
+        try {
+            $serverDetailsDTO = $this->serverService->getServerStateByClient($user, $server);
+        } catch (\Exception) {
+            $serverDetailsDTO = null;
+        }
+
+        if ($serverDetailsDTO === null) {
+            $this->eventDispatcher->dispatch(new ServerDetailsLoadedEvent(
+                $this->getUserId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                null,
+                $server->getIsSuspended(),
+                $context
+            ));
+            return new JsonResponse(['state' => 'unknown']);
+        }
+
+        $serverDetails = $serverDetailsDTO->toArray();
         unset($serverDetails['egg']);
         $loadedEvent = new ServerDetailsLoadedEvent(
             $this->getUserId(),
             $server->getId(),
             $server->getPterodactylServerIdentifier(),
-            $serverDetailsDTO?->state?->value,
+            $serverDetailsDTO->state?->value,
             $server->getIsSuspended(),
             $context
         );

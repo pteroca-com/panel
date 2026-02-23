@@ -361,6 +361,7 @@ pteroca:
       starting: 'Starting'
       stopping: 'Stopping'
       offline: 'Offline'
+      unknown: 'Unknown'
 
   server:
     title: 'Server management'
@@ -433,6 +434,7 @@ pteroca:
     console_token_expired: 'The console token has expired. Please refresh the page.'
     console_connection_closed: 'The console connection has been closed.'
     console_connection_error: 'An error occurred while connecting to the console.'
+    console_stats_unknown: 'Unknown'
     server_installing: 'Server is being installed'
     server_installing_message: 'Your server is currently being installed and will be available in a few minutes. Please wait while the installation process completes.'
     server_installing_description: 'The installation process may take several minutes depending on the selected software and server specifications.'

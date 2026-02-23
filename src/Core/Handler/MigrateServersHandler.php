@@ -398,7 +398,7 @@ class MigrateServersHandler implements HandlerInterface
         $serverProductEntity = (new ServerProduct())
             ->setServer($serverEntity)
             ->setOriginalProduct(null)
-            ->setName(sprintf('%s #%s', $pterodactylServer['name'], $pterodactylServer['identifier']))
+            ->setName($pterodactylServer['name'])
             ->setDiskSpace($pterodactylServer['limits']['disk'])
             ->setMemory($pterodactylServer['limits']['memory'])
             ->setIo($pterodactylServer['limits']['io'])

@@ -46,6 +46,9 @@
                     terminal.getWebsocketToken()
                         .then(data => {
                             terminal.initializeWebsocket(data.token, data.socket);
+                        })
+                        .catch(() => {
+                            terminal.setUnknownStatistics();
                         });
                 {% else %}
                     terminal.showSuspendedServerMessage();
@@ -58,6 +61,7 @@
             terminal: null,
             ws: null,
             eulaModalShown: false,
+            statsReceived: false,
             eulaPatterns: [
                 /You need to agree to the EULA in order to run the server/i,
                 /Go to eula.txt for more info/i,
@@ -135,10 +139,16 @@
                 this.ws.onclose = function() {
                     terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_connection_closed'|trans }}' + terminal.colors.default + '\r\n');
                     terminal.toggleButtons(true);
+                    if (!terminal.statsReceived) {
+                        terminal.setUnknownStatistics();
+                    }
                 };
                 this.ws.onerror = function(event) {
                     terminal.terminal.write(terminal.colors.red + '{{ 'pteroca.server.console_connection_error'|trans }}' + terminal.colors.default + '\r\n');
                     terminal.toggleButtons(true);
+                    if (!terminal.statsReceived) {
+                        terminal.setUnknownStatistics();
+                    }
                 };
             },
             sendCommand: function(command) {
@@ -149,6 +159,7 @@
                 this.ws.send(JSON.stringify({ event: 'set state', args: [state] }));
             },
             loadStatisticsFromWebsocket: function(stats) {
+                this.statsReceived = true;
                 const isOnline = stats.state !== 'offline',
                     uptimeIcon = document.querySelector('[data-uptime-icon]');
 
@@ -166,6 +177,19 @@
                 addChartData(memoryChart, new Date().toLocaleTimeString(), stats.memory_bytes / 1024 / 1024);
                 const networkRate = this.calculateNetworkRate(stats);
                 addChartData(networkChart, new Date().toLocaleTimeString(), networkRate);
+            },
+            setUnknownStatistics: function() {
+                const unknownText = '{{ 'pteroca.server.console_stats_unknown'|trans }}';
+                const uptimeIcon = document.querySelector('[data-uptime-icon]');
+                if (uptimeIcon) {
+                    uptimeIcon.classList.remove('text-success', 'text-danger');
+                }
+                this.updateStatisticValue('[data-uptime]', unknownText);
+                this.updateStatisticValue('[data-cpu-load]', unknownText);
+                this.updateStatisticValue('[data-memory]', unknownText);
+                this.updateStatisticValue('[data-disk]', unknownText);
+                this.updateStatisticValue('[data-network-inbound]', unknownText);
+                this.updateStatisticValue('[data-network-outbound]', unknownText);
             },
             updateStatisticValue(selector, value) {
                 const element = document.querySelector(selector);

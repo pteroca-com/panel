@@ -123,17 +123,31 @@
                 const endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details';
 
                 fetch(endpointUrl)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server details unavailable');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         const serverElements = document.querySelectorAll(`[data-server-id="${serverId}"]`);
                         serverElements.forEach(element => {
                             updateServerElements(element, data);
+                            clearRemainingPlaceholders(element);
                         });
-                        
                         document.querySelectorAll('.placeholder-glow').forEach(el => el.classList.remove('placeholder-glow'));
                         document.querySelectorAll('.placeholder-wave').forEach(el => el.classList.remove('placeholder-wave'));
                     })
-                    .catch(error => console.error('Error fetching server details:', error));
+                    .catch(error => {
+                        console.error('Error fetching server details:', error);
+                        const serverElements = document.querySelectorAll(`[data-server-id="${serverId}"]`);
+                        serverElements.forEach(element => {
+                            updateServerElements(element, { state: 'unknown' });
+                            clearRemainingPlaceholders(element);
+                        });
+                        document.querySelectorAll('.placeholder-glow').forEach(el => el.classList.remove('placeholder-glow'));
+                        document.querySelectorAll('.placeholder-wave').forEach(el => el.classList.remove('placeholder-wave'));
+                    });
             });
 
             function updateServerElements(element, data, prefix = '') {
@@ -167,17 +181,25 @@
                 }
             }
 
+            function clearRemainingPlaceholders(element) {
+                element.querySelectorAll('.placeholder').forEach(el => {
+                    el.textContent = '-';
+                    el.classList.remove('placeholder');
+                });
+            }
+
             function updateServerStateBadge(element, state) {
                 const stateConfig = {
-                    'running': { class: 'badge-success', text: '{{ 'pteroca.servers.state.running'|trans }}' },
-                    'stopped': { class: 'badge-secondary', text: '{{ 'pteroca.servers.state.stopped'|trans }}' },
-                    'starting': { class: 'badge-warning', text: '{{ 'pteroca.servers.state.starting'|trans }}' },
-                    'stopping': { class: 'badge-warning', text: '{{ 'pteroca.servers.state.stopping'|trans }}' },
-                    'offline': { class: 'badge-danger', text: '{{ 'pteroca.servers.state.offline'|trans }}' }
+                    'running':  { class: 'badge-success',   text: '{{ 'pteroca.servers.state.running'|trans }}' },
+                    'stopped':  { class: 'badge-secondary', text: '{{ 'pteroca.servers.state.stopped'|trans }}' },
+                    'starting': { class: 'badge-warning',   text: '{{ 'pteroca.servers.state.starting'|trans }}' },
+                    'stopping': { class: 'badge-warning',   text: '{{ 'pteroca.servers.state.stopping'|trans }}' },
+                    'offline':  { class: 'badge-danger',    text: '{{ 'pteroca.servers.state.offline'|trans }}' },
+                    'unknown':  { class: 'badge-secondary', text: '{{ 'pteroca.servers.state.unknown'|trans }}' },
                 };
 
-                const config = stateConfig[state] || { class: 'badge-secondary', text: state };
-                
+                const config = stateConfig[state] || { class: 'badge-secondary', text: '{{ 'pteroca.servers.state.unknown'|trans }}' };
+
                 element.className = `badge ${config.class}`;
                 element.textContent = config.text;
             }
