@@ -857,6 +857,8 @@ pteroca:
       egg_variable_slot_variable_hint: 'Seleziona la variabile che imposta gli slot massimi (giocatori) per la tariffazione basata sugli slot'
       slot_variable_not_configured_egg: 'Variabile slot non configurata per questo egg'
       slot_variables_unconfigured_eggs: 'Alcuni egg hanno variabili slot non configurate'
+      egg_variable_rules: Regole
+      egg_variable_validation_error: 'Errore di validazione in "%name%": il valore non soddisfa le regole richieste.'
       see_product_configuration_guide: 'Fai clic qui per aprire la guida dettagliata su come configurare i prodotti.'
       slot_variable_required_for_slot_prices: 'Tutti gli egg devono avere una variabile slot configurata quando vengono definiti i prezzi per slot.'
       show_archived: 'Mostra archiviati'

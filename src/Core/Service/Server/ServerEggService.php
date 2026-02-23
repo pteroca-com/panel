@@ -111,6 +111,8 @@ readonly class ServerEggService
             'egg_variable_slot_variable_hint' => $this->translator->trans('pteroca.crud.product.egg_variable_slot_variable_hint'),
             'slot_variable_not_configured_egg' => $this->translator->trans('pteroca.crud.product.slot_variable_not_configured_egg'),
             'slot_variables_unconfigured_eggs' => $this->translator->trans('pteroca.crud.product.slot_variables_unconfigured_eggs'),
+            'egg_variable_rules' => $this->translator->trans('pteroca.crud.product.egg_variable_rules'),
+            'egg_variable_validation_error' => $this->translator->trans('pteroca.crud.product.egg_variable_validation_error'),
             'use_as_starting_egg' => $this->translator->trans('pteroca.admin.server_create.use_as_starting_egg'),
             'starting_egg_help' => $this->translator->trans('pteroca.admin.server_create.starting_egg_help'),
         ];

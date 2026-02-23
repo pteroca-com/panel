@@ -820,6 +820,8 @@ pteroca:
       egg_variable_slot_variable_hint: 'Select the variable that sets the max slots (players) for slot-based pricing'
       slot_variable_not_configured_egg: 'Slot variable not configured for this egg'
       slot_variables_unconfigured_eggs: 'Some eggs have unconfigured slot variables'
+      egg_variable_rules: 'Rules'
+      egg_variable_validation_error: 'Validation error in "%name%": value does not meet the required rules.'
       see_product_configuration_guide: 'Click here to open the detailed guide on how to set up products.'
       egg_allow_change: 'Allow to change egg with reinstallation'
       egg_allow_change_hint: 'When enabled, customers can change server software (egg) by reinstalling their server. The server will be stopped and reinstalled with the new software configuration.'

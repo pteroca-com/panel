@@ -820,6 +820,8 @@ pteroca:
       nodes_hint: 'Sélectionnez une ou plusieurs machines physiques ou virtuelles (nœuds) de votre configuration Pterodactyl.'
       nest_hint: 'Un Nest est une catégorie qui regroupe des Eggs liés. Choisissez un Nest pour charger ses Eggs.'
       eggs_hint: 'Les Eggs définissent des configurations de serveur spécifiques (jeux ou applications). Sélectionnez les Eggs que vous souhaitez que ce produit prenne en charge.'
+      egg_variable_rules: Règles
+      egg_variable_validation_error: 'Erreur de validation dans "%name%" : la valeur ne respecte pas les règles requises.'
       threads: Threads
       threads_hint: 'Nombre de threads CPU alloués à ce serveur.'
       pricing: Tarification

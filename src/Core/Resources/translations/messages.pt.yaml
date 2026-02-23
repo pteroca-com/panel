@@ -824,6 +824,8 @@ pteroca:
       nodes_hint: 'Selecione uma ou mais máquinas físicas ou virtuais (nós) da sua configuração Pterodactyl.'
       nest_hint: 'Um Nest é uma categoria que agrupa Eggs relacionados. Escolha um Nest para carregar seus Eggs.'
       eggs_hint: 'Eggs definem configurações específicas do servidor (jogos ou aplicativos). Selecione os Eggs que você deseja que este produto suporte.'
+      egg_variable_rules: Regras
+      egg_variable_validation_error: 'Erro de validação em "%name%": o valor não atende às regras necessárias.'
       pricing: Preços
       price_static_plan: 'Preço fixo'
       price_static_plan_hint: 'O preço do produto por um período fixo que os usuários podem selecionar como ciclo de cobrança.'

@@ -1,4 +1,5 @@
 {% block body_javascript %}
+    {% include 'components/egg_variable_validator.html.twig' %}
     <script>
         let loadedEggs = [],
             loadedEggsConfigurations = null,
@@ -22,6 +23,10 @@
             const form = document.querySelector('form');
             if (form) {
                 form.addEventListener('submit', function(e) {
+                    if (!validateEggVariablesRules()) {
+                        e.preventDefault();
+                        return false;
+                    }
                     saveEggsConfigurationToHiddenField();
                 });
             }
@@ -138,6 +143,7 @@
                 updateEggTabIndicators();
                 saveEggsConfigurationToHiddenField();
                 ensureOneStartingEggSelected();
+                attachEggVariableValidation();
             }, 1000);
         }
 
@@ -313,7 +319,19 @@
                 tdDescription.textContent = value.description;
                 tdDescription.className = 'text-muted small';
 
-                tdValue.innerHTML = createInput((value.default_value || ''), value.egg_id, value.id, value.options, 'value');
+                tdValue.innerHTML = createInput((value.default_value || ''), value.egg_id, value.id, value.options, 'value', isVariablesSection ? (value.rules || '') : '');
+
+                if (isVariablesSection && value.rules) {
+                    const parsedRules = value.rules.split('|').filter(r => r.length > 0);
+                    if (parsedRules.length > 0) {
+                        const rulesDiv = document.createElement('div');
+                        rulesDiv.className = 'd-flex flex-wrap gap-1 align-items-center mt-1';
+                        let rulesHtml = `<small class="text-muted me-1">${loadedTranslations.egg_variable_rules}:</small>`;
+                        rulesHtml += parsedRules.map(r => `<span class="px-1 rounded-1 font-monospace text-secondary border border-secondary-subtle" data-rule="${escAttr(r)}" style="font-size:0.7rem;background:rgba(108,117,125,0.08)">${escAttr(r)}</span>`).join('');
+                        rulesDiv.innerHTML = rulesHtml;
+                        tdValue.appendChild(rulesDiv);
+                    }
+                }
 
                 tdUserViewable.innerHTML = createCheckbox(value.user_viewable, value.egg_id, value.id, 'user_viewable');
                 tdUserViewable.className = 'text-center';
@@ -362,12 +380,13 @@
             return inputName;
         }
 
-        function createInput(value, eggId, variableId, options, name) {
+        function createInput(value, eggId, variableId, options, name, rules = '') {
             if (options) {
                 return createSelect(value, eggId, options, name);
             }
             const v = escAttr(value);
-            return `<input type="text" value="${v}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control form-control-sm" onchange="saveEggsConfigurationToHiddenField()">`;
+            const rulesAttr = rules ? ` data-rules="${escAttr(rules)}"` : '';
+            return `<input type="text" value="${v}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control form-control-sm"${rulesAttr} onchange="saveEggsConfigurationToHiddenField()">`;
         }
 
         function createCheckbox(checked, eggId, variableId, name) {
@@ -851,6 +870,20 @@
             const freeServerField = document.querySelector('input[name="ServerProduct[freeServer]"]');
 
             return userField !== null || freeServerField !== null;
+        }
+
+        function validateEggVariablesRules() {
+            const inputs = document.querySelectorAll('input[data-rules]:not([data-rules=""])');
+            for (const input of inputs) {
+                if (!validateRulesValue(input.value, input.dataset.rules)) {
+                    const variableName = input.closest('tr')?.querySelector('td:first-child')?.textContent?.trim() || input.name;
+                    const msg = loadedTranslations.egg_variable_validation_error.replace('%name%', variableName);
+                    alert(msg);
+                    input.focus();
+                    return false;
+                }
+            }
+            return true;
         }
     </script>
 {% endblock %}
