@@ -53,6 +53,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('use_pterodactyl_panel_as_client_panel', [$this, 'usePterodactylPanelAsClientPanel']),
             new TwigFunction('get_pterodactyl_panel_url', [$this, 'getPterodactylPanelUrl']),
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
+            new TwigFunction('is_manage_in_pterodactyl_button_enabled', [$this, 'isManageInPterodactylButtonEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
             new TwigFunction('plugin_asset', [$this, 'pluginAsset']),
@@ -144,6 +145,11 @@ class AppExtension extends AbstractExtension
     public function isPterodactylSSOEnabled(): bool
     {
         return $this->pterodactylRedirectService->isSSOEnabled();
+    }
+
+    public function isManageInPterodactylButtonEnabled(): bool
+    {
+        return $this->pterodactylRedirectService->isManageInPterodactylButtonEnabled();
     }
 
     public function getPterodactylPanelUrl(string $path = ''): string

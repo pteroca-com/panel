@@ -392,6 +392,8 @@ pteroca:
     reinstall_server_hint: 重新安装服务器将停止它，然后重新运行最初配置它的安装脚本。在此过程中某些文件可能会被删除或修改，请在继续之前备份您的数据。
     select_software: 选择软件
     admin_view_warning: 您当前以管理员身份查看此服务器。请谨慎进行更改，因为它们可能会影响服务器及其用户。
+    back_to_servers: '返回服务器'
+    manage_in_pterodactyl: '在 Pterodactyl 中管理'
     extend_server: 延长服务器
     extend_server_expires: '您的服务器<strong>{{ productName }}</strong>当前设置为在<strong>{{ expiresAt }}</strong>到期。'
     extend_server_hint: 您可以通过点击下面的按钮来延长服务器。
@@ -1163,6 +1165,7 @@ pteroca:
         delete_suspended_servers_days_after: 从服务器暂停日期起，经过多少天后自动删除已暂停的服务器
         pterodactyl_sso_enabled: '启用使用 Pterodactyl 面板的单点登录 (SSO)（必须设置 SSO 密钥）'
         pterodactyl_sso_secret: 'Pterodactyl SSO 登录密钥'
+        pterodactyl_manage_in_panel_button_enabled: '在服务器管理页面启用"在 Pterodactyl 中管理"按钮'
         show_pterodactyl_logs_in_server_activity: '在服务器活动中显示 Pterodactyl 日志'
         current_theme: 当前面板的主题
         renewal_notification_enabled: 服务器续订时发送邮件确认。所有续订通知的主开关。

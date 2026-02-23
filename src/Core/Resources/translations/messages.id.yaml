@@ -419,6 +419,8 @@ pteroca:
     reinstall_server_hint: 'Menginstal ulang server Anda akan menghentikannya, dan kemudian menjalankan ulang skrip instalasi yang awalnya mengaturnya. Beberapa file mungkin dihapus atau dimodifikasi selama proses ini, harap cadangkan data Anda sebelum melanjutkan.'
     select_software: 'Pilih perangkat lunak'
     admin_view_warning: 'Anda sedang melihat server ini sebagai administrator. Berhati-hatilah dengan perubahan yang Anda buat, karena mungkin mempengaruhi server dan penggunanya.'
+    back_to_servers: 'Kembali ke server'
+    manage_in_pterodactyl: 'Kelola di Pterodactyl'
     extend_server: 'Perpanjang Server'
     extend_server_expires: 'Server <strong>{{ productName }}</strong> Anda saat ini disetel untuk kedaluwarsa pada <strong>{{ expiresAt }}</strong>.'
     extend_server_hint: 'Anda dapat memperpanjang server dengan mengklik tombol di bawah.'
@@ -1213,6 +1215,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Jumlah hari setelah tanggal penangguhan server sebelum server yang ditangguhkan dihapus secara permanen'
         pterodactyl_sso_enabled: 'Aktifkan Login Single Sign-On dengan Panel Pterodactyl (Rahasia SSO harus disetel)'
         pterodactyl_sso_secret: 'Kunci Rahasia Login SSO Pterodactyl'
+        pterodactyl_manage_in_panel_button_enabled: 'Aktifkan tombol "Kelola di Pterodactyl" di halaman manajemen server'
         show_pterodactyl_logs_in_server_activity: 'Tampilkan log Pterodactyl di aktivitas server'
         current_theme: 'Tema saat ini dari panel'
         smtp_from: "Email pengirim di bidang 'From' (mis. noreply@example.com). Harus cocok dengan pengirim yang diizinkan SMTP."

@@ -392,6 +392,8 @@ pteroca:
     reinstall_server_hint: "La réinstallation de votre serveur l'arrêtera, puis relancera le script d'installation initial. Certains fichiers peuvent être supprimés ou modifiés pendant ce processus, veuillez sauvegarder vos données avant de continuer."
     select_software: 'Sélectionner le logiciel'
     admin_view_warning: "Vous consultez actuellement ce serveur en tant qu'administrateur. Soyez prudent avec les modifications que vous apportez, car elles peuvent affecter le serveur et ses utilisateurs."
+    back_to_servers: 'Retour aux serveurs'
+    manage_in_pterodactyl: 'Gérer dans Pterodactyl'
     extend_server: 'Prolonger le serveur'
     extend_server_expires: 'Votre serveur <strong>{{ productName }}</strong> est actuellement configuré pour expirer le <strong>{{ expiresAt }}</strong>.'
     extend_server_hint: 'Vous pouvez prolonger le serveur en cliquant sur le bouton ci-dessous.'
@@ -1160,6 +1162,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Nombre de jours après la date de suspension du serveur avant que les serveurs suspendus ne soient supprimés définitivement'
         pterodactyl_sso_enabled: 'Activer la connexion Single Sign-On avec le panneau Pterodactyl (Le secret SSO doit être défini)'
         pterodactyl_sso_secret: 'Clé secrète de connexion SSO de Pterodactyl'
+        pterodactyl_manage_in_panel_button_enabled: 'Activer le bouton "Gérer dans Pterodactyl" sur la page de gestion du serveur'
         show_pterodactyl_logs_in_server_activity: "Afficher les journaux de Pterodactyl dans l'activité du serveur"
         current_theme: 'Thème actuel du panneau'
         renewal_notification_enabled: 'Envoyer confirmations email lors renouvellement serveurs. Interrupteur principal pour toutes notifications renouvellement.'
