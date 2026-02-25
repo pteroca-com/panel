@@ -299,6 +299,14 @@
                 tr.appendChild(thSlotVariable);
             }
 
+            if (isVariablesSection) {
+                const thUserRequired = document.createElement('th');
+                thUserRequired.innerHTML = '<i class="fas fa-user-edit me-1 text-muted"></i>' + loadedTranslations.egg_variable_user_required + ' <i class="fas fa-info-circle text-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="' + loadedTranslations.egg_variable_user_required_hint + '"></i>';
+                thUserRequired.className = 'fw-semibold text-center';
+                thUserRequired.style.width = '140px';
+                tr.appendChild(thUserRequired);
+            }
+
             thead.appendChild(tr);
             table.appendChild(thead);
 
@@ -333,6 +341,24 @@
                     }
                 }
 
+                // Hidden inputs to persist variable metadata in eggsConfiguration
+                if (isVariablesSection) {
+                    const metaFields = ['env_variable', 'name', 'description', 'rules'];
+                    const metaValues = {
+                        env_variable: value.env_variable || '',
+                        name: value.name || '',
+                        description: value.description || '',
+                        rules: value.rules || '',
+                    };
+                    metaFields.forEach(field => {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = getInputName(value.egg_id, value.id, field);
+                        hidden.value = metaValues[field];
+                        tdValue.appendChild(hidden);
+                    });
+                }
+
                 tdUserViewable.innerHTML = createCheckbox(value.user_viewable, value.egg_id, value.id, 'user_viewable');
                 tdUserViewable.className = 'text-center';
 
@@ -351,6 +377,13 @@
                     const isNumeric = isValueNumeric(value.default_value || '');
                     tdSlotVariable.innerHTML = createSlotVariableCheckbox(false, value.egg_id, value.id, 'slot_variable', !isNumeric);
                     tr.appendChild(tdSlotVariable);
+                }
+
+                if (isVariablesSection) {
+                    const tdUserRequired = document.createElement('td');
+                    tdUserRequired.className = 'text-center';
+                    tdUserRequired.innerHTML = createCheckbox(false, value.egg_id, value.id, 'user_required');
+                    tr.appendChild(tdUserRequired);
                 }
 
                 tbody.appendChild(tr);
@@ -639,8 +672,9 @@
                 selectInput = document.querySelector(`select[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
                 viewableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_viewable]"]`),
                 editableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_editable]"]`),
-                slotVariableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][slot_variable]"]`);
-            
+                slotVariableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][slot_variable]"]`),
+                userRequiredInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_required]"]`);
+
             if (valueInput) {
                 valueInput.value = value.value;
             }
@@ -655,15 +689,28 @@
             }
             if (slotVariableInput) {
                 slotVariableInput.checked = value.slot_variable || false;
-                
+
                 if (value.slot_variable) {
                     if (editableInput) {
                         editableInput.disabled = true;
                     }
                 }
-                
+
                 updateSlotVariableCheckboxState(slotVariableInput);
             }
+            if (userRequiredInput) {
+                userRequiredInput.checked = value.user_required || false;
+            }
+
+            // Restore hidden metadata fields
+            ['env_variable', 'name', 'description', 'rules'].forEach(field => {
+                if (value[field] !== undefined) {
+                    const hiddenInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][${field}]"]`);
+                    if (hiddenInput) {
+                        hiddenInput.value = value[field];
+                    }
+                }
+            });
         }
 
         function saveEggsConfigurationToHiddenField() {

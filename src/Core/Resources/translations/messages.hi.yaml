@@ -288,6 +288,8 @@ pteroca:
     location_check_failed: 'स्थान उपलब्धता की जाँच विफल'
     checking_availability: 'उपलब्धता जाँच रहे हैं...'
     invalid_node_selection: 'अमान्य नोड चयन'
+    user_required_variable_missing: 'आवश्यक चर "%name%" प्रदान नहीं किया गया।'
+    user_required_variable_invalid: 'आवश्यक चर "%name%" के लिए अमान्य मान।'
   cart_configuration:
     title: 'अपने सर्वर को कॉन्फ़िगर करें'
     configuration: कॉन्फ़िगरेशन
@@ -300,6 +302,8 @@ pteroca:
     location: 'सर्वर स्थान'
     owner_only: 'केवल मालिक'
     description: 'अपने सर्वर को कॉन्फ़िगर करें और भुगतान के लिए आगे बढ़ें'
+    user_required_variables_title: 'आवश्यक कॉन्फ़िगरेशन'
+    user_required_variables_description: 'कृपया चयनित सर्वर सॉफ़्टवेयर के लिए आवश्यक मान प्रदान करें'
   cart_topup:
     title: 'अपना खाता रिचार्ज करें'
     order: ऑर्डर
@@ -809,6 +813,8 @@ pteroca:
       egg_variable_value: मूल्य
       egg_variable_user_viewable: 'उपयोगकर्ता द्वारा देखा जा सकता है'
       egg_variable_user_editable: 'उपयोगकर्ता द्वारा संपादित किया जा सकता है'
+      egg_variable_user_required: 'उपयोगकर्ता से आवश्यक'
+      egg_variable_user_required_hint: 'सर्वर ऑर्डर करते समय उपयोगकर्ता को इस मान को दर्ज करना होगा'
       egg_allow_change: 'इंस्टॉलेशन के साथ सॉफ़्टवेयर बदलने की अनुमति दें'
       egg_allow_change_hint: 'जब सक्षम किया जाता है, तो ग्राहक अपने सर्वर को पुनः स्थापित करके सर्वर सॉफ़्टवेयर (egg) बदल सकते हैं। सर्वर बंद कर दिया जाएगा और नई सॉफ़्टवेयर कॉन्फ़िगरेशन के साथ पुनः स्थापित किया जाएगा।'
       allow_auto_renewal: 'ऑटो-रिन्यूअल की अनुमति दें'

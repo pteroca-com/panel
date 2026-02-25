@@ -236,6 +236,24 @@
                             </div>
                         </div>
                     </div>
+                    {% if userRequiredVariablesByEgg is not empty %}
+                    <!-- User Required Variables Card (shown dynamically) -->
+                    <div id="user-required-variables-card" class="card border-0 shadow-sm rounded-3 mt-4 d-none">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-key me-2 text-warning"></i>
+                                <h5 class="mb-0 fw-semibold">{{ 'pteroca.cart_configuration.user_required_variables_title'|trans }}</h5>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                {{ 'pteroca.cart_configuration.user_required_variables_description'|trans }}
+                            </p>
+                            <div id="user-required-variables-container"></div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- Order Summary -->
@@ -329,6 +347,7 @@
 {% endblock %}
 
 {% block body_javascript %}
+    {% include 'components/egg_variable_validator.html.twig' %}
     {% set priceSeps = get_price_separators() %}
     <script>
         const unitTranslations = {
@@ -488,7 +507,7 @@
             const form = document.getElementById('configure-form');
 
             form.addEventListener('submit', function(e) {
-                if (!submitButton.disabled) {
+                if (!e.defaultPrevented && !submitButton.disabled) {
                     submitButton.disabled = true;
                     submitButton.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>{{ "pteroca.product.processing"|trans|default("Processing...") }}';
                 }
@@ -583,6 +602,138 @@
             document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);
             document.querySelector('button#order-submit').disabled = insufficientBalance || !isProductAvailable;
         }
+
+        {% if userRequiredVariablesByEgg is not empty %}
+        // --- User Required Variables ---
+        const userRequiredVariablesByEgg = {{ userRequiredVariablesByEgg|json_encode|raw }};
+
+        function loadUserRequiredVariables(eggId) {
+            if (!eggId) {
+                hideUserRequiredCard();
+                return;
+            }
+
+            const variables = userRequiredVariablesByEgg[eggId] || [];
+            const card = document.getElementById('user-required-variables-card');
+            const container = document.getElementById('user-required-variables-container');
+
+            if (variables.length === 0) {
+                hideUserRequiredCard();
+                return;
+            }
+
+            container.innerHTML = '';
+
+            variables.forEach(variable => {
+                const group = document.createElement('div');
+                group.className = 'mb-4';
+
+                const label = document.createElement('label');
+                label.className = 'form-label fw-semibold';
+                label.textContent = variable.name || variable.env_variable;
+
+                const inputName = `user_variables[${escapeHtml(variable.env_variable)}]`;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = inputName;
+                input.className = 'form-control';
+                input.required = true;
+                if (variable.rules) {
+                    input.dataset.rules = variable.rules;
+                }
+                if (variable.default_value) {
+                    input.value = variable.default_value;
+                    input.placeholder = variable.default_value;
+                }
+
+                group.appendChild(label);
+                group.appendChild(input);
+
+                if (variable.description) {
+                    const hint = document.createElement('div');
+                    hint.className = 'form-text text-muted';
+                    hint.textContent = variable.description;
+                    group.appendChild(hint);
+                }
+
+                if (variable.rules) {
+                    const parsedRules = variable.rules.split('|').filter(r => r.length > 0);
+                    if (parsedRules.length > 0) {
+                        const rulesDiv = document.createElement('div');
+                        rulesDiv.className = 'd-flex flex-wrap gap-1 align-items-center mt-1';
+                        const escapedRules = parsedRules.map(r => {
+                            const s = escapeHtml(r);
+                            return `<span data-rule="${s}" class="px-1 rounded-1 font-monospace text-secondary border border-secondary-subtle" style="font-size:0.7rem;background:rgba(108,117,125,0.08)">${s}</span>`;
+                        }).join('');
+                        rulesDiv.innerHTML = escapedRules;
+                        group.appendChild(rulesDiv);
+                    }
+                }
+
+                container.appendChild(group);
+            });
+
+            card.classList.remove('d-none');
+            attachEggVariableValidation(container);
+        }
+
+        function hideUserRequiredCard() {
+            const card = document.getElementById('user-required-variables-card');
+            const container = document.getElementById('user-required-variables-container');
+            if (card) card.classList.add('d-none');
+            if (container) container.innerHTML = '';
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const eggSelect = document.getElementById('egg');
+            if (eggSelect) {
+                eggSelect.addEventListener('change', function() {
+                    loadUserRequiredVariables(this.value);
+                });
+                if (eggSelect.value) {
+                    loadUserRequiredVariables(eggSelect.value);
+                }
+            }
+        });
+
+        // Extend form submit to validate user_required inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('configure-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const userVarInputs = document.querySelectorAll('#user-required-variables-container input[data-rules]');
+                    for (const input of userVarInputs) {
+                        if (!validateRulesValue(input.value, input.dataset.rules)) {
+                            e.preventDefault();
+                            const label = input.closest('div')?.querySelector('label')?.textContent || input.name;
+                            const msg = '{{ 'pteroca.store.user_required_variable_invalid'|trans }}';
+                            alert(msg.replace('%name%', label));
+                            input.focus();
+                            input.classList.add('is-invalid');
+                            return false;
+                        }
+                        input.classList.remove('is-invalid');
+                    }
+                    // Check empty required inputs without explicit rules
+                    const allUserVarInputs = document.querySelectorAll('#user-required-variables-container input[required]');
+                    for (const input of allUserVarInputs) {
+                        if (!input.value.trim()) {
+                            e.preventDefault();
+                            input.focus();
+                            input.classList.add('is-invalid');
+                            return false;
+                        }
+                        input.classList.remove('is-invalid');
+                    }
+                }, true);
+            }
+        });
+        // --- End User Required Variables ---
+        {% endif %}
 
         {% if allowLocationSelection and groupedLocations is not empty %}
         document.addEventListener('DOMContentLoaded', function() {

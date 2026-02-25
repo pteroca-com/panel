@@ -30,6 +30,7 @@ readonly class ServerBuildService
         string $serverName = '',
         ?int $slots = null,
         ?int $selectedNodeId = null,
+        array $userVariables = [],
     ): array
     {
         $selectedEgg = $this->getSelectedEgg($eggId, $product);
@@ -61,7 +62,7 @@ readonly class ServerBuildService
             'egg' => $selectedEgg->get('id'),
             'docker_image' => $dockerImage,
             'startup' => $startup,
-            'environment' => $this->serverEggEnvironmentService->buildEnvironmentVariables($selectedEgg, $productEggConfiguration, $slots),
+            'environment' => $this->serverEggEnvironmentService->buildEnvironmentVariables($selectedEgg, $productEggConfiguration, $slots, $userVariables),
             'limits' => [
                 'memory' => $product->getMemory(),
                 'swap' => $product->getSwap(),

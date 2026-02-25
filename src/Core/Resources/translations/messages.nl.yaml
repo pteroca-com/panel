@@ -288,6 +288,8 @@ pteroca:
     location_check_failed: 'Kon locatiebeschikbaarheid niet controleren'
     checking_availability: 'Beschikbaarheid controleren...'
     invalid_node_selection: 'Ongeldige knoopselectie'
+    user_required_variable_missing: 'Vereiste variabele "%name%" niet aangeleverd.'
+    user_required_variable_invalid: 'Ongeldige waarde voor vereiste variabele "%name%".'
   renew:
     title: 'Server verlengen'
     renew: 'Server verlengen'
@@ -703,6 +705,8 @@ pteroca:
     location: Serverlocatie
     owner_only: 'alleen eigenaar'
     description: 'Configureer uw server en ga door naar betaling'
+    user_required_variables_title: 'Vereiste Configuratie'
+    user_required_variables_description: 'Geef de vereiste waarden voor de geselecteerde serversoftware'
   cart_topup:
     title: 'Vul je account aan'
     order: Bestellen
@@ -808,6 +812,8 @@ pteroca:
       egg_variable_value: Waarde
       egg_variable_user_viewable: 'Gebruiker zichtbaar'
       egg_variable_user_editable: 'Gebruiker aanpasbaar'
+      egg_variable_user_required: 'Vereist van gebruiker'
+      egg_variable_user_required_hint: 'Gebruiker moet deze waarde invoeren bij het bestellen van een server'
       egg_allow_change: 'Sta het veranderen van egg toe bij herinstallatie'
       egg_allow_change_hint: 'Wanneer ingeschakeld, kunnen klanten de serversoftware (egg) wijzigen door hun server opnieuw te installeren. De server wordt gestopt en opnieuw geïnstalleerd met de nieuwe softwareconfiguratie.'
       allow_auto_renewal: 'Automatische verlenging toestaan'

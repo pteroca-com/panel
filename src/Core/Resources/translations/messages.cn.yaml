@@ -288,6 +288,8 @@ pteroca:
     location_check_failed: 检查位置可用性失败
     checking_availability: 正在检查可用性...
     invalid_node_selection: 无效的节点选择
+    user_required_variable_missing: '缺少必需变量 "%name%"。'
+    user_required_variable_invalid: '必需变量 "%name%" 的值无效。'
   cart_configuration:
     title: 配置你的服务器
     configuration: 配置
@@ -300,6 +302,8 @@ pteroca:
     location: 服务器位置
     owner_only: 仅限所有者
     description: 配置您的服务器并进行支付
+    user_required_variables_title: '必需配置'
+    user_required_variables_description: '请为选定的服务器软件提供必需的值'
   cart_topup:
     title: 充值你的账户
     order: 订单
@@ -809,6 +813,8 @@ pteroca:
       egg_variable_value: '值'
       egg_variable_user_viewable: '用户可见'
       egg_variable_user_editable: '用户可编辑'
+      egg_variable_user_required: '用户必需'
+      egg_variable_user_required_hint: '用户在订购服务器时需要输入此值'
       egg_allow_change: '允许在重新安装时更改egg'
       egg_allow_change_hint: '启用后，客户可以通过重新安装其服务器来更改服务器软件（egg）。服务器将被停止并使用新的软件配置重新安装。'
       allow_auto_renewal: '允许自动续费'

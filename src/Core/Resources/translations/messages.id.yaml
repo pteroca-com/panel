@@ -312,6 +312,8 @@ pteroca:
     location_check_failed: 'Gagal memeriksa ketersediaan lokasi'
     checking_availability: 'Memeriksa ketersediaan...'
     invalid_node_selection: 'Pemilihan node tidak valid'
+    user_required_variable_missing: 'Variabel yang diperlukan "%name%" tidak disediakan.'
+    user_required_variable_invalid: 'Nilai tidak valid untuk variabel wajib "%name%".'
   cart_configuration:
     title: 'Konfigurasi server Anda'
     configuration: Konfigurasi
@@ -324,6 +326,8 @@ pteroca:
     location: 'Lokasi Server'
     owner_only: 'hanya pemilik'
     description: 'Konfigurasi server Anda dan lanjutkan ke pembayaran'
+    user_required_variables_title: 'Konfigurasi yang Diperlukan'
+    user_required_variables_description: 'Silakan berikan nilai yang diperlukan untuk perangkat lunak server yang dipilih'
   cart_topup:
     title: 'Isi ulang akun Anda'
     order: Pesan
@@ -825,6 +829,8 @@ pteroca:
       egg_variable_value: Nilai
       egg_variable_user_viewable: 'Dapat dilihat pengguna'
       egg_variable_user_editable: 'Dapat diedit pengguna'
+      egg_variable_user_required: 'Diperlukan dari pengguna'
+      egg_variable_user_required_hint: 'Pengguna akan diminta memasukkan nilai ini saat memesan server'
       egg_variable_slot_variable: 'Variabel slot'
       egg_variable_slot_variable_hint: 'Pilih variabel yang menetapkan slot maks (pemain) untuk harga berdasarkan slot'
       slot_variable_not_configured_egg: 'Variabel slot tidak dikonfigurasi untuk egg ini'

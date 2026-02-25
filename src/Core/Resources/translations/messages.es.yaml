@@ -288,6 +288,8 @@ pteroca:
     location_check_failed: 'Error al verificar la disponibilidad de la ubicación'
     checking_availability: 'Verificando disponibilidad...'
     invalid_node_selection: 'Selección de nodo inválida'
+    user_required_variable_missing: 'Variable requerida "%name%" no fue proporcionada.'
+    user_required_variable_invalid: 'Valor inválido para la variable requerida "%name%".'
   cart_configuration:
     title: 'Configura tu servidor'
     configuration: Configuración
@@ -300,6 +302,8 @@ pteroca:
     location: 'Ubicación del servidor'
     owner_only: 'solo propietario'
     description: 'Configura tu servidor y procede con el pago'
+    user_required_variables_title: 'Configuración Requerida'
+    user_required_variables_description: 'Proporcione los valores requeridos para el software de servidor seleccionado'
   cart_topup:
     title: 'Recarga tu cuenta'
     order: Ordenar
@@ -809,6 +813,8 @@ pteroca:
       egg_variable_value: Valor
       egg_variable_user_viewable: 'Visible para el usuario'
       egg_variable_user_editable: 'Editable por el usuario'
+      egg_variable_user_required: 'Requerido del usuario'
+      egg_variable_user_required_hint: 'Se requerirá que el usuario ingrese este valor al solicitar un servidor'
       egg_allow_change: 'Permitir cambiar el egg con la reinstalación'
       egg_allow_change_hint: 'Cuando está habilitado, los clientes pueden cambiar el software del servidor (egg) reinstalando el servidor. El servidor se detendrá y se reinstalará con la nueva configuración de software.'
       allow_auto_renewal: 'Permitir renovación automática'

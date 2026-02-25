@@ -78,6 +78,7 @@ class CreateServerService extends AbstractActionServerService
         ?string $voucherCode = null,
         ?int $slots = null,
         ?int $selectedNodeId = null,
+        array $userVariables = [],
     ): array
     {
         if (!empty($voucherCode)) {
@@ -110,7 +111,7 @@ class CreateServerService extends AbstractActionServerService
             throw new Exception($this->translator->trans('pteroca.store.server_creation_blocked'));
         }
 
-        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user, $slots, $selectedNodeId);
+        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user, $slots, $selectedNodeId, $userVariables);
 
         $createdOnPterodactylEvent = new ServerCreatedOnPterodactylEvent(
             $user->getId(),
@@ -216,12 +217,13 @@ class CreateServerService extends AbstractActionServerService
         string $serverName,
         UserInterface $user,
         ?int $slots = null,
-        ?int $selectedNodeId = null
+        ?int $selectedNodeId = null,
+        array $userVariables = []
     ): PterodactylServer
     {
         try {
             $preparedServerBuild = $this->serverBuildService
-                ->prepareServerBuild($product, $user, $eggId, $serverName, $slots, $selectedNodeId);
+                ->prepareServerBuild($product, $user, $eggId, $serverName, $slots, $selectedNodeId, $userVariables);
 
             return $this->pterodactylApplicationService
                 ->getApplicationApi()

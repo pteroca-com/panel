@@ -312,6 +312,8 @@ pteroca:
     location_check_failed: 'Не удалось проверить доступность расположения'
     checking_availability: 'Проверка доступности...'
     invalid_node_selection: 'Неверный выбор узла'
+    user_required_variable_missing: 'Обязательная переменная "%name%" не предоставлена.'
+    user_required_variable_invalid: 'Недействительное значение для обязательной переменной "%name%".'
   cart_configuration:
     title: 'Настроить сервер'
     configuration: Конфигурация
@@ -324,6 +326,8 @@ pteroca:
     location: 'Расположение сервера'
     owner_only: 'только владелец'
     description: 'Настройте ваш сервер и произведите оплату'
+    user_required_variables_title: 'Требуемая Конфигурация'
+    user_required_variables_description: 'Пожалуйста, укажите требуемые значения для выбранного серверного ПО'
   cart_topup:
     title: 'Пополнить аккаунт'
     order: Заказать
@@ -833,6 +837,8 @@ pteroca:
       egg_variable_value: Значение
       egg_variable_user_viewable: 'Доступно пользователю'
       egg_variable_user_editable: 'Редактируемо пользователем'
+      egg_variable_user_required: 'Требуется от пользователя'
+      egg_variable_user_required_hint: 'Пользователь должен будет ввести это значение при заказе сервера'
       egg_allow_change: 'Разрешить замену яиц с переустановкой'
       egg_allow_change_hint: 'Если параметр включен, клиенты могут изменить программное обеспечение сервера (egg) путем переустановки своего сервера. Сервер будет остановлен и переустановлен с новой конфигурацией программного обеспечения.'
       allow_auto_renewal: 'Разрешить автоматическое продление'
