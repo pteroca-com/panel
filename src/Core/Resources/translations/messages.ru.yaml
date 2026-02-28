@@ -1849,6 +1849,9 @@ pteroca:
       failed: 'Загрузка не удалась: %s'
       security_warnings_detected: 'Предупреждение: Обнаружены проблемы безопасности. Проверьте перед включением.'
       invalid_mime_type: 'Загрузите допустимый ZIP-файл'
+      filesystem_permission_error: 'Операция плагина прервана: следующие директории недоступны для записи веб-сервером: %paths%. Исправить командой: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Предупреждение о правах доступа к файловой системе'
+      filesystem_warning_body: 'Некоторые директории, необходимые для работы плагинов, недоступны для записи. Загрузка или активация плагина может завершиться ошибкой:'
     security:
       title: 'Безопасность Плагина'
       scan: 'Сканирование Безопасности'
@@ -2006,6 +2009,9 @@ pteroca:
         invalid_manifest: 'Недопустимый template.json: %s'
         compatibility_error: 'Тема несовместима с текущей версией PteroCA'
         security_critical: 'Обнаружены критические проблемы безопасности. Загрузка заблокирована для безопасности.'
+      filesystem_permission_error: 'Операция темы прервана: следующие директории недоступны для записи веб-сервером: %paths%. Исправить командой: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Предупреждение о правах доступа к файловой системе'
+      filesystem_warning_body: 'Некоторые директории, необходимые для работы с темами, недоступны для записи. Загрузка или управление темой может завершиться ошибкой:'
       warning:
         outdated_pteroca_version: 'Тема предназначена для более старой версии PteroCA'
         missing_assets: 'Каталог ассетов не найден - тема загружена без статических ассетов'

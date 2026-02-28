@@ -1837,6 +1837,9 @@ pteroca:
       failed: 'Unggah gagal: %s'
       security_warnings_detected: 'Peringatan: Masalah keamanan terdeteksi. Tinjau sebelum mengaktifkan.'
       invalid_mime_type: 'Silakan unggah file ZIP yang valid'
+      filesystem_permission_error: 'Operasi plugin dibatalkan: direktori berikut tidak dapat ditulis oleh server web: %paths%. Perbaiki dengan: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Peringatan Izin Sistem File'
+      filesystem_warning_body: 'Beberapa direktori yang diperlukan untuk operasi plugin tidak dapat ditulis. Pengunggahan atau aktivasi plugin mungkin gagal:'
   widget:
     plugin_status:
       title: 'Status Plugin'
@@ -1922,6 +1925,9 @@ pteroca:
         invalid_manifest: 'template.json tidak valid: %s'
         compatibility_error: 'Tema tidak kompatibel dengan versi PteroCA saat ini'
         security_critical: 'Masalah keamanan kritis terdeteksi. Unggahan diblokir untuk keamanan.'
+      filesystem_permission_error: 'Operasi tema dibatalkan: direktori berikut tidak dapat ditulis oleh server web: %paths%. Perbaiki dengan: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Peringatan Izin Sistem File'
+      filesystem_warning_body: 'Beberapa direktori yang diperlukan untuk operasi tema tidak dapat ditulis. Pengunggahan atau pengelolaan tema mungkin gagal:'
       warning:
         outdated_pteroca_version: 'Tema menargetkan versi PteroCA yang lebih lama'
         missing_assets: 'Direktori aset tidak ditemukan - tema diunggah tanpa aset statis'

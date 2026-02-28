@@ -1835,6 +1835,9 @@ pteroca:
       failed: 上传失败：%s
       security_warnings_detected: 警告：检测到安全问题。启用前请检查。
       invalid_mime_type: '请上传有效的 ZIP 文件'
+      filesystem_permission_error: '插件操作已中止：以下目录对 Web 服务器不可写：%paths%。修复方法：sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: '文件系统权限警告'
+      filesystem_warning_body: '插件操作所需的某些目录不可写。插件上传或激活可能会失败：'
     security:
       title: 插件安全
       scan: 安全扫描
@@ -1992,6 +1995,9 @@ pteroca:
         invalid_manifest: '无效的 template.json：%s'
         compatibility_error: '主题与当前 PteroCA 版本不兼容'
         security_critical: 检测到严重安全问题。为安全起见，上传已被阻止。
+      filesystem_permission_error: '主题操作已中止：以下目录对 Web 服务器不可写：%paths%。修复方法：sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: '文件系统权限警告'
+      filesystem_warning_body: '主题操作所需的某些目录不可写。主题上传或管理可能会失败：'
       warning:
         outdated_pteroca_version: '主题针对旧版 PteroCA 版本'
         missing_assets: '未找到资产目录 - 主题已上传但不包含静态资产'

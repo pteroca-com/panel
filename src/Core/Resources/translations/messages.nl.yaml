@@ -1815,6 +1815,9 @@ pteroca:
       failed: 'Upload mislukt: %s'
       security_warnings_detected: 'Waarschuwing: Beveiligingsproblemen gedetecteerd. Controleer voordat u inschakelt.'
       invalid_mime_type: 'Upload een geldig ZIP-bestand'
+      filesystem_permission_error: 'Plugin-bewerking afgebroken: de volgende mappen zijn niet beschrijfbaar door de webserver: %paths%. Oplossen met: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Bestandssysteem-machtigingswaarschuwing'
+      filesystem_warning_body: 'Sommige mappen die vereist zijn voor plugin-bewerkingen zijn niet beschrijfbaar. Plugin-upload of activering kan mislukken:'
     security:
       title: 'Plugin Beveiliging'
       scan: Beveiligingsscan
@@ -1972,6 +1975,9 @@ pteroca:
         invalid_manifest: 'Ongeldige template.json: %s'
         compatibility_error: 'Thema is niet compatibel met de huidige PteroCA-versie'
         security_critical: 'Kritieke beveiligingsproblemen gedetecteerd. Upload geblokkeerd voor veiligheid.'
+      filesystem_permission_error: 'Thema-bewerking afgebroken: de volgende mappen zijn niet beschrijfbaar door de webserver: %paths%. Oplossen met: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Bestandssysteem-machtigingswaarschuwing'
+      filesystem_warning_body: 'Sommige mappen die vereist zijn voor thema-bewerkingen zijn niet beschrijfbaar. Thema-upload of beheer kan mislukken:'
       warning:
         outdated_pteroca_version: 'Thema is gericht op een oudere PteroCA-versie'
         missing_assets: 'Geen assets-map gevonden - thema geüpload zonder statische assets'

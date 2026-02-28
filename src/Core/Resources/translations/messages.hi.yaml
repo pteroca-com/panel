@@ -1815,6 +1815,9 @@ pteroca:
       failed: 'अपलोड विफल: %s'
       security_warnings_detected: 'चेतावनी: सुरक्षा समस्याएँ पाई गईं। सक्षम करने से पहले समीक्षा करें।'
       invalid_mime_type: 'कृपया एक वैध ZIP फ़ाइल अपलोड करें'
+      filesystem_permission_error: 'प्लगइन ऑपरेशन रद्द: निम्नलिखित निर्देशिकाएँ वेब सर्वर द्वारा लिखने योग्य नहीं हैं: %paths%। ठीक करने के लिए: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'फाइलसिस्टम अनुमति चेतावनी'
+      filesystem_warning_body: 'प्लगइन ऑपरेशन के लिए आवश्यक कुछ निर्देशिकाएँ लिखने योग्य नहीं हैं। प्लगइन अपलोड या सक्रियण विफल हो सकता है:'
     security:
       title: 'प्लगइन सुरक्षा'
       scan: 'सुरक्षा स्कैन'
@@ -1972,6 +1975,9 @@ pteroca:
         invalid_manifest: 'अमान्य template.json: %s'
         compatibility_error: 'थीम वर्तमान PteroCA संस्करण के साथ असंगत है'
         security_critical: 'गंभीर सुरक्षा समस्याएं मिलीं। सुरक्षा के लिए अपलोड अवरुद्ध किया गया।'
+      filesystem_permission_error: 'थीम ऑपरेशन रद्द: निम्नलिखित निर्देशिकाएँ वेब सर्वर द्वारा लिखने योग्य नहीं हैं: %paths%। ठीक करने के लिए: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'फाइलसिस्टम अनुमति चेतावनी'
+      filesystem_warning_body: 'थीम ऑपरेशन के लिए आवश्यक कुछ निर्देशिकाएँ लिखने योग्य नहीं हैं। थीम अपलोड या प्रबंधन विफल हो सकता है:'
       warning:
         outdated_pteroca_version: 'थीम पुराने PteroCA संस्करण को लक्षित करती है'
         missing_assets: 'कोई एसेट निर्देशिका नहीं मिली - थीम स्थिर एसेट के बिना अपलोड की गई'

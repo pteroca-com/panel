@@ -1815,6 +1815,9 @@ pteroca:
       failed: 'Subida fallida: %s'
       security_warnings_detected: 'Advertencia: Problemas de seguridad detectados. Revisa antes de habilitar.'
       invalid_mime_type: 'Por favor, sube un archivo ZIP válido'
+      filesystem_permission_error: 'Operación del plugin abortada: los siguientes directorios no son escribibles por el servidor web: %paths%. Corregir con: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Advertencia de permisos del sistema de archivos'
+      filesystem_warning_body: 'Algunos directorios necesarios para las operaciones del plugin no son escribibles. La subida o activación del plugin puede fallar:'
     security:
       title: 'Seguridad del Plugin'
       scan: 'Escaneo de Seguridad'
@@ -1972,6 +1975,9 @@ pteroca:
         invalid_manifest: 'template.json inválido: %s'
         compatibility_error: 'El tema no es compatible con la versión actual de PteroCA'
         security_critical: 'Se detectaron problemas de seguridad críticos. Subida bloqueada por seguridad.'
+      filesystem_permission_error: 'Operación del tema abortada: los siguientes directorios no son escribibles por el servidor web: %paths%. Corregir con: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Advertencia de permisos del sistema de archivos'
+      filesystem_warning_body: 'Algunos directorios necesarios para las operaciones del tema no son escribibles. La subida o gestión del tema puede fallar:'
       warning:
         outdated_pteroca_version: 'El tema está diseñado para una versión anterior de PteroCA'
         missing_assets: 'No se encontró directorio de assets - tema subido sin recursos estáticos'

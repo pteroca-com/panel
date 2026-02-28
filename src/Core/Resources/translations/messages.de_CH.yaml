@@ -1815,6 +1815,9 @@ pteroca:
       failed: 'Hochladen fehlgeschlagen: %s'
       security_warnings_detected: 'Warnung: Sicherheitsprobleme erkannt. Überprüfen Sie vor der Aktivierung.'
       invalid_mime_type: 'Bitte laden Sie eine gültige ZIP-Datei hoch'
+      filesystem_permission_error: 'Plugin-Vorgang abgebrochen: Die folgenden Verzeichnisse sind für den Webserver nicht schreibbar: %paths%. Beheben mit: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Dateisystem-Berechtigungswarnung'
+      filesystem_warning_body: 'Einige für Plugin-Vorgänge erforderliche Verzeichnisse sind nicht schreibbar. Plugin-Upload oder Aktivierung kann fehlschlagen:'
     security:
       title: Plugin-Sicherheit
       scan: Sicherheits-Scan
@@ -1972,6 +1975,9 @@ pteroca:
         invalid_manifest: 'Ungültige template.json: %s'
         compatibility_error: 'Theme ist mit der aktuellen PteroCA-Version nicht kompatibel'
         security_critical: 'Kritische Sicherheitsprobleme erkannt. Upload aus Sicherheitsgründen blockiert.'
+      filesystem_permission_error: 'Theme-Vorgang abgebrochen: Die folgenden Verzeichnisse sind für den Webserver nicht schreibbar: %paths%. Beheben mit: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Dateisystem-Berechtigungswarnung'
+      filesystem_warning_body: 'Einige für Theme-Vorgänge erforderliche Verzeichnisse sind nicht schreibbar. Theme-Upload oder -Verwaltung kann fehlschlagen:'
       warning:
         outdated_pteroca_version: 'Theme zielt auf eine ältere PteroCA-Version ab'
         missing_assets: 'Kein Assets-Verzeichnis gefunden - Theme ohne statische Assets hochgeladen'

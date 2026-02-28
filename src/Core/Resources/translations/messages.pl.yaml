@@ -1815,6 +1815,9 @@ pteroca:
       failed: 'Przesłanie nie powiodło się: %s'
       security_warnings_detected: 'Ostrzeżenie: Wykryto problemy bezpieczeństwa. Przejrzyj przed włączeniem.'
       invalid_mime_type: 'Prześlij prawidłowy plik ZIP'
+      filesystem_permission_error: 'Operacja wtyczki przerwana: następujące katalogi nie są zapisywalne przez serwer WWW: %paths%. Napraw za pomocą: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Ostrzeżenie o uprawnieniach systemu plików'
+      filesystem_warning_body: 'Niektóre katalogi wymagane do operacji na wtyczkach nie są zapisywalne. Przesyłanie lub aktywacja wtyczki może się nie powieść:'
     security:
       title: 'Bezpieczeństwo Wtyczki'
       scan: 'Skan Bezpieczeństwa'
@@ -1972,6 +1975,9 @@ pteroca:
         invalid_manifest: 'Nieprawidłowy template.json: %s'
         compatibility_error: 'Motyw jest niekompatybilny z aktualną wersją PteroCA'
         security_critical: 'Wykryto krytyczne problemy bezpieczeństwa. Przesyłanie zablokowane dla bezpieczeństwa.'
+      filesystem_permission_error: 'Operacja motywu przerwana: następujące katalogi nie są zapisywalne przez serwer WWW: %paths%. Napraw za pomocą: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Ostrzeżenie o uprawnieniach systemu plików'
+      filesystem_warning_body: 'Niektóre katalogi wymagane do operacji na motywach nie są zapisywalne. Przesyłanie lub zarządzanie motywem może się nie powieść:'
       warning:
         outdated_pteroca_version: 'Motyw jest przeznaczony dla starszej wersji PteroCA'
         missing_assets: 'Nie znaleziono katalogu zasobów - motyw przesłany bez zasobów statycznych'

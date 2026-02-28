@@ -1817,6 +1817,9 @@ pteroca:
       failed: 'Carregamento falhou: %s'
       security_warnings_detected: 'Aviso: Problemas de segurança detectados. Revise antes de habilitar.'
       invalid_mime_type: 'Carregue um arquivo ZIP válido'
+      filesystem_permission_error: 'Operação do plugin abortada: os seguintes diretórios não são graváveis pelo servidor web: %paths%. Corrigir com: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Aviso de permissão do sistema de arquivos'
+      filesystem_warning_body: 'Alguns diretórios necessários para as operações do plugin não são graváveis. O upload ou ativação do plugin pode falhar:'
     security:
       title: 'Segurança do Plugin'
       scan: 'Verificação de Segurança'
@@ -1974,6 +1977,9 @@ pteroca:
         invalid_manifest: 'template.json inválido: %s'
         compatibility_error: 'O tema é incompatível com a versão atual do PteroCA'
         security_critical: 'Problemas críticos de segurança detectados. Upload bloqueado por segurança.'
+      filesystem_permission_error: 'Operação do tema abortada: os seguintes diretórios não são graváveis pelo servidor web: %paths%. Corrigir com: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Aviso de permissão do sistema de arquivos'
+      filesystem_warning_body: 'Alguns diretórios necessários para as operações do tema não são graváveis. O upload ou gerenciamento do tema pode falhar:'
       warning:
         outdated_pteroca_version: 'O tema é direcionado para uma versão anterior do PteroCA'
         missing_assets: 'Nenhum diretório de assets encontrado - tema carregado sem assets estáticos'

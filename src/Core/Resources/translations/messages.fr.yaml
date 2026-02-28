@@ -1815,6 +1815,9 @@ pteroca:
       failed: 'Téléchargement échoué : %s'
       security_warnings_detected: "Avertissement : Problèmes de sécurité détectés. Vérifiez avant d'activer."
       invalid_mime_type: 'Veuillez télécharger un fichier ZIP valide'
+      filesystem_permission_error: 'Opération du plugin abandonnée : les répertoires suivants ne sont pas accessibles en écriture par le serveur web : %paths%. Corriger avec : sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Avertissement sur les permissions du système de fichiers'
+      filesystem_warning_body: "Certains répertoires requis pour les opérations du plugin ne sont pas accessibles en écriture. Le téléchargement ou l'activation du plugin peut échouer :"
     security:
       title: 'Sécurité du Plugin'
       scan: 'Scan de Sécurité'
@@ -1972,6 +1975,9 @@ pteroca:
         invalid_manifest: 'template.json invalide : %s'
         compatibility_error: 'Le thème est incompatible avec la version actuelle de PteroCA'
         security_critical: 'Problèmes de sécurité critiques détectés. Téléchargement bloqué pour des raisons de sécurité.'
+      filesystem_permission_error: 'Opération du thème abandonnée : les répertoires suivants ne sont pas accessibles en écriture par le serveur web : %paths%. Corriger avec : sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Avertissement sur les permissions du système de fichiers'
+      filesystem_warning_body: 'Certains répertoires requis pour les opérations du thème ne sont pas accessibles en écriture. Le téléchargement ou la gestion du thème peut échouer :'
       warning:
         outdated_pteroca_version: 'Le thème cible une version plus ancienne de PteroCA'
         missing_assets: "Aucun répertoire d'assets trouvé - thème téléchargé sans ressources statiques"
