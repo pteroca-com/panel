@@ -286,6 +286,8 @@ We welcome contributions from developers of all skill levels!
 
 [Read the Contributing Guide →](CONTRIBUTING.md)
 
+> **Before submitting a PR:** Make sure the CI pipeline passes (PHPStan, migrations, translations) and that your branch is up to date with `main`. All review threads must be resolved before merge.
+
 ---
 
 ## 📄 License
