@@ -1981,3 +1981,14 @@ pteroca:
         twig_dynamic_include: 'Dynamische include met variabele gedetecteerd'
         dangerous_file: 'Uitvoerbaar bestand gedetecteerd'
         invalid_asset_type: 'Ongebruikelijk asset-bestandstype gedetecteerd'
+  marketplace:
+
+    browser_title: Marketplace
+    free: Gratis
+    error: 'Fout bij het laden van marketplace-plugins'
+    no_results: 'Geen plugins gevonden'
+    download: 'Downloaden vanuit Marketplace'
+    sort:
+      newest: Nieuwste
+      popular: Meest gedownload
+      rating: 'Beste beoordeeld'

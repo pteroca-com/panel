@@ -1,0 +1,30 @@
+{# Marketplace Plugin Browser Sidebar #}
+<div class="marketplace-sidebar-panel card border-0 shadow-sm rounded-3" id="marketplace-sidebar">
+    <div class="marketplace-sidebar-header">
+        <span class="mp-title">
+            <i class="fas fa-store me-2"></i>{{ 'pteroca.marketplace.browser_title'|trans }}
+        </span>
+        <span id="marketplace-total-count" class="mp-count">...</span>
+    </div>
+    <div class="marketplace-sort-bar">
+        <select id="marketplace-sort" class="form-select">
+            <option value="newest">{{ 'pteroca.marketplace.sort.newest'|trans }}</option>
+            <option value="popular">{{ 'pteroca.marketplace.sort.popular'|trans }}</option>
+            <option value="rating">{{ 'pteroca.marketplace.sort.rating'|trans }}</option>
+        </select>
+    </div>
+    <div class="marketplace-products-list" id="marketplace-products">
+        <div class="text-center p-4">
+            <div class="spinner-border spinner-border-sm text-primary"></div>
+        </div>
+    </div>
+    <div class="marketplace-sidebar-footer">
+        <button class="btn btn-outline-secondary" id="marketplace-prev" disabled>
+            <i class="fa fa-chevron-left"></i>
+        </button>
+        <span class="mp-page-info" id="marketplace-page-info">-</span>
+        <button class="btn btn-outline-secondary" id="marketplace-next" disabled>
+            <i class="fa fa-chevron-right"></i>
+        </button>
+    </div>
+</div>

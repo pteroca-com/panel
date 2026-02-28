@@ -1981,3 +1981,14 @@ pteroca:
         twig_dynamic_include: 'Wykryto dynamiczny include ze zmienną'
         dangerous_file: 'Wykryto plik wykonywalny'
         invalid_asset_type: 'Wykryto nietypowy typ pliku zasobów'
+  marketplace:
+
+    browser_title: Marketplace
+    free: Bezpłatnie
+    error: 'Nie udało się załadować dodatków marketplace'
+    no_results: 'Nie znaleziono dodatków'
+    download: 'Pobierz z Marketplace'
+    sort:
+      newest: Najnowsze
+      popular: Najczęściej pobierane
+      rating: 'Najwyżej ocenione'

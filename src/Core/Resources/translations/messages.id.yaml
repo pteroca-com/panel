@@ -1931,3 +1931,14 @@ pteroca:
         twig_dynamic_include: 'Include dinamis dengan variabel terdeteksi'
         dangerous_file: 'File executable terdeteksi'
         invalid_asset_type: 'Jenis file aset tidak biasa terdeteksi'
+  marketplace:
+
+    browser_title: Marketplace
+    free: Gratis
+    error: 'Gagal memuat plugin marketplace'
+    no_results: 'Tidak ada plugin ditemukan'
+    download: 'Unduh dari Marketplace'
+    sort:
+      newest: Terbaru
+      popular: 'Paling Banyak Diunduh'
+      rating: 'Rating Teratas'

@@ -1981,3 +1981,13 @@ pteroca:
         twig_dynamic_include: 'वेरिएबल के साथ गतिशील include मिला'
         dangerous_file: 'निष्पादन योग्य फ़ाइल मिली'
         invalid_asset_type: 'असामान्य एसेट फ़ाइल प्रकार मिला'
+  marketplace:
+    browser_title: मार्केटप्लेस
+    free: मुक्त
+    error: 'मार्केटप्लेस प्लगइन लोड करने में विफल'
+    no_results: 'कोई प्लगइन नहीं मिला'
+    download: 'मार्केटप्लेस से डाउनलोड करें'
+    sort:
+      newest: सबसे नया
+      popular: सबसे अधिक डाउनलोड
+      rating: शीर्ष रेटेड

@@ -1981,3 +1981,13 @@ pteroca:
         twig_dynamic_include: 'Dynamischer Include mit Variable erkannt'
         dangerous_file: 'Ausführbare Datei erkannt'
         invalid_asset_type: 'Ungewöhnlicher Asset-Dateityp erkannt'
+  marketplace:
+    browser_title: 'Marktplatz'
+    free: 'Kostenlos'
+    error: 'Fehler beim Laden von Marketplace-Plugins'
+    no_results: 'Keine Plugins gefunden'
+    download: 'Aus dem Marktplatz herunterladen'
+    sort:
+      newest: 'Neueste'
+      popular: 'Am häufigsten heruntergeladen'
+      rating: 'Top bewertet'

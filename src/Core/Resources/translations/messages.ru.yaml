@@ -2015,3 +2015,14 @@ pteroca:
         twig_dynamic_include: 'Обнаружен динамический include с переменной'
         dangerous_file: 'Обнаружен исполняемый файл'
         invalid_asset_type: 'Обнаружен необычный тип файла ассета'
+  marketplace:
+
+    browser_title: Маркетплейс
+    free: Бесплатно
+    error: 'Ошибка загрузки плагинов маркетплейса'
+    no_results: 'Плагины не найдены'
+    download: 'Загрузить с Маркетплейса'
+    sort:
+      newest: Новейшие
+      popular: Самые загруженные
+      rating: 'Наивысший рейтинг'

@@ -1983,3 +1983,14 @@ pteroca:
         twig_dynamic_include: 'Include dinâmico com variável detectado'
         dangerous_file: 'Arquivo executável detectado'
         invalid_asset_type: 'Tipo de arquivo de asset incomum detectado'
+  marketplace:
+
+    browser_title: Marketplace
+    free: Gratuito
+    error: 'Falha ao carregar plug-ins do marketplace'
+    no_results: 'Nenhum plug-in encontrado'
+    download: 'Baixar do Marketplace'
+    sort:
+      newest: Mais recente
+      popular: Mais baixado
+      rating: 'Mais bem avaliado'

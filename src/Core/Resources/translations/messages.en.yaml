@@ -1917,3 +1917,13 @@ pteroca:
         twig_dynamic_include: 'Dynamic include with variable detected'
         dangerous_file: 'Executable file detected'
         invalid_asset_type: 'Unusual asset file type detected'
+  marketplace:
+    browser_title: 'Marketplace'
+    free: 'Free'
+    error: 'Failed to load marketplace plugins'
+    no_results: 'No plugins found'
+    download: 'Download from Marketplace'
+    sort:
+      newest: 'Newest'
+      popular: 'Most Downloaded'
+      rating: 'Top Rated'

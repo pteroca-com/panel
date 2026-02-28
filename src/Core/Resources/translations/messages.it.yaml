@@ -1981,3 +1981,13 @@ pteroca:
         twig_dynamic_include: 'Rilevato include dinamico con variabile'
         dangerous_file: 'Rilevato file eseguibile'
         invalid_asset_type: 'Rilevato tipo di file asset insolito'
+  marketplace:
+    browser_title: 'Marketplace'
+    free: 'Gratuito'
+    error: 'Errore nel caricamento dei plugin del marketplace'
+    no_results: 'Nessun plugin trovato'
+    download: 'Scarica dal Marketplace'
+    sort:
+      newest: 'Più recente'
+      popular: 'Più scaricato'
+      rating: 'Più votato'

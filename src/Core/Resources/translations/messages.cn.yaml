@@ -2001,3 +2001,13 @@ pteroca:
         twig_dynamic_include: 检测到带变量的动态包含
         dangerous_file: 检测到可执行文件
         invalid_asset_type: 检测到异常资产文件类型
+  marketplace:
+    browser_title: 市场
+    free: 免费
+    error: 加载市场插件失败
+    no_results: 未找到插件
+    download: 从市场下载
+    sort:
+      newest: 最新
+      popular: 最受欢迎
+      rating: 排名靠前

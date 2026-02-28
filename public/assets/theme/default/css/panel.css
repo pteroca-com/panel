@@ -2146,6 +2146,183 @@ hr {
     font-size: 2.9rem;
 }
 
+/* Marketplace Sidebar */
+.marketplace-sidebar-panel {
+    width: 310px;
+    min-width: 280px;
+    min-height: 420px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,.07) !important;
+}
+.marketplace-sidebar-header {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #5a6fd8 100%);
+    color: #fff;
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+.marketplace-sidebar-header .mp-title {
+    font-size: .875rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+.marketplace-sidebar-header .mp-count {
+    background: rgba(255,255,255,.25);
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+}
+.marketplace-sort-bar {
+    padding: .5rem .75rem;
+    background: #fafafa;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    flex-shrink: 0;
+}
+.marketplace-sort-bar .form-select {
+    font-size: .8rem;
+    padding: .3rem .65rem;
+    border-color: rgba(0,0,0,.12);
+    background-color: #fff;
+}
+.marketplace-products-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #fff;
+}
+.marketplace-product-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: .65rem .75rem;
+    border-bottom: 1px solid rgba(0,0,0,.05);
+    transition: background 0.15s;
+}
+.marketplace-product-item:last-child { border-bottom: none; }
+.marketplace-product-item:hover { background: rgba(var(--bs-primary-rgb), .04); }
+.marketplace-product-img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,.07);
+}
+.marketplace-product-img-placeholder {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #f0f2ff 0%, #e8ebf8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bs-primary);
+    flex-shrink: 0;
+    font-size: 17px;
+    border: 1px solid rgba(0,0,0,.06);
+}
+.marketplace-product-body { flex: 1; min-width: 0; }
+.marketplace-product-name {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+.marketplace-product-desc {
+    font-size: .74rem;
+    color: #888;
+    margin-top: 2px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.35;
+}
+.marketplace-product-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: .7rem;
+    color: #aaa;
+}
+.marketplace-product-meta .mp-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.marketplace-badge-free {
+    font-size: .65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #d1fae5;
+    color: #065f46;
+    flex-shrink: 0;
+}
+.marketplace-badge-paid {
+    font-size: .65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #dbeafe;
+    color: #1e40af;
+    flex-shrink: 0;
+}
+.marketplace-dl-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bs-primary);
+    color: #fff;
+    border: none;
+    text-decoration: none;
+    font-size: .8rem;
+    transition: background .15s, transform .1s;
+}
+.marketplace-dl-btn:hover {
+    background: #3a56c5;
+    color: #fff;
+    transform: scale(1.08);
+}
+.marketplace-sidebar-footer {
+    padding: .5rem .75rem;
+    background: #fafafa;
+    border-top: 1px solid rgba(0,0,0,.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+.marketplace-sidebar-footer .btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: .75rem;
+}
+.marketplace-sidebar-footer .mp-page-info {
+    font-size: .75rem;
+    color: #888;
+}
+
 .server-stats-row [data-uptime-icon].text-success {
     color: var(--stripe-green-600) !important;
 }
