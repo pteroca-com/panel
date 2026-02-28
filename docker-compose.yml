@@ -51,8 +51,17 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - app_var_dev:/app/var
-      - app_uploads_dev:/app/public/uploads
+      # Live source code sync - changes on host immediately visible in container
+      - ./src:/app/src
+      - ./themes:/app/themes
+      - ./config:/app/config
+      - ./migrations:/app/migrations
+      - ./plugins:/app/plugins
+      - ./public:/app/public
+      - ./tests:/app/tests
+      # Persistent data volumes
+      - app_var_dev:/app/var                # Persist cache/logs across restarts
+      - app_uploads_dev:/app/public/uploads # Persist user uploads across restarts
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     working_dir: /app

@@ -1823,6 +1823,9 @@ pteroca:
       failed: 'Upload failed: %s'
       security_warnings_detected: 'Warning: Security issues detected. Review before enabling.'
       invalid_mime_type: 'Please upload a valid ZIP file'
+      filesystem_permission_error: 'Plugin operation aborted: the following directories are not writable by the web server: %paths%. Fix with: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Filesystem Permission Warning'
+      filesystem_warning_body: 'Some directories required for plugin operations are not writable. Plugin upload or activation may fail:'
 
   widget:
     plugin_status:

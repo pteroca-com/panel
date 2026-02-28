@@ -28,6 +28,7 @@ use App\Core\Event\Plugin\PluginUploadPageAccessedEvent;
 use App\Core\Event\Plugin\PluginUploadRequestedEvent;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Logs\LogService;
+use App\Core\Service\Plugin\PluginFilesystemCheckService;
 use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginDependencyResolver;
 use App\Core\Service\Plugin\PluginHealthCheckService;
@@ -69,6 +70,7 @@ class PluginCrudController extends AbstractPanelController
         private readonly PluginHealthCheckService $healthCheckService,
         private readonly PluginSecurityValidator $securityValidator,
         private readonly PluginUploadService $pluginUploadService,
+        private readonly PluginFilesystemCheckService $pluginFilesystemCheckService,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -378,6 +380,11 @@ class PluginCrudController extends AbstractPanelController
         $request = $context->getRequest();
         $pluginName = $request->query->get('pluginName');
 
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
+        }
+
         $this->dispatchDataEvent(
             PluginEnablementRequestedEvent::class,
             $request,
@@ -437,6 +444,11 @@ class PluginCrudController extends AbstractPanelController
     {
         $request = $context->getRequest();
         $pluginName = $request->query->get('pluginName');
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
+        }
 
         $this->dispatchDataEvent(
             PluginDisablementRequestedEvent::class,
@@ -500,6 +512,11 @@ class PluginCrudController extends AbstractPanelController
     {
         if (!$this->getUser()?->hasPermission(PermissionEnum::ENABLE_PLUGIN)) {
             throw $this->createAccessDeniedException('You do not have permission to reset plugins.');
+        }
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
         }
 
         $request = $context->getRequest();
@@ -574,6 +591,11 @@ class PluginCrudController extends AbstractPanelController
     {
         if (!$this->getUser()?->hasPermission(PermissionEnum::UNINSTALL_PLUGIN)) {
             throw $this->createAccessDeniedException('You do not have permission to delete plugins.');
+        }
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
         }
 
         $request = $context->getRequest();
@@ -673,10 +695,12 @@ class PluginCrudController extends AbstractPanelController
         $this->dispatchSimpleEvent(PluginUploadPageAccessedEvent::class, $request);
 
         $form = $this->createForm(PluginUploadFormType::class);
+        $filesystemIssues = $this->pluginFilesystemCheckService->getUnwritablePaths();
 
         return $this->render('panel/crud/plugin/upload.html.twig', [
             'form' => $form->createView(),
             'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
+            'filesystem_issues' => $filesystemIssues,
         ]);
     }
 
@@ -684,6 +708,11 @@ class PluginCrudController extends AbstractPanelController
     {
         if (!$this->getUser()?->hasPermission(PermissionEnum::UPLOAD_PLUGIN)) {
             throw $this->createAccessDeniedException('You do not have permission to upload plugins.');
+        }
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
         }
 
         $request = $context->getRequest();
@@ -798,6 +827,19 @@ class PluginCrudController extends AbstractPanelController
             ->generateUrl();
 
         return new RedirectResponse($url);
+    }
+
+    private function checkFilesystemPermissions(string $redirectUrl): ?RedirectResponse
+    {
+        $unwritable = $this->pluginFilesystemCheckService->getUnwritablePaths();
+        if (!empty($unwritable)) {
+            $this->addFlash('danger', $this->translator->trans(
+                'pteroca.plugin.upload.filesystem_permission_error',
+                ['%paths%' => implode(', ', $unwritable)]
+            ));
+            return new RedirectResponse($redirectUrl);
+        }
+        return null;
     }
 
     /**
