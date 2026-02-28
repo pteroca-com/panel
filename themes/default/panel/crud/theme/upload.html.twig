@@ -24,6 +24,16 @@
 {% endblock %}
 
 {% block main %}
+    {% if filesystem_issues is defined and filesystem_issues is not empty %}
+    <div class="alert alert-warning mb-4">
+        <strong><i class="fas fa-exclamation-triangle me-2"></i>{{ 'pteroca.theme.upload.filesystem_warning_title'|trans }}</strong>
+        <p class="mb-2 mt-1">{{ 'pteroca.theme.upload.filesystem_warning_body'|trans }}</p>
+        <ul class="mb-2">
+            {% for path in filesystem_issues %}<li><code>{{ path }}</code></li>{% endfor %}
+        </ul>
+        <code>sudo chown -R www-data:www-data var/ themes/ public/assets/theme/</code>
+    </div>
+    {% endif %}
     <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-4">
             {{ form_start(form, {'action': path('admin_theme_upload_process'), 'method': 'POST'}) }}

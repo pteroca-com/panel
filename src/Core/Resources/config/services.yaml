@@ -254,6 +254,12 @@ services:
       $tempDirectory: '%kernel.project_dir%/var/tmp'
       $currentPterocaVersion: '%version%'
 
+  App\Core\Service\Theme\ThemeFilesystemCheckService:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+      $themesDirectory: '%kernel.project_dir%/themes'
+      $tempDirectory: '%kernel.project_dir%/var/tmp'
+
   App\Core\Service\Theme\TemplateManifestValidator:
     arguments:
       $currentPterocaVersion: '%version%'

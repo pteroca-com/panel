@@ -1911,6 +1911,9 @@ pteroca:
         invalid_manifest: 'Invalid template.json: %s'
         compatibility_error: 'Theme is incompatible with current PteroCA version'
         security_critical: 'Critical security issues detected. Upload blocked for safety.'
+      filesystem_permission_error: 'Theme operation aborted: the following directories are not writable by the web server: %paths%. Fix with: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Filesystem Permission Warning'
+      filesystem_warning_body: 'Some directories required for theme operations are not writable. Theme upload or management may fail:'
       warning:
         outdated_pteroca_version: 'Theme targets an older PteroCA version'
         missing_assets: 'No assets directory found - theme uploaded without static assets'

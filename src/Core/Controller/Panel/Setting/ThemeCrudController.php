@@ -41,6 +41,7 @@ use App\Core\Service\SettingService;
 use App\Core\Service\Template\TemplateService;
 use App\Core\Service\Template\ThemeCopyService;
 use App\Core\Service\Template\ThemeExportService;
+use App\Core\Service\Theme\ThemeFilesystemCheckService;
 use App\Core\Service\Theme\ThemeUploadService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -65,6 +66,7 @@ class ThemeCrudController extends AbstractPanelController
         private readonly ThemeUploadService $themeUploadService,
         private readonly ThemeCopyService $themeCopyService,
         private readonly ThemeExportService $themeExportService,
+        private readonly ThemeFilesystemCheckService $themeFilesystemCheckService,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -313,6 +315,11 @@ class ThemeCrudController extends AbstractPanelController
             throw $this->createAccessDeniedException('You do not have permission to delete themes.');
         }
 
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction('index')->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
+        }
+
         $request = $context->getRequest();
         $themeName = $request->request->get('themeName');
         $themeContext = $request->request->get('context', 'panel');
@@ -440,6 +447,11 @@ class ThemeCrudController extends AbstractPanelController
     {
         if (!$this->getUser()?->hasPermission(PermissionEnum::COPY_THEME)) {
             throw $this->createAccessDeniedException('You do not have permission to copy themes.');
+        }
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction('index')->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
         }
 
         $request = $context->getRequest();
@@ -620,6 +632,8 @@ class ThemeCrudController extends AbstractPanelController
             ->setAction('index')
             ->generateUrl();
 
+        $filesystemIssues = $this->themeFilesystemCheckService->getUnwritablePaths();
+
         return $this->renderWithEvent(
             ViewNameEnum::THEME_UPLOAD,
             'panel/crud/theme/upload.html.twig',
@@ -627,6 +641,7 @@ class ThemeCrudController extends AbstractPanelController
                 'form' => $form->createView(),
                 'page_title' => $this->translator->trans('pteroca.theme.upload.title'),
                 'back_url' => $backUrl,
+                'filesystem_issues' => $filesystemIssues,
             ],
             $request
         );
@@ -637,6 +652,11 @@ class ThemeCrudController extends AbstractPanelController
     {
         if (!$this->getUser()?->hasPermission(PermissionEnum::UPLOAD_THEME)) {
             throw $this->createAccessDeniedException('You do not have permission to upload themes.');
+        }
+
+        $uploadUrl = $this->adminUrlGenerator->setRoute('admin_theme_upload')->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($uploadUrl)) {
+            return $redirect;
         }
 
         $request = $this->requestStack->getCurrentRequest();
@@ -882,6 +902,19 @@ class ThemeCrudController extends AbstractPanelController
         }
 
         return $actions;
+    }
+
+    private function checkFilesystemPermissions(string $redirectUrl): ?RedirectResponse
+    {
+        $unwritable = $this->themeFilesystemCheckService->getUnwritablePaths();
+        if (!empty($unwritable)) {
+            $this->addFlash('danger', $this->translator->trans(
+                'pteroca.theme.upload.filesystem_permission_error',
+                ['%paths%' => implode(', ', $unwritable)]
+            ));
+            return new RedirectResponse($redirectUrl);
+        }
+        return null;
     }
 
     private function deleteDirectory(string $dir): bool
