@@ -2,44 +2,21 @@
 
 namespace App\Core\Service\Theme;
 
+use App\Core\Service\AbstractFilesystemCheckService;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ThemeFilesystemCheckService
+class ThemeFilesystemCheckService extends AbstractFilesystemCheckService
 {
     public function __construct(
         private readonly string $projectDir,
         private readonly string $themesDirectory,
         private readonly string $tempDirectory,
-        private readonly Filesystem $filesystem,
-    ) {}
-
-    /**
-     * Returns list of relative paths that are not writable by the web server.
-     * Empty array means all required permissions are OK.
-     */
-    public function getUnwritablePaths(): array
-    {
-        $unwritable = [];
-
-        foreach ($this->getRequiredPaths() as $absolutePath => $relativePath) {
-            if (!$this->filesystem->exists($absolutePath)) {
-                try {
-                    $this->filesystem->mkdir($absolutePath, 0755);
-                } catch (\Exception) {
-                    $unwritable[] = $relativePath;
-                    continue;
-                }
-            }
-
-            if (!is_writable($absolutePath)) {
-                $unwritable[] = $relativePath;
-            }
-        }
-
-        return $unwritable;
+        Filesystem $filesystem,
+    ) {
+        parent::__construct($filesystem);
     }
 
-    private function getRequiredPaths(): array
+    protected function getRequiredPaths(): array
     {
         return [
             $this->tempDirectory                       => 'var/tmp',
