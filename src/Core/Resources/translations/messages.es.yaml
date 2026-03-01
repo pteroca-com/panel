@@ -844,6 +844,8 @@ pteroca:
       days: Días
       hours: Horas
       minutes: Minutos
+      price_preview_per: 'por'
+      price_preview_per_slot: 'por ranura'
       server_product: 'Producto de servidor'
       server_products: 'Productos de servidor'
       original_product: 'Producto original'

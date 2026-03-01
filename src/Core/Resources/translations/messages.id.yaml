@@ -867,6 +867,8 @@ pteroca:
       days: Hari
       hours: Jam
       minutes: Menit
+      price_preview_per: 'per'
+      price_preview_per_slot: 'per slot'
       server_product: 'Produk server'
       server_products: 'Produk server'
       original_product: 'Produk asli'

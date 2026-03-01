@@ -844,6 +844,8 @@ pteroca:
       days: 天
       hours: 小时
       minutes: 分钟
+      price_preview_per: '每'
+      price_preview_per_slot: '每槽位'
       server_product: 服务器产品
       server_products: 服务器产品列表
       original_product: 原始产品

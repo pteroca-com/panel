@@ -844,6 +844,8 @@ pteroca:
       days: दिन
       hours: घंटे
       minutes: मिनट
+      price_preview_per: 'प्रति'
+      price_preview_per_slot: 'प्रति स्लॉट'
       server_product: 'सर्वर उत्पाद'
       server_products: 'सर्वर उत्पादों की सूची'
       original_product: 'मूल उत्पाद'

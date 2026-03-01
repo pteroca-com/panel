@@ -864,6 +864,8 @@ pteroca:
       days: 'Days'
       hours: 'Hours'
       minutes: 'Minutes'
+      price_preview_per: 'per'
+      price_preview_per_slot: 'per slot'
       build_name: 'Build name'
       server_build: 'Server'
       server_builds: 'Servers'

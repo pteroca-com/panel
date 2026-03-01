@@ -846,6 +846,8 @@ pteroca:
       days: Dagen
       hours: Uren
       minutes: Minuten
+      price_preview_per: 'per'
+      price_preview_per_slot: 'per slot'
       server_product: 'Server product'
       server_products: 'Server producten'
       original_product: 'Oorspronkelijk product'

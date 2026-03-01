@@ -846,6 +846,8 @@ pteroca:
       days: Jours
       hours: Heures
       minutes: Minutes
+      price_preview_per: 'par'
+      price_preview_per_slot: 'par slot'
       server_product: 'Produit serveur'
       server_products: 'Produits serveurs'
       original_product: 'Produit original'

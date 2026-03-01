@@ -868,6 +868,8 @@ pteroca:
       days: Дни
       hours: Часы
       minutes: Минуты
+      price_preview_per: 'за'
+      price_preview_per_slot: 'за слот'
       server_product: 'Серверный продукт'
       server_products: 'Серверные продукты'
       original_product: 'Исходный продукт'
