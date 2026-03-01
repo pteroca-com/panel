@@ -34,8 +34,16 @@ services:
     depends_on:
       - db
 
+  mailhog:
+    image: mailhog/mailhog
+    container_name: pteroca_mailhog_dev
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    restart: unless-stopped
+
   web:
-    build: 
+    build:
       context: .
       args:
         APP_ENV: dev
@@ -50,6 +58,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     volumes:
       # Live source code sync - changes on host immediately visible in container
       - ./src:/app/src
