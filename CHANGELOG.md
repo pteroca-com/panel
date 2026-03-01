@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.6.4] - 2026-03-01
+
+### Added
+- Added price preview widget in the product pricing tab showing formatted prices for each billing period.
+- Added email notification sent to the user when an admin creates a server on their behalf.
+- Added filesystem permission precheck before plugin upload to verify write access and show clear error messages.
+- Added filesystem permission precheck before theme upload to verify write access and show clear error messages.
+- Added Marketplace integration in the admin panel - browse, search, and install plugins directly from marketplace.pteroca.com.
+- Added support for required user-provided server variables during the server purchase flow.
+- Added product egg variable validation rules support - rules defined in egg configuration are now enforced on user input.
+- Added server health status badge in the admin server CRUD list view.
+- Added configurable "Manage in Pterodactyl" button on the user server management page (can be enabled/disabled in settings).
+- Added configurable price format settings - customizable decimal and thousands separators for price display.
+- Added configurable datetime format settings - date format, timezone, and timezone visibility can be set per installation.
+- Added configurable minimum top-up amount setting for wallet balance.
+- Added custom head scripts setting - arbitrary scripts can be injected into the `<head>` of the landing page and panel.
+- Added code editor field type for settings with syntax highlighting support.
+- Added short description field to products for use in SEO metadata and store listing previews.
+
+### Changed
+- Improved admin server CRUD list view - Pterodactyl server identifier is now shown in a shortened form on the index page.
+- Updated contribution documentation - improved CONTRIBUTING.md, PR template, issue templates, and code of conduct.
+- Updated help link in product CRUD controllers.
+- Added Mailhog to the development Docker environment for local email testing.
+
+### Fixed
+- Fixed server state in the servers list showing as unknown when the status check cannot be performed.
+- Fixed doubled server ID appearing in the server name after migration from Pterodactyl.
+- Fixed invalid YAML escaping in the Italian translation file.
+- Fixed theme export functionality that was producing invalid archives.
+- Fixed plugin migration not wrapping schema changes in a database transaction.
+- Fixed saving the default theme context in theme settings.
+- Fixed EasyAdmin CRUD controllers not calling the parent `configureFields` method, causing plugin-registered fields to be dropped.
+
+---
+
 ## [0.6.3] - 2026-02-03
 
 ### Added
