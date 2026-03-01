@@ -733,6 +733,7 @@ pteroca:
     renew_product: 'Odnowienie produktu'
     reset_password: 'Reset hasła'
     server_suspended: 'Zawieszenie serwera'
+    admin_server_created: 'Serwer utworzony przez administratora'
   crud:
     category:
       name: 'Nazwa kategorii'
@@ -1565,6 +1566,17 @@ pteroca:
       auto_delete_title: 'Ostrzeżenie o automatycznym usunięciu'
       auto_delete_warning: 'Ważne: Twój serwer zostanie automatycznie usunięty po %days% dniach (%deleteDate%), jeśli nie zostanie przedłużony.'
       panel_access: 'Dostęp do panelu'
+    admin_server_created:
+      subject: 'Twój serwer został utworzony'
+      title: 'Serwer utworzony'
+      subtitle: 'Administrator skonfigurował serwer dla Twojego konta'
+      server_details: 'Szczegóły serwera'
+      server_name: 'Nazwa serwera'
+      product_name: 'Produkt'
+      expires_at: 'Wygaśnie'
+      panel_url: 'Adres URL panelu'
+      access_panel: 'Przejdź do panelu'
+      note: 'Ten serwer został utworzony dla Ciebie przez administratora. Jeśli masz pytania, skontaktuj się z pomocą techniczną.'
   verification:
     title: 'Weryfikacja e-mail wymagana'
     subtitle: 'Zweryfikuj swój adres e-mail, aby kontynuować'
@@ -1614,6 +1626,8 @@ pteroca:
       base_product_help: 'Opcjonalnie wybierz produkt szablonu, aby wstępnie wypełnić wartości konfiguracji'
       free_server: 'Serwer bezpłatny (nie obciążaj salda użytkownika)'
       free_server_help: 'Włącz to, aby utworzyć serwer bez odjęcia z salda użytkownika'
+      send_creation_email: 'Powiadom użytkownika przez e-mail'
+      send_creation_email_help: 'Wyślij e-mail do użytkownika z informacjami o utworzonym serwerze'
       success: 'Serwer utworzony pomyślnie dla użytkownika %user%'
       eggs_required: 'Co najmniej jedno jajko musi być wybrane'
       use_as_starting_egg: 'Użyj jako jajka startowego'

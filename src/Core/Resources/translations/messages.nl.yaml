@@ -733,6 +733,7 @@ pteroca:
     renew_product: 'Product verlenging'
     reset_password: 'Wachtwoord reset'
     server_suspended: 'Server opschorting'
+    admin_server_created: 'Server aangemaakt door beheerder'
   crud:
     category:
       name: Categorienaam
@@ -1565,6 +1566,17 @@ pteroca:
       auto_delete_title: 'Automatische verwijderingswaarschuwing'
       auto_delete_warning: 'Belangrijk: Uw server wordt automatisch verwijderd na %days% dagen (%deleteDate%) als deze niet wordt verlengd.'
       panel_access: 'Toegang tot paneel'
+    admin_server_created:
+      subject: 'Uw server is aangemaakt'
+      title: 'Server aangemaakt'
+      subtitle: 'Een beheerder heeft een server voor uw account ingesteld'
+      server_details: 'Servergegevens'
+      server_name: 'Servernaam'
+      product_name: 'Product'
+      expires_at: 'Verloopt op'
+      panel_url: 'Paneel-URL'
+      access_panel: 'Ga naar paneel'
+      note: 'Deze server is voor u aangemaakt door een beheerder. Als u vragen heeft, neem dan contact op met de ondersteuning.'
   verification:
     title: 'E-mail verificatie vereist'
     subtitle: 'Verificeer uw e-mailadres om door te gaan'
@@ -1614,6 +1626,8 @@ pteroca:
       base_product_help: 'Selecteer optioneel een productsjabloon om configuratiewaarden voor te vullen'
       free_server: 'Gratis server (gebruikerssaldo niet belasten)'
       free_server_help: 'Schakel dit in om een server aan te maken zonder af te schrijven van het gebruikerssaldo'
+      send_creation_email: 'Gebruiker per e-mail informeren'
+      send_creation_email_help: 'Stuur een e-mail naar de gebruiker met informatie over de aangemaakte server'
       success: 'Server succesvol aangemaakt voor gebruiker %user%'
       eggs_required: 'Er moet minimaal één ei worden geselecteerd'
       use_as_starting_egg: 'Gebruik als start-ei'

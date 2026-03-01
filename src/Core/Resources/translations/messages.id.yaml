@@ -757,6 +757,7 @@ pteroca:
     renew_product: 'Perpanjangan produk'
     reset_password: 'Pengaturan ulang kata sandi'
     server_suspended: 'Penangguhan server'
+    admin_server_created: 'Server dibuat oleh administrator'
   crud:
     category:
       name: 'Nama kategori'
@@ -1585,6 +1586,17 @@ pteroca:
       suspension_date: 'Ditangguhkan pada: %suspensionDate%'
       auto_delete_warning: 'Penting: Server Anda akan dihapus secara otomatis setelah %days% hari (%deleteDate%) jika tidak diperpanjang.'
       panel_access: 'Akses Panel'
+    admin_server_created:
+      subject: 'Server Anda telah dibuat'
+      title: 'Server Dibuat'
+      subtitle: 'Administrator telah menyiapkan server untuk akun Anda'
+      server_details: 'Detail Server'
+      server_name: 'Nama Server'
+      product_name: 'Produk'
+      expires_at: 'Kedaluwarsa Pada'
+      panel_url: 'URL Panel'
+      access_panel: 'Buka Panel'
+      note: 'Server ini dibuat untuk Anda oleh administrator. Jika Anda memiliki pertanyaan, silakan hubungi dukungan.'
   verification:
     title: 'Verifikasi Email Diperlukan'
     subtitle: 'Silakan verifikasi alamat email Anda untuk melanjutkan'
@@ -1634,6 +1646,8 @@ pteroca:
       base_product_help: 'Secara opsional pilih template produk untuk mengisi nilai konfigurasi sebelumnya'
       free_server: 'Server gratis (jangan potong dari saldo pengguna)'
       free_server_help: 'Aktifkan ini untuk membuat server tanpa memotong dari saldo pengguna'
+      send_creation_email: 'Beritahu pengguna melalui email'
+      send_creation_email_help: 'Kirim email kepada pengguna dengan informasi tentang server yang dibuat'
       success: 'Server berhasil dibuat untuk pengguna %user%'
       eggs_required: 'Setidaknya satu telur harus dipilih'
       use_as_starting_egg: 'Gunakan sebagai telur awal'

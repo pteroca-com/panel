@@ -733,6 +733,7 @@ pteroca:
     renew_product: Produktverlängerung
     reset_password: 'Passwort zurücksetzen'
     server_suspended: Server-Suspension
+    admin_server_created: 'Vom Administrator erstellter Server'
   crud:
     category:
       name: Kategoriename
@@ -1565,6 +1566,17 @@ pteroca:
       auto_delete_title: 'Automatische Löschung Warnung'
       auto_delete_warning: 'Wichtig: Ihr Server wird automatisch nach %days% Tagen (%deleteDate%) gelöscht, falls nicht erneuert.'
       panel_access: 'Zugang zum Panel'
+    admin_server_created:
+      subject: 'Ihr Server wurde erstellt'
+      title: 'Server erstellt'
+      subtitle: 'Ein Administrator hat einen Server für Ihr Konto eingerichtet'
+      server_details: 'Serverdetails'
+      server_name: 'Servername'
+      product_name: 'Produkt'
+      expires_at: 'Läuft ab am'
+      panel_url: 'Panel-URL'
+      access_panel: 'Zum Panel gehen'
+      note: 'Dieser Server wurde von einem Administrator für Sie erstellt. Bei Fragen wenden Sie sich bitte an den Support.'
   verification:
     title: 'E-Mail-Verifizierung erforderlich'
     subtitle: 'Bitte verifizieren Sie Ihre E-Mail-Adresse, um fortzufahren'
@@ -1614,6 +1626,8 @@ pteroca:
       base_product_help: 'Wählen Sie optional eine Produktvorlage, um Konfigurationswerte vorab auszufüllen'
       free_server: 'Kostenloser Server (Benutzerguthaben nicht belasten)'
       free_server_help: 'Aktivieren Sie dies, um einen Server zu erstellen, ohne vom Benutzerguthaben abzubuchen'
+      send_creation_email: 'Benutzer per E-Mail benachrichtigen'
+      send_creation_email_help: 'Eine E-Mail mit Informationen über den erstellten Server an den Benutzer senden'
       success: 'Server erfolgreich für Benutzer %user% erstellt'
       eggs_required: 'Mindestens ein Ei muss ausgewählt werden'
       use_as_starting_egg: 'Als Start-Ei verwenden'

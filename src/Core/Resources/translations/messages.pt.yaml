@@ -735,6 +735,7 @@ pteroca:
     renew_product: 'Renovação de produto'
     reset_password: 'Redefinição de senha'
     server_suspended: 'Suspensão do servidor'
+    admin_server_created: 'Servidor criado pelo administrador'
   crud:
     category:
       name: 'Nome da categoria'
@@ -1567,6 +1568,17 @@ pteroca:
       auto_delete_title: 'Aviso de exclusão automática'
       auto_delete_warning: 'Importante: O seu servidor será automaticamente eliminado após %days% dias (%deleteDate%) se não for renovado.'
       panel_access: 'Acesso ao painel'
+    admin_server_created:
+      subject: 'O seu servidor foi criado'
+      title: 'Servidor criado'
+      subtitle: 'Um administrador configurou um servidor para a sua conta'
+      server_details: 'Detalhes do servidor'
+      server_name: 'Nome do servidor'
+      product_name: 'Produto'
+      expires_at: 'Expira em'
+      panel_url: 'URL do painel'
+      access_panel: 'Ir para o painel'
+      note: 'Este servidor foi criado para si por um administrador. Se tiver dúvidas, por favor contacte o suporte.'
   verification:
     title: 'Verificação de e-mail obrigatória'
     subtitle: 'Verifique seu endereço de e-mail para continuar'
@@ -1616,6 +1628,8 @@ pteroca:
       base_product_help: 'Selecione opcionalmente um modelo de produto para pré-preencher os valores de configuração'
       free_server: 'Servidor gratuito (não cobrar do saldo do usuário)'
       free_server_help: 'Ative isso para criar um servidor sem deduzir do saldo do usuário'
+      send_creation_email: 'Notificar usuário por e-mail'
+      send_creation_email_help: 'Enviar um e-mail ao usuário com informações sobre o servidor criado'
       success: 'Servidor criado com sucesso para o usuário %user%'
       eggs_required: 'Pelo menos um ovo deve ser selecionado'
       use_as_starting_egg: 'Usar como ovo inicial'
