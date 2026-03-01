@@ -45,6 +45,7 @@ services:
       $twig: '@twig'
       $defaultLogoPath: '%default_logo_path%'
       $projectDir: '%kernel.project_dir%'
+      $appEnv: '%kernel.environment%'
 
   App\Core\Twig\AppExtension:
     tags: [ 'twig.extension' ]

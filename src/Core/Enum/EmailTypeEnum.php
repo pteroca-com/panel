@@ -11,4 +11,5 @@ enum EmailTypeEnum: string
     case RENEW_PRODUCT = 'renew_product';
     case RESET_PASSWORD = 'reset_password';
     case SERVER_SUSPENDED = 'server_suspended';
+    case ADMIN_SERVER_CREATED = 'admin_server_created';
 }

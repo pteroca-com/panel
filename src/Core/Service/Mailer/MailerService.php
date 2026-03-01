@@ -20,6 +20,9 @@ use Twig\Error\SyntaxError;
 
 class MailerService implements MailerServiceInterface
 {
+    private const DEV_MAILHOG_DSN = 'smtp://mailhog:1025';
+    private const DEV_MAILHOG_FROM = 'noreply@pteroca.local';
+
     private MailerInterface $mailer;
 
     private string $from = '';
@@ -31,6 +34,7 @@ class MailerService implements MailerServiceInterface
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
         private readonly string $projectDir,
+        private readonly string $appEnv = 'prod',
     ) {}
 
     /**
@@ -111,13 +115,18 @@ class MailerService implements MailerServiceInterface
 
     private function setMailer(): void
     {
-        $smtpServer = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_SERVER->value);
-        $smtpPort = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PORT->value);
-        $smtpUsername = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_USERNAME->value);
-        $smtpPassword = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD->value);
-        $this->from = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_FROM->value);
+        if ($this->appEnv === 'dev') {
+            $this->from = self::DEV_MAILHOG_FROM;
+            $dsn = self::DEV_MAILHOG_DSN;
+        } else {
+            $smtpServer = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_SERVER->value);
+            $smtpPort = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PORT->value);
+            $smtpUsername = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_USERNAME->value);
+            $smtpPassword = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD->value);
+            $this->from = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_FROM->value);
+            $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUsername, $smtpPassword, $smtpServer, $smtpPort);
+        }
 
-        $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUsername, $smtpPassword, $smtpServer, $smtpPort);
         $transport = Transport::fromDsn($dsn);
         $this->mailer = new Mailer($transport);
     }

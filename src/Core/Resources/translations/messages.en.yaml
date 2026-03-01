@@ -749,6 +749,7 @@ pteroca:
     renew_product: 'Product renewal'
     reset_password: 'Password reset'
     server_suspended: 'Server suspension'
+    admin_server_created: 'Server created by admin'
 
   crud:
     category:
@@ -1567,6 +1568,17 @@ pteroca:
       auto_delete_title: 'Auto-Deletion Warning'
       auto_delete_warning: 'Important: Your server will be automatically deleted after %days% days (%deleteDate%) if not renewed.'
       panel_access: 'Access Panel'
+    admin_server_created:
+      subject: 'Your server has been created'
+      title: 'Server Created'
+      subtitle: 'A server has been set up for your account by an administrator'
+      server_details: 'Server Details'
+      server_name: 'Server Name'
+      product_name: 'Product'
+      expires_at: 'Expires At'
+      panel_url: 'Panel URL'
+      access_panel: 'Go to Panel'
+      note: 'This server was created for you by an administrator. If you have questions, please contact support.'
 
   verification:
     title: 'Email Verification Required'
@@ -1618,6 +1630,8 @@ pteroca:
       base_product_help: 'Optionally select a product template to pre-fill configuration values'
       free_server: 'Free Server (do not charge user balance)'
       free_server_help: 'Enable this to create server without deducting from user balance'
+      send_creation_email: 'Notify user via email'
+      send_creation_email_help: 'Send an email to the user with information about the created server'
       success: 'Server created successfully for user %user%'
       eggs_required: 'At least one egg must be selected'
       use_as_starting_egg: 'Use as starting egg'
