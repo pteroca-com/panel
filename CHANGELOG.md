@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.4] - 2026-03-01
+## [0.6.4] - 2026-03-02
 
 ### Added
 - Added price preview widget in the product pricing tab showing formatted prices for each billing period.
