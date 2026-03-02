@@ -33,6 +33,7 @@
 - Fixed plugin migration not wrapping schema changes in a database transaction.
 - Fixed saving the default theme context in theme settings.
 - Fixed EasyAdmin CRUD controllers not calling the parent `configureFields` method, causing plugin-registered fields to be dropped.
+- Fixed node selection not respecting Pterodactyl maintenance mode - nodes in maintenance are now skipped during automatic selection and rejected when chosen manually.
 
 ---
 
