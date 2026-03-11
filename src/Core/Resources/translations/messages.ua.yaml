@@ -2037,6 +2037,18 @@ pteroca:
         twig_dynamic_include: 'Виявлено динамічне включення зі змінною'
         dangerous_file: 'Виявлено виконуваний файл'
         invalid_asset_type: 'Виявлено незвичний тип файлу ресурсу'
+  license:
+    file_blacklisted: "Цей файл було внесено до чорного списку: %reason%"
+    invalid_license: "Перевірка ліцензії не вдалася: %error%"
+    license_required: "Цей плагін вимагає ліцензійного ключа. Будь ласка, введіть його в налаштуваннях плагіна перед увімкненням."
+    theme_license_required: "Ця тема вимагає ліцензійного ключа. Будь ласка, введіть його в налаштуваннях теми перед активацією."
+    api_unavailable_warning: "API ліцензій маркетплейсу наразі недоступний. Продовження без перевірки ліцензії."
+    theme_blacklisted: "Ця тема внесена до чорного списку і не може бути активована: %reason%"
+    license_key_label: "Ліцензійний ключ"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "Введіть ліцензійний ключ із вашої покупки на marketplace.pteroca.com"
+    cron_plugin_disabled: "Плагін %name% було автоматично вимкнено: перевірка ліцензії не вдалася (%error%)."
+    cron_theme_reset: "Тему %name% було деактивовано: перевірка ліцензії не вдалася (%error%)."
   marketplace:
 
     browser_title: Маркетплейс

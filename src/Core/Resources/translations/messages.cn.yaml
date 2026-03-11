@@ -2023,6 +2023,18 @@ pteroca:
         twig_dynamic_include: 检测到带变量的动态包含
         dangerous_file: 检测到可执行文件
         invalid_asset_type: 检测到异常资产文件类型
+  license:
+    file_blacklisted: "此文件已被列入黑名单：%reason%"
+    invalid_license: "许可证验证失败：%error%"
+    license_required: "此插件需要许可证密钥。请在启用前在插件设置中输入。"
+    theme_license_required: "此主题需要许可证密钥。请在激活前在主题设置中输入。"
+    api_unavailable_warning: "Marketplace许可证API当前不可用。在不进行许可证验证的情况下继续。"
+    theme_blacklisted: "此主题已被列入黑名单，无法激活：%reason%"
+    license_key_label: "许可证密钥"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "输入您从marketplace.pteroca.com购买的许可证密钥"
+    cron_plugin_disabled: "插件 %name% 已被自动禁用：许可证验证失败（%error%）。"
+    cron_theme_reset: "主题 %name% 已被停用：许可证验证失败（%error%）。"
   marketplace:
     browser_title: 市场
     free: 免费

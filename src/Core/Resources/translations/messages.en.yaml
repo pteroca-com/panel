@@ -1939,6 +1939,18 @@ pteroca:
         twig_dynamic_include: 'Dynamic include with variable detected'
         dangerous_file: 'Executable file detected'
         invalid_asset_type: 'Unusual asset file type detected'
+  license:
+    file_blacklisted: "This file has been blacklisted: %reason%"
+    invalid_license: "License verification failed: %error%"
+    license_required: "This plugin requires a license key. Please enter it in plugin settings before enabling."
+    theme_license_required: "This theme requires a license key. Please enter it in theme settings before activating."
+    api_unavailable_warning: "Marketplace license API is currently unavailable. Proceeding without license verification."
+    theme_blacklisted: "This theme has been blacklisted and cannot be activated: %reason%"
+    license_key_label: "License Key"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "Enter the license key from your marketplace.pteroca.com purchase"
+    cron_plugin_disabled: "Plugin %name% has been automatically disabled: license verification failed (%error%)."
+    cron_theme_reset: "Theme %name% has been deactivated: license verification failed (%error%)."
   marketplace:
     browser_title: 'Marketplace'
     free: 'Free'

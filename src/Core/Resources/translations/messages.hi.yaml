@@ -2003,6 +2003,18 @@ pteroca:
         twig_dynamic_include: 'वेरिएबल के साथ गतिशील include मिला'
         dangerous_file: 'निष्पादन योग्य फ़ाइल मिली'
         invalid_asset_type: 'असामान्य एसेट फ़ाइल प्रकार मिला'
+  license:
+    file_blacklisted: "इस फ़ाइल को ब्लैकलिस्ट किया गया है: %reason%"
+    invalid_license: "लाइसेंस सत्यापन विफल: %error%"
+    license_required: "इस प्लगइन के लिए लाइसेंस कुंजी आवश्यक है। कृपया इसे सक्षम करने से पहले प्लगइन सेटिंग में दर्ज करें।"
+    theme_license_required: "इस थीम के लिए लाइसेंस कुंजी आवश्यक है। कृपया इसे सक्रिय करने से पहले थीम सेटिंग में दर्ज करें।"
+    api_unavailable_warning: "Marketplace लाइसेंस API वर्तमान में अनुपलब्ध है। लाइसेंस सत्यापन के बिना आगे बढ़ रहे हैं।"
+    theme_blacklisted: "इस थीम को ब्लैकलिस्ट किया गया है और इसे सक्रिय नहीं किया जा सकता: %reason%"
+    license_key_label: "लाइसेंस कुंजी"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "marketplace.pteroca.com से अपनी खरीद की लाइसेंस कुंजी दर्ज करें"
+    cron_plugin_disabled: "प्लगइन %name% स्वचालित रूप से अक्षम कर दिया गया है: लाइसेंस सत्यापन विफल (%error%)।"
+    cron_theme_reset: "थीम %name% निष्क्रिय कर दी गई है: लाइसेंस सत्यापन विफल (%error%)।"
   marketplace:
     browser_title: मार्केटप्लेस
     free: मुक्त

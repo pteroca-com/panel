@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Core\DependencyInjection\Compiler\LicenseIntegrityCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginDoctrineCompilerPass;
 use App\Core\DependencyInjection\Compiler\PluginEasyAdminCompilerPass;
@@ -32,6 +33,9 @@ class CoreBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
+
+        // Integrity check for license system (must run first, priority 200)
+        $container->addCompilerPass(new LicenseIntegrityCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 200);
 
         // Register core system compiler passes
         $container->addCompilerPass(new WidgetRegistryCompilerPass());

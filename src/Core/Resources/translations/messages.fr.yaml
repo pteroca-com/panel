@@ -2003,6 +2003,18 @@ pteroca:
         twig_dynamic_include: 'Include dynamique avec variable détecté'
         dangerous_file: 'Fichier exécutable détecté'
         invalid_asset_type: "Type de fichier d'asset inhabituel détecté"
+  license:
+    file_blacklisted: "Ce fichier a été mis sur liste noire : %reason%"
+    invalid_license: "Échec de la vérification de licence : %error%"
+    license_required: "Ce plugin nécessite une clé de licence. Veuillez l'entrer dans les paramètres du plugin avant de l'activer."
+    theme_license_required: "Ce thème nécessite une clé de licence. Veuillez l'entrer dans les paramètres du thème avant de l'activer."
+    api_unavailable_warning: "L'API de licence du marketplace est actuellement indisponible. Procéder sans vérification de licence."
+    theme_blacklisted: "Ce thème a été mis sur liste noire et ne peut pas être activé : %reason%"
+    license_key_label: "Clé de Licence"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "Entrez la clé de licence de votre achat sur marketplace.pteroca.com"
+    cron_plugin_disabled: "Le plugin %name% a été automatiquement désactivé : échec de la vérification de licence (%error%)."
+    cron_theme_reset: "Le thème %name% a été désactivé : échec de la vérification de licence (%error%)."
   marketplace:
     browser_title: Marché
     free: Gratuit

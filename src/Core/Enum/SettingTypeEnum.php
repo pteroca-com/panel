@@ -8,6 +8,7 @@ enum SettingTypeEnum: string
     case TEXTAREA = 'textarea';
     case CODE = 'code';
     case SECRET = 'secret';
+    case LICENSE_KEY = 'license_key';
     case COLOR = 'color';
     case NUMBER = 'number';
     case BOOLEAN = 'boolean';
@@ -22,7 +23,7 @@ enum SettingTypeEnum: string
     {
         $values = [];
         foreach (self::cases() as $case) {
-            $values[ucfirst(strtolower($case->name))] = $case->value;
+            $values[ucwords(str_replace('_', ' ', strtolower($case->name)))] = $case->value;
         }
         return $values;
     }

@@ -60,6 +60,9 @@ class Plugin extends AbstractEntity
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $faultReason = null;
 
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: true)]
+    private ?string $zipHash = null;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $createdAt;
 
@@ -248,6 +251,18 @@ class Plugin extends AbstractEntity
     public function setFaultReason(?string $faultReason): self
     {
         $this->faultReason = $faultReason;
+
+        return $this;
+    }
+
+    public function getZipHash(): ?string
+    {
+        return $this->zipHash;
+    }
+
+    public function setZipHash(?string $zipHash): self
+    {
+        $this->zipHash = $zipHash;
 
         return $this;
     }

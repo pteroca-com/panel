@@ -1953,6 +1953,18 @@ pteroca:
         twig_dynamic_include: 'Include dinamis dengan variabel terdeteksi'
         dangerous_file: 'File executable terdeteksi'
         invalid_asset_type: 'Jenis file aset tidak biasa terdeteksi'
+  license:
+    file_blacklisted: "File ini telah dimasukkan ke daftar hitam: %reason%"
+    invalid_license: "Verifikasi lisensi gagal: %error%"
+    license_required: "Plugin ini memerlukan kunci lisensi. Harap masukkan di pengaturan plugin sebelum mengaktifkannya."
+    theme_license_required: "Tema ini memerlukan kunci lisensi. Harap masukkan di pengaturan tema sebelum mengaktifkannya."
+    api_unavailable_warning: "API lisensi marketplace saat ini tidak tersedia. Melanjutkan tanpa verifikasi lisensi."
+    theme_blacklisted: "Tema ini telah dimasukkan ke daftar hitam dan tidak dapat diaktifkan: %reason%"
+    license_key_label: "Kunci Lisensi"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "Masukkan kunci lisensi dari pembelian Anda di marketplace.pteroca.com"
+    cron_plugin_disabled: "Plugin %name% telah dinonaktifkan secara otomatis: verifikasi lisensi gagal (%error%)."
+    cron_theme_reset: "Tema %name% telah dinonaktifkan: verifikasi lisensi gagal (%error%)."
   marketplace:
 
     browser_title: Marketplace

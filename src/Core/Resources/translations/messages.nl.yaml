@@ -2003,6 +2003,18 @@ pteroca:
         twig_dynamic_include: 'Dynamische include met variabele gedetecteerd'
         dangerous_file: 'Uitvoerbaar bestand gedetecteerd'
         invalid_asset_type: 'Ongebruikelijk asset-bestandstype gedetecteerd'
+  license:
+    file_blacklisted: "Dit bestand is op de zwarte lijst gezet: %reason%"
+    invalid_license: "Licentieverificatie mislukt: %error%"
+    license_required: "Deze plugin vereist een licentiesleutel. Voer deze in de plugin-instellingen in voordat u hem inschakelt."
+    theme_license_required: "Dit thema vereist een licentiesleutel. Voer deze in de thema-instellingen in voordat u hem activeert."
+    api_unavailable_warning: "Marketplace-licentie-API is momenteel niet beschikbaar. Doorgaan zonder licentieverificatie."
+    theme_blacklisted: "Dit thema is op de zwarte lijst gezet en kan niet worden geactiveerd: %reason%"
+    license_key_label: "Licentiesleutel"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "Voer de licentiesleutel in van uw aankoop op marketplace.pteroca.com"
+    cron_plugin_disabled: "Plugin %name% is automatisch uitgeschakeld: licentieverificatie mislukt (%error%)."
+    cron_theme_reset: "Thema %name% is gedeactiveerd: licentieverificatie mislukt (%error%)."
   marketplace:
 
     browser_title: Marketplace

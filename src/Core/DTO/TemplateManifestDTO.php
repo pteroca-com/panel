@@ -15,7 +15,13 @@ class TemplateManifestDTO
         public readonly array $contexts,
         public readonly array $translations,
         public readonly array $options,
+        public readonly ?string $marketplaceCode = null,
     ) {}
+
+    public function getMarketplaceCode(): ?string
+    {
+        return $this->marketplaceCode;
+    }
 
     public static function fromArray(array $data): self
     {
@@ -30,6 +36,7 @@ class TemplateManifestDTO
             contexts: $data['contexts'] ?? [],
             translations: $data['translations'] ?? [],
             options: $data['options'] ?? [],
+            marketplaceCode: $data['marketplace_code'] ?? null,
         );
     }
 
@@ -46,6 +53,7 @@ class TemplateManifestDTO
             'contexts' => $this->contexts,
             'translations' => $this->translations,
             'options' => $this->options,
+            'marketplace_code' => $this->marketplaceCode,
         ];
     }
 }

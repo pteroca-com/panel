@@ -2003,6 +2003,18 @@ pteroca:
         twig_dynamic_include: 'Wykryto dynamiczny include ze zmienną'
         dangerous_file: 'Wykryto plik wykonywalny'
         invalid_asset_type: 'Wykryto nietypowy typ pliku zasobów'
+  license:
+    file_blacklisted: "Ten plik został umieszczony na czarnej liście: %reason%"
+    invalid_license: "Weryfikacja licencji nie powiodła się: %error%"
+    license_required: "Ta wtyczka wymaga klucza licencyjnego. Przed włączeniem wprowadź go w ustawieniach wtyczki."
+    theme_license_required: "Ten motyw wymaga klucza licencyjnego. Przed aktywacją wprowadź go w ustawieniach motywu."
+    api_unavailable_warning: "API licencji marketplace jest obecnie niedostępne. Kontynuowanie bez weryfikacji licencji."
+    theme_blacklisted: "Ten motyw został umieszczony na czarnej liście i nie może być aktywowany: %reason%"
+    license_key_label: "Klucz Licencyjny"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "Wprowadź klucz licencyjny z zakupu na marketplace.pteroca.com"
+    cron_plugin_disabled: "Wtyczka %name% została automatycznie wyłączona: weryfikacja licencji nie powiodła się (%error%)."
+    cron_theme_reset: "Motyw %name% został dezaktywowany: weryfikacja licencji nie powiodła się (%error%)."
   marketplace:
 
     browser_title: Marketplace

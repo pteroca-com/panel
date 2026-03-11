@@ -39,6 +39,10 @@ class CronScheduleCommand extends Command
             ]
         ],
 
+        'pteroca:license:verify' => [
+            'interval' => CronIntervalEnum::DAILY,
+        ],
+
         'pteroca:system:cleanup-logs' => [
             'conditions' => [
                 [

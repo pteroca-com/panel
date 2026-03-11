@@ -68,6 +68,9 @@ class PluginUploadService
             // 1. Validate uploaded file
             $this->validateUploadedFile($file);
 
+            // Compute ZIP hash for license verification
+            $zipHash = hash_file('sha256', $file->getPathname());
+
             // 2. Extract to temp
             $tempDir = $this->extractZipToTemp($file);
 
@@ -97,6 +100,7 @@ class PluginUploadService
                 'manifest' => $manifest,
                 'path' => $finalPath,
                 'security_issues' => $securityIssues,
+                'zip_hash' => $zipHash,
             ];
 
         } catch (Exception $e) {

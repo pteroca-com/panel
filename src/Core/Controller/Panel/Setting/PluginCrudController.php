@@ -26,6 +26,9 @@ use App\Core\Event\Plugin\PluginUploadedEvent;
 use App\Core\Event\Plugin\PluginUploadFailedEvent;
 use App\Core\Event\Plugin\PluginUploadPageAccessedEvent;
 use App\Core\Event\Plugin\PluginUploadRequestedEvent;
+use App\Core\Exception\License\FileBlacklistedException;
+use App\Core\Exception\License\LicenseRequiredException;
+use App\Core\Exception\License\LicenseVerificationException;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Logs\LogService;
 use App\Core\Service\Plugin\PluginFilesystemCheckService;
@@ -419,6 +422,24 @@ class PluginCrudController extends AbstractPanelController
                 $this->translator->trans('pteroca.crud.plugin.dependency_error'),
                 nl2br(htmlspecialchars($e->getMessage()))
             ));
+        } catch (LicenseRequiredException $e) {
+            $settingsUrl = $this->adminUrlGenerator
+                ->setController(PluginSettingCrudController::class)
+                ->setAction(Action::INDEX)
+                ->set('pluginName', $pluginName)
+                ->generateUrl();
+            $this->addFlash('warning', $this->translator->trans('pteroca.license.license_required'));
+            return new RedirectResponse($settingsUrl);
+        } catch (FileBlacklistedException $e) {
+            $this->addFlash('danger', $this->translator->trans(
+                'pteroca.license.file_blacklisted',
+                ['%reason%' => $e->getReason()]
+            ));
+        } catch (LicenseVerificationException $e) {
+            $this->addFlash('danger', $this->translator->trans(
+                'pteroca.license.invalid_license',
+                ['%error%' => $e->getMessage()]
+            ));
         } catch (Exception $e) {
             $this->dispatchDataEvent(
                 PluginEnablementFailedEvent::class,
@@ -740,9 +761,10 @@ class PluginCrudController extends AbstractPanelController
             $result = $this->pluginUploadService->uploadPlugin($file);
             $manifest = $result['manifest'];
             $securityIssues = $result['security_issues'];
+            $zipHash = $result['zip_hash'] ?? null;
 
             // Register in database
-            $plugin = $this->pluginManager->getOrCreatePlugin($manifest->name);
+            $plugin = $this->pluginManager->getOrCreatePlugin($manifest->name, $zipHash);
 
             // Log upload
             $this->logService->logAction(
