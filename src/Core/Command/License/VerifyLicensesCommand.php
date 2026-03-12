@@ -5,10 +5,10 @@ namespace App\Core\Command\License;
 use App\Core\Enum\SettingEnum;
 use App\Core\Repository\PluginRepository;
 use App\Core\Repository\SettingRepository;
-use App\Core\Repository\ThemeRecordRepository;
 use App\Core\Service\License\PluginLicenseService;
 use App\Core\Service\License\ThemeLicenseService;
 use App\Core\Service\SettingService;
+use App\Core\Service\Template\TemplateService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -38,7 +38,6 @@ class VerifyLicensesCommand extends Command
 {
     public function __construct(
         private readonly PluginRepository $pluginRepository,
-        private readonly ThemeRecordRepository $themeRecordRepository,
         private readonly PluginLicenseService $pluginLicenseService,
         private readonly ThemeLicenseService $themeLicenseService,
         private readonly SettingRepository $settingRepository,
@@ -114,29 +113,7 @@ class VerifyLicensesCommand extends Command
         ]));
 
         foreach ($activeThemeNames as $themeName) {
-            $record = $this->themeRecordRepository->findByName($themeName);
-
-            if ($record === null) {
-                continue;
-            }
-
-            $result = null;
-
-            if ($record->getMarketplaceCode() !== null) {
-                $licenseKeySetting = $this->settingRepository->findOneBy([
-                    'name' => 'license_key',
-                    'context' => "theme:$themeName",
-                ]);
-                $licenseKey = $licenseKeySetting?->getValue();
-
-                $result = $this->themeLicenseService->check(
-                    $record->getMarketplaceCode(),
-                    $licenseKey,
-                    $record->getZipHash()
-                );
-            } elseif ($record->getZipHash() !== null) {
-                $result = $this->themeLicenseService->checkHashOnly($record->getZipHash());
-            }
+            $result = $this->themeLicenseService->verifyTheme($themeName);
 
             if ($result === null) {
                 continue;
@@ -176,7 +153,7 @@ class VerifyLicensesCommand extends Command
         foreach ($settingNames as $settingName) {
             $setting = $this->settingRepository->findOneBy(['name' => $settingName]);
             if ($setting !== null && $setting->getValue() === $themeName) {
-                $setting->setValue('default');
+                $setting->setValue(TemplateService::DEFAULT_THEME);
                 $this->entityManager->flush();
             }
         }

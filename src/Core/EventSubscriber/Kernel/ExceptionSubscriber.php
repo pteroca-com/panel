@@ -5,6 +5,7 @@ namespace App\Core\EventSubscriber\Kernel;
 use App\Core\Service\Telemetry\TelemetryService;
 use App\Core\Service\Template\CurrentThemeService;
 use App\Core\Service\Template\TemplateContextManager;
+use App\Core\Service\Template\TemplateService;
 use Exception;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,7 +101,7 @@ readonly class ExceptionSubscriber
     {
         $candidates = [];
 
-        if ($theme === 'default') {
+        if ($theme === TemplateService::DEFAULT_THEME) {
             // 1. Default theme with requested context
             $candidates[] = $this->buildTemplatePath('@default_theme', $contextPath, $statusCode);
             $candidates[] = $this->buildTemplatePath('@default_theme', $contextPath);

@@ -3,6 +3,7 @@
 namespace App\Core\EventSubscriber;
 
 use App\Core\Service\Template\TemplateContextManager;
+use App\Core\Service\Template\TemplateService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -40,7 +41,7 @@ readonly class TwigContextSubscriber implements EventSubscriberInterface
 
         // Fallback to default theme if configured theme doesn't exist
         if (!is_dir("$this->templatesBaseDir/$theme")) {
-            $theme = 'default';
+            $theme = TemplateService::DEFAULT_THEME;
         }
 
         match ($context) {
@@ -64,8 +65,9 @@ readonly class TwigContextSubscriber implements EventSubscriberInterface
         string $context
     ): void {
         // Add default theme as fallback first (searched last)
-        $defaultContextPath = "$this->templatesBaseDir/default/$context";
-        if ($theme !== 'default' && is_dir($defaultContextPath)) {
+        $defaultTheme = TemplateService::DEFAULT_THEME;
+        $defaultContextPath = "$this->templatesBaseDir/$defaultTheme/$context";
+        if ($theme !== $defaultTheme && is_dir($defaultContextPath)) {
             $loader->prependPath($defaultContextPath);
         }
 
@@ -117,8 +119,9 @@ readonly class TwigContextSubscriber implements EventSubscriberInterface
     private function registerPanelLegacyPaths(FilesystemLoader $loader, string $theme): void
     {
         // Add default theme legacy location as fallback first
-        if ($theme !== 'default' && is_dir("$this->templatesBaseDir/default")) {
-            $loader->prependPath("$this->templatesBaseDir/default");
+        $defaultTheme = TemplateService::DEFAULT_THEME;
+        if ($theme !== $defaultTheme && is_dir("$this->templatesBaseDir/$defaultTheme")) {
+            $loader->prependPath("$this->templatesBaseDir/$defaultTheme");
         }
 
         // Then add current theme legacy location
@@ -133,12 +136,13 @@ readonly class TwigContextSubscriber implements EventSubscriberInterface
      */
     private function registerPanelEasyAdminPaths(FilesystemLoader $loader, string $theme): void
     {
+        $defaultTheme = TemplateService::DEFAULT_THEME;
         $panelPath = "$this->templatesBaseDir/$theme/panel";
-        $defaultPanelPath = "$this->templatesBaseDir/default/panel";
+        $defaultPanelPath = "$this->templatesBaseDir/$defaultTheme/panel";
 
         // Add default theme EasyAdmin bundle as fallback first
         $defaultEasyAdminPath = "$defaultPanelPath/bundles/EasyAdminBundle";
-        if ($theme !== 'default' && is_dir($defaultEasyAdminPath)) {
+        if ($theme !== $defaultTheme && is_dir($defaultEasyAdminPath)) {
             $loader->prependPath($defaultEasyAdminPath, 'EasyAdmin');
         }
 

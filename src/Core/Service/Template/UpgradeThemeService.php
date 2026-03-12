@@ -7,7 +7,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class UpgradeThemeService
 {
-    private const DEFAULT_THEME = 'default';
 
     public function __construct(
         private readonly Filesystem $filesystem,
@@ -99,7 +98,7 @@ class UpgradeThemeService
 
     public function copyLandingFromDefault(string $themePath): void
     {
-        $defaultLandingPath = $this->templateService->getTemplatePath(self::DEFAULT_THEME) . '/landing';
+        $defaultLandingPath = $this->templateService->getTemplatePath(TemplateService::DEFAULT_THEME) . '/landing';
         $targetLandingPath = $themePath . '/landing';
 
         if (!$this->filesystem->exists($defaultLandingPath)) {
@@ -150,7 +149,7 @@ class UpgradeThemeService
             return;
         }
 
-        $defaultAssetsPath = $this->templateService->getTemplateAssetsPath(self::DEFAULT_THEME);
+        $defaultAssetsPath = $this->templateService->getTemplateAssetsPath(TemplateService::DEFAULT_THEME);
 
         if (!$this->filesystem->exists($defaultAssetsPath)) {
             throw new RuntimeException('Default theme assets not found');

@@ -59,12 +59,12 @@ class TemplateContextManager
     {
         return match($context) {
             self::CONTEXT_PANEL => $this->settingService->getSetting(SettingEnum::PANEL_THEME->value)
-                ?? 'default',
+                ?? TemplateService::DEFAULT_THEME,
             self::CONTEXT_LANDING => $this->settingService->getSetting(SettingEnum::LANDING_THEME->value)
                 ?? $this->getFallbackTheme(self::CONTEXT_LANDING),
             self::CONTEXT_EMAIL => $this->settingService->getSetting(SettingEnum::EMAIL_THEME->value)
                 ?? $this->getFallbackTheme(self::CONTEXT_EMAIL),
-            default => 'default',
+            default => TemplateService::DEFAULT_THEME,
         };
     }
 
@@ -72,12 +72,12 @@ class TemplateContextManager
     {
         // If context theme not set, check if panel theme supports this context
         $panelTheme = $this->settingService->getSetting(SettingEnum::PANEL_THEME->value)
-            ?? 'default';
+            ?? TemplateService::DEFAULT_THEME;
 
         if ($this->templateService->themeSupportsContext($panelTheme, $context)) {
             return $panelTheme;
         }
 
-        return 'default';
+        return TemplateService::DEFAULT_THEME;
     }
 }

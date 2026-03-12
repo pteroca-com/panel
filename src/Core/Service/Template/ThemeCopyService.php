@@ -38,7 +38,7 @@ class ThemeCopyService
             $errors[] = $this->translator->trans('pteroca.crud.theme.validation.name_invalid_edges');
         }
 
-        $reserved = ['default', 'system', 'admin', 'test'];
+        $reserved = [TemplateService::DEFAULT_THEME, 'system', 'admin', 'test'];
         if (in_array($themeName, $reserved, true)) {
             $errors[] = $this->translator->trans('pteroca.crud.theme.validation.name_reserved');
         }
