@@ -35,6 +35,7 @@ use App\Core\Service\Plugin\PluginFilesystemCheckService;
 use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginDependencyResolver;
 use App\Core\Service\Plugin\PluginHealthCheckService;
+use App\Core\Service\Plugin\ManifestValidator;
 use App\Core\Service\Plugin\PluginSecurityValidator;
 use App\Core\Service\Plugin\PluginUploadService;
 use App\Core\Exception\Plugin\PluginDependencyException;
@@ -74,6 +75,7 @@ class PluginCrudController extends AbstractPanelController
         private readonly PluginSecurityValidator $securityValidator,
         private readonly PluginUploadService $pluginUploadService,
         private readonly PluginFilesystemCheckService $pluginFilesystemCheckService,
+        private readonly ManifestValidator $manifestValidator,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -378,10 +380,11 @@ class PluginCrudController extends AbstractPanelController
         );
     }
 
-    public function enablePlugin(AdminContext $context): RedirectResponse
+    public function enablePlugin(AdminContext $context): Response
     {
         $request = $context->getRequest();
         $pluginName = $request->query->get('pluginName');
+        $confirmed = $request->query->getBoolean('confirmed');
 
         $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
         if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
@@ -396,6 +399,27 @@ class PluginCrudController extends AbstractPanelController
 
         try {
             $pluginEntity = $this->pluginManager->getOrCreatePlugin($pluginName);
+
+            // Check for version mismatch warning before enabling
+            if (!$confirmed) {
+                $pluginMinVersion = $pluginEntity->getPterocaMinVersion();
+                if ($pluginMinVersion && $this->manifestValidator->hasVersionMismatchWarning($pluginMinVersion)) {
+                    $confirmUrl = $this->adminUrlGenerator
+                        ->setController(self::class)
+                        ->setAction('enablePlugin')
+                        ->set('pluginName', $pluginName)
+                        ->set('confirmed', '1')
+                        ->generateUrl();
+
+                    return $this->render('panel/crud/plugin/confirm-enable.html.twig', [
+                        'plugin' => $pluginEntity,
+                        'confirm_url' => $confirmUrl,
+                        'cancel_url' => $indexUrl,
+                        'page_title' => $this->translator->trans('pteroca.crud.plugin.version_mismatch_title'),
+                        'current_version' => $this->manifestValidator->getPterocaVersion(),
+                    ]);
+                }
+            }
 
             $this->pluginManager->enablePlugin($pluginEntity);
 
@@ -781,20 +805,30 @@ class PluginCrudController extends AbstractPanelController
 
             // Handle plugin state based on "enable immediately" checkbox
             if ($enableAfterUpload) {
-                try {
-                    $this->pluginManager->enablePlugin($plugin);
-
-                    $this->addFlash('success', sprintf(
-                        $this->translator->trans('pteroca.plugin.upload.success_enabled'),
+                // Check for version mismatch — skip auto-enable and warn user
+                $pluginMinVersion = $plugin->getPterocaMinVersion();
+                if ($pluginMinVersion && $this->manifestValidator->hasVersionMismatchWarning($pluginMinVersion)) {
+                    $this->addFlash('warning', sprintf(
+                        $this->translator->trans('pteroca.crud.plugin.version_mismatch_upload_skipped'),
                         $plugin->getDisplayName(),
                         $plugin->getVersion()
                     ));
-                } catch (Exception $e) {
-                    $this->addFlash('warning', sprintf(
-                        $this->translator->trans('pteroca.plugin.upload.uploaded_but_failed_to_enable'),
-                        $plugin->getDisplayName(),
-                        $e->getMessage()
-                    ));
+                } else {
+                    try {
+                        $this->pluginManager->enablePlugin($plugin);
+
+                        $this->addFlash('success', sprintf(
+                            $this->translator->trans('pteroca.plugin.upload.success_enabled'),
+                            $plugin->getDisplayName(),
+                            $plugin->getVersion()
+                        ));
+                    } catch (Exception $e) {
+                        $this->addFlash('warning', sprintf(
+                            $this->translator->trans('pteroca.plugin.upload.uploaded_but_failed_to_enable'),
+                            $plugin->getDisplayName(),
+                            $e->getMessage()
+                        ));
+                    }
                 }
             } else {
                 // If plugin was previously enabled (e.g., re-upload after folder deletion), disable it

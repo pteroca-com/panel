@@ -1006,6 +1006,11 @@ pteroca:
       warning: 'Warning'
       cancel: 'Cancel'
       close: 'Close'
+      version_mismatch_title: 'Version Compatibility Warning'
+      version_mismatch_message: 'This plugin was built for PteroCA <strong>%plugin_version%</strong>, but you are running PteroCA <strong>%current_version%</strong>. Breaking changes may have been introduced between these versions that could affect plugin functionality.'
+      version_mismatch_risk: 'Enabling this plugin is at your own risk. It may cause errors or unexpected behavior.'
+      enable_anyway: 'Enable Anyway'
+      version_mismatch_upload_skipped: 'Plugin "%s" v%s was uploaded successfully, but automatic enabling was skipped due to a version compatibility mismatch. Please enable it manually from the plugin list after reviewing the compatibility warning.'
     theme:
       theme_management_description: 'Manage and configure themes for different contexts'
       appearance_settings: 'Appearance Settings'
