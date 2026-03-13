@@ -158,7 +158,7 @@ class DashboardController extends AbstractDashboardController
             || $this->settingService->getSetting(SettingEnum::THEME_DISABLE_DARK_MODE->value);
         $defaultMode = $disableDarkMode
             ? ColorScheme::LIGHT
-            : $this->settingService->getSetting(SettingEnum::THEME_DEFAULT_MODE->value);
+            : $this->getValidColorScheme();
 
         return Dashboard::new()
             ->setTitle($logo)
@@ -253,5 +253,13 @@ class DashboardController extends AbstractDashboardController
             'crudAction' => 'index',
             'crudControllerFqcn' => $crudFqcn,
         ]);
+    }
+
+    private function getValidColorScheme(): string
+    {
+        $storedMode = strtolower(trim((string) $this->settingService->getSetting(SettingEnum::THEME_DEFAULT_MODE->value)));
+        $validModes = [ColorScheme::LIGHT, ColorScheme::DARK, ColorScheme::AUTO];
+
+        return in_array($storedMode, $validModes, true) ? $storedMode : ColorScheme::LIGHT;
     }
 }
