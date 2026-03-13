@@ -2,8 +2,9 @@
 
 namespace App\Core\Command\User;
 
+use App\Core\DTO\Command\User\CreateUserCommand;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
-use App\Core\Handler\CreateNewUserHandler;
+use App\Core\Handler\User\CreateUserHandler;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class UserCreateCommand extends Command
 {
     public function __construct(
-        private readonly CreateNewUserHandler $createNewUserHandler,
+        private readonly CreateUserHandler $handler,
     )
     {
         parent::__construct();
@@ -48,8 +49,7 @@ class UserCreateCommand extends Command
         $roleName = $input->getArgument('role');
 
         try {
-            $this->createNewUserHandler->setUserCredentials($email, $password, $roleName);
-            $this->createNewUserHandler->handle();
+            $this->handler->handle(new CreateUserCommand($email, $password, $roleName));
         } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
             $io->warning($exception->getMessage());
             $continueWithoutKey = $io->ask(
@@ -57,7 +57,7 @@ class UserCreateCommand extends Command
                 'no'
             );
             if ($continueWithoutKey === 'yes') {
-                $this->createNewUserHandler->handle(true);
+                $this->handler->handle(new CreateUserCommand($email, $password, $roleName, allowCreateWithoutApiKey: true));
             } else {
                 $io->error('User creation failed. Could not create Pterodactyl Client Account API key.');
                 return Command::FAILURE;

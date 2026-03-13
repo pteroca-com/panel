@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Core\Handler;
+namespace App\Core\Handler\User;
 
+use App\Core\DTO\Command\User\ChangeUserPasswordCommand;
 use App\Core\Event\Cli\ChangePassword\PasswordChangeProcessCompletedEvent;
 use App\Core\Event\Cli\ChangePassword\PasswordChangeProcessFailedEvent;
 use App\Core\Event\Cli\ChangePassword\PasswordChangeProcessStartedEvent;
+use App\Core\Handler\CommandHandlerInterface;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
@@ -14,12 +16,8 @@ use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ChangeUserPasswordHandler implements HandlerInterface
+class ChangeUserPasswordHandler implements CommandHandlerInterface
 {
-    private string $userEmail;
-
-    private string $userPassword;
-
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UserRepository $userRepository,
@@ -28,21 +26,19 @@ class ChangeUserPasswordHandler implements HandlerInterface
         private readonly EventContextService $eventContextService,
     ) {}
 
-    /**
-     * @throws Exception
-     */
-    public function handle(): void
+    public function handle(object $command): mixed
     {
+        assert($command instanceof ChangeUserPasswordCommand);
+
         $startTime = new DateTimeImmutable();
 
-        // Validate credentials first
-        if (empty($this->userEmail) || empty($this->userPassword)) {
-            $context = $this->eventContextService->buildCliContext('app:change-user-password');
+        if (empty($command->email) || empty($command->password)) {
+            $context = $this->eventContextService->buildCliContext('pteroca:user:change-password');
 
             $this->eventDispatcher->dispatch(
                 new PasswordChangeProcessFailedEvent(
                     'User credentials not set',
-                    $this->userEmail ?? 'UNKNOWN',
+                    $command->email ?: 'UNKNOWN',
                     new DateTimeImmutable(),
                     $context
                 )
@@ -51,26 +47,25 @@ class ChangeUserPasswordHandler implements HandlerInterface
             throw new RuntimeException('User credentials not set');
         }
 
-        $context = $this->eventContextService->buildCliContext('app:change-user-password', [
-            'email' => $this->userEmail,
+        $context = $this->eventContextService->buildCliContext('pteroca:user:change-password', [
+            'email' => $command->email,
         ]);
 
-        // Emit process started event
         $this->eventDispatcher->dispatch(
             new PasswordChangeProcessStartedEvent(
                 $startTime,
-                $this->userEmail,
+                $command->email,
                 $context
             )
         );
 
         try {
-            $user = $this->userRepository->findOneBy(['email' => $this->userEmail]);
+            $user = $this->userRepository->findOneBy(['email' => $command->email]);
             if (empty($user)) {
                 $this->eventDispatcher->dispatch(
                     new PasswordChangeProcessFailedEvent(
                         'User not found',
-                        $this->userEmail,
+                        $command->email,
                         new DateTimeImmutable(),
                         $context
                     )
@@ -79,17 +74,17 @@ class ChangeUserPasswordHandler implements HandlerInterface
                 throw new RuntimeException('User not found');
             }
 
-            $hashedPassword = $this->passwordHasher->hashPassword($user, $this->userPassword);
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $command->password);
             $user->setPassword($hashedPassword);
 
             try {
-                $this->pterodactylAccountService->updatePterodactylAccountPassword($user, $this->userPassword);
+                $this->pterodactylAccountService->updatePterodactylAccountPassword($user, $command->password);
             } catch (Exception $exception) {
                 $message = 'Failed to change password in Pterodactyl: ' . $exception->getMessage();
                 $this->eventDispatcher->dispatch(
                     new PasswordChangeProcessFailedEvent(
                         $message,
-                        $this->userEmail,
+                        $command->email,
                         new DateTimeImmutable(),
                         $context
                     )
@@ -103,11 +98,10 @@ class ChangeUserPasswordHandler implements HandlerInterface
             $endTime = new DateTimeImmutable();
             $duration = $endTime->getTimestamp() - $startTime->getTimestamp();
 
-            // Emit process completed event
             $this->eventDispatcher->dispatch(
                 new PasswordChangeProcessCompletedEvent(
                     $user->getId() ?? 0,
-                    $this->userEmail,
+                    $command->email,
                     true,
                     $duration,
                     $endTime,
@@ -115,14 +109,12 @@ class ChangeUserPasswordHandler implements HandlerInterface
                 )
             );
         } catch (RuntimeException $e) {
-            // Already emitted FailedEvent, just re-throw
             throw $e;
         } catch (Exception $e) {
-            // Unexpected exception
             $this->eventDispatcher->dispatch(
                 new PasswordChangeProcessFailedEvent(
                     $e->getMessage(),
-                    $this->userEmail,
+                    $command->email,
                     new DateTimeImmutable(),
                     $context
                 )
@@ -130,11 +122,7 @@ class ChangeUserPasswordHandler implements HandlerInterface
 
             throw $e;
         }
-    }
 
-    public function setUserCredentials(string $email, string $password): void
-    {
-        $this->userEmail = $email;
-        $this->userPassword = $password;
+        return null;
     }
 }

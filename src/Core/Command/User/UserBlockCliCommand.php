@@ -2,8 +2,8 @@
 
 namespace App\Core\Command\User;
 
-use App\Core\DTO\Command\User\ChangeUserPasswordCommand;
-use App\Core\Handler\User\ChangeUserPasswordHandler;
+use App\Core\DTO\Command\User\BlockUserCommand;
+use App\Core\Handler\User\BlockUserHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,40 +12,31 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'pteroca:user:change-password',
-    description: 'Change user password',
-    aliases: ['app:change-user-password']
+    name: 'pteroca:user:block',
+    description: 'Block a user',
 )]
-class UserChangePasswordCommand extends Command
+class UserBlockCliCommand extends Command
 {
     public function __construct(
-        private readonly ChangeUserPasswordHandler $handler,
-    )
-    {
+        private readonly BlockUserHandler $handler,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this
-            ->addArgument('email', InputArgument::REQUIRED, 'User email')
-            ->addArgument('password', InputArgument::REQUIRED, 'New password')
-        ;
+        $this->addArgument('email', InputArgument::REQUIRED, 'User email');
     }
 
-    /**
-     * @throws \Exception
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $this->handler->handle(new ChangeUserPasswordCommand(
+            $this->handler->handle(new BlockUserCommand(
                 $input->getArgument('email'),
-                $input->getArgument('password'),
             ));
-            $io->success('User password changed!');
+            $io->success('User blocked successfully.');
             return Command::SUCCESS;
         } catch (\RuntimeException $e) {
             $io->error($e->getMessage());
