@@ -1134,7 +1134,7 @@ pteroca:
       email_theme:
         help: 'Theme für E-Mail-Vorlagen. Steuert die Gestaltung von Benachrichtigungs-, Registrierungs- und Kaufe-Mails.'
       hints:
-        site_logo: 'Eigenes Logo für Dashboard und Anmeldeseiten. PNG, JPG oder SVG hochladen. Standard wenn leer.'
+        site_logo: 'Standard-Logo für das Panel (Admin-Dashboard, Anmeldeseiten). Wird auch als Fallback für Landingpage und E-Mails verwendet, wenn deren spezifische Logos nicht gesetzt sind. PNG, JPG oder SVG hochladen.'
         site_url: 'Basis-URL des Panels (z.B. https://panel.example.com). Verwendet in E-Mails, SSO und Weiterleitungen.'
         site_title: 'Panel-Name in Browser-Tabs, Kopfzeilen und E-Mails. Ihre Marke für alle Nutzer sichtbar.'
         site_locale: 'Standardsprache für die Benutzeroberfläche. Beeinflusst alle Menüeinträge, Labels und Systemmeldungen.'

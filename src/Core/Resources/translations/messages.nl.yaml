@@ -1134,7 +1134,7 @@ pteroca:
       email_theme:
         help: 'Thema voor e-mail sjablonen. Beheert de styling van meldingen, registratie en aankoop e-mails.'
       hints:
-        site_logo: "Aangepast logo voor dashboard en loginpagina's. Upload PNG, JPG of SVG. Standaard indien leeg."
+        site_logo: "Standaardlogo voor het paneel (admin dashboard, loginpagina's). Wordt ook gebruikt als terugval voor landingspagina en e-mails als hun specifieke logo's niet zijn ingesteld. Upload PNG, JPG of SVG."
         site_url: 'Basis-URL van paneel (bijv. https://panel.example.com). Gebruikt in e-mails, SSO en redirects.'
         site_title: 'Paneelnaam weergegeven in browsertabs, koppen en e-mails. Uw merk zichtbaar voor iedereen.'
         site_locale: 'Standaardtaal voor interface. Beïnvloedt alle menu-items, labels en systeemberichten.'

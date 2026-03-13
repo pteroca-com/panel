@@ -100,10 +100,23 @@ class AppExtension extends AbstractExtension
 
     public function getLogo(): string
     {
+        $context = $this->currentThemeService->getCurrentContext();
+
+        $contextLogo = match($context) {
+            'landing' => $this->settingService->getSetting(SettingEnum::LANDING_LOGO->value),
+            'email' => $this->settingService->getSetting(SettingEnum::EMAIL_LOGO->value),
+            default => null,
+        };
+
+        if (!empty($contextLogo)) {
+            return sprintf('/uploads/settings/%s', $contextLogo);
+        }
+
         $uploadedLogo = $this->settingService->getSetting(SettingEnum::LOGO->value);
         if (!empty($uploadedLogo)) {
             return sprintf('/uploads/settings/%s', $uploadedLogo);
         }
+
         return '/assets/img/logo/logo.png';
     }
 

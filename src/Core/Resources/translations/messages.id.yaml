@@ -1198,7 +1198,7 @@ pteroca:
       email_theme:
         help: 'Tema untuk template email. Mengontrol gaya pemberitahuan, pendaftaran, dan email pembelian.'
       hints:
-        site_logo: 'Logo kustom untuk dasbor dan halaman login. Unggah PNG, JPG, atau SVG. Kembali ke default jika kosong.'
+        site_logo: 'Logo default untuk panel (dasbor admin, halaman login). Juga digunakan sebagai cadangan untuk halaman arahan dan email jika logo spesifiknya tidak diatur. Unggah PNG, JPG, atau SVG.'
         site_url: 'URL dasar panel Anda (mis. https://panel.example.com). Digunakan dalam email, SSO, dan redirect.'
         site_title: 'Nama panel ditampilkan di tab browser, header, dan email. Merek Anda terlihat semua pengguna.'
         site_locale: 'Bahasa default untuk antarmuka. Mempengaruhi semua item menu, label, dan pesan sistem.'

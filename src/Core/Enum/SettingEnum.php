@@ -57,6 +57,8 @@ enum SettingEnum: string
     case DATE_TIMEZONE = 'date_timezone';
     case DATE_SHOW_TIMEZONE = 'date_show_timezone';
     case PRICE_FORMAT = 'price_format';
+    case LANDING_LOGO = 'site_landing_logo';
+    case EMAIL_LOGO = 'site_email_logo';
     case CUSTOM_HEAD_SCRIPTS_LANDING = 'custom_head_scripts_landing';
     case CUSTOM_HEAD_SCRIPTS_PANEL = 'custom_head_scripts_panel';
 }

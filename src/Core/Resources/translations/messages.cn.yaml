@@ -1137,7 +1137,7 @@ pteroca:
       email_theme:
         help: 电子邮件模板的主题。控制通知、注册和购买电子邮件的样式。
       hints:
-        site_logo: 仪表板和登录页的自定义标志。上传PNG、JPG或SVG。为空时使用默认值。
+        site_logo: 面板的默认标志（管理仪表板、登录页面）。当着陆页和邮件未设置专用标志时，也用作后备标志。上传PNG、JPG或SVG。
         site_url: '面板的基础URL（如https://panel.example.com）。用于邮件、SSO和重定向。'
         site_title: 浏览器标签、标题和邮件中显示的面板名称。所有用户可见的品牌。
         site_locale: 界面的默认语言。影响所有菜单项、标签和系统消息。

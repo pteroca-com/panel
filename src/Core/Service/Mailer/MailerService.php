@@ -133,7 +133,11 @@ class MailerService implements MailerServiceInterface
 
     private function resolveLogoPath(): string
     {
-        $logoFilename = $this->settingsService->getSetting(SettingEnum::LOGO->value);
+        $logoFilename = $this->settingsService->getSetting(SettingEnum::EMAIL_LOGO->value);
+
+        if (empty($logoFilename)) {
+            $logoFilename = $this->settingsService->getSetting(SettingEnum::LOGO->value);
+        }
 
         if (!empty($logoFilename)) {
             $customLogoPath = sprintf(

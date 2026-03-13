@@ -1152,7 +1152,9 @@ pteroca:
       email_theme:
         help: 'Theme for email templates. Controls the styling of notification, registration, and purchase emails.'
       hints:
-        site_logo: 'Custom logo for dashboard and login pages. Upload PNG, JPG, or SVG. Falls back to default if empty.'
+        site_logo: 'Default logo for the panel (admin dashboard, login pages). Also used as fallback for landing page and emails if their specific logos are not set. Upload PNG, JPG, or SVG.'
+        site_landing_logo: 'Custom logo for the landing page. Upload PNG, JPG, or SVG. Falls back to panel logo if empty.'
+        site_email_logo: 'Custom logo for emails. Upload PNG, JPG, or SVG. Falls back to panel logo if empty.'
         site_url: 'Base URL of your panel (e.g., https://panel.example.com). Used in emails, SSO, and redirects.'
         site_title: 'Panel name displayed in browser tabs, headers, and emails. Your brand visible to all users.'
         site_locale: 'Default language for the interface. Affects all menu items, labels, and system messages.'

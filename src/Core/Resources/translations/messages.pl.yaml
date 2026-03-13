@@ -1134,7 +1134,7 @@ pteroca:
       email_theme:
         help: 'Motyw dla szablonów email. Kontroluje stylizację powiadomień, rejestracji i emaili zakupu.'
       hints:
-        site_logo: 'Własne logo dla panelu i stron logowania. Prześlij PNG, JPG lub SVG. Domyślne jeśli puste.'
+        site_logo: 'Domyślne logo panelu (panel administracyjny, strony logowania). Używane również jako zastępcze dla strony głównej i emaili, jeśli ich dedykowane loga nie są ustawione. Prześlij PNG, JPG lub SVG.'
         site_url: 'Bazowy URL panelu (np. https://panel.example.com). Używany w emailach, SSO i przekierowaniach.'
         site_title: 'Nazwa panelu wyświetlana w kartach przeglądarki, nagłówkach i emailach. Twoja marka dla użytkowników.'
         site_locale: 'Domyślny język interfejsu. Wpływa na wszystkie elementy menu, etykiety i komunikaty systemowe.'

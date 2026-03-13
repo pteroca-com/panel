@@ -1136,7 +1136,7 @@ pteroca:
       email_theme:
         help: 'Tema para modelos de email. Controla o estilo de notificações, registro e emails de compra.'
       hints:
-        site_logo: 'Logo personalizado para painel e páginas de login. Envie PNG, JPG ou SVG. Padrão se vazio.'
+        site_logo: 'Logo padrão do painel (painel administrativo, páginas de login). Também usado como fallback para a página inicial e emails se seus logos específicos não estiverem definidos. Envie PNG, JPG ou SVG.'
         site_url: 'URL base do painel (ex. https://panel.example.com). Usado em emails, SSO e redirecionamentos.'
         site_title: 'Nome do painel exibido em abas do navegador, cabeçalhos e emails. Sua marca visível para todos.'
         site_locale: 'Idioma padrão da interface. Afeta todos os menus, rótulos e mensagens do sistema.'
