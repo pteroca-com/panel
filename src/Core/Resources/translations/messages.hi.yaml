@@ -992,6 +992,11 @@ pteroca:
       warning: चेतावनी
       cancel: 'रद्द करें'
       close: 'बंद करें'
+      version_mismatch_title: 'संस्करण संगतता चेतावनी'
+      version_mismatch_message: 'यह प्लगइन PteroCA <strong>%plugin_version%</strong> के लिए बनाया गया था, लेकिन आप PteroCA <strong>%current_version%</strong> चला रहे हैं। इन संस्करणों के बीच ब्रेकिंग परिवर्तन हो सकते हैं जो प्लगइन कार्यक्षमता को प्रभावित कर सकते हैं।'
+      version_mismatch_risk: 'इस प्लगइन को सक्षम करना आपके अपने जोखिम पर है। इससे त्रुटियाँ या अप्रत्याशित व्यवहार हो सकता है।'
+      enable_anyway: 'फिर भी सक्षम करें'
+      version_mismatch_upload_skipped: 'प्लगइन "%s" v%s सफलतापूर्वक अपलोड किया गया, लेकिन संस्करण संगतता बेमेल के कारण स्वचालित सक्षमता छोड़ दी गई। कृपया संगतता चेतावनी की समीक्षा करने के बाद इसे प्लगइन सूची से मैन्युअल रूप से सक्षम करें।'
     theme:
       theme_management_description: 'विभिन्न संदर्भों के लिए थीम प्रबंधित और कॉन्फ़िगर करें'
       appearance_settings: 'रूप सेटिंग्स'

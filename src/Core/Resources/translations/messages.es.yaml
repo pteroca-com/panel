@@ -992,6 +992,11 @@ pteroca:
       warning: Advertencia
       cancel: Cancelar
       close: Cerrar
+      version_mismatch_title: 'Advertencia de Compatibilidad de Versiones'
+      version_mismatch_message: 'Este complemento fue creado para PteroCA <strong>%plugin_version%</strong>, pero estás utilizando PteroCA <strong>%current_version%</strong>. Es posible que se hayan introducido cambios incompatibles entre estas versiones que podrían afectar la funcionalidad del complemento.'
+      version_mismatch_risk: 'Habilitar este complemento es bajo tu propio riesgo. Puede causar errores o comportamiento inesperado.'
+      enable_anyway: 'Habilitar de todas formas'
+      version_mismatch_upload_skipped: 'El complemento "%s" v%s se subió correctamente, pero la habilitación automática se omitió debido a una incompatibilidad de versiones. Por favor, habilítelo manualmente desde la lista de complementos después de revisar la advertencia de compatibilidad.'
     theme:
       theme_management_description: 'Gestionar y configurar temas para diferentes contextos'
       appearance_settings: 'Configuración de apariencia'

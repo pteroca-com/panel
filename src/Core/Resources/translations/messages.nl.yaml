@@ -992,6 +992,11 @@ pteroca:
       warning: Waarschuwing
       cancel: Annuleren
       close: Sluiten
+      version_mismatch_title: 'Versiecompatibiliteitswaarschuwing'
+      version_mismatch_message: 'Deze plugin is gebouwd voor PteroCA <strong>%plugin_version%</strong>, maar u gebruikt PteroCA <strong>%current_version%</strong>. Er kunnen ingrijpende wijzigingen zijn aangebracht tussen deze versies die de pluginfunctionaliteit kunnen beïnvloeden.'
+      version_mismatch_risk: 'Het inschakelen van deze plugin is op eigen risico. Het kan fouten of onverwacht gedrag veroorzaken.'
+      enable_anyway: 'Toch inschakelen'
+      version_mismatch_upload_skipped: 'Plugin "%s" v%s is succesvol geüpload, maar automatisch inschakelen is overgeslagen vanwege een versiecompatibiliteitsmismatch. Schakel het handmatig in via de pluginlijst nadat u de compatibiliteitswaarschuwing hebt bekeken.'
     theme:
       theme_management_description: "Beheer en configureer thema's voor verschillende contexten"
       appearance_settings: Weergave-instellingen

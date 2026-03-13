@@ -1016,6 +1016,11 @@ pteroca:
       warning: Peringatan
       cancel: Batal
       close: Tutup
+      version_mismatch_title: 'Peringatan Kompatibilitas Versi'
+      version_mismatch_message: 'Plugin ini dibuat untuk PteroCA <strong>%plugin_version%</strong>, tetapi Anda menjalankan PteroCA <strong>%current_version%</strong>. Perubahan yang merusak mungkin telah diperkenalkan antara versi-versi ini yang dapat memengaruhi fungsionalitas plugin.'
+      version_mismatch_risk: 'Mengaktifkan plugin ini adalah risiko Anda sendiri. Ini mungkin menyebabkan kesalahan atau perilaku yang tidak terduga.'
+      enable_anyway: 'Aktifkan Saja'
+      version_mismatch_upload_skipped: 'Plugin "%s" v%s berhasil diunggah, tetapi pengaktifan otomatis dilewati karena ketidakcocokan versi. Harap aktifkan secara manual dari daftar plugin setelah meninjau peringatan kompatibilitas.'
     theme:
       theme_management_description: 'Kelola dan konfigurasikan tema untuk konteks yang berbeda'
       appearance_settings: 'Pengaturan Penampilan'

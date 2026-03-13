@@ -992,6 +992,11 @@ pteroca:
       warning: 警告
       cancel: 取消
       close: 关闭
+      version_mismatch_title: '版本兼容性警告'
+      version_mismatch_message: '此插件是为PteroCA <strong>%plugin_version%</strong>构建的，但您当前运行的是PteroCA <strong>%current_version%</strong>。这些版本之间可能引入了破坏性更改，可能会影响插件功能。'
+      version_mismatch_risk: '启用此插件风险自负。可能会导致错误或意外行为。'
+      enable_anyway: '仍然启用'
+      version_mismatch_upload_skipped: '插件 "%s" v%s 已成功上传，但由于版本兼容性不匹配，自动启用已被跳过。请在查看兼容性警告后，从插件列表手动启用它。'
     theme:
       panel_themes: 面板主题
       landing_themes: 着陆页主题

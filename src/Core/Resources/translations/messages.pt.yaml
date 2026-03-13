@@ -994,6 +994,11 @@ pteroca:
       warning: Aviso
       cancel: Cancelar
       close: Fechar
+      version_mismatch_title: 'Aviso de Compatibilidade de Versão'
+      version_mismatch_message: 'Este plugin foi criado para PteroCA <strong>%plugin_version%</strong>, mas você está usando PteroCA <strong>%current_version%</strong>. Alterações que podem causar incompatibilidade podem ter sido introduzidas entre essas versões e podem afetar a funcionalidade do plugin.'
+      version_mismatch_risk: 'Habilitar este plugin é por sua conta e risco. Pode causar erros ou comportamento inesperado.'
+      enable_anyway: 'Habilitar mesmo assim'
+      version_mismatch_upload_skipped: 'O plugin "%s" v%s foi enviado com sucesso, mas a habilitação automática foi ignorada devido a uma incompatibilidade de versão. Por favor, habilite-o manualmente na lista de plugins após revisar o aviso de compatibilidade.'
     theme:
       theme_management_description: 'Gerencie e configure temas para diferentes contextos'
       appearance_settings: 'Configurações de aparência'

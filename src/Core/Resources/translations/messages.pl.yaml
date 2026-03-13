@@ -992,6 +992,11 @@ pteroca:
       warning: Ostrzeżenie
       cancel: Anuluj
       close: Zamknij
+      version_mismatch_title: 'Ostrzeżenie o zgodności wersji'
+      version_mismatch_message: 'Ta wtyczka została zbudowana dla PteroCA <strong>%plugin_version%</strong>, ale używasz PteroCA <strong>%current_version%</strong>. Między tymi wersjami mogły zostać wprowadzone przełomowe zmiany, które mogą wpływać na funkcjonalność wtyczki.'
+      version_mismatch_risk: 'Włączanie tej wtyczki odbywa się na własne ryzyko. Może to powodować błędy lub nieoczekiwane zachowanie.'
+      enable_anyway: 'Włącz mimo to'
+      version_mismatch_upload_skipped: 'Wtyczka "%s" v%s została przesłana pomyślnie, ale automatyczne włączenie zostało pominięte z powodu niezgodności wersji. Proszę włączyć ją ręcznie z listy wtyczek po zapoznaniu się z ostrzeżeniem o zgodności.'
     theme:
       theme_management_description: 'Zarządzaj i konfiguruj motywy dla różnych kontekstów'
       appearance_settings: 'Ustawienia wyglądu'
