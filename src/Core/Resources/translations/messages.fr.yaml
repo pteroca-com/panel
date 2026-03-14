@@ -1486,6 +1486,9 @@ pteroca:
       not_found: 'Bon non trouvé.'
       expired: 'Le bon a expiré.'
       successfully_applied: 'Bon appliqué avec succès.'
+      successfully_applied_balance_topup: 'Bon appliqué ! Votre compte a été rechargé de %amount% %currency%. Nouveau solde : %newBalance% %currency%.'
+      successfully_applied_server_discount: 'Bon appliqué ! Une réduction de %value%% sera appliquée à votre achat de serveur.'
+      successfully_applied_payment_discount: 'Bon appliqué ! Une réduction de %value%% sera appliquée à votre paiement.'
       max_global_uses_reached: "Nombre maximal d'utilisations atteint."
       already_used: 'Le bon a déjà été utilisé.'
       only_for_new_accounts: 'Le bon est réservé aux nouveaux comptes.'
