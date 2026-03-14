@@ -38,6 +38,8 @@ services:
     volumes:
       - app_var:/app/var
       - app_uploads:/app/public/uploads
+      - app_plugins:/app/plugins
+      - app_themes:/app/themes
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     working_dir: /app
@@ -55,10 +57,9 @@ services:
         echo 'Running migrations...'
         php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
         echo 'Migrations completed successfully!'
-        echo 'Setting up permissions...'
-        mkdir -p /app/var/log /app/var/cache /app/public/uploads
-        chown -R www-data:www-data /app/var /app/public/uploads
-        chmod -R 775 /app/var /app/public/uploads
+        mkdir -p /app/var/log /app/var/cache /app/public/uploads /app/plugins /app/themes
+        chown -R www-data:www-data /app/var /app/public/uploads /app/plugins /app/themes
+        chmod -R 775 /app/var /app/public/uploads /app/plugins /app/themes
         echo 'Starting production server...'
         /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
       "
@@ -70,3 +71,5 @@ volumes:
   db_data_prod:
   app_var:
   app_uploads:
+  app_plugins:
+  app_themes:
