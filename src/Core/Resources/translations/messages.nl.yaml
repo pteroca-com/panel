@@ -1197,6 +1197,8 @@ pteroca:
         telemetry_consent: "Sta het verzenden van anonieme gebruiksgegevens toe om PteroCA te helpen verbeteren. Alleen installatiegebeurtenissen en fouten worden bijgehouden. Er worden geen persoonlijke gegevens, API-sleutels of URL's verzameld."
         custom_head_scripts_landing: 'Aangepaste HTML/JavaScript-code geïnjecteerd in de <head>-sectie van de landingspagina. Gebruik dit voor analytics (Google Analytics, Meta Pixel), aangepaste lettertypen of trackingscripts. WAARSCHUWING: Voeg alleen scripts van vertrouwde bronnen toe om XSS-aanvallen te voorkomen.'
         custom_head_scripts_panel: 'Aangepaste HTML/JavaScript-code geïnjecteerd in de <head>-sectie van het paneel (dashboard, admin). Gebruik dit voor interne analytics, monitoringtools of aangepaste integraties. WAARSCHUWING: Voeg alleen scripts van vertrouwde bronnen toe om XSS-aanvallen te voorkomen.'
+        avatar_max_size: 'Maximale bestandsgrootte voor het uploaden van gebruikersavatars (bijv. 2M, 500K, 5M). Gebruikt het Symfony-grootteformaat.'
+        avatar_allowed_extensions: 'Toegestane MIME-typen voor avatar-uploads, gescheiden door komma''s (bijv. image/jpeg, image/png, image/webp).'
         panel_theme: "Thema voor gebruikerspaneel (dashboard, servers, winkel). Beheert de look van alle admin- en user-facing pagina's."
         landing_theme: 'Thema voor landingspagina (homepage voor bezoekers). Weergegeven aan niet-ingelogde gebruikers op de publieke site.'
         email_theme: 'Thema voor e-mail sjablonen. Beheert de styling van meldingen, registratie en aankoop e-mails.'

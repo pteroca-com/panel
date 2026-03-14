@@ -1251,6 +1251,8 @@ pteroca:
         telemetry_consent: 'Izinkan pengiriman data penggunaan anonim untuk membantu meningkatkan PteroCA. Hanya peristiwa instalasi dan kesalahan yang dilacak. Tidak ada data pribadi, kunci API, atau URL yang dikumpulkan.'
         custom_head_scripts_landing: 'Kode HTML/JavaScript khusus yang disuntikkan ke bagian <head> halaman arahan. Gunakan untuk analytics (Google Analytics, Meta Pixel), font khusus, atau skrip pelacakan. PERINGATAN: Hanya tambahkan skrip dari sumber yang terpercaya untuk mencegah serangan XSS.'
         custom_head_scripts_panel: 'Kode HTML/JavaScript khusus yang disuntikkan ke bagian <head> panel (dashboard, admin). Gunakan untuk analytics internal, tools pemantauan, atau integrasi khusus. PERINGATAN: Hanya tambahkan skrip dari sumber yang terpercaya untuk mencegah serangan XSS.'
+        avatar_max_size: 'Ukuran file maksimum untuk pengunggahan avatar pengguna (mis., 2M, 500K, 5M). Menggunakan format ukuran Symfony.'
+        avatar_allowed_extensions: 'Jenis MIME yang diizinkan untuk pengunggahan avatar, dipisahkan dengan koma (mis., image/jpeg, image/png, image/webp).'
         panel_theme: 'Tema untuk panel pengguna (dasbor, server, toko). Mengontrol tampilan semua halaman admin dan user-facing.'
         landing_theme: 'Tema untuk halaman landing (halaman utama untuk pengunjung). Ditampilkan kepada pengguna yang belum login di situs publik.'
         email_theme: 'Tema untuk template email. Mengontrol gaya pemberitahuan, pendaftaran, dan email pembelian.'
