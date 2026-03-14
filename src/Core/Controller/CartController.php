@@ -44,6 +44,9 @@ use App\Core\Service\Product\LocationService;
 use App\Core\Service\Server\ServerUserVariableService;
 use App\Core\Service\PriceFormatterService;
 use App\Core\Enum\ProductPriceTypeEnum;
+use App\Core\Enum\WidgetContext;
+use App\Core\Service\Widget\WidgetRegistry;
+use App\Core\Event\Widget\WidgetsCollectedEvent;
 
 class CartController extends AbstractController
 {
@@ -183,6 +186,10 @@ class CartController extends AbstractController
             'request' => ['amount' => $amount, 'currency' => $currency], // For backward compatibility with template
         ];
 
+        $viewData = array_merge($viewData, $this->setupWidgets(WidgetContext::CART_TOPUP, [
+            'user' => $this->getUser(), 'amount' => $amount, 'currency' => $currency,
+        ]));
+
         return $this->renderWithEvent(ViewNameEnum::CART_TOPUP, 'panel/cart/topup.html.twig', $viewData, $request);
     }
 
@@ -299,6 +306,10 @@ class CartController extends AbstractController
             'groupedLocations' => $groupedLocations,
             'userRequiredVariablesByEgg' => $userRequiredVariablesByEgg,
         ];
+
+        $viewData = array_merge($viewData, $this->setupWidgets(WidgetContext::CART_CONFIGURE, [
+            'user' => $this->getUser(), 'product' => $product, 'hasSlotPrices' => $hasSlotPrices,
+        ]));
 
         return $this->renderWithEvent(ViewNameEnum::CART_CONFIGURE, 'panel/cart/configure.html.twig', $viewData, $request);
     }
@@ -506,6 +517,10 @@ class CartController extends AbstractController
             'allowAutoRenewal' => $server->getServerProduct()->getAllowAutoRenewal(),
         ];
 
+        $viewData = array_merge($viewData, $this->setupWidgets(WidgetContext::CART_RENEW, [
+            'user' => $this->getUser(), 'server' => $server, 'isOwner' => $isOwner, 'hasSlotPrices' => $hasSlotPrices,
+        ]));
+
         return $this->renderWithEvent(ViewNameEnum::CART_RENEW, 'panel/cart/renew.html.twig', $viewData, $request);
     }
 
@@ -683,6 +698,17 @@ class CartController extends AbstractController
         }
 
         return $product;
+    }
+
+    private function setupWidgets(WidgetContext $context, array $contextData): array
+    {
+        $widgetRegistry = new WidgetRegistry();
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, $context, $contextData));
+        return [
+            'widgetRegistry' => $widgetRegistry,
+            'widgetContext' => $context,
+            'contextData' => $contextData,
+        ];
     }
 
     private function getServerByRequest(Request $request): Server

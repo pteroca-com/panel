@@ -28,6 +28,15 @@
             </div>
         </div>
 
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::TOP'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
+        {% endif %}
+
         {{ form_start(form, {
             'action': path('panel', { routeName: 'cart_renew_buy', 'id': server.id }),
             'method': 'POST',
@@ -284,6 +293,17 @@
                     </div>
                 </div>
             </div>
+
+            {% if widgetRegistry is defined %}
+                <div class="col-12">
+                    {% include '_partials/widget_area.html.twig' with {
+                        'position': constant('App\\Core\\Enum\\WidgetPosition::BOTTOM'),
+                        'widgetContext': widgetContext,
+                        'widgetRegistry': widgetRegistry,
+                        'contextData': contextData
+                    } %}
+                </div>
+            {% endif %}
         {{ form_end(form) }}
     </div>
 

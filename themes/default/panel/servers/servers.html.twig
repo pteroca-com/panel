@@ -33,6 +33,15 @@
             </div>
         </div>
 
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::TOP'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
+        {% endif %}
+
         {% if servers|length > 0 %}
             <div id="cards-view">
                 <div class="row">
@@ -73,6 +82,15 @@
                     {% include 'panel/servers/components/alert.html.twig' %}
                 </div>
             </div>
+        {% endif %}
+
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::BOTTOM'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
         {% endif %}
     </div>
 {% endblock %}

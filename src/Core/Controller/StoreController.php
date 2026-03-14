@@ -15,6 +15,9 @@ use App\Core\Service\StoreService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Core\Enum\WidgetContext;
+use App\Core\Service\Widget\WidgetRegistry;
+use App\Core\Event\Widget\WidgetsCollectedEvent;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreController extends AbstractController
@@ -45,6 +48,11 @@ class StoreController extends AbstractController
             'categories' => $categories,
             'products' => $products,
         ];
+
+        $widgetRegistry = new WidgetRegistry();
+        $contextData = ['user' => $this->getUser()];
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, WidgetContext::STORE_HOME, $contextData));
+        $viewData = array_merge($viewData, compact('widgetRegistry', 'contextData') + ['widgetContext' => WidgetContext::STORE_HOME]);
 
         return $this->renderWithEvent(ViewNameEnum::STORE_INDEX, 'panel/store/index.html.twig', $viewData, $request);
     }
@@ -126,6 +134,11 @@ class StoreController extends AbstractController
             'eggs' => $preparedEggs,
             'groupedLocations' => $groupedLocations,
         ];
+
+        $widgetRegistry = new WidgetRegistry();
+        $contextData = ['user' => $this->getUser(), 'product' => $product];
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, WidgetContext::STORE_PRODUCT, $contextData));
+        $viewData = array_merge($viewData, compact('widgetRegistry', 'contextData') + ['widgetContext' => WidgetContext::STORE_PRODUCT]);
 
         return $this->renderWithEvent(ViewNameEnum::STORE_PRODUCT, 'panel/store/product.html.twig', $viewData, $request);
     }

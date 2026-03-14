@@ -18,6 +18,9 @@ use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Core\Enum\WidgetContext;
+use App\Core\Service\Widget\WidgetRegistry;
+use App\Core\Event\Widget\WidgetsCollectedEvent;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ServerController extends AbstractController
@@ -49,6 +52,11 @@ class ServerController extends AbstractController
         $viewData = [
             'servers' => $servers,
         ];
+
+        $widgetRegistry = new WidgetRegistry();
+        $contextData = ['user' => $this->getUser()];
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, WidgetContext::SERVER_LIST, $contextData));
+        $viewData = array_merge($viewData, compact('widgetRegistry', 'contextData') + ['widgetContext' => WidgetContext::SERVER_LIST]);
 
         return $this->renderWithEvent(ViewNameEnum::SERVERS_LIST, 'panel/servers/servers.html.twig', $viewData, $request);
     }
@@ -141,6 +149,10 @@ class ServerController extends AbstractController
         $visibleTabs = $serverTabRegistry->getVisibleTabs($tabContext);
         $tabAssets = $serverTabRegistry->getTabAssets($visibleTabs);
 
+        $widgetRegistry = new WidgetRegistry();
+        $contextData = ['user' => $this->getUser(), 'server' => $server];
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, WidgetContext::SERVER_DETAIL, $contextData));
+
         return $this->renderWithEvent(
             ViewNameEnum::SERVER_MANAGEMENT,
             'panel/server/server.html.twig',
@@ -153,6 +165,9 @@ class ServerController extends AbstractController
                 'tabContext' => $tabContext,
                 'visibleTabs' => $visibleTabs,
                 'tabAssets' => $tabAssets,
+                'widgetRegistry' => $widgetRegistry,
+                'widgetContext' => WidgetContext::SERVER_DETAIL,
+                'contextData' => $contextData,
             ],
             $request
         );

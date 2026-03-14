@@ -49,6 +49,16 @@
             </div>
         </div>
     </div>
+
+    {% if widgetRegistry is defined %}
+        {% include '_partials/widget_area.html.twig' with {
+            'position': constant('App\\Core\\Enum\\WidgetPosition::TOP'),
+            'widgetContext': widgetContext,
+            'widgetRegistry': widgetRegistry,
+            'contextData': contextData
+        } %}
+    {% endif %}
+
     {% if isAdminView and app.user.email != server.user.email %}
         <div class="container">
             <div class="alert alert-warning" role="alert">
@@ -83,6 +93,15 @@
                 {% endfor %}
             </div>
         </div>
+    {% endif %}
+
+    {% if widgetRegistry is defined %}
+        {% include '_partials/widget_area.html.twig' with {
+            'position': constant('App\\Core\\Enum\\WidgetPosition::BOTTOM'),
+            'widgetContext': widgetContext,
+            'widgetRegistry': widgetRegistry,
+            'contextData': contextData
+        } %}
     {% endif %}
 {% endblock %}
 

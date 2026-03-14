@@ -23,6 +23,15 @@
             </div>
         </div>
 
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::TOP'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
+        {% endif %}
+
         <!-- Banner Section -->
         {% if product.bannerPath %}
             <div class="row mb-4">
@@ -353,6 +362,15 @@
                 </div>
             </div>
         </div>
+
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::BOTTOM'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
+        {% endif %}
     </div>
 
     {% include 'panel/store/components/product_order_calculator.html.twig' %}

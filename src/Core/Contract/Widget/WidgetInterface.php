@@ -103,7 +103,13 @@ interface WidgetInterface
      * Context data structure varies by context:
      * - DASHBOARD: ['user' => UserInterface, ...]
      * - ADMIN_OVERVIEW: ['user' => UserInterface, 'statistics' => array, 'systemInformation' => array, ...]
-     * - SERVER_DETAIL: ['user' => UserInterface, 'server' => ServerInterface, ...]
+     * - SERVER_DETAIL: ['user' => UserInterface, 'server' => Server]
+     * - SERVER_LIST: ['user' => UserInterface]
+     * - CART_CONFIGURE: ['user' => UserInterface, 'product' => Product, 'hasSlotPrices' => bool]
+     * - CART_RENEW: ['user' => UserInterface, 'server' => Server, 'isOwner' => bool, 'hasSlotPrices' => bool]
+     * - CART_TOPUP: ['user' => UserInterface, 'amount' => float, 'currency' => string]
+     * - STORE_HOME: ['user' => UserInterface]
+     * - STORE_PRODUCT: ['user' => UserInterface, 'product' => Product]
      *
      * @param WidgetContext $context Current rendering context
      * @param array $contextData Context-specific data (user, statistics, etc.)

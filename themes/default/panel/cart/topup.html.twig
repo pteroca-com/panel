@@ -28,6 +28,15 @@
             </div>
         </div>
 
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::TOP'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
+        {% endif %}
+
         {{ form_start(form, {
             'action': path('panel', { routeName: 'cart_topup' }),
             'method': 'POST',
@@ -199,6 +208,15 @@
             </div>
         {{ form_rest(form) }}
         {{ form_end(form, {'render_rest': false}) }}
+
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::BOTTOM'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
+        {% endif %}
     </div>
 
     {% include 'components/use_voucher_modal.html.twig' %}
