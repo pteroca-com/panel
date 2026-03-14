@@ -61,4 +61,6 @@ enum SettingEnum: string
     case EMAIL_LOGO = 'site_email_logo';
     case CUSTOM_HEAD_SCRIPTS_LANDING = 'custom_head_scripts_landing';
     case CUSTOM_HEAD_SCRIPTS_PANEL = 'custom_head_scripts_panel';
+    case AVATAR_MAX_SIZE = 'avatar_max_size';
+    case AVATAR_ALLOWED_EXTENSIONS = 'avatar_allowed_extensions';
 }

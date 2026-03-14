@@ -9,8 +9,10 @@ use App\Core\Enum\PermissionEnum;
 use App\Core\Event\User\Account\PterodactylAccountSyncedEvent;
 use App\Core\Event\User\Account\UserAccountUpdateRequestedEvent;
 use App\Core\Event\User\Account\UserAccountUpdatedEvent;
+use App\Core\Enum\SettingEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
+use App\Core\Service\SettingService;
 use App\Core\Trait\CrudFlashMessagesTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -51,6 +53,7 @@ class UserAccountCrudController extends AbstractPanelController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly TranslatorInterface $translator,
         private readonly PterodactylApplicationService $pterodactylApplicationService,
+        private readonly SettingService $settingService,
         PanelCrudService $panelCrudService,
         RequestStack $requestStack,
     ) {
@@ -98,8 +101,12 @@ class UserAccountCrudController extends AbstractPanelController
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
                 ->setRequired(false)
                 ->setFileConstraints(new Image([
-                    'maxSize' => $this->getParameter('avatar_max_size'),
-                    'mimeTypes' => $this->getParameter('avatar_allowed_extensions'),
+                    'maxSize' => $this->settingService->getSetting(SettingEnum::AVATAR_MAX_SIZE->value)
+                        ?? $this->getParameter('avatar_max_size'),
+                    'mimeTypes' => array_map('trim', explode(',',
+                        $this->settingService->getSetting(SettingEnum::AVATAR_ALLOWED_EXTENSIONS->value)
+                            ?? implode(', ', $this->getParameter('avatar_allowed_extensions'))
+                    )),
                 ]))
                 ->setColumns(6),
 

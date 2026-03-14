@@ -1213,6 +1213,8 @@ pteroca:
         telemetry_consent: 'Allow sending anonymous usage data to help improve PteroCA. Only installation events and errors are tracked. No personal data, API keys, or URLs are collected.'
         custom_head_scripts_landing: 'Custom HTML/JavaScript code injected into the <head> section of the landing page. Use for analytics (Google Analytics, Meta Pixel), custom fonts, or tracking scripts. WARNING: Only add scripts from trusted sources to prevent XSS attacks.'
         custom_head_scripts_panel: 'Custom HTML/JavaScript code injected into the <head> section of the panel (dashboard, admin). Use for internal analytics, monitoring tools, or custom integrations. WARNING: Only add scripts from trusted sources to prevent XSS attacks.'
+        avatar_max_size: 'Maximum file size for user avatar uploads (e.g., 2M, 500K, 5M). Uses Symfony size format.'
+        avatar_allowed_extensions: 'Allowed MIME types for avatar uploads, separated by commas (e.g., image/jpeg, image/png, image/webp).'
       template:
         name: 'Template name'
         description: 'Template description'
