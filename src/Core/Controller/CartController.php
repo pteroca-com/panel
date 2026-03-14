@@ -42,6 +42,8 @@ use App\Core\Event\Payment\PaymentGatewaysCollectedEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Core\Service\Product\LocationService;
 use App\Core\Service\Server\ServerUserVariableService;
+use App\Core\Service\PriceFormatterService;
+use App\Core\Enum\ProductPriceTypeEnum;
 
 class CartController extends AbstractController
 {
@@ -56,21 +58,22 @@ class CartController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly LocationService $locationService,
         private readonly ServerUserVariableService $serverUserVariableService,
+        private readonly PriceFormatterService $priceFormatterService,
+        private readonly SettingService $settingService,
     ) {}
 
     #[Route('/cart/topup', name: 'cart_topup', methods: ['GET', 'POST'])]
     #[RequiresVerifiedEmail]
     public function topUpBalance(
         Request $request,
-        SettingService $settingService,
         PaymentService $paymentService,
         PaymentGatewayManager $gatewayManager,
     ): Response
     {
         $this->denyAccessUnlessGranted(PermissionEnum::ACCESS_WALLET->value);
 
-        $currency = $settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
-        $minAmount = (float) ($settingService
+        $currency = $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        $minAmount = (float) ($this->settingService
             ->getSetting(SettingEnum::MINIMUM_TOPUP_AMOUNT->value) ?? '1.00');
 
         if ($request->query->has('amount')) {
@@ -224,10 +227,7 @@ class CartController extends AbstractController
             $eggChoices[$egg['name']] = $egg['id'];
         }
 
-        $priceChoices = [];
-        foreach ($product->getPrices() as $price) {
-            $priceChoices[$price->getId()] = $price->getId();
-        }
+        [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs($product->getPrices());
 
         $initialData = [];
         if (isset($requestData['egg'])) {
@@ -247,6 +247,9 @@ class CartController extends AbstractController
             'product_id' => $product->getId(),
             'eggs' => $eggChoices,
             'prices' => $priceChoices,
+            'price_choice_attrs' => $priceChoiceAttrs,
+            'selected_duration' => isset($requestData['duration']) ? (int) $requestData['duration'] : null,
+            'selected_egg' => isset($requestData['egg']) ? (int) $requestData['egg'] : null,
             'has_slot_prices' => $hasSlotPrices,
             'initial_slots' => isset($requestData['slots']) ? (int) $requestData['slots'] : null,
             'allow_auto_renewal' => $product->getAllowAutoRenewal(),
@@ -333,15 +336,13 @@ class CartController extends AbstractController
                 $eggChoices[$egg['name']] = $egg['id'];
             }
 
-            $priceChoices = [];
-            foreach ($product->getPrices() as $price) {
-                $priceChoices[$price->getId()] = $price->getId();
-            }
+            [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs($product->getPrices());
 
             $form = $this->createForm(ServerOrderType::class, null, [
                 'product_id' => $product->getId(),
                 'eggs' => $eggChoices,
                 'prices' => $priceChoices,
+                'price_choice_attrs' => $priceChoiceAttrs,
                 'has_slot_prices' => $hasSlotPrices,
                 'initial_slots' => null,
                 'allow_auto_renewal' => $product->getAllowAutoRenewal(),
@@ -473,6 +474,10 @@ class CartController extends AbstractController
 
         $purchaseToken = $this->purchaseTokenService->generateToken($this->getUser(), 'renew');
 
+        [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs(
+            $server->getServerProduct()->getPrices()
+        );
+
         $form = $this->createForm(ServerRenewType::class, null, [
             'server_id' => $server->getId(),
             'current_auto_renewal' => $server->isAutoRenewal(),
@@ -480,6 +485,9 @@ class CartController extends AbstractController
             'has_slot_pricing' => $hasSlotPrices,
             'server_slots' => $serverSlots,
             'allow_auto_renewal' => $server->getServerProduct()->getAllowAutoRenewal(),
+            'prices' => $priceChoices,
+            'price_choice_attrs' => $priceChoiceAttrs,
+            'selected_price_id' => $server->getServerProduct()->getSelectedPrice()->getId(),
         ]);
 
         $this->dispatchDataEvent(
@@ -517,19 +525,26 @@ class CartController extends AbstractController
             $server = $this->getServerByRequest($request);
             $isOwner = $server->getUser() === $this->getUser();
 
-            $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
+            $hasSlotPrices = $this->serverSlotPricingService->hasSlotPricing($server);
             $serverSlots = null;
-            if ($hasActiveSlotPricing) {
+            if ($hasSlotPrices) {
                 $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
             }
+
+            [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs(
+                $server->getServerProduct()->getPrices()
+            );
 
             $form = $this->createForm(ServerRenewType::class, null, [
                 'server_id'            => $server->getId(),
                 'current_auto_renewal' => $server->isAutoRenewal(),
                 'is_owner'             => $isOwner,
-                'has_slot_pricing'     => $hasActiveSlotPricing,
+                'has_slot_pricing'     => $hasSlotPrices,
                 'server_slots'         => $serverSlots,
                 'allow_auto_renewal'   => $server->getServerProduct()->getAllowAutoRenewal(),
+                'prices'               => $priceChoices,
+                'price_choice_attrs'   => $priceChoiceAttrs,
+                'selected_price_id'    => $server->getServerProduct()->getSelectedPrice()->getId(),
             ]);
             $form->handleRequest($request);
 
@@ -604,6 +619,59 @@ class CartController extends AbstractController
         }
 
         return $this->redirectToRoute('panel', ['routeName' => 'servers']);
+    }
+
+    /**
+     * Build choices and choice_attr arrays for price ChoiceType fields.
+     *
+     * @return array{0: array<string, int>, 1: array<int, array<string, string>>}
+     */
+    private function buildPriceChoicesAndAttrs(iterable $prices): array
+    {
+        $currency = $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        $choices = [];
+        $choiceAttrs = [];
+
+        foreach ($prices as $price) {
+            $formattedPrice = $this->priceFormatterService->formatPrice($price->getPrice());
+            $type = $price->getType();
+
+            $label = match ($type) {
+                ProductPriceTypeEnum::STATIC => sprintf(
+                    '%d %s - %s %s',
+                    $price->getValue(),
+                    $this->translator->trans('pteroca.product.' . $price->getUnit()->value),
+                    $formattedPrice,
+                    $currency
+                ),
+                ProductPriceTypeEnum::ON_DEMAND => sprintf(
+                    '%s - %s %s/%s',
+                    $this->translator->trans('pteroca.product.on_demand'),
+                    $formattedPrice,
+                    $currency,
+                    $this->translator->trans('pteroca.product.minute_short')
+                ),
+                ProductPriceTypeEnum::SLOT => sprintf(
+                    '%s - %d %s - %s %s/%s',
+                    $this->translator->trans('pteroca.store.slot_pricing'),
+                    $price->getValue(),
+                    $this->translator->trans('pteroca.product.' . $price->getUnit()->value),
+                    $formattedPrice,
+                    $currency,
+                    $this->translator->trans('pteroca.product.slot')
+                ),
+            };
+
+            $choices[$label] = $price->getId();
+            $choiceAttrs[$price->getId()] = [
+                'data-type' => $type->value,
+                'data-value' => (string) $price->getValue(),
+                'data-unit' => $price->getUnit()->value,
+                'data-price' => (string) $price->getPrice(),
+            ];
+        }
+
+        return [$choices, $choiceAttrs];
     }
 
     private function getProductByRequest(Request $request): Product
