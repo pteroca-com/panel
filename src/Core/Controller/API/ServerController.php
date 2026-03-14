@@ -10,7 +10,7 @@ use App\Core\Event\Server\ServerWebsocketTokenRequestedEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\ServerEulaService;
+use App\Core\Service\Server\ServerEulaService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
 use App\Core\Trait\InternalServerApiTrait;
