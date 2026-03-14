@@ -2,6 +2,7 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Attribute\RequiresVerifiedEmail;
 use App\Core\Enum\PermissionEnum;
 use App\Core\Enum\ServerLogActionEnum;
 use App\Core\Enum\ServerPermissionEnum;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[RequiresVerifiedEmail]
 class ServerConfigurationController extends APIAbstractController
 {
     use InternalServerApiTrait;

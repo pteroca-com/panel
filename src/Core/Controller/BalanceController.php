@@ -2,6 +2,7 @@
 
 namespace App\Core\Controller;
 
+use App\Core\Attribute\RequiresVerifiedEmail;
 use App\Core\Enum\PermissionEnum;
 use App\Core\Enum\SettingEnum;
 use App\Core\Enum\ViewNameEnum;
@@ -21,6 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[RequiresVerifiedEmail]
 class BalanceController extends AbstractController
 {
 

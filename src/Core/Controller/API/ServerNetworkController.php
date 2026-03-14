@@ -2,6 +2,7 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Attribute\RequiresVerifiedEmail;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[RequiresVerifiedEmail]
 class ServerNetworkController extends APIAbstractController
 {
     use InternalServerApiTrait;
