@@ -246,6 +246,8 @@ pteroca:
     discount_hint: 'Zniżka zostanie zastosowana tylko do pierwszego cyklu rozliczeniowego.'
     product_order_details: 'Szczegóły produktu i możliwość zamówienia'
     total: Łącznie
+    setup_fee: 'Opłata instalacyjna'
+    includes_setup_fee: 'Zawiera jednorazową opłatę instalacyjną %setupFee% %currency%'
     slot: slot
     slots: Sloty
     processing: Przetwarzanie...
@@ -304,6 +306,8 @@ pteroca:
     description: 'Skonfiguruj swój serwer i przejdź do płatności'
     user_required_variables_title: 'Wymagana Konfiguracja'
     user_required_variables_description: 'Podaj wymagane wartości dla wybranego oprogramowania serwera'
+    setup_fee: 'Opłata instalacyjna'
+    setup_fee_one_time: 'jednorazowa'
   cart_topup:
     title: 'Doładuj swoje konto'
     order: Zamów
@@ -839,6 +843,8 @@ pteroca:
       price_dynamic_only_one_plan: 'Można ustawić tylko jeden plan dynamiczny.'
       price_slot_plan: 'Cena planu slotów'
       price_slot_plan_hint: 'Cena za slot. Po ustawieniu połącz zmienną maksymalnej liczby graczy w Połączeniach produktu dla każdego egg.'
+      setup_fee: 'Opłata instalacyjna'
+      setup_fee_hint: 'Jednorazowa opłata instalacyjna pobierana tylko przy pierwszym zakupie. Pozostaw puste, aby wyłączyć. Ta opłata nie podlega rabatom z kuponów.'
       period: Okres
       unit: Jednostka
       days: Dni
@@ -1135,6 +1141,8 @@ pteroca:
         help: 'Motyw dla szablonów email. Kontroluje stylizację powiadomień, rejestracji i emaili zakupu.'
       hints:
         site_logo: 'Domyślne logo panelu (panel administracyjny, strony logowania). Używane również jako zastępcze dla strony głównej i emaili, jeśli ich dedykowane loga nie są ustawione. Prześlij PNG, JPG lub SVG.'
+        site_landing_logo: 'Niestandardowe logo dla strony głównej. Prześlij PNG, JPG lub SVG. Używa logo panelu, jeśli pole jest puste.'
+        site_email_logo: 'Niestandardowe logo dla emaili. Prześlij PNG, JPG lub SVG. Używa logo panelu, jeśli pole jest puste.'
         site_url: 'Bazowy URL panelu (np. https://panel.example.com). Używany w emailach, SSO i przekierowaniach.'
         site_title: 'Nazwa panelu wyświetlana w kartach przeglądarki, nagłówkach i emailach. Twoja marka dla użytkowników.'
         site_locale: 'Domyślny język interfejsu. Wpływa na wszystkie elementy menu, etykiety i komunikaty systemowe.'

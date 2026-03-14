@@ -238,6 +238,13 @@ class ProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.price_slot_plan_hint'))
                 ->setRequired(true)
                 ->setEntryIsComplex(),
+            FormField::addRow(),
+            NumberField::new('setupFee', $this->translator->trans('pteroca.crud.product.setup_fee'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.setup_fee_hint'))
+                ->setColumns(6)
+                ->setRequired(false)
+                ->hideOnIndex()
+                ->setNumDecimals(2),
             $this->getProductHelpPanel(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))

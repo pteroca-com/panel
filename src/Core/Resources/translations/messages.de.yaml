@@ -246,6 +246,8 @@ pteroca:
     discount_hint: 'Der Rabatt wird nur für den ersten Abrechnungszeitraum angewendet.'
     product_order_details: 'Produktdetails und Bestelloptionen'
     total: Gesamt
+    setup_fee: 'Einrichtungsgebühr'
+    includes_setup_fee: 'Enthält %setupFee% %currency% einmalige Einrichtungsgebühr'
     slot: Slot
     slots: Slots
     processing: Verarbeitung...
@@ -304,6 +306,8 @@ pteroca:
     description: 'Konfigurieren Sie Ihren Server und fahren Sie mit der Zahlung fort'
     user_required_variables_title: 'Erforderliche Konfiguration'
     user_required_variables_description: 'Bitte geben Sie die erforderlichen Werte für die ausgewählte Serversoftware an'
+    setup_fee: 'Einrichtungsgebühr'
+    setup_fee_one_time: 'einmalig'
   cart_topup:
     title: 'Konto aufladen'
     order: Bestellen
@@ -839,6 +843,8 @@ pteroca:
       price_dynamic_only_one_plan: 'Es kann nur ein dynamischer Plan festgelegt werden.'
       price_slot_plan: 'Slot-Plan Preis'
       price_slot_plan_hint: 'Preis pro Slot. Nach dem Setzen verknüpfen Sie die Variable für maximale Spieler in Produktverbindungen für jedes Egg.'
+      setup_fee: 'Einrichtungsgebühr'
+      setup_fee_hint: 'Einmalige Einrichtungsgebühr, die nur beim ersten Kauf erhoben wird. Leer lassen, um zu deaktivieren. Diese Gebühr wird nicht durch Gutscheinrabatte beeinflusst.'
       period: Zeitraum
       unit: Einheit
       days: Tage
@@ -1135,6 +1141,8 @@ pteroca:
         help: 'Theme für E-Mail-Vorlagen. Steuert die Gestaltung von Benachrichtigungs-, Registrierungs- und Kaufe-Mails.'
       hints:
         site_logo: 'Standard-Logo für das Panel (Admin-Dashboard, Anmeldeseiten). Wird auch als Fallback für Landingpage und E-Mails verwendet, wenn deren spezifische Logos nicht gesetzt sind. PNG, JPG oder SVG hochladen.'
+        site_landing_logo: 'Benutzerdefiniertes Logo für die Landingpage. PNG, JPG oder SVG hochladen. Greift auf das Panel-Logo zurück, wenn leer.'
+        site_email_logo: 'Benutzerdefiniertes Logo für E-Mails. PNG, JPG oder SVG hochladen. Greift auf das Panel-Logo zurück, wenn leer.'
         site_url: 'Basis-URL des Panels (z.B. https://panel.example.com). Verwendet in E-Mails, SSO und Weiterleitungen.'
         site_title: 'Panel-Name in Browser-Tabs, Kopfzeilen und E-Mails. Ihre Marke für alle Nutzer sichtbar.'
         site_locale: 'Standardsprache für die Benutzeroberfläche. Beeinflusst alle Menüeinträge, Labels und Systemmeldungen.'

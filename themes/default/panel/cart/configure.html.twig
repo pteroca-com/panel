@@ -272,6 +272,21 @@
                                 </div>
                             </div>
 
+                            <!-- Setup Fee -->
+                            {% if product.setupFee is not null and product.setupFee > 0 %}
+                            <div class="mb-3" id="setup-fee-section">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small>{{ 'pteroca.cart_configuration.setup_fee'|trans }}:</small>
+                                        <div class="small text-muted">{{ 'pteroca.cart_configuration.setup_fee_one_time'|trans }}</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-semibold">{{ product.setupFee|format_price }} {{ get_currency() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
                             <!-- Discount Section -->
                             <div class="mb-3 d-none" id="applied-discount">
                                 <hr class="my-3">
@@ -528,6 +543,7 @@
             }
             {% endif %}
 
+            const setupFee = {{ product.setupFee ?? 0 }};
             let summaryPrice = productPrice
 
             if (appliedDiscountValue && appliedDiscountValue.innerText) {
@@ -591,6 +607,8 @@
             } else {
                 datesElement.style.display = 'none';
             }
+
+            summaryPrice = summaryPrice + setupFee;
 
             document.querySelector('#selected-summary').textContent = `${formatPrice(summaryPrice)} {{ get_currency() }}`
 

@@ -246,6 +246,8 @@ pteroca:
     discount_hint: 'Lo sconto verrà applicato solo al primo ciclo di fatturazione.'
     product_order_details: 'Dettagli del prodotto e opzioni di ordine'
     total: Totale
+    setup_fee: 'Commissione di configurazione'
+    includes_setup_fee: 'Include %setupFee% %currency% commissione di configurazione una tantum'
     slot: slot
     slots: Slot
     processing: Elaborazione...
@@ -304,6 +306,8 @@ pteroca:
     description: 'Configura il tuo server e procedi al pagamento'
     user_required_variables_title: 'Configurazione Richiesta'
     user_required_variables_description: 'Fornire i valori richiesti per il software server selezionato'
+    setup_fee: 'Commissione di configurazione'
+    setup_fee_one_time: 'una tantum'
   cart_topup:
     title: 'Ricarica il tuo conto'
     order: Ordina
@@ -839,6 +843,8 @@ pteroca:
       price_dynamic_only_one_plan: 'È possibile impostare un solo piano dinamico.'
       price_slot_plan: 'Prezzo piano slot'
       price_slot_plan_hint: 'Prezzo per slot. Dopo averlo impostato, collega la variabile per i giocatori massimi nelle Connessioni prodotto per ogni egg.'
+      setup_fee: 'Commissione di configurazione'
+      setup_fee_hint: 'Commissione di configurazione una tantum addebitata solo al primo acquisto. Lascia vuoto per disabilitare. Questa commissione non è influenzata dagli sconti voucher.'
       period: Periodo
       unit: Unità
       days: Giorni
@@ -1135,6 +1141,8 @@ pteroca:
         help: 'Tema per i modelli email. Controlla lo styling delle notifiche, registrazione e email di acquisto.'
       hints:
         site_logo: 'Logo predefinito del pannello (dashboard admin, pagine di login). Usato anche come fallback per la landing page e le email se i loro loghi specifici non sono impostati. Carica PNG, JPG o SVG.'
+        site_landing_logo: 'Logo personalizzato per la pagina di destinazione. Carica PNG, JPG o SVG. Utilizza il logo del pannello se vuoto.'
+        site_email_logo: 'Logo personalizzato per le email. Carica PNG, JPG o SVG. Utilizza il logo del pannello se vuoto.'
         site_url: 'URL base del pannello (es. https://panel.example.com). Usato in email, SSO e redirect.'
         site_title: 'Nome pannello mostrato in schede browser, intestazioni ed email. Il tuo marchio visibile a tutti.'
         site_locale: "Lingua predefinita dell'interfaccia. Influisce su tutti i menu, etichette e messaggi di sistema."

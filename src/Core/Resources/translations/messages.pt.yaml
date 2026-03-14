@@ -246,6 +246,8 @@ pteroca:
     discount_hint: 'O desconto será aplicado apenas ao primeiro ciclo de cobrança.'
     product_order_details: 'Detalhes do produto e opções de pedido'
     total: Total
+    setup_fee: 'Taxa de configuração'
+    includes_setup_fee: 'Inclui %setupFee% %currency% de taxa de configuração única'
     slot: slot
     slots: Slots
     processing: Processando...
@@ -304,6 +306,8 @@ pteroca:
     description: 'Configure seu servidor e prossiga para o pagamento'
     user_required_variables_title: 'Configuração Obrigatória'
     user_required_variables_description: 'Forneça os valores obrigatórios para o software do servidor selecionado'
+    setup_fee: 'Taxa de configuração'
+    setup_fee_one_time: 'única'
   cart_topup:
     title: 'Recarregar sua conta'
     order: Pedir
@@ -843,6 +847,8 @@ pteroca:
       price_dynamic_only_one_plan: 'Você só pode definir um plano de preço dinâmico.'
       price_slot_plan: 'Preço do plano por slot'
       price_slot_plan_hint: 'Preço por slot. Após configurar, vincule a variável para jogadores máximos em Conexões de Produto para cada egg.'
+      setup_fee: 'Taxa de configuração'
+      setup_fee_hint: 'Taxa de configuração única cobrada apenas na primeira compra. Deixe vazio para desativar. Esta taxa não é afetada por descontos de cupons.'
       period: Período
       unit: Unidade
       days: Dias
@@ -1137,6 +1143,8 @@ pteroca:
         help: 'Tema para modelos de email. Controla o estilo de notificações, registro e emails de compra.'
       hints:
         site_logo: 'Logo padrão do painel (painel administrativo, páginas de login). Também usado como fallback para a página inicial e emails se seus logos específicos não estiverem definidos. Envie PNG, JPG ou SVG.'
+        site_landing_logo: 'Logo personalizado para a página inicial. Envie PNG, JPG ou SVG. Usa o logo do painel se estiver vazio.'
+        site_email_logo: 'Logo personalizado para e-mails. Envie PNG, JPG ou SVG. Usa o logo do painel se estiver vazio.'
         site_url: 'URL base do painel (ex. https://panel.example.com). Usado em emails, SSO e redirecionamentos.'
         site_title: 'Nome do painel exibido em abas do navegador, cabeçalhos e emails. Sua marca visível para todos.'
         site_locale: 'Idioma padrão da interface. Afeta todos os menus, rótulos e mensagens do sistema.'

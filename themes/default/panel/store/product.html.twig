@@ -338,6 +338,16 @@
                                 </div>
                             </div>
 
+                            {% if product.setupFee is not null and product.setupFee > 0 %}
+                            <div class="text-muted small mt-2 mb-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                {{ 'pteroca.product.includes_setup_fee'|trans({
+                                    '%setupFee%': product.setupFee|format_price,
+                                    '%currency%': get_currency()
+                                }) }}
+                            </div>
+                            {% endif %}
+
                             <div class="d-grid">
                                 {% if eggs is empty %}
                                     <button type="button" class="btn secondary btn-lg rounded-3 fw-semibold" disabled>

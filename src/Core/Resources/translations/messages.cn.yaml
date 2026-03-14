@@ -246,6 +246,8 @@ pteroca:
     discount_hint: 仅适用于第一个账单周期。
     product_order_details: 产品详情和订购选项
     total: 总计
+    setup_fee: '安装费'
+    includes_setup_fee: '包含 %setupFee% %currency% 一次性安装费'
     slot: 插槽
     slots: 插槽数
     processing: 处理中...
@@ -304,6 +306,8 @@ pteroca:
     description: 配置您的服务器并进行支付
     user_required_variables_title: '必需配置'
     user_required_variables_description: '请为选定的服务器软件提供必需的值'
+    setup_fee: '安装费'
+    setup_fee_one_time: '一次性'
   cart_topup:
     title: 充值你的账户
     order: 订单
@@ -839,6 +843,8 @@ pteroca:
       price_dynamic_only_one_plan: 仅可设置一个动态价格方案。
       price_slot_plan: 插槽计划价格
       price_slot_plan_hint: '每个插槽的价格。设置后，请在每个 Egg 的产品连接中链接用于最大玩家数的变量。'
+      setup_fee: '安装费'
+      setup_fee_hint: '仅在首次购买时收取的一次性安装费。留空以禁用。此费用不受优惠券折扣影响。'
       period: 周期
       unit: 单位
       days: 天
@@ -1138,6 +1144,8 @@ pteroca:
         help: 电子邮件模板的主题。控制通知、注册和购买电子邮件的样式。
       hints:
         site_logo: 面板的默认标志（管理仪表板、登录页面）。当着陆页和邮件未设置专用标志时，也用作后备标志。上传PNG、JPG或SVG。
+        site_landing_logo: '着陆页的自定义标志。上传PNG、JPG或SVG。如果为空，则使用面板标志。'
+        site_email_logo: '电子邮件的自定义标志。上传PNG、JPG或SVG。如果为空，则使用面板标志。'
         site_url: '面板的基础URL（如https://panel.example.com）。用于邮件、SSO和重定向。'
         site_title: 浏览器标签、标题和邮件中显示的面板名称。所有用户可见的品牌。
         site_locale: 界面的默认语言。影响所有菜单项、标签和系统消息。

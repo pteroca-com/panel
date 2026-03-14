@@ -246,6 +246,8 @@ pteroca:
     discount_hint: 'Korting toegepast op de totale prijs'
     product_order_details: 'Productdetails en besteloptie'
     total: Totaal
+    setup_fee: 'Installatiekosten'
+    includes_setup_fee: 'Inclusief %setupFee% %currency% eenmalige installatiekosten'
     slot: slot
     slots: Slots
     processing: Verwerken...
@@ -707,6 +709,8 @@ pteroca:
     description: 'Configureer uw server en ga door naar betaling'
     user_required_variables_title: 'Vereiste Configuratie'
     user_required_variables_description: 'Geef de vereiste waarden voor de geselecteerde serversoftware'
+    setup_fee: 'Installatiekosten'
+    setup_fee_one_time: 'eenmalig'
   cart_topup:
     title: 'Vul je account aan'
     order: Bestellen
@@ -841,6 +845,8 @@ pteroca:
       price_dynamic_only_one_plan: 'U kunt slechts één prijs instellen voor een dynamisch plan.'
       price_slot_plan: 'Slotplan prijs'
       price_slot_plan_hint: 'Prijs per slot. Koppel na het instellen de variabele voor maximale spelers in Productverbindingen voor elk egg.'
+      setup_fee: 'Installatiekosten'
+      setup_fee_hint: 'Eenmalige installatiekosten die alleen bij de eerste aankoop worden berekend. Laat leeg om uit te schakelen. Deze kosten worden niet beïnvloed door voucherkortingen.'
       period: Periode
       unit: Eenheid
       days: Dagen
@@ -1135,6 +1141,8 @@ pteroca:
         help: 'Thema voor e-mail sjablonen. Beheert de styling van meldingen, registratie en aankoop e-mails.'
       hints:
         site_logo: "Standaardlogo voor het paneel (admin dashboard, loginpagina's). Wordt ook gebruikt als terugval voor landingspagina en e-mails als hun specifieke logo's niet zijn ingesteld. Upload PNG, JPG of SVG."
+        site_landing_logo: 'Aangepast logo voor de landingspagina. Upload PNG, JPG of SVG. Valt terug op het paneellogo als dit leeg is.'
+        site_email_logo: 'Aangepast logo voor e-mails. Upload PNG, JPG of SVG. Valt terug op het paneellogo als dit leeg is.'
         site_url: 'Basis-URL van paneel (bijv. https://panel.example.com). Gebruikt in e-mails, SSO en redirects.'
         site_title: 'Paneelnaam weergegeven in browsertabs, koppen en e-mails. Uw merk zichtbaar voor iedereen.'
         site_locale: 'Standaardtaal voor interface. Beïnvloedt alle menu-items, labels en systeemberichten.'

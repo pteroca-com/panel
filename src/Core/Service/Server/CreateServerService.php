@@ -148,7 +148,7 @@ class CreateServerService extends AbstractActionServerService
         $this->eventDispatcher->dispatch($productCreatedEvent);
 
         $oldBalance = $user->getBalance();
-        $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots);
+        $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots, $product->getSetupFee());
         $newBalance = $user->getBalance();
 
         $finalPrice = $oldBalance - $newBalance;
@@ -301,6 +301,7 @@ class CreateServerService extends AbstractActionServerService
             ->setAllowChangeEgg($product->getAllowChangeEgg())
             ->setAllowAutoRenewal($product->getAllowAutoRenewal())
             ->setAllowUserSelectLocation($product->getAllowUserSelectLocation())
+            ->setSetupFee($product->getSetupFee())
             ->setSelectedNodeId($selectedNodeId);
 
         $this->serverProductRepository->save($entityServerProduct);

@@ -246,6 +246,8 @@ pteroca:
     discount_hint: 'El descuento se aplicará solo al primer ciclo de facturación.'
     product_order_details: 'Detalles del producto y opciones de pedido'
     total: Total
+    setup_fee: 'Tarifa de configuración'
+    includes_setup_fee: 'Incluye %setupFee% %currency% de tarifa de configuración única'
     slot: slot
     slots: Slots
     processing: Procesando...
@@ -304,6 +306,8 @@ pteroca:
     description: 'Configura tu servidor y procede con el pago'
     user_required_variables_title: 'Configuración Requerida'
     user_required_variables_description: 'Proporcione los valores requeridos para el software de servidor seleccionado'
+    setup_fee: 'Tarifa de configuración'
+    setup_fee_one_time: 'única'
   cart_topup:
     title: 'Recarga tu cuenta'
     order: Ordenar
@@ -839,6 +843,8 @@ pteroca:
       price_dynamic_only_one_plan: 'Solo puedes establecer un plan de precio dinámico.'
       price_slot_plan: 'Precio del plan por slot'
       price_slot_plan_hint: 'Precio por slot. Después de configurarlo, vincule la variable para jugadores máximos en Conexiones de producto para cada egg.'
+      setup_fee: 'Tarifa de configuración'
+      setup_fee_hint: 'Tarifa de configuración única cobrada solo en la primera compra. Dejar vacío para desactivar. Esta tarifa no está afectada por descuentos de cupones.'
       period: Período
       unit: Unidad
       days: Días
@@ -1135,6 +1141,8 @@ pteroca:
         help: 'Tema para plantillas de email. Controla el estilo de notificaciones, registro y emails de compra.'
       hints:
         site_logo: 'Logo predeterminado del panel (panel de administración, páginas de inicio de sesión). También se usa como respaldo para la página de destino y emails si sus logos específicos no están configurados. Suba PNG, JPG o SVG.'
+        site_landing_logo: 'Logo personalizado para la página de destino. Suba PNG, JPG o SVG. Usa el logo del panel si está vacío.'
+        site_email_logo: 'Logo personalizado para los correos electrónicos. Suba PNG, JPG o SVG. Usa el logo del panel si está vacío.'
         site_url: 'URL base del panel (ej. https://panel.example.com). Usado en emails, SSO y redirecciones.'
         site_title: 'Nombre del panel mostrado en pestañas navegador, encabezados y emails. Su marca visible para todos.'
         site_locale: 'Idioma predeterminado de la interfaz. Afecta todos los menús, etiquetas y mensajes del sistema.'

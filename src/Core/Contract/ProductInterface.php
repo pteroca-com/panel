@@ -53,6 +53,9 @@ interface ProductInterface
     public function getAllowChangeEgg(): bool;
     public function setAllowChangeEgg(bool $allow): self;
 
+    public function getSetupFee(): ?float;
+    public function setSetupFee(?float $setupFee): self;
+
     /**
      * @return Collection<int, ProductPriceInterface>
      */

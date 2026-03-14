@@ -246,6 +246,8 @@ pteroca:
     discount_hint: "La réduction ne s'appliquera qu'au premier cycle de facturation."
     product_order_details: 'Détails du produit et options de commande'
     total: Total
+    setup_fee: 'Frais de configuration'
+    includes_setup_fee: 'Comprend %setupFee% %currency% de frais de configuration uniques'
     slot: emplacement
     slots: Emplacements
     processing: Traitement...
@@ -304,6 +306,8 @@ pteroca:
     description: 'Configurez votre serveur et procédez au paiement'
     user_required_variables_title: 'Configuration Requise'
     user_required_variables_description: 'Veuillez fournir les valeurs requises pour le logiciel serveur sélectionné'
+    setup_fee: 'Frais de configuration'
+    setup_fee_one_time: 'unique'
   cart_topup:
     title: 'Recharger votre compte'
     order: Commander
@@ -841,6 +845,8 @@ pteroca:
       price_dynamic_only_one_plan: 'Vous ne pouvez définir qu’un seul plan de tarification dynamique.'
       price_slot_plan: 'Prix du plan par emplacement'
       price_slot_plan_hint: 'Prix par emplacement. Après l’avoir défini, liez la variable correspondant au nombre maximal de joueurs dans les connexions produit pour chaque egg.'
+      setup_fee: 'Frais de configuration'
+      setup_fee_hint: "Frais de configuration uniques facturés uniquement lors du premier achat. Laisser vide pour désactiver. Ces frais ne sont pas affectés par les remises de coupons."
       period: Période
       unit: Unité
       days: Jours
@@ -1135,6 +1141,8 @@ pteroca:
         help: "Thème pour les modèles d'email. Contrôle le style des notifications, enregistrement et emails d'achat."
       hints:
         site_logo: 'Logo par défaut du panneau (tableau de bord admin, pages de connexion). Également utilisé comme repli pour la page d''accueil et les emails si leurs logos spécifiques ne sont pas définis. Téléchargez PNG, JPG ou SVG.'
+        site_landing_logo: "Logo personnalisé pour la page d'accueil. Téléchargez PNG, JPG ou SVG. Utilise le logo du panneau si vide."
+        site_email_logo: 'Logo personnalisé pour les e-mails. Téléchargez PNG, JPG ou SVG. Utilise le logo du panneau si vide.'
         site_url: 'URL de base du panneau (ex. https://panel.example.com). Utilisée dans emails, SSO et redirections.'
         site_title: 'Nom du panneau affiché dans onglets navigateur, en-têtes et emails. Votre marque visible par tous.'
         site_locale: "Langue par défaut de l'interface. Affecte tous les menus, étiquettes et messages système."

@@ -270,6 +270,8 @@ pteroca:
     discount_hint: 'Diskon hanya akan diterapkan pada siklus penagihan pertama.'
     product_order_details: 'Detail produk dan opsi pemesanan'
     total: Total
+    setup_fee: 'Biaya pengaturan'
+    includes_setup_fee: 'Termasuk %setupFee% %currency% biaya pengaturan satu kali'
     slot: slot
     slots: Slot
     processing: Memproses...
@@ -328,6 +330,8 @@ pteroca:
     description: 'Konfigurasi server Anda dan lanjutkan ke pembayaran'
     user_required_variables_title: 'Konfigurasi yang Diperlukan'
     user_required_variables_description: 'Silakan berikan nilai yang diperlukan untuk perangkat lunak server yang dipilih'
+    setup_fee: 'Biaya pengaturan'
+    setup_fee_one_time: 'satu kali'
   cart_topup:
     title: 'Isi ulang akun Anda'
     order: Pesan
@@ -861,6 +865,8 @@ pteroca:
       price_dynamic_plan_hint: 'Harga produk untuk periode dinamis yang dapat dipilih pengguna sebagai siklus penagihan. Saat server offline, penagihan dijeda.'
       price_slot_plan: 'Harga rencana slot'
       price_slot_plan_hint: 'Harga per slot. Setelah mengatur, tautkan variabel untuk pemain maks di Koneksi Produk untuk setiap egg.'
+      setup_fee: 'Biaya pengaturan'
+      setup_fee_hint: 'Biaya pengaturan satu kali yang dibebankan hanya pada pembelian pertama. Biarkan kosong untuk menonaktifkan. Biaya ini tidak dipengaruhi oleh diskon voucher.'
       price_dynamic_only_one_plan: 'Anda hanya dapat mengatur harga untuk satu rencana dinamis.'
       period: Periode
       unit: Unit
@@ -1199,6 +1205,8 @@ pteroca:
         help: 'Tema untuk template email. Mengontrol gaya pemberitahuan, pendaftaran, dan email pembelian.'
       hints:
         site_logo: 'Logo default untuk panel (dasbor admin, halaman login). Juga digunakan sebagai cadangan untuk halaman arahan dan email jika logo spesifiknya tidak diatur. Unggah PNG, JPG, atau SVG.'
+        site_landing_logo: 'Logo kustom untuk halaman arahan. Unggah PNG, JPG, atau SVG. Menggunakan logo panel jika kosong.'
+        site_email_logo: 'Logo kustom untuk email. Unggah PNG, JPG, atau SVG. Menggunakan logo panel jika kosong.'
         site_url: 'URL dasar panel Anda (mis. https://panel.example.com). Digunakan dalam email, SSO, dan redirect.'
         site_title: 'Nama panel ditampilkan di tab browser, header, dan email. Merek Anda terlihat semua pengguna.'
         site_locale: 'Bahasa default untuk antarmuka. Mempengaruhi semua item menu, label, dan pesan sistem.'
