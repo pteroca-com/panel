@@ -1,0 +1,25 @@
+/**
+ * PteroCA shared dark mode — Bootstrap variable overrides when data-bs-theme="dark".
+ * Load this when a theme has "forceDarkMode": true so .bg-light, .card, body, etc. stay dark
+ * without each theme redefining every override.
+ */
+[data-bs-theme="dark"] {
+  --bs-body-bg: #0d0d0d;
+  --bs-body-color: #dee2e6;
+  --bs-light-rgb: 33, 37, 41;
+  --bs-card-bg: #212529;
+  --bs-card-color: #dee2e6;
+  --bs-border-color: rgba(255, 255, 255, 0.15);
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+}
+
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .card .card-body {
+  background-color: var(--bs-card-bg) !important;
+  color: var(--bs-card-color);
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme="dark"] .bg-light {
+  background-color: rgba(33, 37, 41, 1) !important;
+}

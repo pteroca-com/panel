@@ -36,7 +36,6 @@ use App\Core\Trait\GetUserTrait;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -157,8 +156,10 @@ class DashboardController extends AbstractDashboardController
         $disableDarkMode = !$currentTemplateOptions->isSupportDarkMode()
             || $this->settingService->getSetting(SettingEnum::THEME_DISABLE_DARK_MODE->value);
         $defaultMode = $disableDarkMode
-            ? ColorScheme::LIGHT
-            : $this->settingService->getSetting(SettingEnum::THEME_DEFAULT_MODE->value);
+            ? 'light'
+            : $this->normalizeColorSchemeSetting(
+                $this->settingService->getSetting(SettingEnum::THEME_DEFAULT_MODE->value)
+            );
 
         return Dashboard::new()
             ->setTitle($logo)
@@ -253,5 +254,21 @@ class DashboardController extends AbstractDashboardController
             'crudAction' => 'index',
             'crudControllerFqcn' => $crudFqcn,
         ]);
+    }
+
+    /**
+     * Normalise theme_default_mode setting to a valid value for setDefaultColorScheme.
+     * Accepts only "light", "dark", "auto" (case-insensitive); defaults to light when invalid.
+     *
+     * @return 'light'|'dark'|'auto'
+     */
+    private function normalizeColorSchemeSetting(?string $value): string
+    {
+        $normalized = strtolower(trim((string) $value));
+        return match ($normalized) {
+            'dark' => 'dark',
+            'auto' => 'auto',
+            default => 'light',
+        };
     }
 }

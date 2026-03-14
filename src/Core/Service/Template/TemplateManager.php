@@ -32,6 +32,7 @@ class TemplateManager
         return new TemplateOptionsDTO(
             $this->currentTemplateMetadata['options']['supportDarkMode'] ?? false,
             $this->currentTemplateMetadata['options']['supportCustomColors'] ?? false,
+            $this->currentTemplateMetadata['options']['forceDarkMode'] ?? false,
         );
     }
 

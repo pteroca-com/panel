@@ -43,6 +43,8 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
 {
     use CrudFlashMessagesTrait;
 
+    private const ACCEPT_ALL_PATTERN = '#^.*$#';
+
     protected bool $useConventionBasedPermissions = false;
 
     protected ?Setting $currentEntity = null;
@@ -173,6 +175,17 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 ->hideOnIndex();
         }
 
+        $fields[] = TextField::new('validationPattern', $this->translator->trans('pteroca.crud.setting.validation_pattern'))
+            ->setHelp($this->translator->trans('pteroca.crud.setting.validation_pattern_help'))
+            ->setRequired(false)
+            ->setColumns(6)
+            ->hideOnIndex();
+        $fields[] = TextField::new('validationNormalizer', $this->translator->trans('pteroca.crud.setting.validation_normalizer'))
+            ->setHelp($this->translator->trans('pteroca.crud.setting.validation_normalizer_help'))
+            ->setRequired(false)
+            ->setColumns(6)
+            ->hideOnIndex();
+
         $fields[] = ChoiceField::new('context', $this->translator->trans('pteroca.crud.setting.context'))
                 ->setChoices(SettingContextEnum::getValues())
                 ->setRequired(true)
@@ -280,6 +293,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     {
         try {
             $this->handleSetAsEmpty($entityInstance);
+            $this->normalizeAndValidateSettingValue($entityInstance);
             $this->validateSettingValue($entityInstance);
             $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
             parent::persistEntity($entityManager, $entityInstance);
@@ -295,6 +309,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     {
         try {
             $this->handleSetAsEmpty($entityInstance);
+            $this->normalizeAndValidateSettingValue($entityInstance);
             $this->validateSettingValue($entityInstance);
             $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
             parent::updateEntity($entityManager, $entityInstance);
@@ -373,6 +388,48 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         }
 
         return $this->settingOptionRepository->getOptionsForSetting($settingName);
+    }
+
+    /**
+     * Apply normaliser from entity (if set) and validate value against entity's validation_pattern.
+     * When pattern is null/empty, use accept-all pattern so any value passes.
+     */
+    private function normalizeAndValidateSettingValue(Setting $setting): void
+    {
+        $value = $setting->getValue();
+        $normalizerName = $setting->getValidationNormalizer();
+        if ($normalizerName !== null && $normalizerName !== '') {
+            $value = $this->applyNormalizer((string) $value, trim($normalizerName));
+            $setting->setValue($value);
+        }
+        $pattern = $setting->getValidationPattern();
+        if ($pattern === null || trim($pattern) === '') {
+            $pattern = self::ACCEPT_ALL_PATTERN;
+        }
+        $valueToCheck = $setting->getValue() ?? '';
+        if (!preg_match($pattern, $valueToCheck)) {
+            throw new \InvalidArgumentException(
+                $this->translator->trans('pteroca.crud.setting.validation_pattern_mismatch')
+            );
+        }
+    }
+
+    /**
+     * Apply a known normaliser by name (e.g. strtolower, trim). Comma-separated names applied in order.
+     */
+    private function applyNormalizer(string $value, string $normalizerName): string
+    {
+        $names = array_map('trim', explode(',', $normalizerName));
+        $normalizers = [
+            'strtolower' => fn (string $v): string => strtolower($v),
+            'trim' => fn (string $v): string => trim($v),
+        ];
+        foreach ($names as $name) {
+            if (isset($normalizers[$name])) {
+                $value = $normalizers[$name]($value);
+            }
+        }
+        return $value;
     }
 
     private function validateSettingValue(Setting $setting): void

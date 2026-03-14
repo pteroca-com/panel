@@ -3,7 +3,7 @@
         <div class="card-header">
             <div class="d-flex align-items-center">
                 <i class="fas fa-bullhorn me-2"></i>
-                <h5 class="mb-0 fw-semibold">{{ motdTitle|raw }}</h5>
+                <h5 class="mb-0 fw-semibold">{{ motdTitle }}</h5>
             </div>
         </div>
         <div class="card-body p-4">
@@ -12,7 +12,7 @@
                     <i class="fas fa-info-circle motd-icon" style="color: var(--stripe-blue-600);"></i>
                 </div>
                 <div class="flex-grow-1 motd-message" style="color: var(--stripe-gray-700);">
-                    {{ motdMessage|raw }}
+                    {{ motdMessage }}
                 </div>
             </div>
         </div>

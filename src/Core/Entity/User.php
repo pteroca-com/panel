@@ -40,7 +40,7 @@ class User extends AbstractEntity implements UserInterface
     private array $roles = [];
 
     #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
-    private float $balance = 0;
+    private string $balance = '0.00';
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
@@ -193,12 +193,12 @@ class User extends AbstractEntity implements UserInterface
 
     public function getBalance(): float
     {
-        return $this->balance;
+        return (float) $this->balance;
     }
 
     public function setBalance(float $balance): static
     {
-        $this->balance = $balance;
+        $this->balance = (string) $balance;
 
         return $this;
     }

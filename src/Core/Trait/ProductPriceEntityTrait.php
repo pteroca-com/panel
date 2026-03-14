@@ -24,7 +24,7 @@ trait ProductPriceEntityTrait
     private ProductPriceUnitEnum $unit;
 
     #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
-    private float $price;
+    private string $price = '0.00';
 
     #[ORM\Column(type: "datetime", nullable: true)]
     private ?DateTime $deletedAt = null;
@@ -69,12 +69,12 @@ trait ProductPriceEntityTrait
 
     public function getPrice(): float
     {
-        return $this->price;
+        return (float) $this->price;
     }
 
     public function setPrice(float $price): self
     {
-        $this->price = $price;
+        $this->price = (string) $price;
         return $this;
     }
 
@@ -101,7 +101,7 @@ trait ProductPriceEntityTrait
             '%d %s: %.2f',
             $this->value,
             $unit,
-            $this->price,
+            (float) $this->price,
         );
     }
 }

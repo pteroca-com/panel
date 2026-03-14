@@ -28,7 +28,7 @@ class Log extends AbstractEntity
     #[ORM\Column(type: "datetime")]
     private DateTimeInterface $createdAt;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'logs')]
     #[ORM\JoinColumn(nullable: false)]
     private UserInterface $user;
 

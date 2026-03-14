@@ -31,6 +31,12 @@ class Setting extends AbstractEntity
     #[ORM\Column(type: "boolean", options: ["default" => false])]
     private bool $nullable = false;
 
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $validationPattern = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $validationNormalizer = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -99,6 +105,28 @@ class Setting extends AbstractEntity
     public function setNullable(bool $nullable): self
     {
         $this->nullable = $nullable;
+        return $this;
+    }
+
+    public function getValidationPattern(): ?string
+    {
+        return $this->validationPattern;
+    }
+
+    public function setValidationPattern(?string $validationPattern): self
+    {
+        $this->validationPattern = $validationPattern;
+        return $this;
+    }
+
+    public function getValidationNormalizer(): ?string
+    {
+        return $this->validationNormalizer;
+    }
+
+    public function setValidationNormalizer(?string $validationNormalizer): self
+    {
+        $this->validationNormalizer = $validationNormalizer;
         return $this;
     }
 
