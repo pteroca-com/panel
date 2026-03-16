@@ -43,7 +43,7 @@
                                         {% set lowestPriceObj = product.lowestPriceObject %}
                                         {% if lowestPriceObj %}
                                             {% if lowestPriceObj.type.value == 'static' %}
-                                                <span class="h5 text-primary">{{ lowestPriceObj.price|format_price }} {{ get_currency() }}/{{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</span>
+                                                <span class="h5 text-primary">{{ lowestPriceObj.price|format_price }} {{ get_currency() }}/{{ lowestPriceObj.value }} {{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</span>
                                             {% elseif lowestPriceObj.type.value == 'on_demand' %}
                                                 <span class="h5 text-primary">{{ lowestPriceObj.price|format_price }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}</span>
                                             {% elseif lowestPriceObj.type.value == 'slot' %}
