@@ -16,6 +16,8 @@ use App\Core\Service\Pterodactyl\PterodactylRedirectService;
 use App\Core\Service\Tab\ServerTabRegistry;
 use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Core\Enum\WidgetContext;
@@ -68,6 +70,7 @@ class ServerController extends AbstractController
         ServerDataService $serverDataService,
         ServerTabRegistry $serverTabRegistry,
         PterodactylRedirectService $pterodactylRedirectService,
+        LoggerInterface $logger,
     ): Response
     {
         $this->checkPermission();
@@ -101,7 +104,26 @@ class ServerController extends AbstractController
             ]
         );
 
-        $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
+        try {
+            $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
+        } catch (Exception $exception) {
+            $logger->error('Failed to load server data from Pterodactyl', [
+                'server_id' => $server->getId(),
+                'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                'error' => $exception->getMessage(),
+            ]);
+            return $this->renderWithEvent(
+                ViewNameEnum::SERVER_MANAGEMENT,
+                'panel/server/server.html.twig',
+                [
+                    'server' => $server,
+                    'serverData' => null,
+                    'connectionError' => true,
+                ],
+                $request
+            );
+        }
+
         $isAdminView = $this->isGranted(PermissionEnum::ACCESS_SERVERS->value);
         $isOwner = $server->getUser() === $this->getUser();
 

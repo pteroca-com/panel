@@ -456,6 +456,7 @@ pteroca:
     data_validation_error: 'Error during validation. Please check if all rules are met.'
     enable_auto_renewal: 'Enable auto-renewal for this server'
     auto_renewal_tooltip: 'If enabled, the server will be automatically renewed for the selected period. The payment will be made from your account balance.'
+    connection_error: 'Unable to connect to the game server panel. Please try again later or contact the administrator.'
     no_backups: 'There are no backups for this server yet.'
     create_backup: 'Create backup'
     backup_name: 'Backup name'

@@ -77,6 +77,7 @@ class ServerDataService
                     'error' => $exception->getMessage(),
                     'trace' => $exception->getTraceAsString()
                 ]);
+                $allocatedPorts = [];
             }
         }
 
@@ -152,6 +153,7 @@ class ServerDataService
                     'error' => $exception->getMessage(),
                     'trace' => $exception->getTraceAsString()
                 ]);
+                $serverBackups = [];
             }
         }
 
@@ -168,6 +170,7 @@ class ServerDataService
                     'error' => $exception->getMessage(),
                     'trace' => $exception->getTraceAsString()
                 ]);
+                $subusers = [];
             }
         }
 
@@ -188,6 +191,7 @@ class ServerDataService
                         'error' => $exception->getMessage(),
                         'trace' => $exception->getTraceAsString()
                     ]);
+                    $pterodactylActivityLogs = [];
                 }
             }
 
@@ -210,6 +214,7 @@ class ServerDataService
                     'error' => $exception->getMessage(),
                     'trace' => $exception->getTraceAsString()
                 ]);
+                $serverSchedules = [];
             }
         }
 
