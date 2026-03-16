@@ -382,14 +382,14 @@ readonly class PluginManager
                 true
             );
             if ($implementsInterface) {
-                $interfaceProductCode = (new $bootstrapClass())->getMarketplaceProductCode();
+                $interfaceProductCode = $this->getProductCodeWithoutConstructor($bootstrapClass);
             }
         }
 
         if (!$implementsInterface) {
             $scannedClass = $this->findLicensableClassInSource($plugin);
             if ($scannedClass !== null) {
-                $interfaceProductCode = (new $scannedClass())->getMarketplaceProductCode();
+                $interfaceProductCode = $this->getProductCodeWithoutConstructor($scannedClass);
                 $implementsInterface = true;
                 $this->logger->warning('PluginLicensableInterface detected by source scan but not declared in bootstrap_class', [
                     'plugin' => $plugin->getName(),
@@ -1056,6 +1056,13 @@ readonly class PluginManager
      *
      * @return class-string|null Fully qualified class name, or null if none found
      */
+    private function getProductCodeWithoutConstructor(string $className): ?string
+    {
+        $ref = new \ReflectionClass($className);
+        $instance = $ref->newInstanceWithoutConstructor();
+        return $instance->getMarketplaceProductCode();
+    }
+
     private function findLicensableClassInSource(Plugin $plugin): ?string
     {
         $pluginName = $plugin->getName();

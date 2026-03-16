@@ -57,8 +57,9 @@ RUN if [ "$APP_ENV" = "dev" ]; then \
 COPY . .
 
 # Rebuild autoload with full classmap (now that src/ is available)
+# Dev uses --optimize only (not authoritative) so bind-mounted new classes are found via PSR-4 fallback
 RUN if [ "$APP_ENV" = "dev" ]; then \
-        composer dump-autoload --optimize --classmap-authoritative; \
+        composer dump-autoload --optimize; \
     else \
         composer dump-autoload --optimize --no-dev --classmap-authoritative; \
     fi
