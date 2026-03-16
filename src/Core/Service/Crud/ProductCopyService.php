@@ -47,6 +47,7 @@ readonly class ProductCopyService
         $copiedProduct = new Product();
         $copiedProduct->setName($originalProduct->getName() . ' (Copy)');
         $copiedProduct->setDescription($originalProduct->getDescription());
+        $copiedProduct->setShortDescription($originalProduct->getShortDescription());
         $copiedProduct->setIsActive(false);
         $copiedProduct->setCategory($originalProduct->getCategory());
 
