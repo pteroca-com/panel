@@ -3,7 +3,6 @@
 namespace App\Core\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,14 +31,6 @@ class PluginUploadFormType extends AbstractType
                         ],
                         'mimeTypesMessage' => 'pteroca.plugin.upload.invalid_mime_type',
                     ]),
-                ],
-            ])
-            ->add('enableAfterUpload', CheckboxType::class, [
-                'label' => 'pteroca.plugin.upload.enable_after_upload',
-                'required' => false,
-                'data' => false,
-                'attr' => [
-                    'class' => 'form-check-input',
                 ],
             ])
             ->add('submit', SubmitType::class, [

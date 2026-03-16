@@ -773,12 +773,11 @@ class PluginCrudController extends AbstractPanelController
 
         try {
             $file = $form->get('pluginFile')->getData();
-            $enableAfterUpload = $form->get('enableAfterUpload')->getData();
 
             $this->dispatchDataEvent(
                 PluginUploadRequestedEvent::class,
                 $request,
-                [$file->getClientOriginalName(), $enableAfterUpload]
+                [$file->getClientOriginalName(), false]
             );
 
             // Upload plugin
@@ -803,60 +802,30 @@ class PluginCrudController extends AbstractPanelController
                 [$plugin->getName(), $plugin->getVersion(), !empty($securityIssues)]
             );
 
-            // Handle plugin state based on "enable immediately" checkbox
-            if ($enableAfterUpload) {
-                // Check for version mismatch — skip auto-enable and warn user
-                $pluginMinVersion = $plugin->getPterocaMinVersion();
-                if ($pluginMinVersion && $this->manifestValidator->hasVersionMismatchWarning($pluginMinVersion)) {
-                    $this->addFlash('warning', sprintf(
-                        $this->translator->trans('pteroca.crud.plugin.version_mismatch_upload_skipped'),
-                        $plugin->getDisplayName(),
-                        $plugin->getVersion()
-                    ));
-                } else {
-                    try {
-                        $this->pluginManager->enablePlugin($plugin);
-
-                        $this->addFlash('success', sprintf(
-                            $this->translator->trans('pteroca.plugin.upload.success_enabled'),
-                            $plugin->getDisplayName(),
-                            $plugin->getVersion()
-                        ));
-                    } catch (Exception $e) {
-                        $this->addFlash('warning', sprintf(
-                            $this->translator->trans('pteroca.plugin.upload.uploaded_but_failed_to_enable'),
-                            $plugin->getDisplayName(),
-                            $e->getMessage()
-                        ));
-                    }
+            // If plugin was previously enabled (e.g., re-upload after folder deletion), disable it
+            if ($plugin->getState() === PluginStateEnum::ENABLED) {
+                try {
+                    $this->pluginManager->disablePlugin($plugin);
+                } catch (Exception) {
+                    // If disabling fails (e.g., due to dependencies), continue
                 }
-            } else {
-                // If plugin was previously enabled (e.g., re-upload after folder deletion), disable it
-                if ($plugin->getState() === PluginStateEnum::ENABLED) {
-                    try {
-                        $this->pluginManager->disablePlugin($plugin);
-                    } catch (Exception) {
-                        // If disabling fails (e.g., due to dependencies), continue
-                        // Plugin will stay enabled, user can manually disable it later
-                    }
-                }
-
-                // Show success message with security warnings if any
-                $warningMessage = sprintf(
-                    $this->translator->trans('pteroca.plugin.upload.success'),
-                    $plugin->getDisplayName(),
-                    $plugin->getVersion()
-                );
-
-                if (!empty($securityIssues)) {
-                    $highIssues = array_filter($securityIssues, fn($i) => $i['severity'] === 'HIGH');
-                    if (!empty($highIssues)) {
-                        $warningMessage .= ' ' . $this->translator->trans('pteroca.plugin.upload.security_warnings_detected');
-                    }
-                }
-
-                $this->addFlash('success', $warningMessage);
             }
+
+            // Show success message with security warnings if any
+            $warningMessage = sprintf(
+                $this->translator->trans('pteroca.plugin.upload.success'),
+                $plugin->getDisplayName(),
+                $plugin->getVersion()
+            );
+
+            if (!empty($securityIssues)) {
+                $highIssues = array_filter($securityIssues, fn($i) => $i['severity'] === 'HIGH');
+                if (!empty($highIssues)) {
+                    $warningMessage .= ' ' . $this->translator->trans('pteroca.plugin.upload.security_warnings_detected');
+                }
+            }
+
+            $this->addFlash('success', $warningMessage);
 
         } catch (Exception $e) {
             $this->dispatchDataEvent(
