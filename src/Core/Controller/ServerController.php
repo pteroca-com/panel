@@ -39,8 +39,8 @@ class ServerController extends AbstractController
 
         $imagePath = $this->getParameter('products_base_path') . '/';
         $servers = array_map(function (Server $server) use ($imagePath) {
-            if (!empty($server->getServerProduct()->getOriginalProduct()?->getImagePath())) {
-                $server->setImagePath($imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath());
+            if (!empty($server->getServerProduct()?->getOriginalProduct()?->getImagePath())) {
+                $server->setImagePath($imagePath . $server->getServerProduct()?->getOriginalProduct()?->getImagePath());
             }
             return $server;
         }, $serverService->getServersWithAccess($this->getUser()));
