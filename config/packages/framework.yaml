@@ -6,6 +6,8 @@ framework:
         cookie_secure: auto
         cookie_samesite: lax
         cookie_domain: null
+        cookie_lifetime: 604800
+        gc_maxlifetime: 604800
 
     default_locale: en
     translator:
