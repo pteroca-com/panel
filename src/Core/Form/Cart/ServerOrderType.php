@@ -59,13 +59,10 @@ class ServerOrderType extends AbstractType
             ])
             ->add('server-name', TextType::class, [
                 'label' => 'pteroca.store.server_name',
-                'required' => true,
+                'required' => false,
                 'constraints' => [
-                    new Assert\NotBlank(message: 'pteroca.store.server_name_required'),
                     new Assert\Length(
-                        min: 3,
                         max: 50,
-                        minMessage: 'pteroca.store.server_name_too_short',
                         maxMessage: 'pteroca.store.server_name_too_long'
                     ),
                 ],

@@ -418,6 +418,8 @@ pteroca:
     data_updated_successfully: 数据已成功更新。
     data_update_error: 更新数据时出错。
     server_name_required: 服务器名称是必需的。
+    server_name_too_long: '服务器名称不能超过 {{ limit }} 个字符。'
+    enter_server_name: '输入服务器名称'
     are_you_sure: 你确定要这样做吗？
     suspended_expired_hint: '由于未续订，此服务器已于 {{ expireDate }} 被暂停。要恢复服务器，请在配置选项卡中续订。'
     suspended_hint: 此服务器已被暂停。

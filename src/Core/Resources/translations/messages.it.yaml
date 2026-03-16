@@ -418,6 +418,8 @@ pteroca:
     data_updated_successfully: 'Dati aggiornati con successo.'
     data_update_error: "Si è verificato un errore durante l'aggiornamento dei dati."
     server_name_required: 'Il nome del server è obbligatorio.'
+    server_name_too_long: 'Il nome del server non può superare {{ limit }} caratteri.'
+    enter_server_name: 'Inserisci il nome del server'
     are_you_sure: 'Sei sicuro di volerlo fare?'
     suspended_expired_hint: 'Questo server è stato sospeso il {{ expireDate }} perché non è stato rinnovato. Per ripristinare il server, rinnovalo nella scheda di configurazione.'
     suspended_hint: 'Questo server è stato sospeso.'

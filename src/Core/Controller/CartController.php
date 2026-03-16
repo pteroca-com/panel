@@ -371,7 +371,7 @@ class CartController extends AbstractController
             $formData = $form->getData();
             $eggId = $form->get('egg')->getData();
             $priceId = $form->get('duration')->getData();
-            $serverName = $formData['server-name'];
+            $serverName = !empty($formData['server-name']) ? $formData['server-name'] : $product->getName();
             $autoRenewal = $formData['auto-renewal'] ?? false;
             $slots = $formData['slots'] ?? null;
             $voucher = $formData['voucher'] ?? '';

@@ -387,6 +387,8 @@ pteroca:
     data_updated_successfully: 'Gegevens zijn succesvol bijgewerkt.'
     data_update_error: 'Fout opgetreden tijdens het bijwerken van de gegevens.'
     server_name_required: 'Servernaam is vereist.'
+    server_name_too_long: 'De servernaam mag niet meer dan {{ limit }} tekens bevatten.'
+    enter_server_name: 'Servernaam invoeren'
     are_you_sure: 'Weet u zeker dat u dit wilt doen?'
     suspended_expired_hint: 'Deze server is op {{ expireDate }} opgeschort omdat deze niet is verlengd. Om de server te herstellen, verlengt u deze in het configuratie tabblad.'
     suspended_hint: 'Deze server is opgeschort.'

@@ -446,6 +446,8 @@ pteroca:
     data_updated_successfully: 'Data telah berhasil diperbarui.'
     data_update_error: 'Terjadi kesalahan saat memperbarui data.'
     server_name_required: 'Nama server diperlukan.'
+    server_name_too_long: 'Nama server tidak boleh melebihi {{ limit }} karakter.'
+    enter_server_name: 'Masukkan nama server'
     are_you_sure: 'Apakah Anda yakin ingin melakukan ini?'
     suspended_expired_hint: 'Server ini telah ditangguhkan pada {{ expireDate }} karena tidak diperpanjang. Untuk memulihkan server, perpanjang di tab konfigurasi.'
     suspended_hint: 'Server ini telah ditangguhkan.'
