@@ -14,6 +14,7 @@ pteroca:
     back: 'Retour au panneau'
     email_not_verified: 'Votre adresse e-mail n’a pas encore été vérifiée. Vérifiez votre boîte de réception.'
     pterodactyl_error: 'Une erreur est survenue lors de la communication avec le panneau Pterodactyl.'
+    pterodactyl_account_not_synchronized: "Votre compte n'est pas correctement synchronisé avec le panneau du serveur de jeux. Certaines fonctionnalités peuvent ne pas fonctionner correctement. Veuillez contacter l'administrateur."
     dont_have_permission: 'Vous n’avez pas la permission de faire cela.'
     experimental_feature: 'Cette fonctionnalité est expérimentale et pourrait ne pas fonctionner correctement.'
     or_resend_verification_email: "ou cliquez ici pour renvoyer l'e-mail de vérification."
@@ -262,6 +263,7 @@ pteroca:
     not_enough_funds: 'Vous n’avez pas assez de fonds sur votre compte.'
     successful_purchase: 'Le serveur a été acheté avec succès.'
     error_during_creating_server: 'Erreur lors de la création du serveur'
+    pterodactyl_account_not_synchronized: "Votre compte n'est pas synchronisé avec le panneau du serveur de jeux. Veuillez contacter l'administrateur pour résoudre ce problème avant de commander un serveur."
     no_categories: 'Aucune catégorie n’a encore été ajoutée à la boutique.'
     no_products: 'Il n’y a pas encore de produits dans cette catégorie.'
     price_not_found: 'Prix introuvable'
@@ -440,6 +442,7 @@ pteroca:
     data_validation_error: 'Erreur lors de la validation. Veuillez vérifier que toutes les règles sont respectées.'
     enable_auto_renewal: 'Activer le renouvellement automatique pour ce serveur'
     auto_renewal_tooltip: 'Si activé, le serveur sera automatiquement renouvelé pour la période sélectionnée. Le paiement sera effectué depuis le solde de votre compte.'
+    connection_error: "Impossible de se connecter au panneau du serveur de jeux. Veuillez réessayer plus tard ou contacter l'administrateur."
     no_backups: "Il n'y a pas encore de sauvegardes pour ce serveur."
     create_backup: 'Créer une sauvegarde'
     backup_name: 'Nom de la sauvegarde'

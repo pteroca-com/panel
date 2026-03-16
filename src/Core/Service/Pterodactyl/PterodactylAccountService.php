@@ -83,6 +83,11 @@ class PterodactylAccountService
         }
     }
 
+    public function isAccountSynchronized(UserInterface $user): bool
+    {
+        return $user->getPterodactylUserId() !== null && $user->getPterodactylUserId() > 0;
+    }
+
     public function deletePterodactylAccount(UserInterface $user): void
     {
         $this->pterodactylApplicationService

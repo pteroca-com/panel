@@ -14,6 +14,7 @@ pteroca:
     back: 'Zurück zum Panel'
     email_not_verified: 'Ihre E-Mail-Adresse wurde noch nicht verifiziert. Überprüfen Sie Ihren Posteingang.'
     pterodactyl_error: 'Es ist ein Fehler bei der Kommunikation mit dem Pterodactyl-Panel aufgetreten.'
+    pterodactyl_account_not_synchronized: 'Ihr Konto ist nicht ordnungsgemäß mit dem Spielserver-Panel synchronisiert. Einige Funktionen funktionieren möglicherweise nicht korrekt. Bitte kontaktieren Sie den Administrator.'
     dont_have_permission: 'Sie haben keine Berechtigung, diese Aktion auszuführen.'
     experimental_feature: 'Diese Funktion ist experimentell und könnte nicht korrekt funktionieren.'
     or_resend_verification_email: 'oder klicken Sie hier, um die Bestätigungs-E-Mail erneut zu senden.'
@@ -262,6 +263,7 @@ pteroca:
     not_enough_funds: 'Sie haben nicht genügend Guthaben auf Ihrem Konto.'
     successful_purchase: 'Der Server wurde erfolgreich gekauft.'
     error_during_creating_server: 'Fehler beim Erstellen des Servers'
+    pterodactyl_account_not_synchronized: 'Ihr Konto ist nicht mit dem Spielserver-Panel synchronisiert. Bitte kontaktieren Sie den Administrator, um dieses Problem zu beheben, bevor Sie einen Server bestellen.'
     no_categories: 'Es wurden noch keine Kategorien zum Shop hinzugefügt.'
     no_products: 'Es gibt noch keine Produkte in dieser Kategorie.'
     price_not_found: 'Preis nicht gefunden'
@@ -440,6 +442,7 @@ pteroca:
     data_validation_error: 'Fehler bei der Validierung. Bitte überprüfen Sie, ob alle Regeln erfüllt sind.'
     enable_auto_renewal: 'Automatische Verlängerung für diesen Server aktivieren'
     auto_renewal_tooltip: 'Wenn aktiviert, wird der Server automatisch für den ausgewählten Zeitraum verlängert. Die Zahlung erfolgt aus Ihrem Kontoguthaben.'
+    connection_error: 'Es konnte keine Verbindung zum Spielserver-Panel hergestellt werden. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Administrator.'
     no_backups: 'Es gibt noch keine Backups für diesen Server.'
     create_backup: 'Backup erstellen'
     backup_name: Backup-Name

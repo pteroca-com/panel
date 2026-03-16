@@ -15,6 +15,7 @@ pteroca:
     email_not_verified: 'Alamat email Anda belum diverifikasi. Silakan periksa kotak masuk Anda'
     or_resend_verification_email: 'atau klik di sini untuk mengirim ulang email verifikasi.'
     pterodactyl_error: 'Kesalahan saat menghubungkan ke API Pterodactyl.'
+    pterodactyl_account_not_synchronized: 'Akun Anda tidak tersinkronisasi dengan benar dengan panel server game. Beberapa fitur mungkin tidak berfungsi dengan benar. Silakan hubungi administrator.'
     dont_have_permission: 'Anda tidak memiliki izin untuk melakukan tindakan ini.'
     experimental_feature: 'Fitur ini eksperimental dan mungkin tidak berfungsi dengan benar.'
   page:
@@ -286,6 +287,7 @@ pteroca:
     not_enough_funds: 'Anda tidak memiliki cukup dana di akun Anda.'
     successful_purchase: 'Server berhasil dibeli.'
     error_during_creating_server: 'Kesalahan saat membuat server'
+    pterodactyl_account_not_synchronized: 'Akun Anda tidak tersinkronisasi dengan panel server game. Silakan hubungi administrator untuk menyelesaikan masalah ini sebelum memesan server.'
     no_categories: 'Belum ada kategori.'
     no_products: 'Belum ada produk.'
     price_not_found: 'Harga tidak ditemukan'
@@ -468,6 +470,7 @@ pteroca:
     data_validation_error: 'Kesalahan selama validasi. Silakan periksa apakah semua aturan terpenuhi.'
     enable_auto_renewal: 'Aktifkan perpanjangan otomatis untuk server ini'
     auto_renewal_tooltip: 'Jika diaktifkan, server akan diperpanjang secara otomatis untuk periode yang dipilih. Pembayaran akan dilakukan dari saldo akun Anda.'
+    connection_error: 'Tidak dapat terhubung ke panel server game. Silakan coba lagi nanti atau hubungi administrator.'
     no_backups: 'Belum ada cadangan untuk server ini.'
     create_backup: 'Buat cadangan'
     backup_name: 'Nama cadangan'

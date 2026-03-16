@@ -14,6 +14,7 @@ pteroca:
     back: 'Torna al pannello'
     email_not_verified: 'Il tuo indirizzo e-mail non è stato ancora verificato. Controlla la tua casella di posta.'
     pterodactyl_error: 'Si è verificato un errore durante la comunicazione con il pannello di Pterodactyl.'
+    pterodactyl_account_not_synchronized: "Il tuo account non è sincronizzato correttamente con il pannello del server di gioco. Alcune funzionalità potrebbero non funzionare correttamente. Contatta l'amministratore."
     dont_have_permission: 'Non hai il permesso per eseguire questa azione.'
     experimental_feature: 'Questa funzionalità è sperimentale e potrebbe non funzionare correttamente.'
     or_resend_verification_email: "oppure clicca qui per inviare nuovamente l'email di verifica."
@@ -262,6 +263,7 @@ pteroca:
     not_enough_funds: 'Non hai fondi sufficienti sul tuo account.'
     successful_purchase: 'Server acquistato con successo.'
     error_during_creating_server: 'Errore durante la creazione del server'
+    pterodactyl_account_not_synchronized: "Il tuo account non è sincronizzato con il pannello del server di gioco. Contatta l'amministratore per risolvere questo problema prima di ordinare un server."
     no_categories: 'Nessuna categoria è stata ancora aggiunta al negozio.'
     no_products: 'Non ci sono ancora prodotti in questa categoria.'
     price_not_found: 'Prezzo non trovato'
@@ -440,6 +442,7 @@ pteroca:
     data_validation_error: 'Errore durante la validazione. Si prega di controllare se tutte le regole sono rispettate.'
     enable_auto_renewal: 'Abilita il rinnovo automatico per questo server'
     auto_renewal_tooltip: 'Se abilitato, il server verrà rinnovato automaticamente per il periodo selezionato. Il pagamento sarà effettuato dal saldo del tuo account.'
+    connection_error: "Impossibile connettersi al pannello del server di gioco. Riprova più tardi o contatta l'amministratore."
     no_backups: 'Non ci sono ancora backup per questo server.'
     create_backup: 'Crea backup'
     backup_name: 'Nome del backup'

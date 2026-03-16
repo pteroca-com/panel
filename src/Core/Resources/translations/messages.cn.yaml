@@ -14,6 +14,7 @@ pteroca:
     back: 返回面板
     email_not_verified: 您的电子邮件地址尚未验证。请检查您的收件箱。
     pterodactyl_error: '与 Pterodactyl 面板通信时发生错误。'
+    pterodactyl_account_not_synchronized: '您的账户未与游戏服务器面板正确同步。某些功能可能无法正常工作。请联系管理员。'
     dont_have_permission: 您没有权限执行此操作。
     experimental_feature: 此功能为实验性功能，可能无法正常工作。
     or_resend_verification_email: 或点击此处重新发送验证邮件。
@@ -262,6 +263,7 @@ pteroca:
     not_enough_funds: 您的账户余额不足。
     successful_purchase: 服务器购买成功。
     error_during_creating_server: 创建服务器时出错
+    pterodactyl_account_not_synchronized: '您的账户未与游戏服务器面板同步。在订购服务器之前，请联系管理员解决此问题。'
     no_categories: 商店中尚未添加任何类别。
     no_products: 该类别中没有产品。
     price_not_found: 找不到价格
@@ -438,6 +440,7 @@ pteroca:
     suspended_expired_description: '此服务器因于 %expireDate% 到期且未续订而被暂停。要恢复服务器，请续订它。'
     enable_auto_renewal: 启用此服务器的自动续费
     auto_renewal_tooltip: 如果启用，服务器将根据选定的周期自动续费。付款将从您的账户余额中扣除。
+    connection_error: '无法连接到游戏服务器面板。请稍后重试或联系管理员。'
     rules: 规则
     data_validation_error: 验证过程中出错。请检查是否满足所有规则。
     no_backups: 此服务器尚无备份。

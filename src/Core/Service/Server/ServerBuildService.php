@@ -9,6 +9,7 @@ use App\Core\Contract\UserInterface;
 use App\Core\DTO\Pterodactyl\Resource;
 use App\Core\Contract\ProductInterface;
 use App\Core\Service\Pterodactyl\NodeSelectionService;
+use App\Core\Service\Pterodactyl\PterodactylAccountService;
 use App\Core\DTO\Pterodactyl\Application\PterodactylServer;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 
@@ -16,6 +17,7 @@ readonly class ServerBuildService
 {
     public function __construct(
         private PterodactylApplicationService $pterodactylApplicationService,
+        private PterodactylAccountService     $pterodactylAccountService,
         private NodeSelectionService          $nodeSelectionService,
         private ServerEggEnvironmentService   $serverEggEnvironmentService,
     ) {}
@@ -33,6 +35,10 @@ readonly class ServerBuildService
         array $userVariables = [],
     ): array
     {
+        if (!$this->pterodactylAccountService->isAccountSynchronized($user)) {
+            throw new Exception('pteroca.store.pterodactyl_account_not_synchronized');
+        }
+
         $selectedEgg = $this->getSelectedEgg($eggId, $product);
         if (!$selectedEgg->has('id')) {
             throw new Exception('Egg not found');

@@ -14,6 +14,7 @@ pteroca:
     back: 'Terug naar paneel'
     email_not_verified: 'Uw e-mailadres is nog niet geverifieerd. Controleer uw postvak in.'
     pterodactyl_error: 'Fout tijdens het verbinden met de Pterodactyl API.'
+    pterodactyl_account_not_synchronized: 'Uw account is niet goed gesynchroniseerd met het gamespaneel. Sommige functies werken mogelijk niet correct. Neem contact op met de beheerder.'
     dont_have_permission: 'U bent niet bevoegd om deze functie te gebruiken.'
     experimental_feature: 'Deze functie is experimenteel en werkt mogelijk niet correct.'
     or_resend_verification_email: 'of klik hier om de verificatie-e-mail opnieuw te verzenden.'
@@ -262,6 +263,7 @@ pteroca:
     not_enough_funds: 'Je hebt niet genoeg saldo op je account.'
     successful_purchase: 'De server is met succes aangekocht.'
     error_during_creating_server: 'Fout tijdens het aanmaken van de server'
+    pterodactyl_account_not_synchronized: 'Uw account is niet gesynchroniseerd met het gamespaneel. Neem contact op met de beheerder om dit probleem op te lossen voordat u een server bestelt.'
     no_categories: 'Er zijn nog geen categorieën.'
     no_products: 'Er zijn nog geen producten.'
     price_not_found: 'Prijs niet gevonden'
@@ -409,6 +411,7 @@ pteroca:
     data_validation_error: 'Fout tijdens validatie. Controleer of aan alle regels is voldaan.'
     enable_auto_renewal: 'Schakel automatische verlenging in voor deze server'
     auto_renewal_tooltip: 'Indien ingeschakeld, wordt de server automatisch verlengd voor de geselecteerde periode. De betaling wordt gedaan vanaf uw rekening.'
+    connection_error: 'Kan geen verbinding maken met het gamespaneel. Probeer het later opnieuw of neem contact op met de beheerder.'
     backups: Back-ups
     network: Netwerk
     no_backups: 'Er zijn nog geen back-ups voor deze server.'

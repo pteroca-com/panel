@@ -15,6 +15,7 @@ pteroca:
     email_not_verified: 'Your email address has not been verified yet. Please check your inbox'
     or_resend_verification_email: 'or click here to resend the verification email.'
     pterodactyl_error: 'Error while connecting to the Pterodactyl API.'
+    pterodactyl_account_not_synchronized: 'Your account is not properly synchronized with the game server panel. Some features may not work correctly. Please contact the administrator.'
     dont_have_permission: 'You do not have permission to perform this action.'
     experimental_feature: 'This feature is experimental and may not work correctly.'
 
@@ -271,6 +272,7 @@ pteroca:
     not_enough_funds: 'You do not have enough funds in your account.'
     successful_purchase: 'The server was successfully purchased.'
     error_during_creating_server: 'Error during creating the server'
+    pterodactyl_account_not_synchronized: 'Your account is not synchronized with the game server panel. Please contact the administrator to resolve this issue before ordering a server.'
     no_categories: 'There are no categories yet.'
     no_products: 'There are no products yet.'
     price_not_found: 'Price not found'

@@ -14,6 +14,7 @@ pteroca:
     back: 'Zurück zum Panel'
     email_not_verified: 'Ihre E-Mail-Adresse wurde noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.'
     pterodactyl_error: 'Fehler bei der Verbindung zur Pterodactyl API.'
+    pterodactyl_account_not_synchronized: 'Ihr Konto ist nicht ordnungsgemäss mit dem Spielserver-Panel synchronisiert. Einige Funktionen funktionieren möglicherweise nicht korrekt. Bitte kontaktieren Sie den Administrator.'
     dont_have_permission: 'Sie haben keine Berechtigung, um diese Aktion durchzuführen.'
     experimental_feature: 'Diese Funktion ist experimentell und funktioniert möglicherweise nicht korrekt.'
     or_resend_verification_email: 'oder klicken Sie hier, um die Bestätigungs-E-Mail erneut zu senden.'
@@ -262,6 +263,7 @@ pteroca:
     not_enough_funds: 'Sie haben nicht genug Guthaben auf Ihrem Konto.'
     successful_purchase: 'Der Server wurde erfolgreich gekauft.'
     error_during_creating_server: 'Fehler beim Erstellen des Servers'
+    pterodactyl_account_not_synchronized: 'Ihr Konto ist nicht mit dem Spielserver-Panel synchronisiert. Bitte kontaktieren Sie den Administrator, um dieses Problem zu beheben, bevor Sie einen Server bestellen.'
     no_categories: 'Es gibt noch keine Kategorien.'
     no_products: 'Es gibt noch keine Produkte.'
     price_not_found: 'Preis nicht gefunden'
@@ -438,6 +440,7 @@ pteroca:
     data_validation_error: 'Fehler bei der Validierung. Bitte überprüfen Sie, ob alle Regeln erfüllt sind.'
     enable_auto_renewal: 'Aktiviere automatische Verlängerung für diesen Server'
     auto_renewal_tooltip: 'Wenn aktiviert, wird der Server automatisch für den ausgewählten Zeitraum erneuert. Die Zahlung wird von Ihrem Konto ausgeführt.'
+    connection_error: 'Es konnte keine Verbindung zum Spielserver-Panel hergestellt werden. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Administrator.'
     backups: Backups
     network: Netzwerk
     no_backups: 'Noch keine Backups vorhanden'

@@ -10,6 +10,7 @@ use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
 use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
 use App\Core\Entity\Panel\UserAccount;
 use App\Core\Service\Menu\MenuBuilder;
+use App\Core\Service\Pterodactyl\PterodactylAccountService;
 use App\Core\Enum\PermissionEnum;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
@@ -66,6 +67,7 @@ class DashboardController extends AbstractDashboardController
         private readonly QuickActionsWidget $quickActionsWidget,
         private readonly MenuBuilder $menuBuilder,
         private readonly WidgetRegistry $widgetRegistry,
+        private readonly PterodactylAccountService $pterodactylAccountService,
     ) {}
 
     #[Route('/panel', name: 'panel')]
@@ -75,6 +77,10 @@ class DashboardController extends AbstractDashboardController
 
         $user = $this->getUser();
         $request = $this->requestStack->getCurrentRequest();
+
+        if (!$this->pterodactylAccountService->isAccountSynchronized($user)) {
+            $this->addFlash('warning', $this->translator->trans('pteroca.system.pterodactyl_account_not_synchronized'));
+        }
 
         $this->dispatchDataEvent(
             DashboardAccessedEvent::class,
