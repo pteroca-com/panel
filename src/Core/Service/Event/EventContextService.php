@@ -2,14 +2,19 @@
 
 namespace App\Core\Service\Event;
 
+use App\Core\Service\System\IpAddressProviderService;
 use Symfony\Component\HttpFoundation\Request;
 
 class EventContextService
 {
+    public function __construct(
+        private readonly IpAddressProviderService $ipAddressProvider,
+    ) {}
+
     public function buildContext(Request $request, array $additionalContext = []): array
     {
         $context = [
-            'ip' => $request->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request->headers->get('User-Agent'),
             'locale' => $request->getLocale(),
             'referer' => $request->headers->get('referer'),
@@ -21,7 +26,7 @@ class EventContextService
     public function buildMinimalContext(Request $request, array $additionalContext = []): array
     {
         $context = [
-            'ip' => $request->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request->headers->get('User-Agent'),
             'locale' => $request->getLocale(),
         ];

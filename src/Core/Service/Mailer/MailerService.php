@@ -6,6 +6,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Event\Email\EmailAfterSendEvent;
 use App\Core\Event\Email\EmailBeforeSendEvent;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\IpAddressProviderService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mailer\Mailer;
@@ -33,6 +34,7 @@ class MailerService implements MailerServiceInterface
         private readonly string $defaultLogoPath,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
+        private readonly IpAddressProviderService $ipAddressProvider,
         private readonly string $projectDir,
         private readonly string $appEnv = 'prod',
     ) {}
@@ -168,7 +170,7 @@ class MailerService implements MailerServiceInterface
         }
 
         return [
-            'ip' => $request->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request->headers->get('User-Agent'),
             'locale' => $request->getLocale(),
             'route' => $request->attributes->get('_route'),

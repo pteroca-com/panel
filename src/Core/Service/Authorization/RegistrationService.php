@@ -22,6 +22,7 @@ use App\Core\Enum\EmailVerificationValueEnum;
 use App\Core\Event\User\Registration\UserEmailVerifiedEvent;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use RuntimeException;
+use App\Core\Service\System\IpAddressProviderService;
 use Symfony\Component\HttpFoundation\RequestStack;
 use App\Core\Event\User\Registration\UserRegistrationFailedEvent;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -45,6 +46,7 @@ class RegistrationService
         private readonly UserService $userService,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
+        private readonly IpAddressProviderService $ipAddressProvider,
     ) {
         $this->jwtConfiguration = Configuration::forSymmetricSigner(
             new Sha256(),
@@ -61,7 +63,7 @@ class RegistrationService
     {
         $request = $this->requestStack->getCurrentRequest();
         $context = [
-            'ip' => $request?->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request?->headers->get('User-Agent'),
             'locale' => $request?->getLocale(),
             'source' => 'web',
@@ -185,7 +187,7 @@ class RegistrationService
                 $deletedUser->getEmail(),
                 $deletedUser->isVerified(),
                 [
-                    'ip' => $request?->getClientIp(),
+                    'ip' => $this->ipAddressProvider->getIpAddress(),
                     'userAgent' => $request?->headers->get('User-Agent'),
                     'locale' => $request?->getLocale(),
                     'source' => 'reactivation',
@@ -253,7 +255,7 @@ class RegistrationService
             $user->getId(),
             $user->getEmail(),
             [
-                'ip' => $request?->getClientIp(),
+                'ip' => $this->ipAddressProvider->getIpAddress(),
                 'userAgent' => $request?->headers->get('User-Agent'),
             ]
         );
