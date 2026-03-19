@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.5] - 2026-03-18
+## [0.6.5] - 2026-03-19
 
 ### Added
 - Added one-time setup fee option for products.
