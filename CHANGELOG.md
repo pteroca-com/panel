@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.6.5] - 2026-03-18
+
+### Added
+- Added one-time setup fee option for products.
+- Added context-specific logo settings for landing page and email templates.
+- Added configurable avatar upload restrictions (max size and allowed formats) in security settings.
+- Added user management CLI commands: block, unblock, delete, restore, info, list, change-balance, change-role, verify.
+- Added theme management CLI commands: list, set, reset.
+- Added theme record tracking for metadata persistence.
+- Added plugin version mismatch warning when enabling incompatible plugins.
+- Added pre-balance-charge events for server purchase and renewal flows.
+- Added widget system support for server list, server detail, store, and store product pages.
+- Added Pterodactyl account synchronization validation on dashboard and server creation.
+- Added Cloudflare `CF-Connecting-IP` header support for accurate IP address detection.
+
+### Changed
+- Optimized Docker build with improved layer caching and simplified permissions.
+- Added persistent volumes for plugins and themes in production Docker setup.
+- Improved voucher redemption notifications with type-specific messages showing amount and balance.
+- Relaxed server name validation — field is now optional with automatic fallback to product name.
+- Simplified plugin upload flow by removing auto-enable option in favor of manual activation.
+- Reworked cart configuration and renewal views.
+- Set session cookie lifetime to 7 days to prevent unexpected logouts on browser close.
+- Moved `ServerEulaService` to `Server` namespace.
+- Improved user email verification status handling.
+
+### Fixed
+- Fixed product copy not including the short description field.
+- Fixed price display on landing page showing only unit without billing period value.
+- Fixed server management page crashing with error 500 when Pterodactyl API is unavailable.
+- Fixed uninitialized variables in server data service causing errors when API calls fail.
+- Fixed servers list crashing when server product relation is null.
+- Centralized IP address retrieval through `IpAddressProviderService` across all services.
+- Fixed Docker environment error logging configuration.
+- Fixed theme color scheme mode sanitization.
+
+---
+
 ## [0.6.4] - 2026-03-02
 
 ### Added
