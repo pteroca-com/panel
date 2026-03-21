@@ -67,6 +67,9 @@ trait ProductEntityTrait
     #[ORM\Column(type: "boolean")]
     private bool $allowUserSelectLocation = false;
 
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
+    private ?string $setupFee = null;
+
     private ?int $sanitizedEggsCount = null;
 
     public function getId(): int
@@ -269,6 +272,17 @@ trait ProductEntityTrait
     public function setAllowUserSelectLocation(bool $allowUserSelectLocation): self
     {
         $this->allowUserSelectLocation = $allowUserSelectLocation;
+        return $this;
+    }
+
+    public function getSetupFee(): ?float
+    {
+        return $this->setupFee !== null ? (float) $this->setupFee : null;
+    }
+
+    public function setSetupFee(?float $setupFee): self
+    {
+        $this->setupFee = $setupFee !== null ? (string) $setupFee : null;
         return $this;
     }
 

@@ -28,6 +28,15 @@
             </div>
         </div>
 
+        {% if widgetRegistry is defined %}
+            {% include '_partials/widget_area.html.twig' with {
+                'position': constant('App\\Core\\Enum\\WidgetPosition::TOP'),
+                'widgetContext': widgetContext,
+                'widgetRegistry': widgetRegistry,
+                'contextData': contextData
+            } %}
+        {% endif %}
+
         {{ form_start(form, {
             'action': path('panel', { routeName: 'cart_renew_buy', 'id': server.id }),
             'method': 'POST',
@@ -53,7 +62,7 @@
                             <div class="alert alert-info border-0 shadow-sm mb-4" role="alert">
                                 <i class="fas fa-info-circle me-2"></i>
                                 {% if server.getServerProduct().getSelectedPrice().getType().value != 'on_demand' %}
-                                    {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.serverProduct.name, '{{ expiresAt }}': server.expiresAt|date('Y-m-d H:i') })|raw }}
+                                    {{ 'pteroca.server.extend_server_expires'|trans({ '{{ productName }}': server.serverProduct.name, '{{ expiresAt }}': server.expiresAt|app_date })|raw }}
                                 {% else %}
                                     {{ 'pteroca.server.extend_server_expires_on_demand'|trans({ '{{ productName }}': server.serverProduct.name })|raw }}<br>
                                     {{ 'pteroca.server.on_demand_billing_cycle'|trans({ '{{ productPrice }}': server.getServerProduct().getSelectedPrice().getPrice(), '{{ internalCurrency }}': get_currency() }) }}
@@ -179,23 +188,7 @@
                                         <i class="fas fa-clock me-2 text-primary"></i>
                                         {{ 'pteroca.cart_configuration.period'|trans }}
                                     </label>
-                                    <select id="duration" name="duration" class="form-select form-select-lg" disabled>
-                                        {% for price in server.serverProduct.prices %}
-                                            {% if price.type.value == 'static' %}
-                                                <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if server.serverProduct.selectedPrice.id == price.id %}selected{% endif %}>
-                                                    {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}
-                                                </option>
-                                            {% elseif price.type.value == 'on_demand' %}
-                                                <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if server.serverProduct.selectedPrice.id == price.id %}selected{% endif %}>
-                                                    {{ 'pteroca.product.on_demand'|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}
-                                                </option>
-                                            {% elseif price.type.value == 'slot' %}
-                                                <option value="{{ price.id }}" data-type="{{ price.type.value }}" data-value="{{ price.value }}" data-unit="{{ price.unit.value }}" data-price="{{ price.price }}" {% if server.serverProduct.selectedPrice.id == price.id %}selected{% endif %}>
-                                                    {{ 'pteroca.store.slot_pricing'|trans }} - {{ price.value }} {{ ('pteroca.product.' ~ price.unit.value)|trans }} - {{ price.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.slot'|trans }}
-                                                </option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
+                                    {{ form_widget(form.duration, {'id': 'duration'}) }}
                                 </div>
                                 {% if hasSlotPrices %}
                                 <div class="col-md-6">
@@ -300,6 +293,17 @@
                     </div>
                 </div>
             </div>
+
+            {% if widgetRegistry is defined %}
+                <div class="col-12">
+                    {% include '_partials/widget_area.html.twig' with {
+                        'position': constant('App\\Core\\Enum\\WidgetPosition::BOTTOM'),
+                        'widgetContext': widgetContext,
+                        'widgetRegistry': widgetRegistry,
+                        'contextData': contextData
+                    } %}
+                </div>
+            {% endif %}
         {{ form_end(form) }}
     </div>
 
@@ -308,6 +312,7 @@
 {% endblock %}
 
 {% block body_javascript %}
+    {% set priceSeps = get_price_separators() %}
     <script>
         const unitTranslations = {
             minutes: '{{ 'pteroca.product.minutes'|trans }}',
@@ -316,6 +321,18 @@
         },
             currentUserBalance = parseFloat('{{ app.user.balance }}'),
             serverId = '{{ server.id }}'
+
+        function formatPrice(price) {
+            const decSep = '{{ priceSeps.decimal|e('js') }}';
+            const thSep = '{{ priceSeps.thousands|e('js') }}';
+            const parts = price.toFixed(2).split('.');
+            let intPart = parts[0];
+            const decPart = parts[1] || '00';
+            if (thSep !== '') {
+                intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thSep);
+            }
+            return intPart + decSep + decPart;
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
             loadServerData();
@@ -332,7 +349,7 @@
 
             // Prevent double-submit: disable button on form submission
             const submitButton = document.getElementById('order-submit');
-            const form = document.getElementById('cart-renew-form');
+            const form = document.getElementById('renew-form');
 
             form.addEventListener('submit', function(e) {
                 if (!submitButton.disabled) {
@@ -367,7 +384,7 @@
                 const discountValue = parseFloat(appliedDiscountValue.innerText);
                 if (!isNaN(discountValue)) {
                     let discountPrice = summaryPrice * (discountValue / 100);
-                    document.querySelector('#applied-discount-amount').textContent = discountPrice.toFixed(2);
+                    document.querySelector('#applied-discount-amount').textContent = formatPrice(discountPrice);
                     summaryPrice -= discountPrice
                 }
             }
@@ -384,7 +401,7 @@
             }
 
             document.querySelector('#selected-duration').textContent = durationText;
-            document.querySelector('#selected-price').textContent = `${productPrice.toFixed(2)} {{ get_currency() }}`;
+            document.querySelector('#selected-price').textContent = `${formatPrice(productPrice)} {{ get_currency() }}`;
 
             // Calculate and display dates for static pricing
             const datesElement = document.querySelector('#selected-dates');
@@ -422,7 +439,7 @@
                 datesElement.style.display = 'none';
             }
 
-            document.querySelector('#selected-summary').textContent = `${summaryPrice.toFixed(2)} {{ get_currency() }}`
+            document.querySelector('#selected-summary').textContent = `${formatPrice(summaryPrice)} {{ get_currency() }}`
 
             const insufficientBalance = currentUserBalance < summaryPrice;
             document.querySelector('div[data-alert="not_enough_balance"]').classList.toggle('d-none', !insufficientBalance);

@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Core\Handler;
+namespace App\Core\Handler\User;
 
+use App\Core\DTO\Command\User\CreateUserCommand;
 use App\Core\Entity\User;
 use App\Core\Enum\SystemRoleEnum;
 use App\Core\Event\Cli\CreateUser\UserCreationProcessCompletedEvent;
 use App\Core\Event\Cli\CreateUser\UserCreationProcessFailedEvent;
 use App\Core\Event\Cli\CreateUser\UserCreationProcessStartedEvent;
 use App\Core\Exception\CouldNotCreatePterodactylClientApiKeyException;
-use App\Core\Exception\PterodactylAccountEmailAlreadyExists;
+use App\Core\Handler\CommandHandlerInterface;
 use App\Core\Repository\UserRepository;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylAccountService;
@@ -20,14 +21,8 @@ use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class CreateNewUserHandler implements HandlerInterface
+class CreateUserHandler implements CommandHandlerInterface
 {
-    private string $userEmail;
-
-    private string $userPassword;
-
-    private string $userRoleName;
-
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UserRepository $userRepository,
@@ -40,23 +35,23 @@ class CreateNewUserHandler implements HandlerInterface
 
     /**
      * @throws CouldNotCreatePterodactylClientApiKeyException
-     * @throws PterodactylAccountEmailAlreadyExists
      */
-    public function handle(bool $allowToCreateWithNoPterodactylApiKey = false): void
+    public function handle(object $command): mixed
     {
+        assert($command instanceof CreateUserCommand);
+
         $startTime = new DateTimeImmutable();
 
-        // Validate credentials first
-        if (empty($this->userEmail) || empty($this->userPassword)) {
-            $context = $this->eventContextService->buildCliContext('app:create-new-user', [
-                'role' => $this->userRoleName ?? 'UNKNOWN',
+        if (empty($command->email) || empty($command->password)) {
+            $context = $this->eventContextService->buildCliContext('pteroca:user:create', [
+                'role' => $command->roleName,
             ]);
 
             $this->eventDispatcher->dispatch(
                 new UserCreationProcessFailedEvent(
                     'User credentials not set',
-                    $this->userEmail ?? 'UNKNOWN',
-                    $this->userRoleName ?? 'UNKNOWN',
+                    $command->email ?: 'UNKNOWN',
+                    $command->roleName,
                     new DateTimeImmutable(),
                     $context
                 )
@@ -65,42 +60,39 @@ class CreateNewUserHandler implements HandlerInterface
             throw new RuntimeException('User credentials not set');
         }
 
-        $context = $this->eventContextService->buildCliContext('app:create-new-user', [
-            'email' => $this->userEmail,
-            'role' => $this->userRoleName,
+        $context = $this->eventContextService->buildCliContext('pteroca:user:create', [
+            'email' => $command->email,
+            'role' => $command->roleName,
         ]);
 
-        // Emit process started event
         $this->eventDispatcher->dispatch(
             new UserCreationProcessStartedEvent(
                 $startTime,
-                $this->userEmail,
-                $this->userRoleName,
+                $command->email,
+                $command->roleName,
                 $context
             )
         );
 
         try {
             $user = (new User())
-                ->setEmail($this->userEmail)
+                ->setEmail($command->email)
                 ->setPassword('')
                 ->setBalance(0)
                 ->setName('Admin')
                 ->setSurname('Admin');
 
-            // Assign role using RoleManager
-            $role = $this->roleManager->getRoleByName($this->userRoleName);
+            $role = $this->roleManager->getRoleByName($command->roleName);
             if ($role) {
                 $user->addUserRole($role);
             } else {
-                // Fallback to user role if specified role doesn't exist
                 $defaultRole = $this->roleManager->getRoleByName(SystemRoleEnum::ROLE_USER->value);
                 if ($defaultRole) {
                     $user->addUserRole($defaultRole);
                 }
             }
 
-            $hashedPassword = $this->passwordHasher->hashPassword($user, $this->userPassword);
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $command->password);
             $user->setPassword($hashedPassword);
 
             $hasPterodactylAccount = false;
@@ -108,15 +100,15 @@ class CreateNewUserHandler implements HandlerInterface
             $createdWithoutApiKey = false;
 
             try {
-                $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $this->userPassword);
+                $pterodactylAccount = $this->pterodactylAccountService->createPterodactylAccount($user, $command->password);
             } catch (Exception $exception) {
                 $message = 'Could not create Pterodactyl account: ' . $exception->getMessage();
 
                 $this->eventDispatcher->dispatch(
                     new UserCreationProcessFailedEvent(
                         $message,
-                        $this->userEmail,
-                        $this->userRoleName,
+                        $command->email,
+                        $command->roleName,
                         new DateTimeImmutable(),
                         $context
                     )
@@ -134,8 +126,7 @@ class CreateNewUserHandler implements HandlerInterface
                     $user->setPterodactylUserApiKey($pterodactylClientApiKey);
                     $hasApiKey = true;
                 } catch (CouldNotCreatePterodactylClientApiKeyException $exception) {
-                    if (!$allowToCreateWithNoPterodactylApiKey) {
-                        // Rollback: delete Pterodactyl account
+                    if (!$command->allowCreateWithoutApiKey) {
                         try {
                             $this->pterodactylAccountService->deletePterodactylAccount($user);
                         } catch (Exception $rollbackException) {
@@ -148,8 +139,8 @@ class CreateNewUserHandler implements HandlerInterface
                             $this->eventDispatcher->dispatch(
                                 new UserCreationProcessFailedEvent(
                                     $failureMessage,
-                                    $this->userEmail,
-                                    $this->userRoleName,
+                                    $command->email,
+                                    $command->roleName,
                                     new DateTimeImmutable(),
                                     $context
                                 )
@@ -161,8 +152,8 @@ class CreateNewUserHandler implements HandlerInterface
                         $this->eventDispatcher->dispatch(
                             new UserCreationProcessFailedEvent(
                                 $exception->getMessage(),
-                                $this->userEmail,
-                                $this->userRoleName,
+                                $command->email,
+                                $command->roleName,
                                 new DateTimeImmutable(),
                                 $context
                             )
@@ -171,7 +162,6 @@ class CreateNewUserHandler implements HandlerInterface
                         throw $exception;
                     }
 
-                    // User chose to continue without API key
                     $createdWithoutApiKey = true;
                 }
             }
@@ -181,12 +171,11 @@ class CreateNewUserHandler implements HandlerInterface
             $endTime = new DateTimeImmutable();
             $duration = $endTime->getTimestamp() - $startTime->getTimestamp();
 
-            // Emit process completed event
             $this->eventDispatcher->dispatch(
                 new UserCreationProcessCompletedEvent(
                     $user->getId() ?? 0,
-                    $this->userEmail,
-                    $this->userRoleName,
+                    $command->email,
+                    $command->roleName,
                     $hasPterodactylAccount,
                     $hasApiKey,
                     $createdWithoutApiKey,
@@ -196,15 +185,13 @@ class CreateNewUserHandler implements HandlerInterface
                 )
             );
         } catch (RuntimeException|CouldNotCreatePterodactylClientApiKeyException $e) {
-            // Already emitted FailedEvent, just re-throw
             throw $e;
         } catch (Exception $e) {
-            // Unexpected exception
             $this->eventDispatcher->dispatch(
                 new UserCreationProcessFailedEvent(
                     $e->getMessage(),
-                    $this->userEmail,
-                    $this->userRoleName,
+                    $command->email,
+                    $command->roleName,
                     new DateTimeImmutable(),
                     $context
                 )
@@ -212,12 +199,7 @@ class CreateNewUserHandler implements HandlerInterface
 
             throw $e;
         }
-    }
 
-    public function setUserCredentials(string $email, string $password, string $userRoleName): void
-    {
-        $this->userEmail = $email;
-        $this->userPassword = $password;
-        $this->userRoleName = $userRoleName;
+        return null;
     }
 }

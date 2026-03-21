@@ -163,6 +163,19 @@ class PluginAutoloader
         return $this->projectDir . '/plugins/' . $pluginName . '/src';
     }
 
+    public function registerForInspection(Plugin $plugin): void
+    {
+        $namespace = $this->getPluginNamespace($plugin->getName());
+        $path = $this->getPluginSrcPath($plugin->getName());
+
+        if (!is_dir($path)) {
+            return;
+        }
+
+        $this->registerNamespace($namespace, $path);
+        $this->loadComposerDependencies($plugin);
+    }
+
     /**
      * @return array<string, string> Namespace => Path
      */

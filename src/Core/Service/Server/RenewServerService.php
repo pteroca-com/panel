@@ -13,6 +13,7 @@ use App\Core\Event\Server\ServerAboutToBeRenewedEvent;
 use App\Core\Event\Server\ServerExpirationExtendedEvent;
 use App\Core\Event\Server\ServerUnsuspendedEvent;
 use App\Core\Event\Server\ServerRenewalBalanceChargedEvent;
+use App\Core\Event\Server\ServerRenewalBeforeBalanceChargeEvent;
 use App\Core\Event\Server\ServerRenewalCompletedEvent;
 use App\Core\Exception\Email\ProductPriceNotFoundException;
 use App\Core\Exception\Email\ServerDetailsNotAvailableException;
@@ -160,20 +161,37 @@ class RenewServerService extends AbstractActionServerService
 
         $this->serverRepository->save($server);
 
-        // 5. Emit ServerRenewalBalanceChargedEvent (if chargeBalance)
-        if ($chargeBalance) {
-            $oldBalance = $user->getBalance();
-            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, $slots);
-            $newBalance = $user->getBalance();
-            $finalPrice = $oldBalance - $newBalance;
+        // 5. Emit ServerRenewalBeforeBalanceChargeEvent + ServerRenewalBalanceChargedEvent
+        $oldBalance = $user->getBalance();
+        $currency = $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        $calculatedAmount = $chargeBalance
+            ? $this->productPriceCalculatorService->calculateFinalPrice($selectedPrice, $slots)
+            : 0;
 
+        $beforeChargeEvent = new ServerRenewalBeforeBalanceChargeEvent(
+            $user->getId(),
+            $server->getId(),
+            $calculatedAmount,
+            $currency,
+            $voucherCode,
+        );
+        $this->eventDispatcher->dispatch($beforeChargeEvent);
+
+        if ($chargeBalance && !$beforeChargeEvent->isBalanceChargeSkipped()) {
+            $this->updateUserBalance($user, $server->getServerProduct(), $selectedPrice->getId(), $voucherCode, $slots);
+        }
+
+        $newBalance = $user->getBalance();
+        $finalPrice = $oldBalance - $newBalance;
+
+        if ($chargeBalance) {
             $balanceChargedEvent = new ServerRenewalBalanceChargedEvent(
                 $user->getId(),
                 $oldBalance,
                 $newBalance,
                 $server->getId(),
                 $finalPrice,
-                $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value)
+                $currency
             );
             $this->eventDispatcher->dispatch($balanceChargedEvent);
         }

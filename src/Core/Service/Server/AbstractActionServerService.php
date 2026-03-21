@@ -30,7 +30,8 @@ abstract class AbstractActionServerService
         ProductInterface $product,
         int $priceId,
         ?string $voucherCode = null,
-        ?int $slots = null
+        ?int $slots = null,
+        ?float $setupFee = null,
     ): void
     {
         $price = $product->getPrices()->filter(
@@ -57,6 +58,10 @@ abstract class AbstractActionServerService
                     'exception' => $exception->getMessage(),
                 ]);
             }
+        }
+
+        if ($setupFee !== null && $setupFee > 0) {
+            $balancePaymentAmount += $setupFee;
         }
 
         if ($balancePaymentAmount > $user->getBalance()) {

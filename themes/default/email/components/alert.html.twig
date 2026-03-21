@@ -43,11 +43,11 @@
                                 <td style="vertical-align: top;">
                                     {% if title is defined and title %}
                                     <p style="margin: 0 0 8px; font-weight: 600; font-size: 16px; color: {{ style.text }}; line-height: 1.4;">
-                                        {{ title }}
+                                        <span style="color: {{ style.text }};">{{ title }}</span>
                                     </p>
                                     {% endif %}
                                     <p style="margin: 0; font-size: 14px; color: {{ style.text }}; line-height: 1.5;">
-                                        {{ message|raw }}
+                                        <span style="color: {{ style.text }};">{{ message|raw }}</span>
                                     </p>
                                 </td>
                             </tr>

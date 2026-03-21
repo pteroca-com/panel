@@ -1,0 +1,93 @@
+{# Marketplace Sidebar JavaScript Component
+   Required variables:
+     - tags:             string — tag to filter products (e.g. 'plugin', 'theme')
+     - placeholder_icon: string — Font Awesome icon class for image placeholder (e.g. 'fa-puzzle-piece')
+#}
+<script>
+(function () {
+    const API = '/panel/marketplace-api/products';
+    const TAGS = {{ tags|json_encode|raw }};
+    const PLACEHOLDER_HTML = `<div class='marketplace-product-img marketplace-product-img-placeholder'><i class='fa {{ placeholder_icon }}'></i></div>`;
+    const PLACEHOLDER_ONERROR = PLACEHOLDER_HTML.replace(/'/g, "\\'");
+    const MSG_NO_RESULTS = {{ ('pteroca.marketplace.no_results'|trans)|json_encode|raw }};
+    const MSG_ERROR = {{ ('pteroca.marketplace.error'|trans)|json_encode|raw }};
+    const MSG_DOWNLOAD = {{ ('pteroca.marketplace.download'|trans)|json_encode|raw }};
+    const MSG_FREE = {{ ('pteroca.marketplace.free'|trans)|json_encode|raw }};
+    let page = 1, sort = 'newest', totalPages = 1;
+
+    async function load() {
+        const container = document.getElementById('marketplace-products');
+        container.innerHTML = '<div class="text-center p-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
+        try {
+            const res = await fetch(`${API}?page=${page}&limit=10&sort=${sort}&tags=${TAGS}`);
+            if (!res.ok) throw new Error();
+            const json = await res.json();
+            totalPages = json.pagination.totalPages;
+            document.getElementById('marketplace-total-count').textContent = json.pagination.totalItems;
+            document.getElementById('marketplace-page-info').textContent = `${json.pagination.currentPage} / ${totalPages}`;
+            document.getElementById('marketplace-prev').disabled = (page <= 1);
+            document.getElementById('marketplace-next').disabled = (page >= totalPages);
+            container.innerHTML = json.data.length
+                ? json.data.map(renderProduct).join('')
+                : `<div class="text-center p-3 text-muted small">${MSG_NO_RESULTS}</div>`;
+        } catch (e) {
+            container.innerHTML = `<div class="text-center p-3 text-danger small"><i class="fa fa-exclamation-triangle me-1"></i>${MSG_ERROR}</div>`;
+        }
+    }
+
+    function renderProduct(p) {
+        const isFree = p.price === 0;
+        const priceLabel = isFree ? MSG_FREE : p.price;
+        const priceBadge = `<span class="${isFree ? 'marketplace-badge-free' : 'marketplace-badge-paid'}">${esc(String(priceLabel))}</span>`;
+        const rating = p.stats.averageRating ? p.stats.averageRating.toFixed(1) : null;
+        const ver = p.versions.length ? 'v' + esc(p.versions[0].version) : '';
+        const url = 'https://marketplace.pteroca.com/product/' + esc(p.slug);
+        const img = p.previewImage
+            ? `<img src="${esc(p.previewImage)}" class="marketplace-product-img" alt="" onerror="this.outerHTML='${PLACEHOLDER_ONERROR}'">`
+            : PLACEHOLDER_HTML;
+        const ratingEl = rating
+            ? `<span class="mp-meta-item"><i class="fa fa-star" style="color:#f59e0b"></i> ${rating}</span>`
+            : '';
+        return `<div class="marketplace-product-item">
+            ${img}
+            <div class="marketplace-product-body">
+                <div class="d-flex align-items-start justify-content-between gap-1">
+                    <span class="marketplace-product-name">${esc(p.name)}</span>
+                    ${priceBadge}
+                </div>
+                <div class="marketplace-product-desc">${esc(p.shortDescription || '')}</div>
+                <div class="marketplace-product-meta">
+                    <span class="mp-meta-item"><i class="fa fa-download"></i> ${p.stats.downloadCount}</span>
+                    ${ratingEl}
+                    ${ver ? `<span class="mp-meta-item">${ver}</span>` : ''}
+                </div>
+            </div>
+            <a href="${url}" target="_blank" rel="noopener"
+               class="marketplace-dl-btn"
+               title="${esc(MSG_DOWNLOAD)}">
+                <i class="fa fa-download"></i>
+            </a>
+        </div>`;
+    }
+
+    function esc(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    document.getElementById('marketplace-sort').addEventListener('change', e => { sort = e.target.value; page = 1; load(); });
+    document.getElementById('marketplace-prev').addEventListener('click', () => { if (page > 1) { page--; load(); } });
+    document.getElementById('marketplace-next').addEventListener('click', () => { if (page < totalPages) { page++; load(); } });
+
+    function syncSidebarHeight() {
+        const mainCol = document.querySelector('#plugin-page-layout .flex-grow-1');
+        const sidebar = document.getElementById('marketplace-sidebar');
+        if (mainCol && sidebar) {
+            sidebar.style.maxHeight = mainCol.offsetHeight + 'px';
+        }
+    }
+    syncSidebarHeight();
+    window.addEventListener('resize', syncSidebarHeight);
+
+    load();
+})();
+</script>

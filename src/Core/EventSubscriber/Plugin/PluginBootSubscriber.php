@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Core\EventSubscriber\Plugin;
 
 use App\Core\Repository\PluginRepository;
+use App\Core\Service\License\PluginLicenseService;
+use App\Core\Service\License\ThemeLicenseService;
 use App\Core\Service\Plugin\PluginAutoloader;
 use App\Core\Service\Plugin\PluginEventSubscriberRegistry;
 use Exception;
@@ -36,6 +38,8 @@ class PluginBootSubscriber implements EventSubscriberInterface
         private readonly FilesystemLoader $twigLoader,
         private readonly LoggerInterface $logger,
         private readonly string $projectDir,
+        private readonly PluginLicenseService $pluginLicenseService,
+        private readonly ThemeLicenseService $themeLicenseService,
     ) {}
 
     public static function getSubscribedEvents(): array

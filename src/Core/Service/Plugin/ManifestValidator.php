@@ -381,6 +381,34 @@ class ManifestValidator
         return $errors;
     }
 
+    public function getPterocaVersion(): string
+    {
+        return $this->pterocaVersion;
+    }
+
+    /**
+     * Check if plugin's pteroca.min version targets a different major.minor than the current PteroCA version.
+     * Returns true when the plugin was built for an older major.minor release (e.g., plugin 0.6.x on PteroCA 0.7.x).
+     */
+    public function hasVersionMismatchWarning(string $pluginMinVersion): bool
+    {
+        $currentParts = explode('.', $this->pterocaVersion);
+        $pluginParts = explode('.', $pluginMinVersion);
+
+        $currentMajor = (int) ($currentParts[0] ?? 0);
+        $currentMinor = (int) ($currentParts[1] ?? 0);
+        $pluginMajor = (int) ($pluginParts[0] ?? 0);
+        $pluginMinor = (int) ($pluginParts[1] ?? 0);
+
+        if ($currentMajor !== $pluginMajor || $currentMinor !== $pluginMinor) {
+            // Only warn when current version is higher than what the plugin targets
+            return ($currentMajor > $pluginMajor)
+                || ($currentMajor === $pluginMajor && $currentMinor > $pluginMinor);
+        }
+
+        return false;
+    }
+
     public function isCompatibleWithPteroCA(PluginManifestDTO $manifest): bool
     {
         try {

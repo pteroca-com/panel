@@ -104,6 +104,11 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                         SettingTypeEnum::BOOLEAN->value => $value
                             ? $this->translator->trans('pteroca.crud.setting.yes')
                             : $this->translator->trans('pteroca.crud.setting.no'),
+                        SettingTypeEnum::SELECT->value => array_search(
+                            $value,
+                            $this->settingOptionRepository->getOptionsForSetting($entity->getName()),
+                            true
+                        ) ?: $value,
                         default => $value,
                     };
                 });
@@ -122,6 +127,10 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 SettingTypeEnum::TWIG->value => CodeEditorField::new('value', $valueLabel)
                     ->setLanguage('twig')
                     ->setNumOfRows(20),
+                SettingTypeEnum::CODE->value => CodeEditorField::new('value', $valueLabel)
+                    ->setLanguage('javascript')
+                    ->setNumOfRows(20)
+                    ->setTabSize(2),
                 SettingTypeEnum::LOCALE->value => ChoiceField::new('value', $valueLabel)
                     ->setChoices(array_flip($this->localeService->getAvailableLocales(false))),
                 SettingTypeEnum::URL->value => UrlField::new('value', $valueLabel),
@@ -176,7 +185,9 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
                 ->hideOnIndex()
                 ->hideOnForm();
 
-        return $fields;
+        $this->fields = $fields;
+
+        return parent::configureFields($pageName);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -269,6 +280,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     {
         try {
             $this->handleSetAsEmpty($entityInstance);
+            $this->validateSettingValue($entityInstance);
             $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
             parent::persistEntity($entityManager, $entityInstance);
 
@@ -283,6 +295,7 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
     {
         try {
             $this->handleSetAsEmpty($entityInstance);
+            $this->validateSettingValue($entityInstance);
             $this->settingService->saveSettingInCache($entityInstance->getName(), $entityInstance->getValue());
             parent::updateEntity($entityManager, $entityInstance);
 
@@ -360,5 +373,15 @@ abstract class AbstractSettingCrudController extends AbstractPanelController
         }
 
         return $this->settingOptionRepository->getOptionsForSetting($settingName);
+    }
+
+    private function validateSettingValue(Setting $setting): void
+    {
+        if ($setting->getName() === 'minimum_topup_amount') {
+            $value = (float) $setting->getValue();
+            if ($value <= 0) {
+                throw new \InvalidArgumentException('Minimum top-up amount must be greater than 0');
+            }
+        }
     }
 }

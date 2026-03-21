@@ -5,6 +5,7 @@ namespace App\Core\EventSubscriber\Security;
 use App\Core\Entity\User;
 use App\Core\Enum\LogActionEnum;
 use App\Core\Service\Logs\LogService;
+use App\Core\Service\System\IpAddressProviderService;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 use App\Core\Event\User\Authentication\UserLoggedInEvent;
@@ -24,9 +25,10 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 class AuthenticationSubscriber
 {
     public function __construct(
-        private EventDispatcherInterface $eventDispatcher,
-        private RequestStack             $requestStack,
-        private LogService               $logService,
+        private EventDispatcherInterface  $eventDispatcher,
+        private RequestStack              $requestStack,
+        private LogService                $logService,
+        private IpAddressProviderService  $ipAddressProvider,
     ) {}
 
     public function __invoke(LoginSuccessEvent|LoginFailureEvent|LogoutEvent $event): void
@@ -47,7 +49,7 @@ class AuthenticationSubscriber
 
         $request = $this->requestStack->getCurrentRequest();
         $context = [
-            'ip' => $request?->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request?->headers->get('User-Agent'),
             'locale' => $request?->getLocale(),
         ];
@@ -86,7 +88,7 @@ class AuthenticationSubscriber
         $reason = $exception->getMessage();
 
         $context = [
-            'ip' => $request?->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request?->headers->get('User-Agent'),
         ];
 
@@ -109,7 +111,7 @@ class AuthenticationSubscriber
         $sessionId = $request?->getSession()->getId();
 
         $context = [
-            'ip' => $request?->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request?->headers->get('User-Agent'),
             'locale' => $request?->getLocale(),
         ];

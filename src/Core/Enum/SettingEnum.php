@@ -19,11 +19,13 @@ enum SettingEnum: string
     case PTERODACTYL_API_KEY = 'pterodactyl_api_key';
     case PTERODACTYL_SSO_ENABLED = 'pterodactyl_sso_enabled';
     case PTERODACTYL_SSO_SECRET = 'pterodactyl_sso_secret';
+    case PTERODACTYL_MANAGE_IN_PANEL_BUTTON_ENABLED = 'pterodactyl_manage_in_panel_button_enabled';
     case SHOW_PTERODACTYL_LOGS_IN_SERVER_ACTIVITY = 'show_pterodactyl_logs_in_server_activity';
     case STRIPE_SECRET_KEY = 'stripe_secret_key';
     case STRIPE_PAYMENT_METHODS = 'stripe_payment_methods';
     case INTERNAL_CURRENCY_NAME = 'internal_currency_name';
     case CURRENCY_NAME = 'currency_name';
+    case MINIMUM_TOPUP_AMOUNT = 'minimum_topup_amount';
     case DEFAULT_THEME_LIGHT_MODE_COLOR = 'theme_default_light_mode_color';
     case DEFAULT_THEME_DARK_MODE_COLOR = 'theme_default_dark_mode_color';
     case THEME_DISABLE_DARK_MODE = 'theme_disable_dark_mode';
@@ -51,4 +53,14 @@ enum SettingEnum: string
     case LOG_CLEANUP_ENABLED = 'log_cleanup_enabled';
     case LOG_CLEANUP_DAYS_AFTER = 'log_cleanup_days_after';
     case TELEMETRY_CONSENT = 'telemetry_consent';
+    case DATE_FORMAT = 'date_format';
+    case DATE_TIMEZONE = 'date_timezone';
+    case DATE_SHOW_TIMEZONE = 'date_show_timezone';
+    case PRICE_FORMAT = 'price_format';
+    case LANDING_LOGO = 'site_landing_logo';
+    case EMAIL_LOGO = 'site_email_logo';
+    case CUSTOM_HEAD_SCRIPTS_LANDING = 'custom_head_scripts_landing';
+    case CUSTOM_HEAD_SCRIPTS_PANEL = 'custom_head_scripts_panel';
+    case AVATAR_MAX_SIZE = 'avatar_max_size';
+    case AVATAR_ALLOWED_EXTENSIONS = 'avatar_allowed_extensions';
 }

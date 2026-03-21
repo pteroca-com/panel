@@ -33,89 +33,102 @@
 {% endblock %}
 
 {% block main %}
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-0">
-            <table class="table table-striped datagrid mb-0">
-                <thead>
-                <tr>
-                    <th>{{ 'pteroca.crud.theme.name'|trans }}</th>
-                    <th>{{ 'pteroca.crud.theme.version'|trans }}</th>
-                    <th>{{ 'pteroca.crud.theme.author'|trans }}</th>
-                    <th>{{ 'pteroca.crud.theme.contexts'|trans }}</th>
-                    <th>{{ 'pteroca.crud.theme.status'|trans }}</th>
-                    <th class="text-center">{{ 'pteroca.crud.theme.actions'|trans }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for theme in themes %}
+<div class="d-flex gap-3" id="plugin-page-layout" style="align-items: flex-start">
+    <div class="flex-grow-1" style="min-width: 0">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-0">
+                <table class="table table-striped datagrid mb-0">
+                    <thead>
                     <tr>
-                        <td>{{ theme.displayName }}</td>
-                        <td>{{ theme.version }}</td>
-                        <td>{{ theme.author }}</td>
-                        <td>
-                            {% if theme.contexts is defined and theme.contexts|length > 0 %}
-                                {% for context in theme.contexts %}
-                                    <span class="badge bg-info me-1">{{ context|capitalize }}</span>
-                                {% endfor %}
-                            {% else %}
-                                <span class="text-muted">-</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if theme.activeContexts|length > 0 %}
-                                <div class="d-flex flex-wrap gap-1">
-                                    {% for activeContext in theme.activeContexts %}
-                                        <span class="badge bg-success" title="{{ 'pteroca.crud.theme.active_in'|trans }} {{ activeContext }}">
-                                            {{ 'pteroca.crud.theme.active'|trans }}: {{ activeContext|capitalize }}
-                                        </span>
+                        <th>{{ 'pteroca.crud.theme.name'|trans }}</th>
+                        <th>{{ 'pteroca.crud.theme.version'|trans }}</th>
+                        <th>{{ 'pteroca.crud.theme.author'|trans }}</th>
+                        <th>{{ 'pteroca.crud.theme.contexts'|trans }}</th>
+                        <th>{{ 'pteroca.crud.theme.status'|trans }}</th>
+                        <th class="text-center">{{ 'pteroca.crud.theme.actions'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for theme in themes %}
+                        <tr>
+                            <td>{{ theme.displayName }}</td>
+                            <td>{{ theme.version }}</td>
+                            <td>{{ theme.author }}</td>
+                            <td>
+                                {% if theme.contexts is defined and theme.contexts|length > 0 %}
+                                    {% for context in theme.contexts %}
+                                        <span class="badge bg-info me-1">{{ context|capitalize }}</span>
                                     {% endfor %}
-                                </div>
-                            {% else %}
-                                <span class="badge bg-secondary">
-                                    {{ 'pteroca.crud.theme.inactive'|trans }}
-                                </span>
-                            {% endif %}
-                        </td>
-                        <td class="text-center actions">
-                            {# Dropdown menu with actions #}
-                            {% if theme_actions[theme.name] is defined and theme_actions[theme.name]|length > 0 %}
-                                <div class="dropdown">
-                                    <a class="btn btn-sm btn-light p-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa fa-ellipsis-h"></i>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        {% for action in theme_actions[theme.name] %}
-                                            <li>
-                                                <a class="dropdown-item"
-                                                   href="{{ action.url }}"
-                                                   {% if action.data_attrs is defined %}
-                                                       {% for attr, value in action.data_attrs %}
-                                                           data-{{ attr }}="{{ value }}"
-                                                       {% endfor %}
-                                                   {% endif %}>
-                                                    <i class="{{ action.icon }} me-2"></i>{{ action.label }}
-                                                </a>
-                                            </li>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if theme.activeContexts|length > 0 %}
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for activeContext in theme.activeContexts %}
+                                            <span class="badge bg-success" title="{{ 'pteroca.crud.theme.active_in'|trans }} {{ activeContext }}">
+                                                {{ 'pteroca.crud.theme.active'|trans }}: {{ activeContext|capitalize }}
+                                            </span>
                                         {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center">
-                            <em>{{ 'pteroca.crud.theme.no_themes_found_unified'|trans }}</em>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        {{ 'pteroca.crud.theme.inactive'|trans }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center actions">
+                                {# Dropdown menu with actions #}
+                                {% if theme_actions[theme.name] is defined and theme_actions[theme.name]|length > 0 %}
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-light p-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa fa-ellipsis-h"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            {% for action in theme_actions[theme.name] %}
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ action.url }}"
+                                                       {% if action.data_attrs is defined %}
+                                                           {% for attr, value in action.data_attrs %}
+                                                               data-{{ attr }}="{{ value }}"
+                                                           {% endfor %}
+                                                       {% endif %}>
+                                                        <i class="{{ action.icon }} me-2"></i>{{ action.label }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <em>{{ 'pteroca.crud.theme.no_themes_found_unified'|trans }}</em>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    {# Include modal components #}
-    {% include 'panel/crud/theme/components/set-default-modal.html.twig' %}
-    {% include 'panel/crud/theme/components/copy-theme-modal.html.twig' %}
-    {% include 'panel/crud/theme/components/delete-theme-modal.html.twig' %}
+        {# Include modal components #}
+        {% include 'panel/crud/theme/components/set-default-modal.html.twig' %}
+        {% include 'panel/crud/theme/components/copy-theme-modal.html.twig' %}
+        {% include 'panel/crud/theme/components/delete-theme-modal.html.twig' %}
+    </div>
+    {% include 'panel/crud/plugin/components/marketplace-sidebar.html.twig' %}
+</div>
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    {% include 'panel/crud/plugin/components/marketplace-sidebar-js.html.twig' with {
+        tags: 'theme',
+        placeholder_icon: 'fa-brush'
+    } %}
 {% endblock %}

@@ -26,11 +26,16 @@ use App\Core\Event\Plugin\PluginUploadedEvent;
 use App\Core\Event\Plugin\PluginUploadFailedEvent;
 use App\Core\Event\Plugin\PluginUploadPageAccessedEvent;
 use App\Core\Event\Plugin\PluginUploadRequestedEvent;
+use App\Core\Exception\License\FileBlacklistedException;
+use App\Core\Exception\License\LicenseRequiredException;
+use App\Core\Exception\License\LicenseVerificationException;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Logs\LogService;
+use App\Core\Service\Plugin\PluginFilesystemCheckService;
 use App\Core\Service\Plugin\PluginManager;
 use App\Core\Service\Plugin\PluginDependencyResolver;
 use App\Core\Service\Plugin\PluginHealthCheckService;
+use App\Core\Service\Plugin\ManifestValidator;
 use App\Core\Service\Plugin\PluginSecurityValidator;
 use App\Core\Service\Plugin\PluginUploadService;
 use App\Core\Service\System\DemoModeService;
@@ -71,6 +76,8 @@ class PluginCrudController extends AbstractPanelController
         private readonly PluginSecurityValidator $securityValidator,
         private readonly PluginUploadService $pluginUploadService,
         private readonly DemoModeService $demoModeService,
+        private readonly PluginFilesystemCheckService $pluginFilesystemCheckService,
+        private readonly ManifestValidator $manifestValidator,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -140,9 +147,9 @@ class PluginCrudController extends AbstractPanelController
                 ->hideOnIndex(),
         ];
 
-        $fields = array_merge($fields, parent::configureFields($pageName));
+        $this->fields = $fields;
 
-        return $fields;
+        return parent::configureFields($pageName);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -375,7 +382,7 @@ class PluginCrudController extends AbstractPanelController
         );
     }
 
-    public function enablePlugin(AdminContext $context): RedirectResponse
+    public function enablePlugin(AdminContext $context): Response
     {
         // Check demo mode first
         if ($this->demoModeService->isDemoModeEnabled()) {
@@ -388,6 +395,12 @@ class PluginCrudController extends AbstractPanelController
 
         $request = $context->getRequest();
         $pluginName = $request->query->get('pluginName');
+        $confirmed = $request->query->getBoolean('confirmed');
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
+        }
 
         $this->dispatchDataEvent(
             PluginEnablementRequestedEvent::class,
@@ -397,6 +410,27 @@ class PluginCrudController extends AbstractPanelController
 
         try {
             $pluginEntity = $this->pluginManager->getOrCreatePlugin($pluginName);
+
+            // Check for version mismatch warning before enabling
+            if (!$confirmed) {
+                $pluginMinVersion = $pluginEntity->getPterocaMinVersion();
+                if ($pluginMinVersion && $this->manifestValidator->hasVersionMismatchWarning($pluginMinVersion)) {
+                    $confirmUrl = $this->adminUrlGenerator
+                        ->setController(self::class)
+                        ->setAction('enablePlugin')
+                        ->set('pluginName', $pluginName)
+                        ->set('confirmed', '1')
+                        ->generateUrl();
+
+                    return $this->render('panel/crud/plugin/confirm-enable.html.twig', [
+                        'plugin' => $pluginEntity,
+                        'confirm_url' => $confirmUrl,
+                        'cancel_url' => $indexUrl,
+                        'page_title' => $this->translator->trans('pteroca.crud.plugin.version_mismatch_title'),
+                        'current_version' => $this->manifestValidator->getPterocaVersion(),
+                    ]);
+                }
+            }
 
             $this->pluginManager->enablePlugin($pluginEntity);
 
@@ -422,6 +456,24 @@ class PluginCrudController extends AbstractPanelController
                 '%s:<br>%s',
                 $this->translator->trans('pteroca.crud.plugin.dependency_error'),
                 nl2br(htmlspecialchars($e->getMessage()))
+            ));
+        } catch (LicenseRequiredException $e) {
+            $settingsUrl = $this->adminUrlGenerator
+                ->setController(PluginSettingCrudController::class)
+                ->setAction(Action::INDEX)
+                ->set('pluginName', $pluginName)
+                ->generateUrl();
+            $this->addFlash('warning', $this->translator->trans('pteroca.license.license_required'));
+            return new RedirectResponse($settingsUrl);
+        } catch (FileBlacklistedException $e) {
+            $this->addFlash('danger', $this->translator->trans(
+                'pteroca.license.file_blacklisted',
+                ['%reason%' => $e->getReason()]
+            ));
+        } catch (LicenseVerificationException $e) {
+            $this->addFlash('danger', $this->translator->trans(
+                'pteroca.license.invalid_license',
+                ['%error%' => $e->getMessage()]
             ));
         } catch (Exception $e) {
             $this->dispatchDataEvent(
@@ -457,6 +509,11 @@ class PluginCrudController extends AbstractPanelController
 
         $request = $context->getRequest();
         $pluginName = $request->query->get('pluginName');
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
+        }
 
         $this->dispatchDataEvent(
             PluginDisablementRequestedEvent::class,
@@ -531,6 +588,11 @@ class PluginCrudController extends AbstractPanelController
             throw $this->createAccessDeniedException('You do not have permission to reset plugins.');
         }
 
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
+        }
+
         $request = $context->getRequest();
         $pluginName = $request->query->get('pluginName');
 
@@ -603,6 +665,11 @@ class PluginCrudController extends AbstractPanelController
     {
         if (!$this->getUser()?->hasPermission(PermissionEnum::UNINSTALL_PLUGIN)) {
             throw $this->createAccessDeniedException('You do not have permission to delete plugins.');
+        }
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
         }
 
         $request = $context->getRequest();
@@ -702,10 +769,12 @@ class PluginCrudController extends AbstractPanelController
         $this->dispatchSimpleEvent(PluginUploadPageAccessedEvent::class, $request);
 
         $form = $this->createForm(PluginUploadFormType::class);
+        $filesystemIssues = $this->pluginFilesystemCheckService->getUnwritablePaths();
 
         return $this->render('panel/crud/plugin/upload.html.twig', [
             'form' => $form->createView(),
             'page_title' => $this->translator->trans('pteroca.plugin.upload.page_title'),
+            'filesystem_issues' => $filesystemIssues,
         ]);
     }
 
@@ -713,6 +782,11 @@ class PluginCrudController extends AbstractPanelController
     {
         if (!$this->getUser()?->hasPermission(PermissionEnum::UPLOAD_PLUGIN)) {
             throw $this->createAccessDeniedException('You do not have permission to upload plugins.');
+        }
+
+        $indexUrl = $this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl();
+        if ($redirect = $this->checkFilesystemPermissions($indexUrl)) {
+            return $redirect;
         }
 
         $request = $context->getRequest();
@@ -728,21 +802,21 @@ class PluginCrudController extends AbstractPanelController
 
         try {
             $file = $form->get('pluginFile')->getData();
-            $enableAfterUpload = $form->get('enableAfterUpload')->getData();
 
             $this->dispatchDataEvent(
                 PluginUploadRequestedEvent::class,
                 $request,
-                [$file->getClientOriginalName(), $enableAfterUpload]
+                [$file->getClientOriginalName(), false]
             );
 
             // Upload plugin
             $result = $this->pluginUploadService->uploadPlugin($file);
             $manifest = $result['manifest'];
             $securityIssues = $result['security_issues'];
+            $zipHash = $result['zip_hash'] ?? null;
 
             // Register in database
-            $plugin = $this->pluginManager->getOrCreatePlugin($manifest->name);
+            $plugin = $this->pluginManager->getOrCreatePlugin($manifest->name, $zipHash);
 
             // Log upload
             $this->logService->logAction(
@@ -757,50 +831,30 @@ class PluginCrudController extends AbstractPanelController
                 [$plugin->getName(), $plugin->getVersion(), !empty($securityIssues)]
             );
 
-            // Handle plugin state based on "enable immediately" checkbox
-            if ($enableAfterUpload) {
+            // If plugin was previously enabled (e.g., re-upload after folder deletion), disable it
+            if ($plugin->getState() === PluginStateEnum::ENABLED) {
                 try {
-                    $this->pluginManager->enablePlugin($plugin);
-
-                    $this->addFlash('success', sprintf(
-                        $this->translator->trans('pteroca.plugin.upload.success_enabled'),
-                        $plugin->getDisplayName(),
-                        $plugin->getVersion()
-                    ));
-                } catch (Exception $e) {
-                    $this->addFlash('warning', sprintf(
-                        $this->translator->trans('pteroca.plugin.upload.uploaded_but_failed_to_enable'),
-                        $plugin->getDisplayName(),
-                        $e->getMessage()
-                    ));
+                    $this->pluginManager->disablePlugin($plugin);
+                } catch (Exception) {
+                    // If disabling fails (e.g., due to dependencies), continue
                 }
-            } else {
-                // If plugin was previously enabled (e.g., re-upload after folder deletion), disable it
-                if ($plugin->getState() === PluginStateEnum::ENABLED) {
-                    try {
-                        $this->pluginManager->disablePlugin($plugin);
-                    } catch (Exception) {
-                        // If disabling fails (e.g., due to dependencies), continue
-                        // Plugin will stay enabled, user can manually disable it later
-                    }
-                }
-
-                // Show success message with security warnings if any
-                $warningMessage = sprintf(
-                    $this->translator->trans('pteroca.plugin.upload.success'),
-                    $plugin->getDisplayName(),
-                    $plugin->getVersion()
-                );
-
-                if (!empty($securityIssues)) {
-                    $highIssues = array_filter($securityIssues, fn($i) => $i['severity'] === 'HIGH');
-                    if (!empty($highIssues)) {
-                        $warningMessage .= ' ' . $this->translator->trans('pteroca.plugin.upload.security_warnings_detected');
-                    }
-                }
-
-                $this->addFlash('success', $warningMessage);
             }
+
+            // Show success message with security warnings if any
+            $warningMessage = sprintf(
+                $this->translator->trans('pteroca.plugin.upload.success'),
+                $plugin->getDisplayName(),
+                $plugin->getVersion()
+            );
+
+            if (!empty($securityIssues)) {
+                $highIssues = array_filter($securityIssues, fn($i) => $i['severity'] === 'HIGH');
+                if (!empty($highIssues)) {
+                    $warningMessage .= ' ' . $this->translator->trans('pteroca.plugin.upload.security_warnings_detected');
+                }
+            }
+
+            $this->addFlash('success', $warningMessage);
 
         } catch (Exception $e) {
             $this->dispatchDataEvent(
@@ -827,6 +881,19 @@ class PluginCrudController extends AbstractPanelController
             ->generateUrl();
 
         return new RedirectResponse($url);
+    }
+
+    private function checkFilesystemPermissions(string $redirectUrl): ?RedirectResponse
+    {
+        $unwritable = $this->pluginFilesystemCheckService->getUnwritablePaths();
+        if (!empty($unwritable)) {
+            $this->addFlash('danger', $this->translator->trans(
+                'pteroca.plugin.upload.filesystem_permission_error',
+                ['%paths%' => implode(', ', $unwritable)]
+            ));
+            return new RedirectResponse($redirectUrl);
+        }
+        return null;
     }
 
     /**

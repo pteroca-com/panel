@@ -105,7 +105,20 @@ readonly class VoucherService
             );
             $this->eventDispatcher->dispatch($redeemedEvent);
 
-            $successMessage = $this->translator->trans('pteroca.api.voucher.successfully_applied');
+            $currency = $this->settingService->getSetting(SettingEnum::INTERNAL_CURRENCY_NAME->value);
+            $successMessage = match ($voucher->getType()) {
+                VoucherTypeEnum::BALANCE_TOPUP => $this->translator->trans('pteroca.api.voucher.successfully_applied_balance_topup', [
+                    '%amount%' => number_format((float)$voucher->getValue(), 2),
+                    '%currency%' => $currency,
+                    '%newBalance%' => number_format($newBalance, 2),
+                ]),
+                VoucherTypeEnum::SERVER_DISCOUNT => $this->translator->trans('pteroca.api.voucher.successfully_applied_server_discount', [
+                    '%value%' => $voucher->getValue(),
+                ]),
+                VoucherTypeEnum::PAYMENT_DISCOUNT => $this->translator->trans('pteroca.api.voucher.successfully_applied_payment_discount', [
+                    '%value%' => $voucher->getValue(),
+                ]),
+            };
 
             return RedeemVoucherActionResult::success(
                 $successMessage,

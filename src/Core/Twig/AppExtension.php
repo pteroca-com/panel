@@ -8,6 +8,8 @@ use Twig\TwigFunction;
 use App\Core\Enum\SettingEnum;
 use App\Core\DTO\TemplateOptionsDTO;
 use App\Core\Service\SettingService;
+use App\Core\Service\DateFormatterService;
+use App\Core\Service\PriceFormatterService;
 use App\Core\Trait\FormatBytesTrait;
 use Symfony\Component\Asset\Packages;
 use Twig\Extension\AbstractExtension;
@@ -32,6 +34,8 @@ class AppExtension extends AbstractExtension
         private readonly RouterInterface $router,
         private readonly PterodactylRedirectService $pterodactylRedirectService,
         private readonly PluginAssetManager $pluginAssetManager,
+        private readonly DateFormatterService $dateFormatterService,
+        private readonly PriceFormatterService $priceFormatterService,
     ) {}
 
     public function getFunctions(): array
@@ -49,9 +53,12 @@ class AppExtension extends AbstractExtension
             new TwigFunction('use_pterodactyl_panel_as_client_panel', [$this, 'usePterodactylPanelAsClientPanel']),
             new TwigFunction('get_pterodactyl_panel_url', [$this, 'getPterodactylPanelUrl']),
             new TwigFunction('is_pterodactyl_sso_enabled', [$this, 'isPterodactylSSOEnabled']),
+            new TwigFunction('is_manage_in_pterodactyl_button_enabled', [$this, 'isManageInPterodactylButtonEnabled']),
             new TwigFunction('template_asset', [$this, 'templateAsset']),
             new TwigFunction('get_current_template_options', [$this, 'getCurrentTemplateOptions']),
             new TwigFunction('plugin_asset', [$this, 'pluginAsset']),
+            new TwigFunction('get_custom_head_scripts', [$this, 'getCustomHeadScripts']),
+            new TwigFunction('get_price_separators', [$this, 'getPriceSeparators']),
         ];
     }
 
@@ -59,6 +66,8 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('format_bytes', [$this, 'formatBytes']),
+            new TwigFilter('app_date', [$this, 'formatDate']),
+            new TwigFilter('format_price', [$this, 'formatPrice']),
         ];
     }
 
@@ -91,10 +100,23 @@ class AppExtension extends AbstractExtension
 
     public function getLogo(): string
     {
+        $context = $this->currentThemeService->getCurrentContext();
+
+        $contextLogo = match($context) {
+            'landing' => $this->settingService->getSetting(SettingEnum::LANDING_LOGO->value),
+            'email' => $this->settingService->getSetting(SettingEnum::EMAIL_LOGO->value),
+            default => null,
+        };
+
+        if (!empty($contextLogo)) {
+            return sprintf('/uploads/settings/%s', $contextLogo);
+        }
+
         $uploadedLogo = $this->settingService->getSetting(SettingEnum::LOGO->value);
         if (!empty($uploadedLogo)) {
             return sprintf('/uploads/settings/%s', $uploadedLogo);
         }
+
         return '/assets/img/logo/logo.png';
     }
 
@@ -138,6 +160,11 @@ class AppExtension extends AbstractExtension
         return $this->pterodactylRedirectService->isSSOEnabled();
     }
 
+    public function isManageInPterodactylButtonEnabled(): bool
+    {
+        return $this->pterodactylRedirectService->isManageInPterodactylButtonEnabled();
+    }
+
     public function getPterodactylPanelUrl(string $path = ''): string
     {
         return $this->pterodactylRedirectService->getPterodactylUrl($path);
@@ -173,5 +200,33 @@ class AppExtension extends AbstractExtension
     public function pluginAsset(string $pluginName, string $path): string
     {
         return $this->pluginAssetManager->getAssetUrl($pluginName, $path);
+    }
+
+    public function formatDate(\DateTimeInterface $date): string
+    {
+        return $this->dateFormatterService->formatDateTime($date);
+    }
+
+    public function formatPrice(float $price): string
+    {
+        return $this->priceFormatterService->formatPrice($price);
+    }
+
+    public function getPriceSeparators(): array
+    {
+        [$decimal, $thousands] = $this->priceFormatterService->getSeparators();
+
+        return ['decimal' => $decimal, 'thousands' => $thousands];
+    }
+
+    public function getCustomHeadScripts(string $context = 'panel'): ?string
+    {
+        $settingName = match($context) {
+            'landing' => SettingEnum::CUSTOM_HEAD_SCRIPTS_LANDING->value,
+            'panel' => SettingEnum::CUSTOM_HEAD_SCRIPTS_PANEL->value,
+            default => SettingEnum::CUSTOM_HEAD_SCRIPTS_PANEL->value,
+        };
+
+        return $this->settingService->getSetting($settingName);
     }
 }

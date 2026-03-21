@@ -2,7 +2,8 @@
 
 namespace App\Core\Command\User;
 
-use App\Core\Handler\ChangeUserPasswordHandler;
+use App\Core\DTO\Command\User\ChangeUserPasswordCommand;
+use App\Core\Handler\User\ChangeUserPasswordHandler;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class UserChangePasswordCommand extends Command
 {
     public function __construct(
-        private readonly ChangeUserPasswordHandler $changeUserPasswordHandler,
+        private readonly ChangeUserPasswordHandler $handler,
     )
     {
         parent::__construct();
@@ -39,14 +40,16 @@ class UserChangePasswordCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $email = $input->getArgument('email');
-        $password = $input->getArgument('password');
-
-        $this->changeUserPasswordHandler->setUserCredentials($email, $password);
-        $this->changeUserPasswordHandler->handle();
-
-        $io->success('User password changed!');
-
-        return Command::SUCCESS;
+        try {
+            $this->handler->handle(new ChangeUserPasswordCommand(
+                $input->getArgument('email'),
+                $input->getArgument('password'),
+            ));
+            $io->success('User password changed!');
+            return Command::SUCCESS;
+        } catch (\RuntimeException $e) {
+            $io->error($e->getMessage());
+            return Command::FAILURE;
+        }
     }
 }

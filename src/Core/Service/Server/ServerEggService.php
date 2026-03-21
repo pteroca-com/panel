@@ -29,17 +29,30 @@ readonly class ServerEggService
                 $defaultValue = $variable['attributes']['default_value'] ?? $variable['default_value'];
                 $userViewable = $variable['attributes']['user_viewable'] ?? $variable['user_viewable'];
                 $userEditable = $variable['attributes']['user_editable'] ?? $variable['user_editable'];
+                $envVariable = $variable['attributes']['env_variable'] ?? $variable['env_variable'] ?? '';
+                $name = $variable['attributes']['name'] ?? $variable['name'] ?? '';
+                $description = $variable['attributes']['description'] ?? $variable['description'] ?? '';
+                $rules = $variable['attributes']['rules'] ?? $variable['rules'] ?? '';
             } else {
                 $id = $variable->get('id');
                 $defaultValue = $variable->get('default_value');
                 $userViewable = $variable->get('user_viewable');
                 $userEditable = $variable->get('user_editable');
+                $envVariable = $variable->get('env_variable') ?? '';
+                $name = $variable->get('name') ?? '';
+                $description = $variable->get('description') ?? '';
+                $rules = $variable->get('rules') ?? '';
             }
 
             $preparedVariables[$id] = [
-                'value' => $defaultValue,
+                'value'        => $defaultValue,
                 'user_viewable' => $userViewable,
                 'user_editable' => $userEditable,
+                'user_required' => false,
+                'env_variable' => $envVariable,
+                'name'         => $name,
+                'description'  => $description,
+                'rules'        => $rules,
             ];
         }
 
@@ -111,6 +124,10 @@ readonly class ServerEggService
             'egg_variable_slot_variable_hint' => $this->translator->trans('pteroca.crud.product.egg_variable_slot_variable_hint'),
             'slot_variable_not_configured_egg' => $this->translator->trans('pteroca.crud.product.slot_variable_not_configured_egg'),
             'slot_variables_unconfigured_eggs' => $this->translator->trans('pteroca.crud.product.slot_variables_unconfigured_eggs'),
+            'egg_variable_rules' => $this->translator->trans('pteroca.crud.product.egg_variable_rules'),
+            'egg_variable_validation_error' => $this->translator->trans('pteroca.crud.product.egg_variable_validation_error'),
+            'egg_variable_user_required' => $this->translator->trans('pteroca.crud.product.egg_variable_user_required'),
+            'egg_variable_user_required_hint' => $this->translator->trans('pteroca.crud.product.egg_variable_user_required_hint'),
             'use_as_starting_egg' => $this->translator->trans('pteroca.admin.server_create.use_as_starting_egg'),
             'starting_egg_help' => $this->translator->trans('pteroca.admin.server_create.starting_egg_help'),
         ];

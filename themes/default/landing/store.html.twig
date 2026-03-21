@@ -33,18 +33,21 @@
                                     <div class="position-absolute top-0 start-50 translate-middle-x mt-n1 w-50 h-1 bg-primary rounded-bottom" style="opacity: 0.5;"></div>
 
                                     <h4 class="text-white mb-1 mt-2">{{ product.name }}</h4>
-                                    {% if product.description %}
-                                        <p class="text-muted small mb-3">{{ product.description|slice(0, 100) }}...</p>
+                                    {% if product.shortDescription %}
+                                        <p class="text-muted small mb-3">{{ product.shortDescription|nl2br|safe_html }}</p>
+                                    {% elseif product.description %}
+                                        {% set plainDescription = product.description|striptags %}
+                                        <p class="text-muted small mb-3">{{ plainDescription|length > 150 ? plainDescription|slice(0, 150) ~ '...' : plainDescription }}</p>
                                     {% endif %}
                                     <div class="pricing mb-3 mt-auto">
                                         {% set lowestPriceObj = product.lowestPriceObject %}
                                         {% if lowestPriceObj %}
                                             {% if lowestPriceObj.type.value == 'static' %}
-                                                <span class="h5 text-primary">{{ lowestPriceObj.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</span>
+                                                <span class="h5 text-primary">{{ lowestPriceObj.price|format_price }} {{ get_currency() }}/{{ lowestPriceObj.value }} {{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</span>
                                             {% elseif lowestPriceObj.type.value == 'on_demand' %}
-                                                <span class="h5 text-primary">{{ lowestPriceObj.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}</span>
+                                                <span class="h5 text-primary">{{ lowestPriceObj.price|format_price }} {{ get_currency() }}/{{ 'pteroca.product.minute_short'|trans }}</span>
                                             {% elseif lowestPriceObj.type.value == 'slot' %}
-                                                <span class="h5 text-primary">{{ lowestPriceObj.price|number_format(2, ',', ' ') }} {{ get_currency() }}/{{ 'pteroca.product.slot'|trans }}</span>
+                                                <span class="h5 text-primary">{{ lowestPriceObj.price|format_price }} {{ get_currency() }}/{{ 'pteroca.product.slot'|trans }}</span>
                                             {% endif %}
                                         {% else %}
                                             <span class="h5 text-muted">{{ 'pteroca.landing.products.contact_us'|trans }}</span>

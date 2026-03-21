@@ -1,0 +1,155 @@
+{% block body_javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const COLLECTION_TYPES = {
+                '__staticPricesname__': 'static',
+                '__dynamicPricesname__': 'dynamic',
+                '__slotPricesname__': 'slot',
+            };
+
+            const TRANSLATIONS = {
+                per: '{{ 'pteroca.crud.product.price_preview_per'|trans }}',
+                perSlot: '{{ 'pteroca.crud.product.price_preview_per_slot'|trans }}',
+                defaultCurrency: '{{ get_currency() }}',
+                days: '{{ 'pteroca.crud.product.days'|trans }}',
+                hours: '{{ 'pteroca.crud.product.hours'|trans }}',
+                minutes: '{{ 'pteroca.crud.product.minutes'|trans }}',
+            };
+
+            function getCurrencyFromCollection(collectionEl) {
+                const label = collectionEl.closest('.form-group, .field-collection')
+                    ?.previousElementSibling
+                    ?? collectionEl.closest('.form-fieldset, .col-12')
+                        ?.querySelector('label');
+
+                if (label) {
+                    const match = label.textContent.match(/\(([^)]+)\)\s*\*?\s*$/);
+                    if (match) {
+                        return match[1].trim();
+                    }
+                }
+
+                // Fallback: search for label in parent hierarchy
+                let el = collectionEl.parentElement;
+                while (el) {
+                    const lbl = el.querySelector(':scope > label, :scope > .col-form-label');
+                    if (lbl) {
+                        const match = lbl.textContent.match(/\(([^)]+)\)\s*\*?\s*$/);
+                        if (match) return match[1].trim();
+                    }
+                    el = el.parentElement;
+                    if (el === document.body) break;
+                }
+
+                return TRANSLATIONS.defaultCurrency;
+            }
+
+            function unitLabel(unitValue) {
+                const map = {
+                    'Days': TRANSLATIONS.days,
+                    'Hours': TRANSLATIONS.hours,
+                    'Minutes': TRANSLATIONS.minutes,
+                };
+                return map[unitValue] ?? unitValue;
+            }
+
+            function buildPreviewText(type, price, period, unit, currency) {
+                const priceNum = parseFloat(price);
+                if (isNaN(priceNum) || price === '') return '';
+
+                const formattedPrice = priceNum.toFixed(2);
+                const unitText = unitLabel(unit);
+
+                if (type === 'static') {
+                    return `${formattedPrice} ${currency} ${TRANSLATIONS.per} ${period} ${unitText}`;
+                } else if (type === 'dynamic') {
+                    return `${formattedPrice} ${currency} ${TRANSLATIONS.per} ${TRANSLATIONS.minutes.toLowerCase()}`;
+                } else if (type === 'slot') {
+                    return `${formattedPrice} ${currency} ${TRANSLATIONS.perSlot} ${TRANSLATIONS.per} ${period} ${unitText}`;
+                }
+
+                return '';
+            }
+
+            function updatePreview(accordionItem, type, currency) {
+                const periodInput = accordionItem.querySelector('input[name$="[value]"]');
+                const unitSelect = accordionItem.querySelector('select[name$="[unit]"]');
+                const priceInput = accordionItem.querySelector('input[name$="[price]"]');
+
+                if (!priceInput) return;
+
+                const price = priceInput.value;
+                const period = periodInput ? periodInput.value : '';
+                const unit = unitSelect ? (unitSelect.options[unitSelect.selectedIndex]?.text || unitSelect.value) : '';
+
+                const text = buildPreviewText(type, price, period, unit, currency);
+
+                const priceContainer = priceInput.parentElement;
+                let preview = priceContainer?.querySelector('.price-preview-text');
+                if (!preview) {
+                    preview = document.createElement('small');
+                    preview.className = 'price-preview-text text-muted d-block mt-1';
+                    priceContainer?.appendChild(preview);
+                }
+
+                preview.textContent = text;
+            }
+
+            function attachListeners(accordionItem, type, currency) {
+                const periodInput = accordionItem.querySelector('input[name$="[value]"]');
+                const unitSelect = accordionItem.querySelector('select[name$="[unit]"]');
+                const priceInput = accordionItem.querySelector('input[name$="[price]"]');
+
+                const update = () => updatePreview(accordionItem, type, currency);
+
+                if (periodInput) {
+                    periodInput.addEventListener('input', update);
+                    periodInput.addEventListener('change', update);
+                }
+                if (unitSelect) {
+                    unitSelect.addEventListener('change', update);
+                }
+                if (priceInput) {
+                    priceInput.addEventListener('input', update);
+                    priceInput.addEventListener('change', update);
+                }
+            }
+
+            function initCollection(collectionEl, type) {
+                const currency = getCurrencyFromCollection(collectionEl);
+                const items = collectionEl.querySelectorAll('.accordion-item');
+
+                items.forEach(item => {
+                    attachListeners(item, type, currency);
+                    updatePreview(item, type, currency);
+                });
+            }
+
+            // Initialize all collections on page load
+            Object.entries(COLLECTION_TYPES).forEach(([placeholder, type]) => {
+                const collections = document.querySelectorAll(
+                    `[data-ea-collection-field][data-form-type-name-placeholder="${placeholder}"]`
+                );
+                collections.forEach(col => initCollection(col, type));
+            });
+
+            // Handle dynamically added items
+            document.addEventListener('ea.collection.item-added', (event) => {
+                const { newElement } = event.detail;
+                const collectionEl = newElement.closest('[data-ea-collection-field]');
+                if (!collectionEl) return;
+
+                const placeholder = collectionEl.getAttribute('data-form-type-name-placeholder');
+                const type = COLLECTION_TYPES[placeholder];
+                if (!type) return;
+
+                // Wait for EasyAdmin to finish initializing the new element
+                setTimeout(() => {
+                    const currency = getCurrencyFromCollection(collectionEl);
+                    attachListeners(newElement, type, currency);
+                    updatePreview(newElement, type, currency);
+                }, 0);
+            });
+        });
+    </script>
+{% endblock %}

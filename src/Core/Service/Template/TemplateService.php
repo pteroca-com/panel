@@ -3,6 +3,7 @@
 namespace App\Core\Service\Template;
 
 use App\Core\DTO\ThemeDTO;
+use App\Core\Enum\SettingEnum;
 use App\Core\Service\System\SystemVersionService;
 use DirectoryIterator;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -11,6 +12,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class TemplateService
 {
     public const METADATA_FILE = 'template.json';
+    public const DEFAULT_THEME = 'default';
+
+    public const CONTEXT_SETTING_MAP = [
+        'panel' => SettingEnum::PANEL_THEME,
+        'landing' => SettingEnum::LANDING_THEME,
+        'email' => SettingEnum::EMAIL_THEME,
+    ];
 
     private const TEMPLATES_DIRECTORY = 'themes';
 
@@ -121,6 +129,19 @@ class TemplateService
         }
 
         return in_array($context, $metadata['contexts'], true);
+    }
+
+    /**
+     * Check if a theme exists in the filesystem
+     * Used for validating whole-theme operations (export, copy, delete)
+     * that don't require context-specific validation
+     */
+    public function themeExists(string $themeName): bool
+    {
+        $themePath = $this->getTemplatePath($themeName);
+        $metadataPath = $themePath . DIRECTORY_SEPARATOR . self::METADATA_FILE;
+
+        return is_dir($themePath) && file_exists($metadataPath);
     }
 
     public function getAvailableTemplatesForContext(string $context): array

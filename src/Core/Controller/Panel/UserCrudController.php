@@ -30,9 +30,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use App\Core\Enum\SettingEnum;
 use App\Core\Exception\PterodactylUserNotFoundException;
+use App\Core\Service\SettingService;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Validator\Constraints\Image;
 
 class UserCrudController extends AbstractPanelController
 {
@@ -44,6 +47,7 @@ class UserCrudController extends AbstractPanelController
         private readonly LogService $logService,
         private readonly RegeneratePterodactylApiKeyService $regeneratePterodactylApiKeyService,
         private readonly DemoModeService $demoModeService,
+        private readonly SettingService $settingService,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -94,6 +98,14 @@ class UserCrudController extends AbstractPanelController
                 ->setUploadDir($uploadDirectory)
                 ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
                 ->setRequired(false)
+                ->setFileConstraints(new Image([
+                    'maxSize' => $this->settingService->getSetting(SettingEnum::AVATAR_MAX_SIZE->value)
+                        ?? $this->getParameter('avatar_max_size'),
+                    'mimeTypes' => array_map('trim', explode(',',
+                        $this->settingService->getSetting(SettingEnum::AVATAR_ALLOWED_EXTENSIONS->value)
+                            ?? implode(', ', $this->getParameter('avatar_allowed_extensions'))
+                    )),
+                ]))
                 ->setColumns(4),
             AssociationField::new('userRoles', $this->translator->trans('pteroca.crud.user.roles'))
                 ->setFormTypeOption('by_reference', false)
@@ -195,7 +207,9 @@ class UserCrudController extends AbstractPanelController
             $fields[] = $apiKeyField;
         }
 
-        return $fields;
+        $this->fields = $fields;
+
+        return parent::configureFields($pageName);
     }
 
     public function configureActions(Actions $actions): Actions

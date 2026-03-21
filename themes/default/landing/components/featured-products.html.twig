@@ -13,11 +13,11 @@
                     {% set lowestPriceObj = product.lowestPriceObject %}
                     {% if lowestPriceObj %}
                         {% if lowestPriceObj.type.value == 'static' %}
-                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|number_format(2, ',', ' ') }}<small>/{{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</small>
+                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|format_price }}<small>/{{ lowestPriceObj.value }} {{ ('pteroca.product.' ~ lowestPriceObj.unit.value)|trans|lower }}</small>
                         {% elseif lowestPriceObj.type.value == 'on_demand' %}
-                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|number_format(2, ',', ' ') }}<small>/{{ 'pteroca.product.minute_short'|trans }}</small>
+                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|format_price }}<small>/{{ 'pteroca.product.minute_short'|trans }}</small>
                         {% elseif lowestPriceObj.type.value == 'slot' %}
-                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|number_format(2, ',', ' ') }}<small>/{{ 'pteroca.product.slot'|trans }}</small>
+                            <small>{{ get_currency() }}</small>{{ lowestPriceObj.price|format_price }}<small>/{{ 'pteroca.product.slot'|trans }}</small>
                         {% endif %}
                     {% else %}
                         <small>{{ 'pteroca.landing.products.contact_us'|trans }}</small>
@@ -26,8 +26,11 @@
                 
                 <div class="flex-grow-1">
                     <div class="text-muted mb-4 text-start mx-auto" style="max-width: 280px;">
-                        {% if product.description %}
-                            <p class="small">{{ product.description|length > 200 ? product.description|slice(0, 200) ~ '...' : product.description }}</p>
+                        {% if product.shortDescription %}
+                            <p class="small">{{ product.shortDescription|nl2br|safe_html }}</p>
+                        {% elseif product.description %}
+                            {% set plainDescription = product.description|striptags %}
+                            <p class="small">{{ plainDescription|length > 150 ? plainDescription|slice(0, 150) ~ '...' : plainDescription }}</p>
                         {% else %}
                             <p class="small text-center fst-italic">{{ 'pteroca.landing.products.view_details'|trans }}</p>
                         {% endif %}

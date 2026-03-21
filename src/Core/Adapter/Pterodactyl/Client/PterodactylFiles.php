@@ -223,4 +223,38 @@ final class PterodactylFiles extends AbstractPterodactylClientAdapter implements
             $this->throwClientApiException($response, $response->getStatusCode());
         }
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws PterodactylClientApiException
+     */
+    public function getDownloadUrl(string $serverId, string $filePath): string
+    {
+        $response = $this->makeRequest('GET', "servers/$serverId/files/download", [
+            'query' => ['file' => $filePath],
+        ]);
+        $data = $this->validateClientResponse($response, 200);
+
+        return $data['attributes']['url'];
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws PterodactylClientApiException
+     */
+    public function getUploadUrl(string $serverId): string
+    {
+        $response = $this->makeRequest('GET', "servers/$serverId/files/upload");
+        $data = $this->validateClientResponse($response, 200);
+
+        return $data['attributes']['url'];
+    }
 }

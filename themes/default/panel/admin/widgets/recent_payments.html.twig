@@ -34,7 +34,7 @@
                         <tr>
                             <th scope="row" class="fw-semibold">{{ payment.id }}</th>
                             <td>{{ payment.user.email }}</td>
-                            <td class="fw-semibold">{{ payment.amount|number_format(2, ',', ' ') }}</td>
+                            <td class="fw-semibold">{{ payment.amount|format_price }}</td>
                             <td><span class="badge bg-light text-dark">{{ payment.currency }}</span></td>
                             <td>
                                 {% if payment.status == 'paid' %}
@@ -47,7 +47,7 @@
                                     </span>
                                 {% endif %}
                             </td>
-                            <td class="text-muted">{{ payment.createdAt|date('Y-m-d H:i') }}</td>
+                            <td class="text-muted">{{ payment.createdAt|app_date }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

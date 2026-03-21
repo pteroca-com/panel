@@ -29,6 +29,10 @@ readonly class DemoModeSubscriber implements EventSubscriberInterface
         'disablePlugin',
         'resetPlugin',
         'regenerateApiKey',
+        'copyProduct',
+        'setDefaultTheme',
+        'copyTheme',
+        'deleteTheme',
     ];
 
     public function __construct(

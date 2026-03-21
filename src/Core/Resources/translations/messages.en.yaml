@@ -15,6 +15,7 @@ pteroca:
     email_not_verified: 'Your email address has not been verified yet. Please check your inbox'
     or_resend_verification_email: 'or click here to resend the verification email.'
     pterodactyl_error: 'Error while connecting to the Pterodactyl API.'
+    pterodactyl_account_not_synchronized: 'Your account is not properly synchronized with the game server panel. Some features may not work correctly. Please contact the administrator.'
     dont_have_permission: 'You do not have permission to perform this action.'
     experimental_feature: 'This feature is experimental and may not work correctly.'
 
@@ -159,6 +160,11 @@ pteroca:
     view_transaction_history: 'View transaction history'
     view_all_payments_description: 'View all payments that have been made on your account.'
     amount_must_be_positive: 'The amount must be positive.'
+    amount_required: 'Please enter an amount to recharge.'
+    enter_amount: 'Enter amount'
+    payment_method_required: 'Please select a payment method.'
+    amount_minimum_not_reached: 'This value should be {{ limit }} or more.'
+    amount_below_minimum: 'The minimum top-up amount is %minimum%.'
 
   payment:
     no_gateways_available: 'No payment gateways are currently available. Please configure a payment gateway or contact the administrator.'
@@ -208,6 +214,8 @@ pteroca:
     discount_hint: 'Discount will be applied only to the first billing cycle.'
     product_order_details: 'Product details and ordering options'
     total: 'Total'
+    setup_fee: 'Setup fee'
+    includes_setup_fee: 'Includes %setupFee% %currency% one-time setup fee'
     slot: 'slot'
     slots: 'Slots'
     processing: 'Processing...'
@@ -264,6 +272,7 @@ pteroca:
     not_enough_funds: 'You do not have enough funds in your account.'
     successful_purchase: 'The server was successfully purchased.'
     error_during_creating_server: 'Error during creating the server'
+    pterodactyl_account_not_synchronized: 'Your account is not synchronized with the game server panel. Please contact the administrator to resolve this issue before ordering a server.'
     no_categories: 'There are no categories yet.'
     no_products: 'There are no products yet.'
     price_not_found: 'Price not found'
@@ -285,6 +294,8 @@ pteroca:
     no_eggs_available: 'No server software options available'
     product_unavailable_title: 'Product Temporarily Unavailable'
     auto_renewal_not_allowed: 'Auto-renewal is not available for this product.'
+    user_required_variable_missing: 'Required variable "%name%" was not provided.'
+    user_required_variable_invalid: 'Invalid value for required variable "%name%".'
     insufficient_balance: 'Insufficient balance'
     please_select_location: 'Please select a server location'
     location_available: 'This location is available'
@@ -304,6 +315,10 @@ pteroca:
     location: 'Server Location'
     owner_only: 'owner only'
     description: 'Configure your server and proceed to payment'
+    user_required_variables_title: 'Required Configuration'
+    user_required_variables_description: 'Please provide the required values for the selected server software'
+    setup_fee: 'Setup fee'
+    setup_fee_one_time: 'one-time'
   cart_topup:
     title: 'Top up your account'
     order: 'Order'
@@ -356,6 +371,7 @@ pteroca:
       starting: 'Starting'
       stopping: 'Stopping'
       offline: 'Offline'
+      unknown: 'Unknown'
 
   server:
     title: 'Server management'
@@ -402,6 +418,8 @@ pteroca:
     reinstall_server_hint: 'Reinstalling your server will stop it, and then re-run the installation script that initially set it up. Some files may be deleted or modified during this process, please back up your data before continuing.'
     select_software: 'Select software'
     admin_view_warning: 'You are currently viewing this server as an administrator. Be careful with the changes you make, as they may affect the server and its users.'
+    back_to_servers: 'Back to Servers'
+    manage_in_pterodactyl: 'Manage in Pterodactyl'
     extend_server: 'Extend Server'
     extend_server_expires: 'Your <strong>{{ productName }}</strong> server is currently set to expire on <strong>{{ expiresAt }}</strong>.'
     extend_server_hint: 'You can extend the server by clicking the button below.'
@@ -418,6 +436,8 @@ pteroca:
     data_updated_successfully: 'Data has been successfully updated.'
     data_update_error: 'An error occurred while updating the data.'
     server_name_required: 'Server name is required.'
+    server_name_too_long: 'Server name cannot exceed {{ limit }} characters.'
+    enter_server_name: 'Enter server name'
     are_you_sure: 'Are you sure you want to do this?'
     suspended_expired_hint: 'This server has been suspended on {{ expireDate }} because it has not been renewed. To restore the server, renew it in the configuration tab.'
     suspended_hint: 'This server has been suspended.'
@@ -426,6 +446,7 @@ pteroca:
     console_token_expired: 'The console token has expired. Please refresh the page.'
     console_connection_closed: 'The console connection has been closed.'
     console_connection_error: 'An error occurred while connecting to the console.'
+    console_stats_unknown: 'Unknown'
     server_installing: 'Server is being installed'
     server_installing_message: 'Your server is currently being installed and will be available in a few minutes. Please wait while the installation process completes.'
     server_installing_description: 'The installation process may take several minutes depending on the selected software and server specifications.'
@@ -437,6 +458,7 @@ pteroca:
     data_validation_error: 'Error during validation. Please check if all rules are met.'
     enable_auto_renewal: 'Enable auto-renewal for this server'
     auto_renewal_tooltip: 'If enabled, the server will be automatically renewed for the selected period. The payment will be made from your account balance.'
+    connection_error: 'Unable to connect to the game server panel. Please try again later or contact the administrator.'
     no_backups: 'There are no backups for this server yet.'
     create_backup: 'Create backup'
     backup_name: 'Backup name'
@@ -736,6 +758,7 @@ pteroca:
     renew_product: 'Product renewal'
     reset_password: 'Password reset'
     server_suspended: 'Server suspension'
+    admin_server_created: 'Server created by admin'
 
   crud:
     category:
@@ -760,8 +783,13 @@ pteroca:
       details: 'Product details'
       name: 'Product name'
       description: 'Product description'
+      description_hint: 'Product description with HTML formatting. You can use tags like &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;a&gt;, &lt;h1&gt;-&lt;h6&gt;, etc. JavaScript and dangerous tags will be automatically removed for security.'
+      short_description: 'Short description'
+      short_description_hint: 'Brief product summary for listings and SEO (max 255 characters). Supports HTML formatting for emphasis, but keep it concise.'
+      short_description_max_length: 'Short description cannot be longer than 255 characters.'
       price: 'Price'
       is_active: 'Active'
+      is_active_hint: 'Only active products are visible in the store and can be purchased by customers'
       priority: 'Priority'
       priority_hint: 'Lower numbers appear first (e.g., 1 appears before 2). Use this to control display order.'
       featured: 'Featured on Landing Page'
@@ -808,8 +836,13 @@ pteroca:
       egg_variable_slot_variable_hint: 'Select the variable that sets the max slots (players) for slot-based pricing'
       slot_variable_not_configured_egg: 'Slot variable not configured for this egg'
       slot_variables_unconfigured_eggs: 'Some eggs have unconfigured slot variables'
+      egg_variable_rules: 'Rules'
+      egg_variable_validation_error: 'Validation error in "%name%": value does not meet the required rules.'
+      egg_variable_user_required: 'Required from user'
+      egg_variable_user_required_hint: 'User will be required to enter this value when ordering a server'
       see_product_configuration_guide: 'Click here to open the detailed guide on how to set up products.'
       egg_allow_change: 'Allow to change egg with reinstallation'
+      egg_allow_change_hint: 'When enabled, customers can change server software (egg) by reinstalling their server. The server will be stopped and reinstalled with the new software configuration.'
       allow_auto_renewal: 'Allow auto-renewal'
       allow_auto_renewal_hint: 'If enabled, customers can set up automatic renewal for servers created from this product. If disabled, the auto-renewal option will be hidden and unavailable.'
       allow_user_select_location: 'Allow user to select server location'
@@ -834,12 +867,16 @@ pteroca:
       price_dynamic_plan_hint: 'The price of the product for a dynamic period that users can select as a billing cycle. When the server is offline, the billing is paused.'
       price_slot_plan: 'Slot plan price'
       price_slot_plan_hint: 'Price per slot. After setting it, link the variable for max players in Product Connections for each egg.'
+      setup_fee: 'Setup fee'
+      setup_fee_hint: 'One-time setup fee charged only on the first purchase. Leave empty to disable. This fee is not affected by voucher discounts.'
       price_dynamic_only_one_plan: 'You can only set the price for one dynamic plan.'
       period: 'Period'
       unit: 'Unit'
       days: 'Days'
       hours: 'Hours'
       minutes: 'Minutes'
+      price_preview_per: 'per'
+      price_preview_per_slot: 'per slot'
       build_name: 'Build name'
       server_build: 'Server'
       server_builds: 'Servers'
@@ -980,6 +1017,11 @@ pteroca:
       warning: 'Warning'
       cancel: 'Cancel'
       close: 'Close'
+      version_mismatch_title: 'Version Compatibility Warning'
+      version_mismatch_message: 'This plugin was built for PteroCA <strong>%plugin_version%</strong>, but you are running PteroCA <strong>%current_version%</strong>. Breaking changes may have been introduced between these versions that could affect plugin functionality.'
+      version_mismatch_risk: 'Enabling this plugin is at your own risk. It may cause errors or unexpected behavior.'
+      enable_anyway: 'Enable Anyway'
+      version_mismatch_upload_skipped: 'Plugin "%s" v%s was uploaded successfully, but automatic enabling was skipped due to a version compatibility mismatch. Please enable it manually from the plugin list after reviewing the compatibility warning.'
     theme:
       theme_management_description: 'Manage and configure themes for different contexts'
       appearance_settings: 'Appearance Settings'
@@ -1050,6 +1092,7 @@ pteroca:
     server:
       pterodactyl_server_id: 'Pterodactyl Server ID'
       pterodactyl_server_identifier: 'Pterodactyl Identifier'
+      pterodactyl_server_identifier_short: 'Ptero ID'
       name: 'Server Name'
       product: 'Product'
       user: 'Owner'
@@ -1084,6 +1127,14 @@ pteroca:
       create_server: 'Create Server'
       pterodactyl_creation_failed: 'Failed to create server on Pterodactyl'
       base_product: 'Base Product'
+      health_status: 'Health Status'
+      health_status.healthy: 'OK'
+      health_status.suspended: 'Suspended'
+      health_status.expired: 'Expired'
+      health_status.expired_not_suspended: 'Expired (not suspended)'
+      health_status.expiring_critical: 'Expires soon'
+      health_status.expiring_soon: 'Renew soon'
+      health_status.deleted: 'Deleted'
     setting:
       name: 'Setting name'
       value: 'Setting value'
@@ -1103,6 +1154,8 @@ pteroca:
       created_successfully: 'Setting created successfully.'
       create_error: 'An error occurred while creating the setting: %error%'
       update_error: 'An error occurred while updating the setting: %error%'
+      minimum_topup_amount: 'Minimum Top-Up Amount'
+      minimum_topup_amount_help: 'The minimum amount users can add to their balance in a single transaction. Must be greater than 0.'
       panel_theme:
         help: 'Theme for user panel (dashboard, servers, store). Controls the look of all admin and user-facing pages.'
       landing_theme:
@@ -1110,10 +1163,16 @@ pteroca:
       email_theme:
         help: 'Theme for email templates. Controls the styling of notification, registration, and purchase emails.'
       hints:
-        site_logo: 'Custom logo for dashboard and login pages. Upload PNG, JPG, or SVG. Falls back to default if empty.'
+        site_logo: 'Default logo for the panel (admin dashboard, login pages). Also used as fallback for landing page and emails if their specific logos are not set. Upload PNG, JPG, or SVG.'
+        site_landing_logo: 'Custom logo for the landing page. Upload PNG, JPG, or SVG. Falls back to panel logo if empty.'
+        site_email_logo: 'Custom logo for emails. Upload PNG, JPG, or SVG. Falls back to panel logo if empty.'
         site_url: 'Base URL of your panel (e.g., https://panel.example.com). Used in emails, SSO, and redirects.'
         site_title: 'Panel name displayed in browser tabs, headers, and emails. Your brand visible to all users.'
         site_locale: 'Default language for the interface. Affects all menu items, labels, and system messages.'
+        date_format: 'Choose how dates and times are displayed throughout the panel. Affects all date displays for all users.'
+        date_timezone: 'Select the timezone for displaying dates. All dates will be converted from UTC to the selected timezone.'
+        date_show_timezone: 'When enabled, timezone abbreviation (e.g., "UTC", "EST") will be shown next to all displayed dates.'
+        price_format: 'Choose how prices are displayed throughout the panel. Affects all price displays in landing pages, user panel, and email templates.'
         site_favicon: 'Icon in browser tabs and bookmarks. Upload ICO, PNG, or SVG (16x16 or 32x32px recommended).'
         pterodactyl_url: 'URL of your Pterodactyl panel (e.g., https://ptero.example.com). Required for all server operations.'
         pterodactyl_api_key: 'Application API key from Pterodactyl panel. Required for user & server creation, suspension, and deletion.'
@@ -1121,6 +1180,7 @@ pteroca:
         stripe_payment_methods: 'Comma-separated payment methods (e.g., card,bank_transfer,klarna). Options shown at checkout.'
         internal_currency_name: 'Virtual currency name (e.g., coins, credits, tokens). Shown in balances, pricing, and emails.'
         currency_name: 'Real currency code (USD, EUR, GBP, PLN). Displayed in checkout and receipts. Match Stripe support.'
+        minimum_topup_amount: 'Minimum amount allowed for balance top-up. Users cannot add less than this value. Must be greater than 0.'
         theme_default_light_mode_color: 'Light mode accent color in hex (e.g., #635bff). Controls buttons, links, active items.'
         theme_default_dark_mode_color: 'Dark mode base color in hex (e.g., #1a1a2e). System auto-generates shades for UI elements.'
         theme_disable_dark_mode: 'Remove dark mode toggle. Panel shows only light mode. Useful if theme doesn''t support dark mode.'
@@ -1144,6 +1204,7 @@ pteroca:
         delete_suspended_servers_days_after: 'Number of days after the server suspension date before suspended servers are permanently deleted'
         pterodactyl_sso_enabled: 'Enable Single Sign-On Login with Pterodactyl Panel (SSO Secret must be set)'
         pterodactyl_sso_secret: 'Pterodactyl SSO Login Secret Key'
+        pterodactyl_manage_in_panel_button_enabled: 'Enable "Manage in Pterodactyl" button on server management page'
         show_pterodactyl_logs_in_server_activity: 'Show Pterodactyl logs in server activity'
         current_theme: 'Current theme of the panel (LEGACY - replaced by context-based themes)'
         panel_theme: 'Theme for user panel (dashboard, servers, store). Controls the look of all admin and user-facing pages.'
@@ -1155,6 +1216,10 @@ pteroca:
         renewal_notification_min_period_hours: 'Minimum hours between renewal emails per server. Prevents spam. E.g., 24 = max once daily.'
         renewal_notification_on_demand_min_hours: 'Min hours for on-demand server renewals to trigger email. E.g., 24 = notify only if 24+ hours.'
         telemetry_consent: 'Allow sending anonymous usage data to help improve PteroCA. Only installation events and errors are tracked. No personal data, API keys, or URLs are collected.'
+        custom_head_scripts_landing: 'Custom HTML/JavaScript code injected into the <head> section of the landing page. Use for analytics (Google Analytics, Meta Pixel), custom fonts, or tracking scripts. WARNING: Only add scripts from trusted sources to prevent XSS attacks.'
+        custom_head_scripts_panel: 'Custom HTML/JavaScript code injected into the <head> section of the panel (dashboard, admin). Use for internal analytics, monitoring tools, or custom integrations. WARNING: Only add scripts from trusted sources to prevent XSS attacks.'
+        avatar_max_size: 'Maximum file size for user avatar uploads (e.g., 2M, 500K, 5M). Uses Symfony size format.'
+        avatar_allowed_extensions: 'Allowed MIME types for avatar uploads, separated by commas (e.g., image/jpeg, image/png, image/webp).'
       template:
         name: 'Template name'
         description: 'Template description'
@@ -1428,6 +1493,9 @@ pteroca:
       not_found: 'Voucher not found.'
       expired: 'Voucher has expired.'
       successfully_applied: 'Voucher successfully applied.'
+      successfully_applied_balance_topup: 'Voucher applied! Your account has been topped up by %amount% %currency%. New balance: %newBalance% %currency%.'
+      successfully_applied_server_discount: 'Voucher applied! %value%% discount will be applied to your server purchase.'
+      successfully_applied_payment_discount: 'Voucher applied! %value%% discount will be applied to your payment.'
       max_global_uses_reached: 'Maximum global uses reached.'
       already_used: 'Voucher has already been used.'
       only_for_new_accounts: 'Voucher is only for new accounts.'
@@ -1526,6 +1594,17 @@ pteroca:
       auto_delete_title: 'Auto-Deletion Warning'
       auto_delete_warning: 'Important: Your server will be automatically deleted after %days% days (%deleteDate%) if not renewed.'
       panel_access: 'Access Panel'
+    admin_server_created:
+      subject: 'Your server has been created'
+      title: 'Server Created'
+      subtitle: 'A server has been set up for your account by an administrator'
+      server_details: 'Server Details'
+      server_name: 'Server Name'
+      product_name: 'Product'
+      expires_at: 'Expires At'
+      panel_url: 'Panel URL'
+      access_panel: 'Go to Panel'
+      note: 'This server was created for you by an administrator. If you have questions, please contact support.'
 
   verification:
     title: 'Email Verification Required'
@@ -1577,6 +1656,8 @@ pteroca:
       base_product_help: 'Optionally select a product template to pre-fill configuration values'
       free_server: 'Free Server (do not charge user balance)'
       free_server_help: 'Enable this to create server without deducting from user balance'
+      send_creation_email: 'Notify user via email'
+      send_creation_email_help: 'Send an email to the user with information about the created server'
       success: 'Server created successfully for user %user%'
       eggs_required: 'At least one egg must be selected'
       use_as_starting_egg: 'Use as starting egg'
@@ -1782,6 +1863,9 @@ pteroca:
       failed: 'Upload failed: %s'
       security_warnings_detected: 'Warning: Security issues detected. Review before enabling.'
       invalid_mime_type: 'Please upload a valid ZIP file'
+      filesystem_permission_error: 'Plugin operation aborted: the following directories are not writable by the web server: %paths%. Fix with: sudo chown -R www-data:www-data var/ plugins/ public/plugins/'
+      filesystem_warning_title: 'Filesystem Permission Warning'
+      filesystem_warning_body: 'Some directories required for plugin operations are not writable. Plugin upload or activation may fail:'
 
   widget:
     plugin_status:
@@ -1867,6 +1951,9 @@ pteroca:
         invalid_manifest: 'Invalid template.json: %s'
         compatibility_error: 'Theme is incompatible with current PteroCA version'
         security_critical: 'Critical security issues detected. Upload blocked for safety.'
+      filesystem_permission_error: 'Theme operation aborted: the following directories are not writable by the web server: %paths%. Fix with: sudo chown -R www-data:www-data var/ themes/ public/assets/theme/'
+      filesystem_warning_title: 'Filesystem Permission Warning'
+      filesystem_warning_body: 'Some directories required for theme operations are not writable. Theme upload or management may fail:'
       warning:
         outdated_pteroca_version: 'Theme targets an older PteroCA version'
         missing_assets: 'No assets directory found - theme uploaded without static assets'
@@ -1880,3 +1967,25 @@ pteroca:
     action_disabled: 'This is a demo version - this action is disabled'
     websocket_disabled: 'Server control (start/stop/restart/kill) and command execution are disabled in demo mode'
     settings_view_disabled: 'Viewing settings is disabled in demo mode to protect sensitive information'
+  license:
+    file_blacklisted: "This file has been blacklisted: %reason%"
+    invalid_license: "License verification failed: %error%"
+    license_required: "This plugin requires a license key. Please enter it in plugin settings before enabling."
+    theme_license_required: "This theme requires a license key. Please enter it in theme settings before activating."
+    api_unavailable_warning: "Marketplace license API is currently unavailable. Proceeding without license verification."
+    theme_blacklisted: "This theme has been blacklisted and cannot be activated: %reason%"
+    license_key_label: "License Key"
+    license_key_placeholder: "XXXX-XXXX-XXXX-XXXX"
+    license_key_hint: "Enter the license key from your marketplace.pteroca.com purchase"
+    cron_plugin_disabled: "Plugin %name% has been automatically disabled: license verification failed (%error%)."
+    cron_theme_reset: "Theme %name% has been deactivated: license verification failed (%error%)."
+  marketplace:
+    browser_title: 'Marketplace'
+    free: 'Free'
+    error: 'Failed to load marketplace plugins'
+    no_results: 'No plugins found'
+    download: 'Download from Marketplace'
+    sort:
+      newest: 'Newest'
+      popular: 'Most Downloaded'
+      rating: 'Top Rated'

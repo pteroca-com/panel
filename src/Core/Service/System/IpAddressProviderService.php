@@ -13,6 +13,15 @@ readonly class IpAddressProviderService
     public function getIpAddress(): ?string
     {
         $request = $this->requestStack->getCurrentRequest();
-        return $request?->getClientIp();
+        if ($request === null) {
+            return null;
+        }
+
+        $cfIp = $request->headers->get('CF-Connecting-IP');
+        if (!empty($cfIp) && filter_var($cfIp, FILTER_VALIDATE_IP)) {
+            return $cfIp;
+        }
+
+        return $request->getClientIp();
     }
 }

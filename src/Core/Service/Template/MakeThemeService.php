@@ -7,7 +7,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class MakeThemeService
 {
-    private const DEFAULT_THEME = 'default';
 
     public function __construct(
         private readonly TemplateService $templateService,
@@ -30,7 +29,7 @@ class MakeThemeService
         }
 
         $this->filesystem->mirror(
-            $this->templateService->getTemplatePath(self::DEFAULT_THEME),
+            $this->templateService->getTemplatePath(TemplateService::DEFAULT_THEME),
             $newTemplatePath
         );
 
@@ -46,7 +45,7 @@ class MakeThemeService
         }
 
         $this->filesystem->mirror(
-            $this->templateService->getTemplateAssetsPath(self::DEFAULT_THEME),
+            $this->templateService->getTemplateAssetsPath(TemplateService::DEFAULT_THEME),
             $assetsPath
         );
     }

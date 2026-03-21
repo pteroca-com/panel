@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Service\Pterodactyl;
+namespace App\Core\Service\Server;
 
 use App\Core\Contract\UserInterface;
 use App\Core\Entity\Server;
@@ -10,6 +10,7 @@ use App\Core\Event\Server\ServerEulaAcceptanceRequestedEvent;
 use App\Core\Event\Server\ServerEulaAcceptedEvent;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Logs\ServerLogService;
+use App\Core\Service\Pterodactyl\PterodactylApplicationService;
 use Exception;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

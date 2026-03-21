@@ -2,6 +2,7 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Attribute\RequiresVerifiedEmail;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Event\Server\ServerDetailsLoadedEvent;
 use App\Core\Event\Server\ServerDetailsRequestedEvent;
@@ -10,7 +11,7 @@ use App\Core\Event\Server\ServerWebsocketTokenRequestedEvent;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Event\EventContextService;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
-use App\Core\Service\Pterodactyl\ServerEulaService;
+use App\Core\Service\Server\ServerEulaService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerWebsocketService;
 use App\Core\Trait\InternalServerApiTrait;
@@ -53,14 +54,31 @@ class ServerController extends APIAbstractController
         );
         $this->eventDispatcher->dispatch($requestedEvent);
 
-        $serverDetailsDTO = $this->serverService->getServerStateByClient($user, $server);
-        $serverDetails = $serverDetailsDTO?->toArray();
+        try {
+            $serverDetailsDTO = $this->serverService->getServerStateByClient($user, $server);
+        } catch (\Exception) {
+            $serverDetailsDTO = null;
+        }
+
+        if ($serverDetailsDTO === null) {
+            $this->eventDispatcher->dispatch(new ServerDetailsLoadedEvent(
+                $this->getUserId(),
+                $server->getId(),
+                $server->getPterodactylServerIdentifier(),
+                null,
+                $server->getIsSuspended(),
+                $context
+            ));
+            return new JsonResponse(['state' => 'unknown']);
+        }
+
+        $serverDetails = $serverDetailsDTO->toArray();
         unset($serverDetails['egg']);
         $loadedEvent = new ServerDetailsLoadedEvent(
             $this->getUserId(),
             $server->getId(),
             $server->getPterodactylServerIdentifier(),
-            $serverDetailsDTO?->state?->value,
+            $serverDetailsDTO->state?->value,
             $server->getIsSuspended(),
             $context
         );
@@ -102,6 +120,7 @@ class ServerController extends APIAbstractController
         return new JsonResponse($websocket->toArray());
     }
 
+    #[RequiresVerifiedEmail]
     #[Route('/panel/api/server/{id}/accept-eula', name: 'panel_server_accept_eula', methods: ['POST'])]
     public function acceptEula(int $id): JsonResponse
     {

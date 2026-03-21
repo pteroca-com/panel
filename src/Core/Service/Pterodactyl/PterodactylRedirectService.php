@@ -35,6 +35,17 @@ class PterodactylRedirectService
     }
 
     /**
+     * Check if the "Manage in Pterodactyl" button should be shown
+     * Requires both SSO and the button setting to be enabled
+     */
+    public function isManageInPterodactylButtonEnabled(): bool
+    {
+        return !empty($this->settingsService->getSetting(
+            SettingEnum::PTERODACTYL_MANAGE_IN_PANEL_BUTTON_ENABLED->value
+        ));
+    }
+
+    /**
      * Get redirect URL for a server (without redirecting)
      *
      * @param string $serverIdentifier Pterodactyl server identifier

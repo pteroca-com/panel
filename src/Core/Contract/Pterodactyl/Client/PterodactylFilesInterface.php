@@ -31,4 +31,8 @@ interface PterodactylFilesInterface
     public function decompressFile(string $serverId, string $root, string $file): void;
 
     public function changePermissions(string $serverId, string $root, array $files): void;
+
+    public function getDownloadUrl(string $serverId, string $filePath): string;
+
+    public function getUploadUrl(string $serverId): string;
 }

@@ -14,7 +14,7 @@
                 </div>
                 <div>
                     <h6 class="mb-1 fw-semibold">{{ 'pteroca.recharge.current_balance'|trans }}</h6>
-                    <span class="fs-4 fw-bold text-primary">{{ app.user.balance|number_format(2, ',', ' ')}} {{ get_currency() }}</span>
+                    <span class="fs-4 fw-bold text-primary">{{ app.user.balance|format_price }} {{ get_currency() }}</span>
                 </div>
             </div>
         </div>

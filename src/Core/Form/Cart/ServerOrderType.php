@@ -30,6 +30,7 @@ class ServerOrderType extends AbstractType
             ])
             ->add('egg', ChoiceType::class, [
                 'choices' => $options['eggs'],
+                'data' => $options['selected_egg'],
                 'label' => false,
                 'required' => true,
                 'mapped' => false,
@@ -37,14 +38,15 @@ class ServerOrderType extends AbstractType
                     new Assert\NotBlank(message: 'pteroca.store.please_select_game'),
                 ],
                 'attr' => [
-                    'style' => 'display:none',
-                ],
-                'label_attr' => [
-                    'style' => 'display:none',
+                    'class' => 'form-select form-select-lg',
                 ],
             ])
             ->add('duration', ChoiceType::class, [
                 'choices' => $options['prices'],
+                'choice_attr' => function ($choice) use ($options) {
+                    return $options['price_choice_attrs'][$choice] ?? [];
+                },
+                'data' => $options['selected_duration'],
                 'label' => false,
                 'required' => true,
                 'mapped' => false,
@@ -52,21 +54,15 @@ class ServerOrderType extends AbstractType
                     new Assert\NotBlank(message: 'pteroca.store.please_select_duration'),
                 ],
                 'attr' => [
-                    'style' => 'display:none',
-                ],
-                'label_attr' => [
-                    'style' => 'display:none',
+                    'class' => 'form-select form-select-lg',
                 ],
             ])
             ->add('server-name', TextType::class, [
                 'label' => 'pteroca.store.server_name',
-                'required' => true,
+                'required' => false,
                 'constraints' => [
-                    new Assert\NotBlank(message: 'pteroca.store.server_name_required'),
                     new Assert\Length(
-                        min: 3,
                         max: 50,
-                        minMessage: 'pteroca.store.server_name_too_short',
                         maxMessage: 'pteroca.store.server_name_too_long'
                     ),
                 ],
@@ -156,6 +152,9 @@ class ServerOrderType extends AbstractType
             'product_id' => null,
             'eggs' => [],
             'prices' => [],
+            'price_choice_attrs' => [],
+            'selected_duration' => null,
+            'selected_egg' => null,
             'has_slot_prices' => false,
             'initial_slots' => null,
             'allow_auto_renewal' => true,
@@ -170,6 +169,9 @@ class ServerOrderType extends AbstractType
         $resolver->setAllowedTypes('product_id', 'int');
         $resolver->setAllowedTypes('eggs', 'array');
         $resolver->setAllowedTypes('prices', 'array');
+        $resolver->setAllowedTypes('price_choice_attrs', 'array');
+        $resolver->setAllowedTypes('selected_duration', ['int', 'null']);
+        $resolver->setAllowedTypes('selected_egg', ['int', 'null']);
         $resolver->setAllowedTypes('has_slot_prices', 'bool');
         $resolver->setAllowedTypes('initial_slots', ['int', 'null']);
         $resolver->setAllowedTypes('allow_auto_renewal', 'bool');

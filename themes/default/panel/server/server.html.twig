@@ -2,13 +2,15 @@
 
 {% block head_stylesheets %}
     {{ parent() }}
-    {% for css in tabAssets.stylesheets %}
-        <link rel="stylesheet" href="{{ template_asset(css) }}">
-    {% endfor %}
+    {% if tabAssets is defined %}
+        {% for css in tabAssets.stylesheets %}
+            <link rel="stylesheet" href="{{ template_asset(css) }}">
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block title %}
-    | {{ serverData.pterodactylServer.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}
+    | {{ serverData.pterodactylServer.name ?? server.serverProduct.name ?? 'pteroca.server.title'|trans }} #{{ server.pterodactylServerIdentifier }}
 {% endblock %}
 
 {% block content_title %}{% endblock %}
@@ -19,6 +21,33 @@
 
 {% block main %}
     <div class="mt-4">
+        {% if connectionError is defined and connectionError %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="dashboard-header rounded-3 p-4 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle me-3">
+                                <i class="fas fa-server p-3 text-white"></i>
+                            </div>
+                            <h4 class="mb-1 fw-bold">{{ server.serverProduct.name }} #{{ server.pterodactylServerIdentifier }}</h4>
+                            <div class="ms-auto">
+                                <a href="{{ path('servers') }}" class="btn btn-outline-secondary px-3">
+                                    <i class="fas fa-arrow-left me-1"></i>{{ 'pteroca.server.back_to_servers'|trans }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {{ 'pteroca.server.connection_error'|trans }}
+                    </div>
+                </div>
+            </div>
+        {% else %}
         <!-- Header Section -->
         <div class="row">
             <div class="col-12">
@@ -33,11 +62,32 @@
                                 <p class="text-muted mb-0">{{ serverData.pterodactylServer.description }}</p>
                             {% endif %}
                         </div>
+                        <div class="ms-auto d-flex gap-2 align-items-center">
+                            <a href="{{ path('servers') }}" class="btn btn-outline-secondary px-3">
+                                <i class="fas fa-arrow-left me-1"></i>{{ 'pteroca.server.back_to_servers'|trans }}
+                            </a>
+                            {% if is_manage_in_pterodactyl_button_enabled() %}
+                                <a href="{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}"
+                                   class="btn btn-primary px-3" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>{{ 'pteroca.server.manage_in_pterodactyl'|trans }}
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {% if widgetRegistry is defined %}
+        {% include '_partials/widget_area.html.twig' with {
+            'position': constant('App\\Core\\Enum\\WidgetPosition::TOP'),
+            'widgetContext': widgetContext,
+            'widgetRegistry': widgetRegistry,
+            'contextData': contextData
+        } %}
+    {% endif %}
+
     {% if isAdminView and app.user.email != server.user.email %}
         <div class="container">
             <div class="alert alert-warning" role="alert">
@@ -51,7 +101,7 @@
             <div class="alert alert-danger" role="alert">
                 <i class="fas fa-exclamation-triangle"></i>
                 {% if server.expiresAt|date("Y-m-d H:i:s") < "now"|date("Y-m-d H:i:s") %}
-                    {{ 'pteroca.server.suspended_expired_hint'|trans({ '{{ expireDate }}': server.expiresAt|date("Y-m-d H:i") }) }}
+                    {{ 'pteroca.server.suspended_expired_hint'|trans({ '{{ expireDate }}': server.expiresAt|app_date }) }}
                 {% else %}
                     {{ 'pteroca.server.suspended_hint'|trans }}
                 {% endif %}
@@ -73,6 +123,16 @@
             </div>
         </div>
     {% endif %}
+
+    {% if widgetRegistry is defined %}
+        {% include '_partials/widget_area.html.twig' with {
+            'position': constant('App\\Core\\Enum\\WidgetPosition::BOTTOM'),
+            'widgetContext': widgetContext,
+            'widgetRegistry': widgetRegistry,
+            'contextData': contextData
+        } %}
+    {% endif %}
+    {% endif %}{# end connectionError check #}
 {% endblock %}
 
 {% block body_javascript %}
@@ -116,7 +176,9 @@
             }
         }
     </script>
-    {% for js in tabAssets.javascripts %}
-        <script src="{{ template_asset(js) }}"></script>
-    {% endfor %}
+    {% if tabAssets is defined %}
+        {% for js in tabAssets.javascripts %}
+            <script src="{{ template_asset(js) }}"></script>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

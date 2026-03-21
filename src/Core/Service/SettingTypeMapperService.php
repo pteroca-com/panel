@@ -53,7 +53,9 @@ readonly class SettingTypeMapperService
             // If already a valid SettingTypeEnum value, pass through
             SettingTypeEnum::TEXT->value,
             SettingTypeEnum::TEXTAREA->value,
+            SettingTypeEnum::CODE->value,
             SettingTypeEnum::SECRET->value,
+            SettingTypeEnum::LICENSE_KEY->value,
             SettingTypeEnum::COLOR->value,
             SettingTypeEnum::NUMBER->value,
             SettingTypeEnum::LOCALE->value,
@@ -84,7 +86,9 @@ readonly class SettingTypeMapperService
             SettingTypeEnum::TEXTAREA->value => 'json',
             // For special UI-only types, map to string as generic storage
             SettingTypeEnum::SECRET->value,
+            SettingTypeEnum::LICENSE_KEY->value,
             SettingTypeEnum::COLOR->value,
+            SettingTypeEnum::CODE->value,
             SettingTypeEnum::LOCALE->value,
             SettingTypeEnum::TWIG->value,
             SettingTypeEnum::URL->value,

@@ -19,6 +19,7 @@ use App\Core\Event\Server\ServerCreatedOnPterodactylEvent;
 use App\Core\Event\Server\ServerEntityCreatedEvent;
 use App\Core\Event\Server\ServerProductCreatedEvent;
 use App\Core\Event\Server\ServerBalanceChargedEvent;
+use App\Core\Event\Server\ServerBeforeBalanceChargeEvent;
 use App\Core\Event\Server\ServerPurchaseCompletedEvent;
 use App\Core\Exception\Email\ProductPriceNotFoundException;
 use App\Core\Exception\Email\ServerDetailsNotAvailableException;
@@ -78,6 +79,7 @@ class CreateServerService extends AbstractActionServerService
         ?string $voucherCode = null,
         ?int $slots = null,
         ?int $selectedNodeId = null,
+        array $userVariables = [],
     ): array
     {
         if (!empty($voucherCode)) {
@@ -110,7 +112,7 @@ class CreateServerService extends AbstractActionServerService
             throw new Exception($this->translator->trans('pteroca.store.server_creation_blocked'));
         }
 
-        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user, $slots, $selectedNodeId);
+        $createdPterodactylServer = $this->createPterodactylServer($product, $eggId, $serverName, $user, $slots, $selectedNodeId, $userVariables);
 
         $createdOnPterodactylEvent = new ServerCreatedOnPterodactylEvent(
             $user->getId(),
@@ -147,9 +149,30 @@ class CreateServerService extends AbstractActionServerService
         $this->eventDispatcher->dispatch($productCreatedEvent);
 
         $oldBalance = $user->getBalance();
-        $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots);
-        $newBalance = $user->getBalance();
+        $currency = $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
 
+        $selectedPrice = $product->getPrices()->filter(
+            fn($p) => $p->getId() === $priceId
+        )->first() ?: null;
+        $calculatedAmount = $selectedPrice
+            ? $this->productPriceCalculatorService->calculateFinalPrice($selectedPrice, $slots) + ($product->getSetupFee() ?? 0)
+            : 0;
+
+        $beforeChargeEvent = new ServerBeforeBalanceChargeEvent(
+            $user->getId(),
+            $createdEntityServer->getId(),
+            $product->getId(),
+            $calculatedAmount,
+            $currency,
+            $voucherCode,
+        );
+        $this->eventDispatcher->dispatch($beforeChargeEvent);
+
+        if (!$beforeChargeEvent->isBalanceChargeSkipped()) {
+            $this->updateUserBalance($user, $product, $priceId, $voucherCode, $slots, $product->getSetupFee());
+        }
+
+        $newBalance = $user->getBalance();
         $finalPrice = $oldBalance - $newBalance;
 
         $balanceChargedEvent = new ServerBalanceChargedEvent(
@@ -158,7 +181,7 @@ class CreateServerService extends AbstractActionServerService
             $newBalance,
             $createdEntityServer->getId(),
             $finalPrice,
-            $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value)
+            $currency
         );
         $this->eventDispatcher->dispatch($balanceChargedEvent);
 
@@ -216,12 +239,13 @@ class CreateServerService extends AbstractActionServerService
         string $serverName,
         UserInterface $user,
         ?int $slots = null,
-        ?int $selectedNodeId = null
+        ?int $selectedNodeId = null,
+        array $userVariables = []
     ): PterodactylServer
     {
         try {
             $preparedServerBuild = $this->serverBuildService
-                ->prepareServerBuild($product, $user, $eggId, $serverName, $slots, $selectedNodeId);
+                ->prepareServerBuild($product, $user, $eggId, $serverName, $slots, $selectedNodeId, $userVariables);
 
             return $this->pterodactylApplicationService
                 ->getApplicationApi()
@@ -299,6 +323,7 @@ class CreateServerService extends AbstractActionServerService
             ->setAllowChangeEgg($product->getAllowChangeEgg())
             ->setAllowAutoRenewal($product->getAllowAutoRenewal())
             ->setAllowUserSelectLocation($product->getAllowUserSelectLocation())
+            ->setSetupFee($product->getSetupFee())
             ->setSelectedNodeId($selectedNodeId);
 
         $this->serverProductRepository->save($entityServerProduct);

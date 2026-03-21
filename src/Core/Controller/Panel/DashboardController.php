@@ -10,6 +10,7 @@ use App\Core\Controller\Panel\Setting\SecuritySettingCrudController;
 use App\Core\Controller\Panel\Setting\ThemeSettingCrudController;
 use App\Core\Entity\Panel\UserAccount;
 use App\Core\Service\Menu\MenuBuilder;
+use App\Core\Service\Pterodactyl\PterodactylAccountService;
 use App\Core\Enum\PermissionEnum;
 use App\Core\Enum\SettingContextEnum;
 use App\Core\Enum\SettingEnum;
@@ -68,6 +69,7 @@ class DashboardController extends AbstractDashboardController
         private readonly MenuBuilder $menuBuilder,
         private readonly WidgetRegistry $widgetRegistry,
         private readonly DemoModeService $demoModeService,
+        private readonly PterodactylAccountService $pterodactylAccountService,
     ) {}
 
     #[Route('/panel', name: 'panel')]
@@ -77,6 +79,10 @@ class DashboardController extends AbstractDashboardController
 
         $user = $this->getUser();
         $request = $this->requestStack->getCurrentRequest();
+
+        if (!$this->pterodactylAccountService->isAccountSynchronized($user)) {
+            $this->addFlash('warning', $this->translator->trans('pteroca.system.pterodactyl_account_not_synchronized'));
+        }
 
         $this->dispatchDataEvent(
             DashboardAccessedEvent::class,
@@ -163,7 +169,7 @@ class DashboardController extends AbstractDashboardController
             || $this->settingService->getSetting(SettingEnum::THEME_DISABLE_DARK_MODE->value);
         $defaultMode = $disableDarkMode
             ? ColorScheme::LIGHT
-            : $this->settingService->getSetting(SettingEnum::THEME_DEFAULT_MODE->value);
+            : $this->getValidColorScheme();
 
         return Dashboard::new()
             ->setTitle($logo)
@@ -258,5 +264,13 @@ class DashboardController extends AbstractDashboardController
             'crudAction' => 'index',
             'crudControllerFqcn' => $crudFqcn,
         ]);
+    }
+
+    private function getValidColorScheme(): string
+    {
+        $storedMode = strtolower(trim((string) $this->settingService->getSetting(SettingEnum::THEME_DEFAULT_MODE->value)));
+        $validModes = [ColorScheme::LIGHT, ColorScheme::DARK, ColorScheme::AUTO];
+
+        return in_array($storedMode, $validModes, true) ? $storedMode : ColorScheme::LIGHT;
     }
 }

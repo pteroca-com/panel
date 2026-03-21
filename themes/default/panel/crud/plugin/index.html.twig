@@ -26,60 +26,73 @@
 {% endblock %}
 
 {% block main %}
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-body p-0">
-            <table class="table table-striped datagrid mb-0">
-                <thead>
-                <tr>
-                    <th>{{ 'pteroca.crud.plugin.name'|trans }}</th>
-                    <th>{{ 'pteroca.crud.plugin.display_name'|trans }}</th>
-                    <th>{{ 'pteroca.crud.plugin.version'|trans }}</th>
-                    <th>{{ 'pteroca.crud.plugin.author'|trans }}</th>
-                    <th>{{ 'pteroca.crud.plugin.state'|trans }}</th>
-                    <th class="text-center">{{ 'pteroca.crud.plugin.actions'|trans }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for plugin in plugins %}
+<div class="d-flex gap-3 align-items-flex-start" id="plugin-page-layout" style="align-items: flex-start">
+    <div class="flex-grow-1" style="min-width: 0">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-0">
+                <table class="table table-striped datagrid mb-0">
+                    <thead>
                     <tr>
-                        <td>{{ plugin.name }}</td>
-                        <td>{{ plugin.displayName }}</td>
-                        <td>{{ plugin.version }}</td>
-                        <td>{{ plugin.author }}</td>
-                        <td>
-                            <span class="badge bg-{{ plugin.state.badgeClass }}">
-                                {{ plugin.state.label|trans }}
-                            </span>
-                        </td>
-                        <td class="text-center actions">
-                            {# Detail button - always visible #}
-                            <a href="{{ ea_url({ crudAction: 'viewDetails', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
-                               class="btn btn-sm btn-primary p-2"
-                               title="{{ 'pteroca.crud.plugin.details'|trans }}">
-                                <i class="fa fa-eye"></i>
-                            </a>
+                        <th>{{ 'pteroca.crud.plugin.name'|trans }}</th>
+                        <th>{{ 'pteroca.crud.plugin.display_name'|trans }}</th>
+                        <th>{{ 'pteroca.crud.plugin.version'|trans }}</th>
+                        <th>{{ 'pteroca.crud.plugin.author'|trans }}</th>
+                        <th>{{ 'pteroca.crud.plugin.state'|trans }}</th>
+                        <th class="text-center">{{ 'pteroca.crud.plugin.actions'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for plugin in plugins %}
+                        <tr>
+                            <td>{{ plugin.name }}</td>
+                            <td>{{ plugin.displayName }}</td>
+                            <td>{{ plugin.version }}</td>
+                            <td>{{ plugin.author }}</td>
+                            <td>
+                                <span class="badge bg-{{ plugin.state.badgeClass }}">
+                                    {{ plugin.state.label|trans }}
+                                </span>
+                            </td>
+                            <td class="text-center actions">
+                                {# Detail button - always visible #}
+                                <a href="{{ ea_url({ crudAction: 'viewDetails', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
+                                   class="btn btn-sm btn-primary p-2"
+                                   title="{{ 'pteroca.crud.plugin.details'|trans }}">
+                                    <i class="fa fa-eye"></i>
+                                </a>
 
-                            {# Dynamic actions from controller #}
-                            {% if plugin_actions[plugin.name] is defined %}
-                                {% for action in plugin_actions[plugin.name] %}
-                                    <a href="{{ action.url }}"
-                                       class="btn btn-sm p-2 {{ action.class }}"
-                                       title="{{ action.label }}">
-                                        <i class="{{ action.icon }}"></i>
-                                    </a>
-                                {% endfor %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center">
-                            <em>{{ 'pteroca.crud.plugin.no_plugins_found'|trans }}</em>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                                {# Dynamic actions from controller #}
+                                {% if plugin_actions[plugin.name] is defined %}
+                                    {% for action in plugin_actions[plugin.name] %}
+                                        <a href="{{ action.url }}"
+                                           class="btn btn-sm p-2 {{ action.class }}"
+                                           title="{{ action.label }}">
+                                            <i class="{{ action.icon }}"></i>
+                                        </a>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <em>{{ 'pteroca.crud.plugin.no_plugins_found'|trans }}</em>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+    {% include 'panel/crud/plugin/components/marketplace-sidebar.html.twig' %}
+</div>
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    {% include 'panel/crud/plugin/components/marketplace-sidebar-js.html.twig' with {
+        tags: 'plugin',
+        placeholder_icon: 'fa-puzzle-piece'
+    } %}
 {% endblock %}

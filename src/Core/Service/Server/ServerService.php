@@ -27,13 +27,21 @@ readonly class ServerService
             ->getClientApi($user);
 
         if (false === $server->getIsSuspended()) {
-            $serverState = $clientApi->servers()
-                ->getServerResources($server->getPterodactylServerIdentifier())['current_state'] ?? null;
+            try {
+                $serverState = $clientApi->servers()
+                    ->getServerResources($server->getPterodactylServerIdentifier())['current_state'] ?? null;
+            } catch (\Exception) {
+                $serverState = null;
+            }
         } else {
             $serverState = ServerStateEnum::SUSPENDED->value;
         }
-        
+
         $serverDetails = $this->getServerDetails($server);
+
+        if ($serverDetails === null) {
+            return null;
+        }
 
         return new ServerDetailsDTO(
             identifier: $server->getPterodactylServerIdentifier(),

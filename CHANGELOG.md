@@ -1,5 +1,80 @@
 # Changelog
 
+## [0.6.5] - 2026-03-19
+
+### Added
+- Added one-time setup fee option for products.
+- Added context-specific logo settings for landing page and email templates.
+- Added configurable avatar upload restrictions (max size and allowed formats) in security settings.
+- Added user management CLI commands: block, unblock, delete, restore, info, list, change-balance, change-role, verify.
+- Added theme management CLI commands: list, set, reset.
+- Added theme record tracking for metadata persistence.
+- Added plugin version mismatch warning when enabling incompatible plugins.
+- Added pre-balance-charge events for server purchase and renewal flows.
+- Added widget system support for server list, server detail, store, and store product pages.
+- Added Pterodactyl account synchronization validation on dashboard and server creation.
+- Added Cloudflare `CF-Connecting-IP` header support for accurate IP address detection.
+
+### Changed
+- Optimized Docker build with improved layer caching and simplified permissions.
+- Added persistent volumes for plugins and themes in production Docker setup.
+- Improved voucher redemption notifications with type-specific messages showing amount and balance.
+- Relaxed server name validation — field is now optional with automatic fallback to product name.
+- Simplified plugin upload flow by removing auto-enable option in favor of manual activation.
+- Reworked cart configuration and renewal views.
+- Set session cookie lifetime to 7 days to prevent unexpected logouts on browser close.
+- Moved `ServerEulaService` to `Server` namespace.
+- Improved user email verification status handling.
+
+### Fixed
+- Fixed product copy not including the short description field.
+- Fixed price display on landing page showing only unit without billing period value.
+- Fixed server management page crashing with error 500 when Pterodactyl API is unavailable.
+- Fixed uninitialized variables in server data service causing errors when API calls fail.
+- Fixed servers list crashing when server product relation is null.
+- Centralized IP address retrieval through `IpAddressProviderService` across all services.
+- Fixed Docker environment error logging configuration.
+- Fixed theme color scheme mode sanitization.
+
+---
+
+## [0.6.4] - 2026-03-02
+
+### Added
+- Added price preview widget in the product pricing tab showing formatted prices for each billing period.
+- Added email notification sent to the user when an admin creates a server on their behalf.
+- Added filesystem permission precheck before plugin upload to verify write access and show clear error messages.
+- Added filesystem permission precheck before theme upload to verify write access and show clear error messages.
+- Added Marketplace integration in the admin panel - browse, search, and install plugins directly from marketplace.pteroca.com.
+- Added support for required user-provided server variables during the server purchase flow.
+- Added product egg variable validation rules support - rules defined in egg configuration are now enforced on user input.
+- Added server health status badge in the admin server CRUD list view.
+- Added configurable "Manage in Pterodactyl" button on the user server management page (can be enabled/disabled in settings).
+- Added configurable price format settings - customizable decimal and thousands separators for price display.
+- Added configurable datetime format settings - date format, timezone, and timezone visibility can be set per installation.
+- Added configurable minimum top-up amount setting for wallet balance.
+- Added custom head scripts setting - arbitrary scripts can be injected into the `<head>` of the landing page and panel.
+- Added code editor field type for settings with syntax highlighting support.
+- Added short description field to products for use in SEO metadata and store listing previews.
+
+### Changed
+- Improved admin server CRUD list view - Pterodactyl server identifier is now shown in a shortened form on the index page.
+- Updated contribution documentation - improved CONTRIBUTING.md, PR template, issue templates, and code of conduct.
+- Updated help link in product CRUD controllers.
+- Added Mailhog to the development Docker environment for local email testing.
+
+### Fixed
+- Fixed server state in the servers list showing as unknown when the status check cannot be performed.
+- Fixed doubled server ID appearing in the server name after migration from Pterodactyl.
+- Fixed invalid YAML escaping in the Italian translation file.
+- Fixed theme export functionality that was producing invalid archives.
+- Fixed plugin migration not wrapping schema changes in a database transaction.
+- Fixed saving the default theme context in theme settings.
+- Fixed EasyAdmin CRUD controllers not calling the parent `configureFields` method, causing plugin-registered fields to be dropped.
+- Fixed node selection not respecting Pterodactyl maintenance mode - nodes in maintenance are now skipped during automatic selection and rejected when chosen manually.
+
+---
+
 ## [0.6.3] - 2026-02-03
 
 ### Added

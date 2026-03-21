@@ -7,6 +7,7 @@ use App\Core\Enum\CrudTemplateContextEnum;
 use App\Core\Service\Crud\PanelCrudService;
 use App\Core\Service\Pterodactyl\PterodactylRedirectService;
 use App\Core\Service\Server\DeleteServerService;
+use App\Core\Service\Server\ServerHealthStatusFormatter;
 use App\Core\Service\Server\UpdateServerService;
 use App\Core\Service\SettingService;
 use App\Core\Trait\CrudFlashMessagesTrait;
@@ -22,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -41,6 +43,7 @@ class ServerCrudController extends AbstractPanelController
         private readonly SettingService $settingService,
         private readonly TranslatorInterface $translator,
         private readonly PterodactylRedirectService $pterodactylRedirectService,
+        private readonly ServerHealthStatusFormatter $serverHealthStatusFormatter,
     ) {
         parent::__construct($panelCrudService, $requestStack);
     }
@@ -52,14 +55,20 @@ class ServerCrudController extends AbstractPanelController
 
     public function configureFields(string $pageName): iterable
     {
-        return [
+        Server::registerVirtualField('healthStatus');
+
+        $this->fields = [
             IdField::new('id')
                 ->hideOnForm(),
             IntegerField::new('pterodactylServerId', $this->translator->trans('pteroca.crud.server.pterodactyl_server_id'))
                 ->setDisabled()
                 ->onlyOnForms()
                 ->setColumns(4),
-            TextField::new('pterodactylServerIdentifier', $this->translator->trans('pteroca.crud.server.pterodactyl_server_identifier'))
+            TextField::new('pterodactylServerIdentifier', $this->translator->trans(
+                $pageName === Crud::PAGE_INDEX
+                    ? 'pteroca.crud.server.pterodactyl_server_identifier_short'
+                    : 'pteroca.crud.server.pterodactyl_server_identifier'
+            ))
                 ->setDisabled()
                 ->setColumns(4),
             TextField::new('name', $this->translator->trans('pteroca.crud.server.name'))
@@ -85,31 +94,25 @@ class ServerCrudController extends AbstractPanelController
             NumberField::new('serverProduct.memory', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.memory')))
                 ->onlyOnIndex()
                 ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.io', $this->translator->trans('pteroca.crud.product.io'))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
             NumberField::new('serverProduct.cpu', sprintf('%s (%%)', $this->translator->trans('pteroca.crud.product.cpu')))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.dbCount', $this->translator->trans('pteroca.crud.product.db_count'))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.swap', sprintf('%s (MB)', $this->translator->trans('pteroca.crud.product.swap')))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.backups', $this->translator->trans('pteroca.crud.product.backups'))
-                ->onlyOnIndex()
-                ->formatValue(fn($value) => $value ?? 'N/A'),
-            NumberField::new('serverProduct.ports', $this->translator->trans('pteroca.crud.product.ports'))
                 ->onlyOnIndex()
                 ->formatValue(fn($value) => $value ?? 'N/A'),
             BooleanField::new('isSuspended', $this->translator->trans('pteroca.crud.server.is_suspended'))
                 ->setColumns(4),
+            Field::new('healthStatus', $this->translator->trans('pteroca.crud.server.health_status'))
+                ->onlyOnIndex()
+                ->setColumns(2)
+                ->setSortable(false)
+                ->formatValue(fn($value, Server $entity) =>
+                    $this->serverHealthStatusFormatter->getHealthBadgeHtml($entity, $this->translator)
+                ),
             DateTimeField::new('createdAt', $this->translator->trans('pteroca.crud.server.created_at'))
                 ->onlyOnDetail(),
             DateTimeField::new('deletedAt', $this->translator->trans('pteroca.crud.server.deleted_at'))
                 ->onlyOnDetail(),
         ];
+
+        return parent::configureFields($pageName);
     }
 
     public function configureActions(Actions $actions): Actions

@@ -12,6 +12,7 @@ use App\Core\DTO\Email\RenewalEmailContextDTO;
 use App\Core\Entity\Server;
 use App\Core\Enum\ProductPriceTypeEnum;
 use App\Core\Enum\SettingEnum;
+use App\Core\Service\PriceFormatterService;
 use App\Core\Service\Product\ProductPriceCalculatorService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\Server\ServerSlotPricingService;
@@ -28,6 +29,7 @@ readonly class EmailContextBuilderService
         private ServerSlotPricingService      $slotPricingService,
         private ProductPriceCalculatorService $priceCalculatorService,
         private TranslatorInterface           $translator,
+        private PriceFormatterService         $priceFormatterService,
     ) {}
 
     /**
@@ -98,7 +100,7 @@ readonly class EmailContextBuilderService
 
         $serverData = [
             'ip' => $serverDetails->ip,
-            'expiresAt' => $server->getExpiresAt()->format('Y-m-d H:i'),
+            'expiresAt' => $server->getExpiresAt(),
         ];
 
         $panelData = [
@@ -158,20 +160,20 @@ readonly class EmailContextBuilderService
         return match ($pricingType) {
             ProductPriceTypeEnum::SLOT->value => $this->translator->trans('pteroca.email.pricing.slot_format', [
                 '{{ slots }}' => $slots ?? 1,
-                '{{ price }}' => number_format($basePrice, 2),
+                '{{ price }}' => $this->priceFormatterService->formatPrice($basePrice),
                 '{{ currency }}' => $currency,
-                '{{ total }}' => number_format($finalPrice, 2),
+                '{{ total }}' => $this->priceFormatterService->formatPrice($finalPrice),
             ]),
             ProductPriceTypeEnum::STATIC->value => $this->translator->trans('pteroca.email.pricing.static_format', [
-                '{{ price }}' => number_format($finalPrice, 2),
+                '{{ price }}' => $this->priceFormatterService->formatPrice($finalPrice),
                 '{{ currency }}' => $currency,
             ]),
             ProductPriceTypeEnum::ON_DEMAND->value => $this->translator->trans('pteroca.email.pricing.on_demand_format', [
-                '{{ price }}' => number_format($finalPrice, 2),
+                '{{ price }}' => $this->priceFormatterService->formatPrice($finalPrice),
                 '{{ currency }}' => $currency,
             ]),
             default => $this->translator->trans('pteroca.email.pricing.static_format', [
-                '{{ price }}' => number_format($finalPrice, 2),
+                '{{ price }}' => $this->priceFormatterService->formatPrice($finalPrice),
                 '{{ currency }}' => $currency,
             ]),
         };

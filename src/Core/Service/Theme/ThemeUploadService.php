@@ -46,6 +46,7 @@ class ThemeUploadService
         private readonly ThemeSecurityValidator $securityValidator,
         private readonly Filesystem $filesystem,
         private readonly LoggerInterface $logger,
+        private readonly ThemeRecordManager $themeRecordManager,
     ) {}
 
     public function uploadTheme(UploadedFile $file, bool $ignoreWarnings = false): ThemeUploadResultDTO
@@ -62,6 +63,8 @@ class ThemeUploadService
 
             // 1. Validate uploaded file
             $this->validateUploadedFile($file);
+
+            $zipHash = hash_file('sha256', $file->getPathname());
 
             // 2. Extract to temp with security checks
             $tempDir = $this->extractZipToTemp($file);
@@ -144,6 +147,10 @@ class ThemeUploadService
 
             // 8. Move to final locations
             [$themePath, $assetsPath] = $this->moveToFinalLocations($tempDir, $manifest->name);
+
+            // Create/update ThemeRecord with hash and marketplace code
+            $marketplaceCode = $manifest->getMarketplaceCode();
+            $this->themeRecordManager->createOrUpdate($manifest->name, $zipHash, $marketplaceCode);
 
             // 9. Set permissions
             $this->setPermissions($themePath);

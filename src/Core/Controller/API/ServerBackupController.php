@@ -2,6 +2,7 @@
 
 namespace App\Core\Controller\API;
 
+use App\Core\Attribute\RequiresVerifiedEmail;
 use App\Core\Enum\ServerPermissionEnum;
 use App\Core\Repository\ServerRepository;
 use App\Core\Service\Pterodactyl\PterodactylApplicationService;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[RequiresVerifiedEmail]
 class ServerBackupController extends APIAbstractController
 {
     use InternalServerApiTrait;

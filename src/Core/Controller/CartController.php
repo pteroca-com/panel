@@ -41,6 +41,12 @@ use App\Core\Event\Cart\CartConfigurePageAccessedEvent;
 use App\Core\Event\Payment\PaymentGatewaysCollectedEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Core\Service\Product\LocationService;
+use App\Core\Service\Server\ServerUserVariableService;
+use App\Core\Service\PriceFormatterService;
+use App\Core\Enum\ProductPriceTypeEnum;
+use App\Core\Enum\WidgetContext;
+use App\Core\Service\Widget\WidgetRegistry;
+use App\Core\Event\Widget\WidgetsCollectedEvent;
 
 class CartController extends AbstractController
 {
@@ -54,20 +60,35 @@ class CartController extends AbstractController
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly LocationService $locationService,
+        private readonly ServerUserVariableService $serverUserVariableService,
+        private readonly PriceFormatterService $priceFormatterService,
+        private readonly SettingService $settingService,
     ) {}
 
     #[Route('/cart/topup', name: 'cart_topup', methods: ['GET', 'POST'])]
     #[RequiresVerifiedEmail]
     public function topUpBalance(
         Request $request,
-        SettingService $settingService,
         PaymentService $paymentService,
         PaymentGatewayManager $gatewayManager,
     ): Response
     {
         $this->denyAccessUnlessGranted(PermissionEnum::ACCESS_WALLET->value);
 
-        $currency = $settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        $currency = $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        $minAmount = (float) ($this->settingService
+            ->getSetting(SettingEnum::MINIMUM_TOPUP_AMOUNT->value) ?? '1.00');
+
+        if ($request->query->has('amount')) {
+            $requestedAmount = (float) $request->query->get('amount');
+            if ($requestedAmount < $minAmount) {
+                $this->addFlash('danger', $this->translator->trans(
+                    'pteroca.recharge.amount_below_minimum',
+                    ['%minimum%' => sprintf('%.2f %s', $minAmount, $currency)]
+                ));
+                return $this->redirectToRoute('panel', ['routeName' => 'recharge_balance']);
+            }
+        }
 
         $context = $this->buildMinimalEventContext($request);
         $gatewaysEvent = new PaymentGatewaysCollectedEvent($gatewayManager, $context);
@@ -165,6 +186,10 @@ class CartController extends AbstractController
             'request' => ['amount' => $amount, 'currency' => $currency], // For backward compatibility with template
         ];
 
+        $viewData = array_merge($viewData, $this->setupWidgets(WidgetContext::CART_TOPUP, [
+            'user' => $this->getUser(), 'amount' => $amount, 'currency' => $currency,
+        ]));
+
         return $this->renderWithEvent(ViewNameEnum::CART_TOPUP, 'panel/cart/topup.html.twig', $viewData, $request);
     }
 
@@ -209,10 +234,7 @@ class CartController extends AbstractController
             $eggChoices[$egg['name']] = $egg['id'];
         }
 
-        $priceChoices = [];
-        foreach ($product->getPrices() as $price) {
-            $priceChoices[$price->getId()] = $price->getId();
-        }
+        [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs($product->getPrices());
 
         $initialData = [];
         if (isset($requestData['egg'])) {
@@ -232,6 +254,9 @@ class CartController extends AbstractController
             'product_id' => $product->getId(),
             'eggs' => $eggChoices,
             'prices' => $priceChoices,
+            'price_choice_attrs' => $priceChoiceAttrs,
+            'selected_duration' => isset($requestData['duration']) ? (int) $requestData['duration'] : null,
+            'selected_egg' => isset($requestData['egg']) ? (int) $requestData['egg'] : null,
             'has_slot_prices' => $hasSlotPrices,
             'initial_slots' => isset($requestData['slots']) ? (int) $requestData['slots'] : null,
             'allow_auto_renewal' => $product->getAllowAutoRenewal(),
@@ -244,6 +269,25 @@ class CartController extends AbstractController
             $request,
             [$product->getId(), $preparedEggs, $hasSlotPrices]
         );
+
+        $userRequiredVariablesByEgg = [];
+        try {
+            $eggsConfig = json_decode($product->getEggsConfiguration() ?? '{}', true, 512, JSON_THROW_ON_ERROR);
+            foreach ($eggsConfig as $eggId => $eggConfig) {
+                foreach ($eggConfig['variables'] ?? [] as $varId => $varConfig) {
+                    if (!empty($varConfig['user_required']) && !empty($varConfig['env_variable'])) {
+                        $userRequiredVariablesByEgg[$eggId][] = [
+                            'env_variable'  => $varConfig['env_variable'],
+                            'name'          => $varConfig['name'] ?? $varConfig['env_variable'],
+                            'description'   => $varConfig['description'] ?? '',
+                            'rules'         => $varConfig['rules'] ?? '',
+                            'default_value' => $varConfig['value'] ?? '',
+                        ];
+                    }
+                }
+            }
+        } catch (\JsonException) {
+        }
 
         $viewData = [
             'product' => $product,
@@ -260,7 +304,12 @@ class CartController extends AbstractController
             'allowAutoRenewal' => $product->getAllowAutoRenewal(),
             'allowLocationSelection' => $product->getAllowUserSelectLocation(),
             'groupedLocations' => $groupedLocations,
+            'userRequiredVariablesByEgg' => $userRequiredVariablesByEgg,
         ];
+
+        $viewData = array_merge($viewData, $this->setupWidgets(WidgetContext::CART_CONFIGURE, [
+            'user' => $this->getUser(), 'product' => $product, 'hasSlotPrices' => $hasSlotPrices,
+        ]));
 
         return $this->renderWithEvent(ViewNameEnum::CART_CONFIGURE, 'panel/cart/configure.html.twig', $viewData, $request);
     }
@@ -298,15 +347,13 @@ class CartController extends AbstractController
                 $eggChoices[$egg['name']] = $egg['id'];
             }
 
-            $priceChoices = [];
-            foreach ($product->getPrices() as $price) {
-                $priceChoices[$price->getId()] = $price->getId();
-            }
+            [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs($product->getPrices());
 
             $form = $this->createForm(ServerOrderType::class, null, [
                 'product_id' => $product->getId(),
                 'eggs' => $eggChoices,
                 'prices' => $priceChoices,
+                'price_choice_attrs' => $priceChoiceAttrs,
                 'has_slot_prices' => $hasSlotPrices,
                 'initial_slots' => null,
                 'allow_auto_renewal' => $product->getAllowAutoRenewal(),
@@ -324,10 +371,15 @@ class CartController extends AbstractController
             $formData = $form->getData();
             $eggId = $form->get('egg')->getData();
             $priceId = $form->get('duration')->getData();
-            $serverName = $formData['server-name'];
+            $serverName = !empty($formData['server-name']) ? $formData['server-name'] : $product->getName();
             $autoRenewal = $formData['auto-renewal'] ?? false;
             $slots = $formData['slots'] ?? null;
             $voucher = $formData['voucher'] ?? '';
+            $userVariables = $this->serverUserVariableService->extractAndValidate(
+                $request->request->all('user_variables'),
+                $product,
+                $eggId
+            );
 
             $selectedNodeId = null;
             if ($product->getAllowUserSelectLocation() && isset($formData['node'])) {
@@ -354,7 +406,7 @@ class CartController extends AbstractController
             );
             $result = null;
             $this->entityManager->wrapInTransaction(function() use (
-                $product, $eggId, $priceId, $serverName, $autoRenewal, $slots, $voucher, $selectedNodeId, $createServerService, &$result
+                $product, $eggId, $priceId, $serverName, $autoRenewal, $slots, $voucher, $selectedNodeId, $userVariables, $createServerService, &$result
             ) {
                 $lockedUser = $this->userRepository->findOneByIdWithLock($this->getUser()->getId());
 
@@ -379,7 +431,8 @@ class CartController extends AbstractController
                     $lockedUser,
                     $voucher,
                     $slots,
-                    $selectedNodeId
+                    $selectedNodeId,
+                    $userVariables
                 );
             });
 
@@ -432,6 +485,10 @@ class CartController extends AbstractController
 
         $purchaseToken = $this->purchaseTokenService->generateToken($this->getUser(), 'renew');
 
+        [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs(
+            $server->getServerProduct()->getPrices()
+        );
+
         $form = $this->createForm(ServerRenewType::class, null, [
             'server_id' => $server->getId(),
             'current_auto_renewal' => $server->isAutoRenewal(),
@@ -439,6 +496,9 @@ class CartController extends AbstractController
             'has_slot_pricing' => $hasSlotPrices,
             'server_slots' => $serverSlots,
             'allow_auto_renewal' => $server->getServerProduct()->getAllowAutoRenewal(),
+            'prices' => $priceChoices,
+            'price_choice_attrs' => $priceChoiceAttrs,
+            'selected_price_id' => $server->getServerProduct()->getSelectedPrice()->getId(),
         ]);
 
         $this->dispatchDataEvent(
@@ -456,6 +516,10 @@ class CartController extends AbstractController
             'purchase_token' => $purchaseToken,
             'allowAutoRenewal' => $server->getServerProduct()->getAllowAutoRenewal(),
         ];
+
+        $viewData = array_merge($viewData, $this->setupWidgets(WidgetContext::CART_RENEW, [
+            'user' => $this->getUser(), 'server' => $server, 'isOwner' => $isOwner, 'hasSlotPrices' => $hasSlotPrices,
+        ]));
 
         return $this->renderWithEvent(ViewNameEnum::CART_RENEW, 'panel/cart/renew.html.twig', $viewData, $request);
     }
@@ -476,19 +540,26 @@ class CartController extends AbstractController
             $server = $this->getServerByRequest($request);
             $isOwner = $server->getUser() === $this->getUser();
 
-            $hasActiveSlotPricing = $this->serverSlotPricingService->hasActiveSlotPricing($server);
+            $hasSlotPrices = $this->serverSlotPricingService->hasSlotPricing($server);
             $serverSlots = null;
-            if ($hasActiveSlotPricing) {
+            if ($hasSlotPrices) {
                 $serverSlots = $this->serverSlotPricingService->getServerSlots($server);
             }
+
+            [$priceChoices, $priceChoiceAttrs] = $this->buildPriceChoicesAndAttrs(
+                $server->getServerProduct()->getPrices()
+            );
 
             $form = $this->createForm(ServerRenewType::class, null, [
                 'server_id'            => $server->getId(),
                 'current_auto_renewal' => $server->isAutoRenewal(),
                 'is_owner'             => $isOwner,
-                'has_slot_pricing'     => $hasActiveSlotPricing,
+                'has_slot_pricing'     => $hasSlotPrices,
                 'server_slots'         => $serverSlots,
                 'allow_auto_renewal'   => $server->getServerProduct()->getAllowAutoRenewal(),
+                'prices'               => $priceChoices,
+                'price_choice_attrs'   => $priceChoiceAttrs,
+                'selected_price_id'    => $server->getServerProduct()->getSelectedPrice()->getId(),
             ]);
             $form->handleRequest($request);
 
@@ -565,6 +636,59 @@ class CartController extends AbstractController
         return $this->redirectToRoute('panel', ['routeName' => 'servers']);
     }
 
+    /**
+     * Build choices and choice_attr arrays for price ChoiceType fields.
+     *
+     * @return array{0: array<string, int>, 1: array<int, array<string, string>>}
+     */
+    private function buildPriceChoicesAndAttrs(iterable $prices): array
+    {
+        $currency = $this->settingService->getSetting(SettingEnum::CURRENCY_NAME->value);
+        $choices = [];
+        $choiceAttrs = [];
+
+        foreach ($prices as $price) {
+            $formattedPrice = $this->priceFormatterService->formatPrice($price->getPrice());
+            $type = $price->getType();
+
+            $label = match ($type) {
+                ProductPriceTypeEnum::STATIC => sprintf(
+                    '%d %s - %s %s',
+                    $price->getValue(),
+                    $this->translator->trans('pteroca.product.' . $price->getUnit()->value),
+                    $formattedPrice,
+                    $currency
+                ),
+                ProductPriceTypeEnum::ON_DEMAND => sprintf(
+                    '%s - %s %s/%s',
+                    $this->translator->trans('pteroca.product.on_demand'),
+                    $formattedPrice,
+                    $currency,
+                    $this->translator->trans('pteroca.product.minute_short')
+                ),
+                ProductPriceTypeEnum::SLOT => sprintf(
+                    '%s - %d %s - %s %s/%s',
+                    $this->translator->trans('pteroca.store.slot_pricing'),
+                    $price->getValue(),
+                    $this->translator->trans('pteroca.product.' . $price->getUnit()->value),
+                    $formattedPrice,
+                    $currency,
+                    $this->translator->trans('pteroca.product.slot')
+                ),
+            };
+
+            $choices[$label] = $price->getId();
+            $choiceAttrs[$price->getId()] = [
+                'data-type' => $type->value,
+                'data-value' => (string) $price->getValue(),
+                'data-unit' => $price->getUnit()->value,
+                'data-price' => (string) $price->getPrice(),
+            ];
+        }
+
+        return [$choices, $choiceAttrs];
+    }
+
     private function getProductByRequest(Request $request): Product
     {
         $productId = $request->request->getInt('id') ?: $request->query->getInt('id');
@@ -574,6 +698,17 @@ class CartController extends AbstractController
         }
 
         return $product;
+    }
+
+    private function setupWidgets(WidgetContext $context, array $contextData): array
+    {
+        $widgetRegistry = new WidgetRegistry();
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, $context, $contextData));
+        return [
+            'widgetRegistry' => $widgetRegistry,
+            'widgetContext' => $context,
+            'contextData' => $contextData,
+        ];
     }
 
     private function getServerByRequest(Request $request): Server

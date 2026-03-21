@@ -29,6 +29,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CodeEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
@@ -111,7 +112,7 @@ class ProductCrudController extends AbstractPanelController
 
         $featuredField = BooleanField::new('featured', $this->translator->trans('pteroca.crud.product.featured'))
             ->setHelp($this->translator->trans('pteroca.crud.product.featured_hint'))
-            ->setColumns(6);
+            ->setColumns(4);
 
         if (!$landingPageEnabled) {
             $featuredField->hideOnIndex()->hideOnForm();
@@ -129,15 +130,17 @@ class ProductCrudController extends AbstractPanelController
                         ->addOrderBy('entity.name', 'ASC');
                 })
                 ->setColumns(6),
-            TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description'))
-                ->setColumns(6)
+            TextareaField::new('shortDescription', $this->translator->trans('pteroca.crud.product.short_description'))
+                ->setMaxLength(255)
+                ->setNumOfRows(3)
+                ->setHelp($this->translator->trans('pteroca.crud.product.short_description_hint'))
+                ->setColumns(12)
                 ->hideOnIndex(),
-            BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active'))
-                ->setColumns(6),
-            NumberField::new('priority', $this->translator->trans('pteroca.crud.product.priority'))
-                ->setHelp($this->translator->trans('pteroca.crud.product.priority_hint'))
-                ->setColumns(6),
-            $featuredField,
+            TextareaField::new('description', $this->translator->trans('pteroca.crud.product.description'))
+                ->setNumOfRows(15)
+                ->setHelp($this->translator->trans('pteroca.crud.product.description_hint'))
+                ->setColumns(12)
+                ->hideOnIndex(),
             FormField::addRow(),
             ImageField::new('imagePath', $this->translator->trans('pteroca.crud.product.image'))
                 ->setBasePath($this->getParameter('products_base_path'))
@@ -153,6 +156,14 @@ class ProductCrudController extends AbstractPanelController
                 ->setRequired(false)
                 ->setHelp($this->translator->trans('pteroca.crud.product.banner_help'))
                 ->setColumns(6),
+            FormField::addRow(),
+            NumberField::new('priority', $this->translator->trans('pteroca.crud.product.priority'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.priority_hint'))
+                ->setColumns(4),
+            BooleanField::new('isActive', $this->translator->trans('pteroca.crud.product.is_active'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.is_active_hint'))
+                ->setColumns(4),
+            $featuredField,
             $this->getProductHelpPanel(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.server_resources'))
@@ -227,6 +238,13 @@ class ProductCrudController extends AbstractPanelController
                 ->setHelp($this->translator->trans('pteroca.crud.product.price_slot_plan_hint'))
                 ->setRequired(true)
                 ->setEntryIsComplex(),
+            FormField::addRow(),
+            NumberField::new('setupFee', $this->translator->trans('pteroca.crud.product.setup_fee'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.setup_fee_hint'))
+                ->setColumns(6)
+                ->setRequired(false)
+                ->hideOnIndex()
+                ->setNumDecimals(2),
             $this->getProductHelpPanel(),
 
             FormField::addTab($this->translator->trans('pteroca.crud.product.product_connections'))
@@ -247,6 +265,7 @@ class ProductCrudController extends AbstractPanelController
                 ->setColumns(6),
             HiddenField::new('eggsConfiguration')->onlyOnForms(),
             BooleanField::new('allowChangeEgg', $this->translator->trans('pteroca.crud.product.egg_allow_change'))
+                ->setHelp($this->translator->trans('pteroca.crud.product.egg_allow_change_hint'))
                 ->setRequired(false)
                 ->hideOnIndex()
                 ->setColumns(6),
@@ -295,7 +314,9 @@ class ProductCrudController extends AbstractPanelController
             $this->addFlash('danger', $flashMessages);
         }
 
-        return $fields;
+        $this->fields = $fields;
+
+        return parent::configureFields($pageName);
     }
 
     public function configureActions(Actions $actions): Actions

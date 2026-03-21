@@ -1,5 +1,5 @@
 parameters:
-  version: '0.6.3'
+  version: '0.6.5'
   categories_base_path: '/uploads/categories'
   categories_directory: 'public/uploads/categories'
   products_base_path: '/uploads/products'
@@ -45,6 +45,7 @@ services:
       $twig: '@twig'
       $defaultLogoPath: '%default_logo_path%'
       $projectDir: '%kernel.project_dir%'
+      $appEnv: '%kernel.environment%'
 
   App\Core\Twig\AppExtension:
     tags: [ 'twig.extension' ]
@@ -191,6 +192,12 @@ services:
       $tempDirectory: '%plugin_upload.temp_directory%'
       $enablePreScan: '%plugin_upload.enable_pre_scan%'
 
+  App\Core\Service\Plugin\PluginFilesystemCheckService:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+      $pluginsDirectory: '%kernel.project_dir%/plugins'
+      $tempDirectory: '%plugin_upload.temp_directory%'
+
   App\Core\Service\Plugin\EnabledPluginsCacheManager:
     arguments:
       $projectDir: '%kernel.project_dir%'
@@ -247,6 +254,12 @@ services:
       $publicAssetsDirectory: '%kernel.project_dir%/public/assets/theme'
       $tempDirectory: '%kernel.project_dir%/var/tmp'
       $currentPterocaVersion: '%version%'
+
+  App\Core\Service\Theme\ThemeFilesystemCheckService:
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+      $themesDirectory: '%kernel.project_dir%/themes'
+      $tempDirectory: '%kernel.project_dir%/var/tmp'
 
   App\Core\Service\Theme\TemplateManifestValidator:
     arguments:

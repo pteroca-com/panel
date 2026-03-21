@@ -6,6 +6,7 @@ use App\Core\Enum\SettingEnum;
 use App\Core\Event\Email\EmailAfterSendEvent;
 use App\Core\Event\Email\EmailBeforeSendEvent;
 use App\Core\Service\SettingService;
+use App\Core\Service\System\IpAddressProviderService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mailer\Mailer;
@@ -20,6 +21,9 @@ use Twig\Error\SyntaxError;
 
 class MailerService implements MailerServiceInterface
 {
+    private const DEV_MAILHOG_DSN = 'smtp://mailhog:1025';
+    private const DEV_MAILHOG_FROM = 'noreply@pteroca.local';
+
     private MailerInterface $mailer;
 
     private string $from = '';
@@ -30,7 +34,9 @@ class MailerService implements MailerServiceInterface
         private readonly string $defaultLogoPath,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly RequestStack $requestStack,
+        private readonly IpAddressProviderService $ipAddressProvider,
         private readonly string $projectDir,
+        private readonly string $appEnv = 'prod',
     ) {}
 
     /**
@@ -111,20 +117,29 @@ class MailerService implements MailerServiceInterface
 
     private function setMailer(): void
     {
-        $smtpServer = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_SERVER->value);
-        $smtpPort = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PORT->value);
-        $smtpUsername = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_USERNAME->value);
-        $smtpPassword = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD->value);
-        $this->from = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_FROM->value);
+        if ($this->appEnv === 'dev') {
+            $this->from = self::DEV_MAILHOG_FROM;
+            $dsn = self::DEV_MAILHOG_DSN;
+        } else {
+            $smtpServer = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_SERVER->value);
+            $smtpPort = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PORT->value);
+            $smtpUsername = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_USERNAME->value);
+            $smtpPassword = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_PASSWORD->value);
+            $this->from = $this->settingsService->getSetting(SettingEnum::EMAIL_SMTP_FROM->value);
+            $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUsername, $smtpPassword, $smtpServer, $smtpPort);
+        }
 
-        $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUsername, $smtpPassword, $smtpServer, $smtpPort);
         $transport = Transport::fromDsn($dsn);
         $this->mailer = new Mailer($transport);
     }
 
     private function resolveLogoPath(): string
     {
-        $logoFilename = $this->settingsService->getSetting(SettingEnum::LOGO->value);
+        $logoFilename = $this->settingsService->getSetting(SettingEnum::EMAIL_LOGO->value);
+
+        if (empty($logoFilename)) {
+            $logoFilename = $this->settingsService->getSetting(SettingEnum::LOGO->value);
+        }
 
         if (!empty($logoFilename)) {
             $customLogoPath = sprintf(
@@ -155,7 +170,7 @@ class MailerService implements MailerServiceInterface
         }
 
         return [
-            'ip' => $request->getClientIp(),
+            'ip' => $this->ipAddressProvider->getIpAddress(),
             'userAgent' => $request->headers->get('User-Agent'),
             'locale' => $request->getLocale(),
             'route' => $request->attributes->get('_route'),

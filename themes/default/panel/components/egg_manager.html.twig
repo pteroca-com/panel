@@ -1,4 +1,5 @@
 {% block body_javascript %}
+    {% include 'components/egg_variable_validator.html.twig' %}
     <script>
         let loadedEggs = [],
             loadedEggsConfigurations = null,
@@ -22,6 +23,10 @@
             const form = document.querySelector('form');
             if (form) {
                 form.addEventListener('submit', function(e) {
+                    if (!validateEggVariablesRules()) {
+                        e.preventDefault();
+                        return false;
+                    }
                     saveEggsConfigurationToHiddenField();
                 });
             }
@@ -138,6 +143,7 @@
                 updateEggTabIndicators();
                 saveEggsConfigurationToHiddenField();
                 ensureOneStartingEggSelected();
+                attachEggVariableValidation();
             }, 1000);
         }
 
@@ -293,6 +299,14 @@
                 tr.appendChild(thSlotVariable);
             }
 
+            if (isVariablesSection) {
+                const thUserRequired = document.createElement('th');
+                thUserRequired.innerHTML = '<i class="fas fa-user-edit me-1 text-muted"></i>' + loadedTranslations.egg_variable_user_required + ' <i class="fas fa-info-circle text-info ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="' + loadedTranslations.egg_variable_user_required_hint + '"></i>';
+                thUserRequired.className = 'fw-semibold text-center';
+                thUserRequired.style.width = '140px';
+                tr.appendChild(thUserRequired);
+            }
+
             thead.appendChild(tr);
             table.appendChild(thead);
 
@@ -313,7 +327,37 @@
                 tdDescription.textContent = value.description;
                 tdDescription.className = 'text-muted small';
 
-                tdValue.innerHTML = createInput((value.default_value || ''), value.egg_id, value.id, value.options, 'value');
+                tdValue.innerHTML = createInput((value.default_value || ''), value.egg_id, value.id, value.options, 'value', isVariablesSection ? (value.rules || '') : '');
+
+                if (isVariablesSection && value.rules) {
+                    const parsedRules = value.rules.split('|').filter(r => r.length > 0);
+                    if (parsedRules.length > 0) {
+                        const rulesDiv = document.createElement('div');
+                        rulesDiv.className = 'd-flex flex-wrap gap-1 align-items-center mt-1';
+                        let rulesHtml = `<small class="text-muted me-1">${loadedTranslations.egg_variable_rules}:</small>`;
+                        rulesHtml += parsedRules.map(r => `<span class="px-1 rounded-1 font-monospace text-secondary border border-secondary-subtle" data-rule="${escAttr(r)}" style="font-size:0.7rem;background:rgba(108,117,125,0.08)">${escAttr(r)}</span>`).join('');
+                        rulesDiv.innerHTML = rulesHtml;
+                        tdValue.appendChild(rulesDiv);
+                    }
+                }
+
+                // Hidden inputs to persist variable metadata in eggsConfiguration
+                if (isVariablesSection) {
+                    const metaFields = ['env_variable', 'name', 'description', 'rules'];
+                    const metaValues = {
+                        env_variable: value.env_variable || '',
+                        name: value.name || '',
+                        description: value.description || '',
+                        rules: value.rules || '',
+                    };
+                    metaFields.forEach(field => {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = getInputName(value.egg_id, value.id, field);
+                        hidden.value = metaValues[field];
+                        tdValue.appendChild(hidden);
+                    });
+                }
 
                 tdUserViewable.innerHTML = createCheckbox(value.user_viewable, value.egg_id, value.id, 'user_viewable');
                 tdUserViewable.className = 'text-center';
@@ -333,6 +377,13 @@
                     const isNumeric = isValueNumeric(value.default_value || '');
                     tdSlotVariable.innerHTML = createSlotVariableCheckbox(false, value.egg_id, value.id, 'slot_variable', !isNumeric);
                     tr.appendChild(tdSlotVariable);
+                }
+
+                if (isVariablesSection) {
+                    const tdUserRequired = document.createElement('td');
+                    tdUserRequired.className = 'text-center';
+                    tdUserRequired.innerHTML = createCheckbox(false, value.egg_id, value.id, 'user_required');
+                    tr.appendChild(tdUserRequired);
                 }
 
                 tbody.appendChild(tr);
@@ -362,12 +413,13 @@
             return inputName;
         }
 
-        function createInput(value, eggId, variableId, options, name) {
+        function createInput(value, eggId, variableId, options, name, rules = '') {
             if (options) {
                 return createSelect(value, eggId, options, name);
             }
             const v = escAttr(value);
-            return `<input type="text" value="${v}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control form-control-sm" onchange="saveEggsConfigurationToHiddenField()">`;
+            const rulesAttr = rules ? ` data-rules="${escAttr(rules)}"` : '';
+            return `<input type="text" value="${v}" name="${getInputName(eggId, variableId || 'startup', name)}" class="form-control form-control-sm"${rulesAttr} onchange="saveEggsConfigurationToHiddenField()">`;
         }
 
         function createCheckbox(checked, eggId, variableId, name) {
@@ -620,8 +672,9 @@
                 selectInput = document.querySelector(`select[name="${inputName}[${optionIndex}][${optionName}][value]"]`),
                 viewableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_viewable]"]`),
                 editableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_editable]"]`),
-                slotVariableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][slot_variable]"]`);
-            
+                slotVariableInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][slot_variable]"]`),
+                userRequiredInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][user_required]"]`);
+
             if (valueInput) {
                 valueInput.value = value.value;
             }
@@ -636,15 +689,28 @@
             }
             if (slotVariableInput) {
                 slotVariableInput.checked = value.slot_variable || false;
-                
+
                 if (value.slot_variable) {
                     if (editableInput) {
                         editableInput.disabled = true;
                     }
                 }
-                
+
                 updateSlotVariableCheckboxState(slotVariableInput);
             }
+            if (userRequiredInput) {
+                userRequiredInput.checked = value.user_required || false;
+            }
+
+            // Restore hidden metadata fields
+            ['env_variable', 'name', 'description', 'rules'].forEach(field => {
+                if (value[field] !== undefined) {
+                    const hiddenInput = document.querySelector(`input[name="${inputName}[${optionIndex}][${optionName}][${field}]"]`);
+                    if (hiddenInput) {
+                        hiddenInput.value = value[field];
+                    }
+                }
+            });
         }
 
         function saveEggsConfigurationToHiddenField() {
@@ -851,6 +917,20 @@
             const freeServerField = document.querySelector('input[name="ServerProduct[freeServer]"]');
 
             return userField !== null || freeServerField !== null;
+        }
+
+        function validateEggVariablesRules() {
+            const inputs = document.querySelectorAll('input[data-rules]:not([data-rules=""])');
+            for (const input of inputs) {
+                if (!validateRulesValue(input.value, input.dataset.rules)) {
+                    const variableName = input.closest('tr')?.querySelector('td:first-child')?.textContent?.trim() || input.name;
+                    const msg = loadedTranslations.egg_variable_validation_error.replace('%name%', variableName);
+                    alert(msg);
+                    input.focus();
+                    return false;
+                }
+            }
+            return true;
         }
     </script>
 {% endblock %}

@@ -13,12 +13,14 @@ readonly class ServerEggEnvironmentService
      * @param Resource $egg The egg resource from Pterodactyl API (must include 'variables' relationship)
      * @param array $productEggConfiguration Product-specific egg configuration (from ServerProduct.eggsConfiguration)
      * @param int|null $slots Optional slots count for slot-based pricing (overrides slot variables)
+     * @param array $userVariables User-provided values keyed by env_variable name (highest priority)
      * @return array Environment variables as key-value pairs
      */
     public function buildEnvironmentVariables(
         Resource $egg,
         array $productEggConfiguration,
-        ?int $slots = null
+        ?int $slots = null,
+        array $userVariables = []
     ): array
     {
         $environmentVariables = [];
@@ -36,8 +38,11 @@ readonly class ServerEggEnvironmentService
         foreach ($variables->toArray() as $variable) {
             $variableFromProduct = $productEggConfiguration[$eggId]['variables'][$variable['id']] ?? null;
 
-            // Priority: product config > default value from egg
-            $valueToSet = $variableFromProduct['value'] ?? $variable['default_value'] ?? null;
+            // Priority: user_variables > product config > default value from egg
+            $valueToSet = $userVariables[$variable['env_variable']]
+                ?? $variableFromProduct['value']
+                ?? $variable['default_value']
+                ?? null;
 
             // Special handling: Override with slot count if this is a slot variable
             if ($slots !== null && !empty($variableFromProduct['slot_variable']) && $variableFromProduct['slot_variable'] === 'on') {

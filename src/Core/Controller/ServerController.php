@@ -17,8 +17,13 @@ use App\Core\Service\Tab\ServerTabRegistry;
 use App\Core\Service\Server\ServerDataService;
 use App\Core\Service\Server\ServerService;
 use App\Core\Service\System\DemoModeService;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Core\Enum\WidgetContext;
+use App\Core\Service\Widget\WidgetRegistry;
+use App\Core\Event\Widget\WidgetsCollectedEvent;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ServerController extends AbstractController
@@ -35,8 +40,8 @@ class ServerController extends AbstractController
 
         $imagePath = $this->getParameter('products_base_path') . '/';
         $servers = array_map(function (Server $server) use ($imagePath) {
-            if (!empty($server->getServerProduct()->getOriginalProduct()?->getImagePath())) {
-                $server->setImagePath($imagePath . $server->getServerProduct()->getOriginalProduct()?->getImagePath());
+            if (!empty($server->getServerProduct()?->getOriginalProduct()?->getImagePath())) {
+                $server->setImagePath($imagePath . $server->getServerProduct()?->getOriginalProduct()?->getImagePath());
             }
             return $server;
         }, $serverService->getServersWithAccess($this->getUser()));
@@ -51,6 +56,11 @@ class ServerController extends AbstractController
             'servers' => $servers,
         ];
 
+        $widgetRegistry = new WidgetRegistry();
+        $contextData = ['user' => $this->getUser()];
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, WidgetContext::SERVER_LIST, $contextData));
+        $viewData = array_merge($viewData, compact('widgetRegistry', 'contextData') + ['widgetContext' => WidgetContext::SERVER_LIST]);
+
         return $this->renderWithEvent(ViewNameEnum::SERVERS_LIST, 'panel/servers/servers.html.twig', $viewData, $request);
     }
 
@@ -62,6 +72,7 @@ class ServerController extends AbstractController
         ServerTabRegistry $serverTabRegistry,
         PterodactylRedirectService $pterodactylRedirectService,
         DemoModeService $demoModeService,
+        LoggerInterface $logger,
     ): Response
     {
         $this->checkPermission();
@@ -95,7 +106,26 @@ class ServerController extends AbstractController
             ]
         );
 
-        $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
+        try {
+            $serverData = $serverDataService->getServerData($server, $this->getUser(), $currentPage);
+        } catch (Exception $exception) {
+            $logger->error('Failed to load server data from Pterodactyl', [
+                'server_id' => $server->getId(),
+                'pterodactyl_server_identifier' => $server->getPterodactylServerIdentifier(),
+                'error' => $exception->getMessage(),
+            ]);
+            return $this->renderWithEvent(
+                ViewNameEnum::SERVER_MANAGEMENT,
+                'panel/server/server.html.twig',
+                [
+                    'server' => $server,
+                    'serverData' => null,
+                    'connectionError' => true,
+                ],
+                $request
+            );
+        }
+
         $isAdminView = $this->isGranted(PermissionEnum::ACCESS_SERVERS->value);
         $isOwner = $server->getUser() === $this->getUser();
 
@@ -143,6 +173,10 @@ class ServerController extends AbstractController
         $visibleTabs = $serverTabRegistry->getVisibleTabs($tabContext);
         $tabAssets = $serverTabRegistry->getTabAssets($visibleTabs);
 
+        $widgetRegistry = new WidgetRegistry();
+        $contextData = ['user' => $this->getUser(), 'server' => $server];
+        $this->dispatchEvent(new WidgetsCollectedEvent($widgetRegistry, WidgetContext::SERVER_DETAIL, $contextData));
+
         return $this->renderWithEvent(
             ViewNameEnum::SERVER_MANAGEMENT,
             'panel/server/server.html.twig',
@@ -156,6 +190,9 @@ class ServerController extends AbstractController
                 'visibleTabs' => $visibleTabs,
                 'tabAssets' => $tabAssets,
                 'demoMode' => $demoModeService->isDemoModeEnabled(),
+                'widgetRegistry' => $widgetRegistry,
+                'widgetContext' => WidgetContext::SERVER_DETAIL,
+                'contextData' => $contextData,
             ],
             $request
         );
