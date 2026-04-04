@@ -90,7 +90,7 @@ readonly class ServerUserService
             $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
 
             if (count($existingPterodactylUsers->toArray()) === 0 || !$existingPterocaUser) {
-                throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
+                throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['{{ email }}' => $email]));
             }
 
             $verificationSetting = $this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
@@ -150,7 +150,7 @@ readonly class ServerUserService
 
             if (str_contains($e->getMessage(), 'No user found') ||
                 str_contains($e->getMessage(), 'does not exist')) {
-                throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
+                throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['{{ email }}' => $email]));
             }
 
             if (str_contains($e->getMessage(), 'already assigned') ||
@@ -179,7 +179,7 @@ readonly class ServerUserService
         $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
 
         if (!$existingPterocaUser) {
-            throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
+            throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['{{ email }}' => $email]));
         }
 
         $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.modify_permissions'));
@@ -253,7 +253,7 @@ readonly class ServerUserService
         $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
 
         if (!$existingPterocaUser) {
-            throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['email' => $email]));
+            throw new Exception($this->translator->trans('pteroca.api.server_user.user_not_exist', ['{{ email }}' => $email]));
         }
 
         $this->validateSubuserModification($server, $user, $email, $this->translator->trans('pteroca.api.server_user.delete_yourself_from_server'));
